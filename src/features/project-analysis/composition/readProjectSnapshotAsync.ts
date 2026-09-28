@@ -1,4 +1,7 @@
-import { createDependencyGraphFromInspectionsAsync } from '@ankhorage/dependency-graph';
+import {
+  createSourceGraphFromInspectionsAsync,
+  projectDependencyGraphFromInspections,
+} from '@ankhorage/dependency-graph';
 
 import { projectDependencyGraph } from '@/features/dependency-analysis/application/use-cases/projectDependencyGraph';
 import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
@@ -10,9 +13,9 @@ import type { ProjectSnapshot } from '@/types/projectAnalysis';
 export async function readProjectSnapshotAsync(projectPath: string): Promise<ProjectSnapshot> {
   const timeStart = Date.now();
   const inspection = await inspectProjectForAnalysisAsync(projectPath);
-  const dependencyGraph = await createDependencyGraphFromInspectionsAsync({
-    projects: [{ id: 'current', inspection }],
-  });
+  const projects = [{ id: 'current', inspection }];
+  const sourceGraph = await createSourceGraphFromInspectionsAsync({ projects });
+  const dependencyGraph = projectDependencyGraphFromInspections(sourceGraph, projects);
   const language = selectParserLanguage(inspection.detection);
   const files = await createProjectFileTreeAsync(
     inspection,
