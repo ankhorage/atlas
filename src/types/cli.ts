@@ -10,6 +10,7 @@ export interface PkgvizCliOptions {
   readonly verbose: boolean;
   readonly failOnRuleViolation: boolean;
   readonly help: boolean;
+  readonly excludePaths: readonly string[];
   readonly rules: readonly AuditRuleConfiguration[];
   readonly port?: number;
 }

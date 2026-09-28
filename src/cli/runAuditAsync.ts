@@ -3,10 +3,11 @@ import { resolveFileSystemPathWithinRoot, writeFileWithinRoot } from '@ankhorage
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { hasBlockingAuditRuleFailure } from '@/features/audit/domain/hasBlockingAuditRuleFailure';
 import type { Audit, ResolveAuditConfigurationInput } from '@/types/audit';
+import type { ProjectAnalysisOptions } from '@/types/projectAnalysis';
 
 /*** Creates, writes, and evaluates an audit while retaining the artifact on rule failure. */
 export async function runAuditAsync(input: RunAuditInput): Promise<RunAuditResult> {
-  const audit = await createAuditAsync(input.projectPath, input.configuration);
+  const audit = await createAuditAsync(input.projectPath, input.configuration, input.analysis);
   const body = input.pretty ? JSON.stringify(audit, null, 2) : JSON.stringify(audit);
 
   await writeFileWithinRoot({
@@ -32,6 +33,7 @@ interface RunAuditInput {
   readonly outputPath: string;
   readonly pretty: boolean;
   readonly configuration?: ResolveAuditConfigurationInput;
+  readonly analysis?: ProjectAnalysisOptions;
 }
 
 interface RunAuditResult {

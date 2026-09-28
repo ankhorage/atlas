@@ -31,7 +31,7 @@ describe('[TypeScript dependency graph migration]', () => {
 
   it('keeps the existing PKGViz package graph output from the owner graph', async () => {
     const projectRoot = resolve(process.cwd(), 'examples/typescript/my-app');
-    const { packageGraph } = await readProjectSnapshotAsync(projectRoot);
+    const { packageGraph } = await readProjectSnapshotAsync({ projectPath: projectRoot });
 
     const rootToComponents = packageGraph.edges.find(
       edge => edge.source === 'src' && edge.target === 'src.components'

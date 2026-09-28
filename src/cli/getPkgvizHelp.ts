@@ -12,6 +12,8 @@ Options:
   -p, --port <n>     Port to use (default: find free)
   --wait <ms>        Max wait for server & route (default: 90000)
   --no-pretty        Write minified JSON
+  --exclude-path <pattern>
+                      Exclude a project-relative path glob from inspection (repeatable)
   --rule <id>=<mode> Configure a rule as off, audit, or block (repeatable)
   --no-fail-on-rule-violation
                       Never fail only because an audit rule is violated

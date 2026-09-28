@@ -63,6 +63,22 @@ it('reports incomplete scans rather than treating partial evidence as complete',
   }
 });
 
+it('forwards generic path-scope exclusions to Project Detector', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  try {
+    await writeFile(join(root, 'main.ts'), '');
+    await symlink(join(root, 'main.ts'), join(root, 'excluded-link'));
+
+    const inspection = await inspectProjectForAnalysisAsync(root, {
+      excludePaths: ['excluded-link'],
+    });
+
+    assert.deepEqual(inspection.files, ['main.ts']);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 it('ignores the generated ZORA runtime directory during project inspection', async () => {
   const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
   try {

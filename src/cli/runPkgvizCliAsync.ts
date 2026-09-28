@@ -41,6 +41,7 @@ async function runAuditCommandAsync(callerRoot: string, options: PkgvizCliOption
       failOnRuleViolation: options.failOnRuleViolation,
       rules: options.rules,
     },
+    analysis: { excludePaths: options.excludePaths },
   });
 
   console.log(`✓ audit.json written → ${result.artifactPath}`);

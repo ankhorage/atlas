@@ -1,4 +1,4 @@
-import type { ProjectSnapshot } from '@/types/projectAnalysis';
+import type { ProjectSnapshot, ProjectSnapshotRequest } from '@/types/projectAnalysis';
 
 /***
  * Shares only in-flight analysis of the same normalized project path within one server process.
@@ -10,14 +10,15 @@ export function createProjectSnapshotReader(source: ProjectSnapshotSource) {
   const pending = new Map<string, Promise<ProjectSnapshot>>();
 
   /*** Joins the current project analysis or starts a fresh snapshot through the source port. */
-  function readAsync(projectPath: string): Promise<ProjectSnapshot> {
-    const current = pending.get(projectPath);
+  function readAsync(input: ProjectSnapshotRequest): Promise<ProjectSnapshot> {
+    const key = inspectionScopeKey(input);
+    const current = pending.get(key);
     if (current !== undefined) return current;
 
     const next = Promise.resolve()
-      .then(() => source.readAsync(projectPath))
-      .finally(() => pending.delete(projectPath));
-    pending.set(projectPath, next);
+      .then(() => source.readAsync(input))
+      .finally(() => pending.delete(key));
+    pending.set(key, next);
     return next;
   }
 
@@ -25,5 +26,10 @@ export function createProjectSnapshotReader(source: ProjectSnapshotSource) {
 }
 
 interface ProjectSnapshotSource {
-  readonly readAsync: (projectPath: string) => Promise<ProjectSnapshot>;
+  readonly readAsync: (input: ProjectSnapshotRequest) => Promise<ProjectSnapshot>;
+}
+
+/*** Create a deterministic in-flight cache key that includes the selected inspection scope. */
+function inspectionScopeKey(input: ProjectSnapshotRequest): string {
+  return JSON.stringify([input.projectPath, input.excludePaths ?? []]);
 }

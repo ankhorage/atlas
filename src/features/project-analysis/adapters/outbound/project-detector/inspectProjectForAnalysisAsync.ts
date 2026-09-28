@@ -1,6 +1,8 @@
 import { inspectProjectAsync } from '@ankhorage/project-detector/node';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
 
+import type { ProjectAnalysisOptions } from '@/types/projectAnalysis';
+
 const PROJECT_PATH_ERROR_CODES: ReadonlySet<string> = new Set(['EACCES', 'ENOENT', 'ENOTDIR']);
 const EXCLUDED_ANALYSIS_DIRECTORIES = [
   '@types',
@@ -21,12 +23,14 @@ const EXCLUDED_ANALYSIS_FILES = [
 
 /*** Inspect one project through the canonical bounded filesystem owner. */
 export async function inspectProjectForAnalysisAsync(
-  projectPath: string
+  projectPath: string,
+  analysisOptions: ProjectAnalysisOptions = {}
 ): Promise<ProjectInspection> {
   try {
     const inspection = await inspectProjectAsync(projectPath, {
       excludeDirectories: EXCLUDED_ANALYSIS_DIRECTORIES,
       excludeFiles: EXCLUDED_ANALYSIS_FILES,
+      excludePaths: analysisOptions.excludePaths,
     });
     if (!inspection.complete) {
       throw new Error(

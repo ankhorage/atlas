@@ -16,6 +16,7 @@ const DEFAULT_OPTIONS: PkgvizCliOptions = {
   verbose: false,
   failOnRuleViolation: true,
   help: false,
+  excludePaths: [],
   rules: [],
 };
 
@@ -46,6 +47,10 @@ const VALUE_UPDATERS = new Map<string, ValueUpdater>([
       ...options,
       rules: [...options.rules, parseRuleConfiguration(value)],
     }),
+  ],
+  [
+    '--exclude-path',
+    (options, value) => ({ ...options, excludePaths: [...options.excludePaths, value] }),
   ],
 ]);
 

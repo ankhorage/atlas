@@ -5,7 +5,9 @@ import { readProjectSnapshotAsync } from '@/features/project-analysis/compositio
 
 describe('[package cycles]', () => {
   it('detects the A-B-A package cycle on the canonical package graph', async () => {
-    const snapshot = await readProjectSnapshotAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const snapshot = await readProjectSnapshotAsync({
+      projectPath: resolve(process.cwd(), 'examples/java/my-app'),
+    });
     const result = getPackageCyclesWithMembers(snapshot.files, snapshot.packageGraph);
     const cyclic = Array.from(result.packageSet);
 
@@ -14,7 +16,9 @@ describe('[package cycles]', () => {
   });
 
   it('preserves canonical member evidence for every edge in the cycle', async () => {
-    const snapshot = await readProjectSnapshotAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const snapshot = await readProjectSnapshotAsync({
+      projectPath: resolve(process.cwd(), 'examples/java/my-app'),
+    });
     const details = getPackageCyclesWithMembers(snapshot.files, snapshot.packageGraph);
 
     expect(details.cycles.length).toBe(1);

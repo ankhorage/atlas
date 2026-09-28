@@ -14,6 +14,7 @@ describe('[parsePkgvizCliArgs]', () => {
       verbose: false,
       failOnRuleViolation: true,
       help: false,
+      excludePaths: [],
       rules: [],
     });
   });
@@ -33,6 +34,10 @@ describe('[parsePkgvizCliArgs]', () => {
         '--wait',
         '12000',
         '--no-pretty',
+        '--exclude-path',
+        'generated/**',
+        '--exclude-path',
+        'metadata-link',
         '--rule',
         'cyclic-dependencies=audit',
         '--rule',
@@ -51,6 +56,7 @@ describe('[parsePkgvizCliArgs]', () => {
         verbose: true,
         failOnRuleViolation: false,
         help: false,
+        excludePaths: ['generated/**', 'metadata-link'],
         rules: [
           { id: 'cyclic-dependencies', mode: 'audit' },
           { id: 'cyclic-dependencies', mode: 'off' },

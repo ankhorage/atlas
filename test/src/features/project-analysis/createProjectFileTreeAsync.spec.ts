@@ -9,7 +9,9 @@ import type { ProjectFileTree } from '@/types/projectFiles';
 
 describe('[project file tree]', () => {
   it('reads Java file metadata recursively', async () => {
-    const snapshot = await readProjectSnapshotAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const snapshot = await readProjectSnapshotAsync({
+      projectPath: resolve(process.cwd(), 'examples/java/my-app'),
+    });
     const comExampleMyapp = ((snapshot.files.com as ProjectFileTree).example as ProjectFileTree)
       .myapp as ProjectFileTree;
     const comExampleMyappA = comExampleMyapp.a as ProjectFileTree;
@@ -31,7 +33,7 @@ describe('[project file tree]', () => {
       await mkdir(join(root, 'src', 'empty'), { recursive: true });
       await writeFile(join(root, 'src', 'main.py'), 'VALUE = 1\n');
 
-      const snapshot = await readProjectSnapshotAsync(root);
+      const snapshot = await readProjectSnapshotAsync({ projectPath: root });
       const emptyDirectory = snapshot.files.empty as ProjectFileTree;
 
       expect(Object.prototype.hasOwnProperty.call(snapshot.files, 'empty')).toBe(true);
@@ -49,7 +51,7 @@ describe('[project file tree]', () => {
       await mkdir(join(root, 'src', '__proto__'), { recursive: true });
       await writeFile(join(root, 'src', '__proto__', 'module.py'), 'VALUE = 1\n');
 
-      const snapshot = await readProjectSnapshotAsync(root);
+      const snapshot = await readProjectSnapshotAsync({ projectPath: root });
       const protoDirectory = snapshot.files['__proto__'] as ProjectFileTree;
 
       expect(Object.getPrototypeOf(snapshot.files)).toBe(null);

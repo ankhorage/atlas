@@ -4,12 +4,15 @@ import { projectDependencyGraph } from '@/features/dependency-analysis/applicati
 import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
 import { selectParserLanguage } from '@/features/project-analysis/application/use-cases/selectParserLanguage';
 import { createProjectFileTreeAsync } from '@/features/project-analysis/composition/createProjectFileTreeAsync';
-import type { ProjectSnapshot } from '@/types/projectAnalysis';
+import type { ProjectSnapshot, ProjectSnapshotRequest } from '@/types/projectAnalysis';
 
 /*** Read one project inspection and derive Tree metadata plus the canonical package graph. */
-export async function readProjectSnapshotAsync(projectPath: string): Promise<ProjectSnapshot> {
+export async function readProjectSnapshotAsync(
+  input: ProjectSnapshotRequest
+): Promise<ProjectSnapshot> {
+  const { projectPath } = input;
   const timeStart = Date.now();
-  const inspection = await inspectProjectForAnalysisAsync(projectPath);
+  const inspection = await inspectProjectForAnalysisAsync(projectPath, input);
   const dependencyGraph = await createDependencyGraphFromInspectionsAsync({
     projects: [{ id: 'current', inspection }],
   });

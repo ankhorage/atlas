@@ -1,4 +1,4 @@
-import { cp, mkdtemp, readFile, rm, symlink } from 'node:fs/promises';
+import { cp, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach } from 'node:test';
@@ -120,6 +120,22 @@ describe('[runAuditAsync]', () => {
 
     expect(result.exitCode).toBe(2);
     expect(result.audit.evaluation.cyclicPackages.length).toBe(1);
+  });
+
+  it('forwards generic inspection scope exclusions through the audit boundary', async () => {
+    const projectPath = await mkdtemp(join(tmpdir(), 'pkgviz-audit-'));
+    temporaryDirectories.push(projectPath);
+    await writeFile(join(projectPath, 'main.ts'), '');
+    await symlink(join(projectPath, 'main.ts'), join(projectPath, 'excluded-link'));
+
+    const result = await runAuditAsync({
+      projectPath,
+      outputPath: 'audit.json',
+      pretty: false,
+      analysis: { excludePaths: ['excluded-link'] },
+    });
+
+    expect(result.exitCode).toBe(0);
   });
 });
 

@@ -45,7 +45,7 @@ describe('[Java dependency graph migration]', () => {
 
   it('preserves the locked Java package dependency semantics from the owner graph', async () => {
     const projectRoot = resolve(process.cwd(), 'examples/java/my-app');
-    const { packageGraph } = await readProjectSnapshotAsync(projectRoot);
+    const { packageGraph } = await readProjectSnapshotAsync({ projectPath: projectRoot });
 
     const weights = new Map(
       packageGraph.edges.map(edge => [`${edge.source}->${edge.target}`, edge.data.weight])

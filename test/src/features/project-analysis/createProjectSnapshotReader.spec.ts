@@ -10,28 +10,28 @@ describe('[project snapshot reader]', () => {
     const snapshots = [first.promise, Promise.resolve(snapshot('/project', 2))];
     const reads: string[] = [];
     const reader = createProjectSnapshotReader({
-      readAsync: projectPath => {
+      readAsync: ({ projectPath }) => {
         reads.push(projectPath);
         return snapshots[reads.length - 1] ?? Promise.resolve(snapshot(projectPath, reads.length));
       },
     });
 
-    const left = reader.readAsync('/project');
-    const right = reader.readAsync('/project');
+    const left = reader.readAsync({ projectPath: '/project' });
+    const right = reader.readAsync({ projectPath: '/project' });
     await Promise.resolve();
 
     assert.equal(left, right);
     assert.deepEqual(reads, ['/project']);
     first.resolve(snapshot('/project', 1));
     assert.equal((await left).timeStart, 1);
-    assert.equal((await reader.readAsync('/project')).timeStart, 2);
+    assert.equal((await reader.readAsync({ projectPath: '/project' })).timeStart, 2);
     assert.deepEqual(reads, ['/project', '/project']);
   });
 
   it('isolates paths and permits a retry after failure', async () => {
     const attempts = new Map<string, number>();
     const reader = createProjectSnapshotReader({
-      readAsync: projectPath => {
+      readAsync: ({ projectPath }) => {
         const attempt = (attempts.get(projectPath) ?? 0) + 1;
         attempts.set(projectPath, attempt);
         if (projectPath === '/broken' && attempt === 1) throw new Error('temporary failure');
@@ -39,10 +39,10 @@ describe('[project snapshot reader]', () => {
       },
     });
 
-    await assert.rejects(reader.readAsync('/broken'), /temporary failure/);
+    await assert.rejects(reader.readAsync({ projectPath: '/broken' }), /temporary failure/);
     const [retry, other] = await Promise.all([
-      reader.readAsync('/broken'),
-      reader.readAsync('/other'),
+      reader.readAsync({ projectPath: '/broken' }),
+      reader.readAsync({ projectPath: '/other' }),
     ]);
 
     assert.equal(retry.timeStart, 2);
