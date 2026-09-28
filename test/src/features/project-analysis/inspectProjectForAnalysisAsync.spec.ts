@@ -63,6 +63,23 @@ it('reports incomplete scans rather than treating partial evidence as complete',
   }
 });
 
+it('ignores current Devtools-managed agent instruction aliases', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  try {
+    await writeFile(join(root, 'main.ts'), '');
+    await writeFile(join(root, 'AGENTS.md'), 'Project instructions.');
+    await symlink(join(root, 'AGENTS.md'), join(root, 'CLAUDE.md'));
+    await symlink(join(root, 'AGENTS.md'), join(root, 'GEMINI.md'));
+
+    const inspection = await inspectProjectForAnalysisAsync(root);
+
+    assert.equal(inspection.complete, true);
+    assert.deepEqual(inspection.files, ['AGENTS.md', 'main.ts']);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 it('ignores the generated ZORA runtime directory during project inspection', async () => {
   const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
   try {

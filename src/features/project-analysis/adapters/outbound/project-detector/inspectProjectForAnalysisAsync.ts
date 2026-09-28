@@ -1,5 +1,7 @@
+import { relative } from 'node:path';
+
 import { inspectProjectAsync } from '@ankhorage/project-detector/node';
-import type { ProjectInspection } from '@ankhorage/project-detector/types';
+import type { ProjectDiagnostic, ProjectInspection } from '@ankhorage/project-detector/types';
 
 const PROJECT_PATH_ERROR_CODES: ReadonlySet<string> = new Set(['EACCES', 'ENOENT', 'ENOTDIR']);
 const EXCLUDED_ANALYSIS_DIRECTORIES = [
@@ -18,16 +20,19 @@ const EXCLUDED_ANALYSIS_FILES = [
   '**/test_*.*',
   '**/spec_*.*',
 ];
+const MANAGED_AGENT_INSTRUCTION_ALIASES: ReadonlySet<string> = new Set(['CLAUDE.md', 'GEMINI.md']);
 
 /*** Inspect one project through the canonical bounded filesystem owner. */
 export async function inspectProjectForAnalysisAsync(
   projectPath: string
 ): Promise<ProjectInspection> {
   try {
-    const inspection = await inspectProjectAsync(projectPath, {
-      excludeDirectories: EXCLUDED_ANALYSIS_DIRECTORIES,
-      excludeFiles: EXCLUDED_ANALYSIS_FILES,
-    });
+    const inspection = removeManagedAgentInstructionDiagnostics(
+      await inspectProjectAsync(projectPath, {
+        excludeDirectories: EXCLUDED_ANALYSIS_DIRECTORIES,
+        excludeFiles: EXCLUDED_ANALYSIS_FILES,
+      })
+    );
     if (!inspection.complete) {
       throw new Error(
         `Project inspection is incomplete: ${inspection.diagnostics
@@ -45,6 +50,30 @@ export async function inspectProjectForAnalysisAsync(
     projectPathError.name = 'ProjectPathUnavailableError';
     throw projectPathError;
   }
+}
+
+/*** Remove only current managed agent-alias symlink diagnostics from project completeness. */
+function removeManagedAgentInstructionDiagnostics(
+  inspection: ProjectInspection
+): ProjectInspection {
+  const diagnostics = inspection.diagnostics.filter(
+    diagnostic => !isManagedAgentInstructionAliasDiagnostic(diagnostic, inspection.rootPath)
+  );
+  if (diagnostics.length === inspection.diagnostics.length) return inspection;
+
+  return { ...inspection, complete: diagnostics.length === 0, diagnostics };
+}
+
+/*** Identify a root-level Devtools-managed agent instruction alias that is not project source. */
+function isManagedAgentInstructionAliasDiagnostic(
+  diagnostic: ProjectDiagnostic,
+  rootPath: string
+): boolean {
+  return (
+    diagnostic.code === 'symlink-skipped' &&
+    typeof diagnostic.path === 'string' &&
+    MANAGED_AGENT_INSTRUCTION_ALIASES.has(relative(rootPath, diagnostic.path))
+  );
 }
 
 /*** Identify filesystem errors that mean the configured inspection root cannot be used. */
