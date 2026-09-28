@@ -8,7 +8,7 @@
         "@ankhorage/dependency-graph": "^0.7.2",
         "@ankhorage/graph": "^0.2.0",
         "@ankhorage/graph-cytoscape": "^0.1.1",
-        "@ankhorage/project-detector": "^0.3.2",
+        "@ankhorage/project-detector": "^0.3.3",
         "@ankhorage/utility": "^1.9.0",
         "@artiphishle/testosterone": "^0.3.9",
         "ankh-hooks": "^1.5.2",
@@ -45,7 +45,7 @@
 
     "@ankhorage/graph-cytoscape": ["@ankhorage/graph-cytoscape@0.1.1", "", { "dependencies": { "@ankhorage/graph": "^0.1.0" }, "peerDependencies": { "cytoscape": "^3.34.3" } }, "sha512-3yTK6KDhNAQh8Z7ResTA1BuISAmnDaWy9nXZRUz5r9Eyl+d3iGWgO6JaSzAJ7rZmRcbug6SDg284YNKWvuzTWg=="],
 
-    "@ankhorage/project-detector": ["@ankhorage/project-detector@0.3.2", "", { "dependencies": { "@ankhorage/utility": "^0.8.0", "minimatch": "^10.2.6", "yaml": "^2.9.1" }, "peerDependencies": { "@ankhorage/ankh": "^0.8.13" }, "optionalPeers": ["@ankhorage/ankh"], "bin": { "project-detector": "dist/cli/runAsync.js" } }, "sha512-Bl+eMf51Mgj2wAqzS0NpkQD4/+VK8Jdvvr00Gwp3TlUOPcXQqq263fZMBiLoIF29tqSR93jbpMGSi4i+68ao0A=="],
+    "@ankhorage/project-detector": ["@ankhorage/project-detector@0.3.3", "", { "dependencies": { "@ankhorage/utility": "^0.8.0", "minimatch": "^10.2.6", "yaml": "^2.9.1" }, "peerDependencies": { "@ankhorage/ankh": "^0.8.13" }, "optionalPeers": ["@ankhorage/ankh"], "bin": { "project-detector": "dist/cli/runAsync.js" } }, "sha512-GSZbi53L81bdMA5j/VjqEyVBSHDzkJ44MMmZOdiXuF6HZOrwNBZ80PFERidALRArIgRj6qvR3SguLgOzzIvSMg=="],
 
     "@ankhorage/utility": ["@ankhorage/utility@1.9.0", "", { "peerDependencies": { "fastify": "^5.12.5" }, "optionalPeers": ["fastify"] }, "sha512-y5n8qV2hMpiA5Xf+E8b7+8HOXQ7rJF0JXtu9Z37RE8e6p+dxfTnxb68OqPJNz8UPG/wIHAonWl4f5wMvzmIHig=="],
 

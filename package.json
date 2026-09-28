@@ -56,7 +56,7 @@
     "@ankhorage/dependency-graph": "^0.7.2",
     "@ankhorage/graph": "^0.2.0",
     "@ankhorage/graph-cytoscape": "^0.1.1",
-    "@ankhorage/project-detector": "^0.3.2",
+    "@ankhorage/project-detector": "^0.3.3",
     "@ankhorage/utility": "^1.9.0",
     "@artiphishle/testosterone": "^0.3.9",
     "ankh-hooks": "^1.5.2",
