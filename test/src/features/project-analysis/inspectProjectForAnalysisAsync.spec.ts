@@ -52,11 +52,30 @@ it('prunes conventional test sources before production analysis', async () => {
   }
 });
 
-it('reports incomplete scans rather than treating partial evidence as complete', async () => {
+it('skips symlinks without treating the inspection as incomplete', async () => {
   const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
   try {
     await writeFile(join(root, 'main.ts'), '');
     await symlink(join(root, 'main.ts'), join(root, 'linked.ts'));
+
+    const inspection = await inspectProjectForAnalysisAsync(root);
+
+    assert.equal(inspection.complete, true);
+    assert.deepEqual(inspection.files, ['main.ts']);
+    assert.equal(inspection.diagnostics.length, 1);
+    assert.equal(inspection.diagnostics[0]?.code, 'symlink-skipped');
+    assert.equal(inspection.diagnostics[0]?.severity, 'warning');
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+it('reports incomplete inspections rather than treating partial evidence as complete', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  try {
+    await writeFile(join(root, 'main.ts'), '');
+    await writeFile(join(root, 'package.json'), '{');
+
     await assert.rejects(inspectProjectForAnalysisAsync(root), /inspection is incomplete/);
   } finally {
     await rm(root, { recursive: true, force: true });
