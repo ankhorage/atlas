@@ -122,14 +122,15 @@ function areWorkspaceSelectionsEqual(
 ): boolean {
   return (
     left.length === right.length &&
-    left.every(
-      (selection, index) =>
-        selection.graphNodeId === right[index]?.graphNodeId &&
-        selection.treeNodeId === right[index]?.treeNodeId
-    )
+    left.every((selection, index) => {
+      const rightSelection = right.at(index);
+      return (
+        selection.graphNodeId === rightSelection?.graphNodeId &&
+        selection.treeNodeId === rightSelection?.treeNodeId
+      );
+    })
   );
 }
-
 
 /*** Resolve one TreeView activation to that exact row and its directly represented graph identity. */
 function resolveTreeWorkspaceSelection(
