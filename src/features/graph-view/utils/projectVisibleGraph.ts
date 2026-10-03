@@ -58,10 +58,11 @@ interface ProjectVisibleGraphResult {
 }
 
 /***
- * Skips empty package levels only when no explicit cycle scope owns the projection.
+ * Calculates the first relevant branch only for Home/root navigation.
+ * Explicit package scopes are stable, including empty/single-child structural nodes.
  * @performance
- * An active cycle can require an ancestor package as a visible node. Redirecting into that package
- * hides it again and causes an endless focus/redirect loop, repeatedly remounting the renderer.
+ * An active cycle can require the root scope as part of its projection. Redirecting while that
+ * scope is preserved can cause an endless focus/redirect loop and repeatedly remount the renderer.
  */
 function resolveRedirectPackage(input: ProjectVisibleGraphInput): string | null {
   const currentPackage = input.currentPackage.replaceAll('/', '.');
