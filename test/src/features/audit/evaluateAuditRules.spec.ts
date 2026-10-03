@@ -115,7 +115,7 @@ function packageNode(id: number, name: string): SourceGraph['graph']['nodes'][nu
 function fileNode(
   id: number,
   path: string,
-  packageName: string,
+  packageName: string
 ): SourceGraph['graph']['nodes'][number] {
   return {
     id,
@@ -137,7 +137,7 @@ function relation(
   source: number,
   target: number,
   kind: 'declares-in' | 'imports',
-  sourcePath: string,
+  sourcePath: string
 ): SourceGraph['graph']['edges'][number] {
   return {
     id,
