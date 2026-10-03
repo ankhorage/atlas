@@ -1,21 +1,45 @@
 import type { GraphViewController } from '@zora/graph-view';
-import { type Dispatch, type SetStateAction, useRef, useState } from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useRef, useState } from 'react';
 
 /***
  * Mirrors owner viewport state without changing graph framing after layout or node movement.
- * @performance Layout completion only refreshes cached bounds. Readable fit and spacing optimization
- * remain an explicit user action so manual node positioning is never overwritten automatically.
+ * @performance Layout completion only refreshes cached bounds. Optimized fit remains behind
+ * intentional actions: the explicit Fit control or one cycle-focus request after evidence is visible.
  */
 export function useGraphViewport() {
   const [controller, setController] = useState<GraphViewController | null>(null);
   const controllerRef = useRef<GraphViewController | null>(null);
+  const handledCycleFocusRef = useRef<string | null>(null);
+  const pendingCycleFocusRef = useRef<string | null>(null);
   const [viewport, setViewport] = useState({ zoom: 1, min: 0.5, max: 2 });
 
-  /*** Captures the controller before synchronizing the initial viewport. */
+  /*** Queues or applies one active-cycle focus without exposing cycle-only fitting. */
+  const requestCycleFocus = useCallback(
+    (signature: string | null) => {
+      if (signature === null) {
+        pendingCycleFocusRef.current = null;
+        handledCycleFocusRef.current = null;
+        return;
+      }
+      if (handledCycleFocusRef.current === signature) return;
+
+      pendingCycleFocusRef.current = signature;
+      const nextController = controllerRef.current;
+      if (nextController === null) return;
+
+      pendingCycleFocusRef.current = null;
+      handledCycleFocusRef.current = signature;
+      fitGraphWithOptimizedSpacing(nextController, setViewport);
+    },
+    [setViewport]
+  );
+
+  /*** Captures the controller before synchronizing the initial viewport and pending cycle focus. */
   const handleReady = (nextController: GraphViewController) => {
     controllerRef.current = nextController;
     setController(nextController);
     synchronizeGraphViewport(nextController, setViewport);
+    requestCycleFocus(pendingCycleFocusRef.current);
   };
 
   /*** Reads the controller synchronously, including events before React commits readiness. */
@@ -29,12 +53,11 @@ export function useGraphViewport() {
     synchronizeGraphViewport(nextController, setViewport);
   };
 
-  /*** Runs readable fit and spacing optimization only from explicit user intent. */
+  /*** Runs the canonical readable fit and spacing optimization from explicit user intent. */
   const fitGraph = () => {
     const nextController = controllerRef.current;
     if (nextController === null) return;
-    nextController.fit({ optimizeSpacing: true });
-    synchronizeGraphViewport(nextController, setViewport);
+    fitGraphWithOptimizedSpacing(nextController, setViewport);
   };
 
   return {
@@ -43,8 +66,18 @@ export function useGraphViewport() {
     handleLayoutComplete,
     handleReady,
     handleViewportChange,
+    requestCycleFocus,
     ...viewport,
   };
+}
+
+/*** Reuses ZORA's measured whole-graph optimization for explicit and cycle-focus intent. */
+function fitGraphWithOptimizedSpacing(
+  controller: GraphViewController,
+  setViewport: Dispatch<SetStateAction<GraphViewportState>>
+) {
+  controller.fit({ optimizeSpacing: true });
+  synchronizeGraphViewport(controller, setViewport);
 }
 
 /*** Publishes only changed viewport values, including range changes without a zoom event. */

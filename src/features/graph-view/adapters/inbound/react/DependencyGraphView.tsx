@@ -41,6 +41,7 @@ const GRAPH_VIEWPORT_STYLE = {
 export function DependencyGraphView(props: DependencyGraphViewProps) {
   const settings = useSettings();
   const { theme } = useZoraTheme();
+  const viewport = useGraphViewport();
   const packageGraph = useMemo(
     () =>
       toCytoscapeElements(props.packageGraph, {
@@ -63,6 +64,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
   useGraphFocus({
     cycleHighlights: props.cycleHighlights,
     currentPackage: props.currentPackage,
+    requestCycleFocus: viewport.requestCycleFocus,
     setCurrentPackage: props.setCurrentPackage,
     setSubPackageDepth: settings.setSubPackageDepth,
     subPackageDepth: settings.subPackageDepth,
@@ -88,6 +90,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
       spacingFactor={settings.cytoscapeLayoutSpacing}
       styles={presentation.styles}
       theme={theme}
+      viewport={viewport}
     />
   );
 }
@@ -129,7 +132,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
-  const viewport = useGraphViewport();
+  const viewport = props.viewport;
   const interactions = useGraphInteractions(props.model.nodes, props.model.edges);
 
   /*** Handles structural graph navigation without touching the rendering engine. */
@@ -208,4 +211,5 @@ interface DependencyGraphCanvasProps extends DependencyGraphViewProps {
   readonly spacingFactor: number;
   readonly styles: ReturnType<typeof createGraphViewStyles>;
   readonly theme: ZoraRuntimeTheme;
+  readonly viewport: ReturnType<typeof useGraphViewport>;
 }
