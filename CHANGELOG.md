@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.2
+
+### Patch Changes
+
+- f298d88: Keep project-tree expansion local so opening or closing folders never changes graph navigation.
+- 5af6b1f: Restore synchronized TreeView and GraphView multi-selection across desktop modifiers and touch input.
+
 ## 0.9.1
 
 ### Patch Changes

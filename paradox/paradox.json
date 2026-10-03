@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.9.1",
+      "value": "v0.9.2",
       "color": "cb3837"
     },
     {
@@ -1349,8 +1349,6 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection.ts",
-        "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts",
-        "src/features/project-tree/utils/findProjectTreeNode.ts",
         "src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts",
         "src/types/projectTree.ts",
         "src/types/workspace.ts"
@@ -3683,78 +3681,78 @@
     },
     {
       "name": "DependencyGraphView",
-      "description": "Renders Atlas graph policy through the materialized ZORA GraphView runtime.",
+      "description": "Render Atlas graph policy through the materialized ZORA GraphView runtime.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 41,
+        "line": 42,
         "column": 1
       }
     },
     {
       "name": "usePackageGraphElements",
-      "description": "Converts the dependency package graph once per source graph identity.",
+      "description": "Convert the dependency package graph once per source graph identity.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 95,
+        "line": 96,
         "column": 1
       }
     },
     {
       "name": "useGraphViewPresentation",
-      "description": "Memoizes GraphView model, style, and layout inputs from the active Atlas projection.\nStable inputs avoid repeated projection work and let the owner distinguish presentation from\ntopology/layout changes. Do not recreate these objects on unrelated renders or add compensating\nlayout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.",
+      "description": "Memoize GraphView model, style, and layout inputs from the active Atlas projection.\nStable inputs avoid repeated projection work and let the owner distinguish presentation from\ntopology/layout changes. Do not recreate these objects on unrelated renders or add compensating\nlayout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 112,
+        "line": 113,
         "column": 1
       }
     },
     {
       "name": "DependencyGraphCanvas",
-      "description": "Owns GraphView controller callbacks and renders the viewport plus zoom controls.",
+      "description": "Own GraphView controller callbacks and render the viewport plus zoom controls.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 141,
+        "line": 142,
         "column": 1
       }
     },
     {
       "name": "useGraphCanvasInteractions",
-      "description": "Compose local hover presentation with the workspace-owned controlled graph selection.",
+      "description": "Compose local hover presentation with workspace-owned controlled graph selection.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 184,
+        "line": 185,
         "column": 1
       }
     },
     {
       "name": "createGraphNodeEventHandler",
-      "description": "Create the graph event bridge without coupling selection changes to layout or viewport work.",
+      "description": "Bridge semantic GraphView press intent without coupling selection to renderer select events.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 204,
+        "line": 203,
         "column": 1
       }
     },
     {
       "name": "readGraphViewLayout",
-      "description": "Narrows persisted Cytoscape layout names to the layouts supported by ZORA GraphView.",
+      "description": "Narrow persisted Cytoscape layout names to the layouts supported by ZORA GraphView.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 215,
+        "line": 216,
         "column": 1
       }
     },
@@ -3804,7 +3802,7 @@
     },
     {
       "name": "useGraphInteractions",
-      "description": "Owns hover state while rendering the workspace-controlled logical selection declaratively.\nCompound hover remains ignored, while a selected dependency endpoint may itself be compound.",
+      "description": "Own hover state while rendering the workspace-controlled logical selection declaratively.\nCompound hover remains ignored, while selected dependency endpoints may themselves be compound.",
       "see": [],
       "security": [],
       "sourceLocation": {
@@ -3820,7 +3818,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
-        "line": 39,
+        "line": 38,
         "column": 9
       }
     },
@@ -4871,56 +4869,45 @@
     },
     {
       "name": "ProjectTreePanel",
-      "description": "Adapts Atlas's serializable project tree to the generated ZORA browser TreeView.",
+      "description": "Adapt Atlas's serializable project tree to the generated ZORA browser TreeView.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 13,
+        "line": 14,
         "column": 1
       }
     },
     {
       "name": "toTreeItemNode",
-      "description": "Maps a portable project-tree node into the ZORA TreeView presentation contract.",
+      "description": "Map a portable project-tree node into the ZORA TreeView presentation contract.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 47,
-        "column": 1
-      }
-    },
-    {
-      "name": "getChangedExpansionId",
-      "description": "Identifies the one folder id changed by an independent TreeView expansion control.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 66,
+        "line": 37,
         "column": 1
       }
     },
     {
       "name": "useProjectTreeExpansion",
-      "description": "Preserves manual folder expansion while revealing only ancestors required by selection.",
+      "description": "Preserve manual folder expansion while revealing ancestors required by every selected row.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
-        "line": 7,
+        "line": 8,
         "column": 1
       }
     },
     {
-      "name": "revealSelection",
-      "description": "Adds only the ancestors required to reveal a selection without opening the selected folder.",
+      "name": "revealSelections",
+      "description": "Add only the ancestors required to reveal all selections without opening selected folders.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
-        "line": 31,
+        "line": 36,
         "column": 1
       }
     },
@@ -5310,24 +5297,13 @@
       }
     },
     {
-      "name": "toggleProjectTreeNode",
-      "description": "Navigate graph scope from an independent folder expansion or collapse action.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 29,
-        "column": 9
-      }
-    },
-    {
       "name": "useWorkspaceSelection",
-      "description": "Own selection transitions without coupling them to package-scope navigation.",
+      "description": "Own semantic selection transitions without coupling them to package-scope navigation.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 49,
+        "line": 38,
         "column": 1
       }
     },
@@ -5338,7 +5314,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 53,
+        "line": 62,
         "column": 9
       }
     },
@@ -5349,73 +5325,62 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 58,
+        "line": 67,
         "column": 9
       }
     },
     {
-      "name": "unselectGraphNode",
-      "description": null,
+      "name": "applyWorkspaceSelection",
+      "description": "Apply one Utility-owned selection intent while retaining Atlas tree/graph mapping metadata.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 63,
-        "column": 9
+        "line": 83,
+        "column": 1
+      }
+    },
+    {
+      "name": "getWorkspaceSelectionKey",
+      "description": "Return one stable identity shared by synchronized TreeView and GraphView selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "line": 99,
+        "column": 1
+      }
+    },
+    {
+      "name": "areWorkspaceSelectionsEqual",
+      "description": "Compare ordered Atlas selection mappings without reallocating stable state.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "line": 106,
+        "column": 1
       }
     },
     {
       "name": "resolveTreeWorkspaceSelection",
-      "description": "Resolve one TreeView click to that exact row and its directly represented graph identity.",
+      "description": "Resolve one TreeView activation to that exact row and its directly represented graph identity.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 78,
+        "line": 123,
         "column": 1
       }
     },
     {
       "name": "resolveGraphWorkspaceSelection",
-      "description": "Resolve one GraphView click to the same graph node and its exact matching TreeView row.",
+      "description": "Resolve one GraphView activation to the same graph node and its exact matching TreeView row.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 89,
-        "column": 1
-      }
-    },
-    {
-      "name": "resolveParentProjectTreeNavigation",
-      "description": "Resolve a collapsed folder to the nearest represented ancestor scope, or Home when none exists.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 105,
-        "column": 1
-      }
-    },
-    {
-      "name": "readDirectoryPath",
-      "description": "Reads the stable filesystem path encoded in one directory tree id.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 129,
-        "column": 1
-      }
-    },
-    {
-      "name": "keepStableSelection",
-      "description": "Reuse an equal selection object so controlled GraphView callbacks cannot create render loops.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 135,
+        "line": 134,
         "column": 1
       }
     },
@@ -5426,68 +5391,68 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "line": 145,
+        "line": 150,
         "column": 1
       }
     },
     {
       "name": "WorkspaceGraph",
-      "description": "Renders the workspace graph together with its optional cycle inspector overlay.",
+      "description": "Render the workspace graph together with its optional cycle inspector overlay.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
-        "line": 12,
+        "line": 13,
         "column": 1
       }
     },
     {
       "name": "WorkspaceSidebar",
-      "description": "Composes workspace tools and persistent graph settings from generated ZORA elements.",
+      "description": "Compose workspace tools and persistent graph settings from generated ZORA elements.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 20,
+        "line": 21,
         "column": 1
       }
     },
     {
       "name": "selectTool",
-      "description": "Closes cycle evidence when leaving the Rules tool and updates the active tab.",
+      "description": "Close cycle evidence when leaving the Rules tool and update the active tab.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 25,
+        "line": 26,
         "column": 9
       }
     },
     {
       "name": "WorkspaceToolTabs",
-      "description": "Renders the workspace tool selector and delegates panel content.",
+      "description": "Render the workspace tool selector and delegate panel content.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 56,
+        "line": 57,
         "column": 1
       }
     },
     {
       "name": "WorkspaceTabPanels",
-      "description": "Renders Tree, Rules, and Export panel bodies inside the workspace tabs.",
+      "description": "Render Tree, Rules, and Export panel bodies inside the workspace tabs.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 91,
+        "line": 92,
         "column": 1
       }
     },
     {
       "name": "WorkspaceRulesPanel",
-      "description": "Renders audit-rule findings and cycle inspection controls for the Rules tab.",
+      "description": "Render audit-rule findings and cycle inspection controls for the Rules tab.",
       "see": [],
       "security": [],
       "sourceLocation": {
@@ -5580,7 +5545,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 148,
+        "line": 147,
         "column": 1
       }
     },
@@ -5591,7 +5556,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 167,
+        "line": 165,
         "column": 1
       }
     },
@@ -5602,7 +5567,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 185,
+        "line": 183,
         "column": 1
       }
     },
@@ -5613,7 +5578,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 203,
+        "line": 201,
         "column": 1
       }
     },
@@ -7685,16 +7650,6 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
         "toPath": "src/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "toPath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "toPath": "src/features/project-tree/utils/findProjectTreeNode.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
@@ -11179,20 +11134,8 @@
       },
       {
         "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
-        "toSymbol": "toggleProjectTreeNode",
-        "callExpression": "navigation.toggleProjectTreeNode",
-        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
-      },
-      {
-        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
         "toSymbol": "selectGraphNode",
         "callExpression": "navigation.selectGraphNode",
-        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
-      },
-      {
-        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
-        "toSymbol": "unselectGraphNode",
-        "callExpression": "navigation.unselectGraphNode",
         "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
       },
       {
@@ -12343,12 +12286,6 @@
       },
       {
         "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "toSymbol": "onNodeUnselect",
-        "callExpression": "input.onNodeUnselect",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
-      },
-      {
-        "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
         "toSymbol": "setCurrentPackage",
         "callExpression": "input.setCurrentPackage",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
@@ -12835,26 +12772,8 @@
       },
       {
         "fromSymbol": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toSymbol": "getChangedExpansionId",
-        "callExpression": "getChangedExpansionId",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromSymbol": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toSymbol": "onExpandedChange",
-        "callExpression": "expansion.onExpandedChange",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromSymbol": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
         "toSymbol": "findProjectTreeNode",
         "callExpression": "findProjectTreeNode",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromSymbol": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toSymbol": "onToggleDirectory",
-        "callExpression": "onToggleDirectory",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
       },
       {
@@ -12871,8 +12790,14 @@
       },
       {
         "fromSymbol": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
-        "toSymbol": "revealSelection",
-        "callExpression": "revealSelection",
+        "toSymbol": "revealSelections",
+        "callExpression": "revealSelections",
+        "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
+      },
+      {
+        "fromSymbol": "useProjectTreeExpansion",
+        "toSymbol": "arraysEqual",
+        "callExpression": "arraysEqual",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
@@ -12883,8 +12808,8 @@
       },
       {
         "fromSymbol": "useProjectTreeExpansion",
-        "toSymbol": "revealSelection",
-        "callExpression": "revealSelection",
+        "toSymbol": "revealSelections",
+        "callExpression": "revealSelections",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
@@ -12894,9 +12819,15 @@
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
-        "fromSymbol": "revealSelection",
+        "fromSymbol": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "toSymbol": "getProjectTreeAncestorIds",
         "callExpression": "getProjectTreeAncestorIds",
+        "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
+      },
+      {
+        "fromSymbol": "revealSelections",
+        "toSymbol": "dedupeBy",
+        "callExpression": "dedupeBy",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
@@ -13068,24 +12999,6 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
-        "fromSymbol": "toggleProjectTreeNode",
-        "toSymbol": "setCurrentPackage",
-        "callExpression": "setCurrentPackage",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromSymbol": "toggleProjectTreeNode",
-        "toSymbol": "resolveProjectTreeNavigation",
-        "callExpression": "resolveProjectTreeNavigation",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromSymbol": "toggleProjectTreeNode",
-        "toSymbol": "resolveParentProjectTreeNavigation",
-        "callExpression": "resolveParentProjectTreeNavigation",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
         "fromSymbol": "useWorkspaceSelection",
         "toSymbol": "useState",
         "callExpression": "useState",
@@ -13098,6 +13011,12 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "toSymbol": "dedupeBy",
+        "callExpression": "dedupeBy",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
+      },
+      {
         "fromSymbol": "selectProjectTreeNode",
         "toSymbol": "resolveTreeWorkspaceSelection",
         "callExpression": "resolveTreeWorkspaceSelection",
@@ -13105,14 +13024,14 @@
       },
       {
         "fromSymbol": "selectProjectTreeNode",
-        "toSymbol": "setSelection",
-        "callExpression": "setSelection",
+        "toSymbol": "setSelections",
+        "callExpression": "setSelections",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "toSymbol": "keepStableSelection",
-        "callExpression": "keepStableSelection",
+        "toSymbol": "applyWorkspaceSelection",
+        "callExpression": "applyWorkspaceSelection",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
@@ -13123,20 +13042,32 @@
       },
       {
         "fromSymbol": "selectGraphNode",
-        "toSymbol": "setSelection",
-        "callExpression": "setSelection",
+        "toSymbol": "setSelections",
+        "callExpression": "setSelections",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
-        "fromSymbol": "unselectGraphNode",
-        "toSymbol": "normalizeGraphPackage",
-        "callExpression": "normalizeGraphPackage",
+        "fromSymbol": "applyWorkspaceSelection",
+        "toSymbol": "getWorkspaceSelectionKey",
+        "callExpression": "getWorkspaceSelectionKey",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
-        "fromSymbol": "unselectGraphNode",
-        "toSymbol": "setSelection",
-        "callExpression": "setSelection",
+        "fromSymbol": "applyWorkspaceSelection",
+        "toSymbol": "applySelectionIntent",
+        "callExpression": "applySelectionIntent",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "toSymbol": "getWorkspaceSelectionKey",
+        "callExpression": "getWorkspaceSelectionKey",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspaceSelection",
+        "toSymbol": "areWorkspaceSelectionsEqual",
+        "callExpression": "areWorkspaceSelectionsEqual",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
@@ -13155,24 +13086,6 @@
         "fromSymbol": "resolveGraphWorkspaceSelection",
         "toSymbol": "resolveGraphProjectTreeSelection",
         "callExpression": "resolveGraphProjectTreeSelection",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromSymbol": "resolveParentProjectTreeNavigation",
-        "toSymbol": "readDirectoryPath",
-        "callExpression": "readDirectoryPath",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromSymbol": "resolveParentProjectTreeNavigation",
-        "toSymbol": "findProjectTreeNode",
-        "callExpression": "findProjectTreeNode",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
-      },
-      {
-        "fromSymbol": "resolveParentProjectTreeNavigation",
-        "toSymbol": "resolveProjectTreeGraphNodeId",
-        "callExpression": "resolveProjectTreeGraphNodeId",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
