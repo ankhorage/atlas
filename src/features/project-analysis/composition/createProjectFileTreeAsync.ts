@@ -26,7 +26,7 @@ interface ReadSourceMetadataInput {
   readonly sourceFile: string;
 }
 
-/*** Create the PKGViz file tree from canonical inspection and dependency evidence. */
+/*** Create the Atlas file tree from canonical inspection and dependency evidence. */
 export async function createProjectFileTreeAsync(
   inspection: ProjectInspection,
   dependencyGraph: DependencyGraph,
@@ -77,7 +77,7 @@ export async function createProjectFileTreeAsync(
   return result;
 }
 
-/*** Preserve the established PKGViz Tree root while consuming detector-owned source-root evidence. */
+/*** Preserve the established Atlas Tree root while consuming detector-owned source-root evidence. */
 function analysisRootFor(inspection: ProjectInspection, language: Language): string {
   if (language === Language.TypeScript) return '.';
   return (
@@ -189,7 +189,7 @@ async function importsForLanguageAsync(
   }
 }
 
-/*** Read one source file through the language-specific PKGViz metadata adapter. */
+/*** Read one source file through the language-specific Atlas metadata adapter. */
 function readSourceMetadata(input: ReadSourceMetadataInput): ProjectFileMetadata {
   const fullPath = resolveFileSystemPathWithinRoot(input.projectPath, input.sourceFile);
   switch (input.language) {
@@ -210,7 +210,7 @@ function readSourceMetadata(input: ReadSourceMetadataInput): ProjectFileMetadata
   }
 }
 
-/*** Keep PKGViz export metadata limited to the source extensions it currently serializes. */
+/*** Keep Atlas export metadata limited to the source extensions it currently serializes. */
 function isMetadataSourceFile(relativeFile: string, language: Language): boolean {
   const extension = path.extname(relativeFile).toLowerCase();
   switch (language) {
@@ -231,7 +231,7 @@ function isMetadataSourceFile(relativeFile: string, language: Language): boolean
   }
 }
 
-/*** Fail before metadata projection when PKGViz has no compatible export reader. */
+/*** Fail before metadata projection when Atlas has no compatible export reader. */
 function assertSupportedLanguage(language: Language): void {
   if (
     ![

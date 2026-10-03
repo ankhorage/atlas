@@ -5,7 +5,7 @@ import { toPortablePath } from '@ankhorage/utility/node/path';
 
 import type { ProjectFileMetadata, ProjectImportMetadata } from '@/types/projectFiles';
 
-/*** Read TypeScript file metadata retained by PKGViz Tree and audit exports. */
+/*** Read TypeScript file metadata retained by Atlas Tree and audit exports. */
 export function readTypeScriptProjectFileMetadata(
   fullPath: string,
   projectRoot: string,

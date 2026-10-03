@@ -5,7 +5,7 @@ export default {
     description:
       'Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.',
     usage: {
-      entrypoints: ['examples/pkgviz-cli/main.ts'],
+      entrypoints: ['examples/atlas-cli/main.ts'],
     },
   },
   package: {

@@ -1,9 +1,9 @@
-# PKGViz Maven Plugin
+# Atlas Maven Plugin
 
-Thin Maven adapter for the shared PKGViz audit and rule engine.
+Thin Maven adapter for the shared Atlas audit and rule engine.
 
 The plugin does not implement dependency analysis or audit rules in Java. It invokes the published
-PKGViz CLI and maps the shared exit contract into Maven build semantics.
+Atlas CLI and maps the shared exit contract into Maven build semantics.
 
 ## Rule policy
 
@@ -56,27 +56,27 @@ rule-specific Java code.
 
 ## Goal
 
-`pkgviz:audit` runs during `verify` by default.
+`atlas:audit` runs during `verify` by default.
 
 - exit code `0`: execution succeeded
 - exit code `2`: a blocking audit rule failed and enforcement is enabled
 - other non-zero exit codes: audit execution/configuration failure
-- the audit is written to `target/pkgviz-audit.json` before a rule failure is raised
+- the audit is written to `target/atlas-audit.json` before a rule failure is raised
 
 ## Configuration
 
 By default the plugin runs:
 
 ```text
-npx --yes pkgviz --out target/pkgviz-audit.json
+npx --yes atlas --out target/atlas-audit.json
 ```
 
-For reproducible CI, pin `pkgviz.packageSpec` to the PKGViz release your pipeline expects.
+For reproducible CI, pin `atlas.packageSpec` to the Atlas release your pipeline expects.
 
 ```xml
 <plugin>
-  <groupId>io.github.artiphishle</groupId>
-  <artifactId>pkgviz-maven-plugin</artifactId>
+  <groupId>io.github.ankhorage</groupId>
+  <artifactId>atlas-maven-plugin</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <executions>
     <execution>
@@ -86,7 +86,7 @@ For reproducible CI, pin `pkgviz.packageSpec` to the PKGViz release your pipelin
     </execution>
   </executions>
   <configuration>
-    <packageSpec>@ankhorage/pkgviz@YOUR_VERSION</packageSpec>
+    <packageSpec>@ankhorage/atlas@YOUR_VERSION</packageSpec>
     <rules>
       <rule>cyclic-dependencies=block</rule>
     </rules>
@@ -95,6 +95,6 @@ For reproducible CI, pin `pkgviz.packageSpec` to the PKGViz release your pipelin
 </plugin>
 ```
 
-`pkgviz.executable`, `pkgviz.packageSpec`, `pkgviz.output`, `pkgviz.cli`,
-`pkgviz.rules`, `pkgviz.failOnRuleViolation`, and `pkgviz.skip` are configurable Maven
-properties. `pkgviz.skip=true` skips analysis entirely and therefore produces no audit artifact.
+`atlas.executable`, `atlas.packageSpec`, `atlas.output`, `atlas.cli`,
+`atlas.rules`, `atlas.failOnRuleViolation`, and `atlas.skip` are configurable Maven
+properties. `atlas.skip=true` skips analysis entirely and therefore produces no audit artifact.

@@ -41,7 +41,7 @@ describe('[canonical dependency package projection]', () => {
   });
 });
 
-/*** Create owner graph data with canonical node IDs that must not leak into PKGViz projection. */
+/*** Create owner graph data with canonical node IDs that must not leak into Atlas projection. */
 function createOwnerGraph(): DependencyGraph {
   return {
     nodes: [

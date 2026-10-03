@@ -7,7 +7,7 @@ import type {
   PackageDependencyNodeData,
 } from '@/types/dependencyAnalysis';
 
-/*** Project the canonical owner graph into PKGViz package identities without re-analyzing source. */
+/*** Project the canonical owner graph into Atlas package identities without re-analyzing source. */
 export function projectDependencyGraph(graph: DependencyGraph): PackageDependencyGraph {
   const projectedIds = new Map<string, string>();
   const nodes = new Map<string, GraphNode<PackageDependencyNodeData>>();
@@ -48,7 +48,7 @@ function packageId(data: DependencyGraphNodeData): string | undefined {
   return nonEmpty(data.packageName) ?? nonEmpty(data.label);
 }
 
-/*** Convert one owner node into the metadata shape required by PKGViz graph projection. */
+/*** Convert one owner node into the metadata shape required by Atlas graph projection. */
 function projectNode(
   id: string,
   data: DependencyGraphNodeData
@@ -71,7 +71,7 @@ function projectNode(
   };
 }
 
-/*** Resolve the dotted parent package used by PKGViz compound-node projection. */
+/*** Resolve the dotted parent package used by Atlas compound-node projection. */
 function parentPackage(id: string): string {
   return id.includes('.') ? id.split('.').slice(0, -1).join('.') : '';
 }

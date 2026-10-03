@@ -9,7 +9,7 @@ import { selectParserLanguage } from '@/features/project-analysis/application/us
 import { Language } from '@/types/language';
 
 it('inspects nested source files and prunes dependencies and examples', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  const root = await mkdtemp(join(tmpdir(), 'atlas-detector-'));
   try {
     await mkdir(join(root, 'src/deep/nested/module'), { recursive: true });
     await writeFile(join(root, 'src/deep/nested/module/main.kt'), '');
@@ -28,7 +28,7 @@ it('inspects nested source files and prunes dependencies and examples', async ()
 });
 
 it('prunes conventional test sources before production analysis', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  const root = await mkdtemp(join(tmpdir(), 'atlas-detector-'));
   try {
     await mkdir(join(root, 'src/nested'), { recursive: true });
     await mkdir(join(root, 'tests'), { recursive: true });
@@ -53,7 +53,7 @@ it('prunes conventional test sources before production analysis', async () => {
 });
 
 it('skips symlinks without treating the inspection as incomplete', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  const root = await mkdtemp(join(tmpdir(), 'atlas-detector-'));
   try {
     await writeFile(join(root, 'main.ts'), '');
     await symlink(join(root, 'main.ts'), join(root, 'linked.ts'));
@@ -71,7 +71,7 @@ it('skips symlinks without treating the inspection as incomplete', async () => {
 });
 
 it('reports incomplete inspections rather than treating partial evidence as complete', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  const root = await mkdtemp(join(tmpdir(), 'atlas-detector-'));
   try {
     await writeFile(join(root, 'main.ts'), '');
     await writeFile(join(root, 'package.json'), '{');
@@ -83,7 +83,7 @@ it('reports incomplete inspections rather than treating partial evidence as comp
 });
 
 it('ignores the generated ZORA runtime directory during project inspection', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'pkgviz-detector-'));
+  const root = await mkdtemp(join(tmpdir(), 'atlas-detector-'));
   try {
     await writeFile(join(root, 'main.ts'), '');
     await mkdir(join(root, '.ankh/zora'), { recursive: true });
@@ -97,7 +97,7 @@ it('ignores the generated ZORA runtime directory during project inspection', asy
 });
 
 it('normalizes an unavailable inspection root to a project path error', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'pkgviz-missing-'));
+  const root = await mkdtemp(join(tmpdir(), 'atlas-missing-'));
   await rm(root, { recursive: true, force: true });
 
   await assert.rejects(

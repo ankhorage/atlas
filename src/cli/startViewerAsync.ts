@@ -6,12 +6,12 @@ import { fileURLToPath } from 'node:url';
 
 import { openBrowser, stopProcess } from '@ankhorage/utility/node/process';
 
-import type { PkgvizCliOptions } from '@/types/cli';
+import type { AtlasCliOptions } from '@/types/cli';
 
 /*** Starts the packaged Next viewer and owns its browser and child-process lifecycle. */
 export async function startViewerAsync(
   callerRoot: string,
-  options: PkgvizCliOptions,
+  options: AtlasCliOptions,
   cleanupAsync: () => Promise<void> = () => Promise.resolve()
 ): Promise<void> {
   const port = await findFreePortAsync(options.port);
@@ -37,7 +37,7 @@ export async function startViewerAsync(
 
   const baseUrl = `http://localhost:${port}`;
   await delayAsync(2_000);
-  openBrowser(`${baseUrl}/?cwd=${encodeURIComponent(callerRoot)}`);
+  if (options.open) openBrowser(`${baseUrl}/?cwd=${encodeURIComponent(callerRoot)}`);
 
   if (options.serve) {
     child.once('exit', () => {
@@ -86,7 +86,7 @@ async function claimAvailablePortAsync(port: number): Promise<number | null> {
   });
 }
 
-/*** Resolves the installed PKGViz package root from this CLI module. */
+/*** Resolves the installed Atlas package root from this CLI module. */
 function resolvePackageRoot(): string {
   const here = fileURLToPath(new URL(import.meta.url));
   return resolve(dirname(here), '../..');
@@ -115,9 +115,9 @@ function writeProcessOutput(stream: NodeJS.WriteStream, data: unknown): void {
   if (typeof data === 'string' || data instanceof Uint8Array) stream.write(data);
 }
 
-/*** Emits one verbose PKGViz CLI line when requested. */
+/*** Emits one verbose Atlas CLI line when requested. */
 function logVerbose(verbose: boolean, message: string): void {
-  if (verbose) console.log('[pkgviz]', message);
+  if (verbose) console.log('[atlas]', message);
 }
 
 /*** Waits for a bounded CLI lifecycle delay. */

@@ -3,7 +3,7 @@ import { loadProjectSnapshotAsync } from '@/features/project-analysis/compositio
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import type { ProjectOverview } from '@/types/workspace';
 
-/*** Composes the project analysis, tree, and audit views used by the active PKGViz workspace. */
+/*** Composes the project analysis, tree, and audit views used by the active Atlas workspace. */
 export async function loadProjectOverviewAsync(projectPath: string): Promise<ProjectOverview> {
   const snapshot = await loadProjectSnapshotAsync(projectPath);
   return {

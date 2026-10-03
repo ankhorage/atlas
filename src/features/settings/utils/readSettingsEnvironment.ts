@@ -1,7 +1,7 @@
 import { readEnvBoolean, readEnvNumber, readEnvString } from '@ankhorage/utility/node/env';
 import type { LayoutOptions } from 'cytoscape';
 
-/*** Reads and validates PKGViz viewer defaults from public settings environment variables. */
+/*** Reads and validates Atlas viewer defaults from public settings environment variables. */
 export function readSettingsEnvironment(): SettingsEnvironment {
   const environment = {
     NEXT_PUBLIC_SETTINGS_SHOW_CYCLES: process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES,

@@ -7,7 +7,12 @@ import type { Audit, AuditMetaInput, ResolveAuditConfigurationInput } from '@/ty
 /*** Creates, writes, and evaluates an audit while retaining the artifact on rule failure. */
 export async function runAuditAsync(input: RunAuditInput): Promise<RunAuditResult> {
   const audit = await createAuditAsync(input.projectPath, input.configuration, input.meta);
-  const body = input.pretty ? JSON.stringify(audit, null, 2) : JSON.stringify(audit);
+  const body =
+    input.artifactFormat === 'csv'
+      ? serializeAuditCsv(audit)
+      : input.pretty
+        ? JSON.stringify(audit, null, 2)
+        : JSON.stringify(audit);
 
   await writeFileWithinRoot({
     rootPath: input.outputRootPath ?? input.projectPath,
@@ -30,11 +35,49 @@ export async function runAuditAsync(input: RunAuditInput): Promise<RunAuditResul
   };
 }
 
+/*** Serializes the complete Audit as deterministic scalar JSON-pointer rows. */
+function serializeAuditCsv(audit: Audit): string {
+  const rows = flattenCsvValue(audit, '');
+  return ['path,type,value', ...rows.map(row => row.map(escapeCsvField).join(','))].join('\n');
+}
+
+/*** Flattens one Audit value without discarding empty containers or scalar types. */
+function flattenCsvValue(value: unknown, path: string): readonly CsvRow[] {
+  if (value === null) return [[path || '/', 'null', '']];
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return [[path || '/', 'array', '']];
+    return value.flatMap((entry, index) => flattenCsvValue(entry, `${path}/${index}`));
+  }
+
+  if (typeof value === 'object') {
+    const record = value as Readonly<Record<string, unknown>>;
+    const keys = Object.keys(record).sort();
+    if (keys.length === 0) return [[path || '/', 'object', '']];
+    return keys.flatMap(key =>
+      flattenCsvValue(record[key], `${path}/${escapeJsonPointerSegment(key)}`)
+    );
+  }
+
+  return [[path || '/', typeof value, String(value)]];
+}
+
+/*** Escapes one JSON-pointer path segment for deterministic CSV paths. */
+function escapeJsonPointerSegment(value: string): string {
+  return value.replaceAll('~', '~0').replaceAll('/', '~1');
+}
+
+/*** Quotes one CSV field so arbitrary source evidence remains valid CSV. */
+function escapeCsvField(value: string): string {
+  return `"${value.replaceAll('"', '""')}"`;
+}
+
 interface RunAuditInput {
   readonly projectPath: string;
   readonly outputPath: string;
   readonly outputRootPath?: string;
   readonly pretty: boolean;
+  readonly artifactFormat?: 'json' | 'csv';
   readonly configuration?: ResolveAuditConfigurationInput;
   readonly meta?: AuditMetaInput;
 }
@@ -44,3 +87,5 @@ interface RunAuditResult {
   readonly artifactPath: string;
   readonly exitCode: 0 | 2;
 }
+
+type CsvRow = readonly [path: string, type: string, value: string];

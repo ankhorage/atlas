@@ -140,7 +140,7 @@ function aggregateEdge(
   });
 }
 
-/*** Reads the numeric edge weight used by PKGViz aggregation, defaulting missing values to one. */
+/*** Reads the numeric edge weight used by Atlas aggregation, defaulting missing values to one. */
 function readWeight(value: unknown): number {
   return typeof value === 'number' ? value : 1;
 }

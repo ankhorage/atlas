@@ -1,13 +1,13 @@
 import { formatAuditRuleFailures } from '@/cli/formatAuditRuleFailures';
-import { getPkgvizHelp } from '@/cli/getPkgvizHelp';
-import { parsePkgvizCommandArgs } from '@/cli/parsePkgvizCommandArgs';
+import { getAtlasHelp } from '@/cli/getAtlasHelp';
+import { parseAtlasCommandArgs } from '@/cli/parseAtlasCommandArgs';
 import { runAuditSourceAsync } from '@/cli/runAuditSourceAsync';
 
-/*** Execute `ankh pkgviz audit` through the canonical project-source and audit boundaries. */
-export async function audit(request: PkgvizCommandRequest): Promise<{ readonly exitCode: number }> {
-  const options = parsePkgvizCommandArgs(request.argv ?? []);
+/*** Execute `ankh atlas audit` through the canonical project-source and audit boundaries. */
+export async function audit(request: AtlasCommandRequest): Promise<{ readonly exitCode: number }> {
+  const options = parseAtlasCommandArgs(request.argv ?? []);
   if (options.help) {
-    console.log(getPkgvizHelp());
+    console.log(getAtlasHelp());
     return { exitCode: 0 };
   }
 
@@ -19,6 +19,6 @@ export async function audit(request: PkgvizCommandRequest): Promise<{ readonly e
   return { exitCode: result.exitCode };
 }
 
-interface PkgvizCommandRequest {
+interface AtlasCommandRequest {
   readonly argv?: readonly string[];
 }

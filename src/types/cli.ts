@@ -1,6 +1,6 @@
 import type { AuditArchitectureTarget, AuditRuleConfiguration } from '@/types/audit';
 
-export interface PkgvizCliOptions {
+export interface AtlasCliOptions {
   readonly architectureTarget?: AuditArchitectureTarget;
   readonly source?: string;
   readonly out: string;
@@ -12,7 +12,7 @@ export interface PkgvizCliOptions {
   readonly verbose: boolean;
   readonly failOnRuleViolation: boolean;
   readonly help: boolean;
-  readonly offline: boolean;
+  readonly exportFormat?: 'json' | 'csv' | 'offline';
   readonly rules: readonly AuditRuleConfiguration[];
   readonly port?: number;
 }

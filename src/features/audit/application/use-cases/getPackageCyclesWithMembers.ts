@@ -65,7 +65,7 @@ function cycleEdgeEvidence(
   };
 }
 
-/*** Add PKGViz file identity to one canonical dependency evidence item. */
+/*** Add Atlas file identity to one canonical dependency evidence item. */
 function projectImportEvidence(
   files: readonly ProjectFileMetadata[],
   evidence: PackageDependencyGraph['edges'][number]['data']['evidence'][number]
@@ -80,7 +80,7 @@ function projectImportEvidence(
   };
 }
 
-/*** Match owner-relative dependency evidence to PKGViz file metadata. */
+/*** Match owner-relative dependency evidence to Atlas file metadata. */
 function findProjectFile(
   files: readonly ProjectFileMetadata[],
   sourceFile: string

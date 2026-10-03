@@ -21,8 +21,8 @@ describe('[package manifest]', () => {
       'paradox',
     ]);
     assert.equal(manifest.files.includes('.next'), false);
-    assert.equal(manifest.name, '@ankhorage/pkgviz');
-    assert.equal(manifest.bin.pkgviz, 'bin/pkgviz.ts');
+    assert.equal(manifest.name, '@ankhorage/atlas');
+    assert.equal(manifest.bin.atlas, 'bin/atlas.ts');
     assert.equal(manifest.exports['./cli'], './src/cli/index.ts');
   });
 });

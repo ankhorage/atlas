@@ -5,7 +5,7 @@ import { toPortablePath } from '@ankhorage/utility/node/path';
 
 import type { ProjectFileMetadata, ProjectImportMetadata } from '@/types/projectFiles';
 
-/*** Read Delphi file metadata retained by PKGViz Tree and audit exports. */
+/*** Read Delphi file metadata retained by Atlas Tree and audit exports. */
 export function readDelphiProjectFileMetadata(
   fullPath: string,
   projectRoot: string,

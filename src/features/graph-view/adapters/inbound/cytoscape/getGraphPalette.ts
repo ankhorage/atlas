@@ -18,7 +18,7 @@ export interface GraphPalette {
   readonly weightXs: string;
 }
 
-/*** Maps the active ZORA theme semantics into PKGViz graph presentation roles. */
+/*** Maps the active ZORA theme semantics into Atlas graph presentation roles. */
 export function getGraphPalette(theme: ZoraRuntimeTheme): GraphPalette {
   return {
     canvasBg: theme.semantics.surface.default,

@@ -6,14 +6,14 @@ import {
 } from '@ankhorage/rules-architecture';
 
 import type { AuditArchitectureTarget, AuditRuleConfiguration } from '@/types/audit';
-import type { PkgvizCliOptions } from '@/types/cli';
+import type { AtlasCliOptions } from '@/types/cli';
 
-/*** Parse PKGViz command-line arguments into immutable CLI options. */
-export function parsePkgvizCliArgs(argv: readonly string[]): PkgvizCliOptions {
+/*** Parse Atlas command-line arguments into immutable CLI options. */
+export function parseAtlasCliArgs(argv: readonly string[]): AtlasCliOptions {
   return parseTokens(argv.slice(2), DEFAULT_OPTIONS);
 }
 
-const DEFAULT_OPTIONS: PkgvizCliOptions = {
+const DEFAULT_OPTIONS: AtlasCliOptions = {
   out: 'audit.json',
   open: false,
   serve: false,
@@ -23,12 +23,11 @@ const DEFAULT_OPTIONS: PkgvizCliOptions = {
   verbose: false,
   failOnRuleViolation: true,
   help: false,
-  offline: false,
   rules: [],
 };
 
-type FlagUpdater = (options: PkgvizCliOptions) => PkgvizCliOptions;
-type ValueUpdater = (options: PkgvizCliOptions, value: string) => PkgvizCliOptions;
+type FlagUpdater = (options: AtlasCliOptions) => AtlasCliOptions;
+type ValueUpdater = (options: AtlasCliOptions, value: string) => AtlasCliOptions;
 
 const FLAG_UPDATERS = new Map<string, FlagUpdater>([
   ['--open', options => ({ ...options, open: true })],
@@ -40,7 +39,9 @@ const FLAG_UPDATERS = new Map<string, FlagUpdater>([
   ['--verbose', options => ({ ...options, verbose: true })],
   ['-h', options => ({ ...options, help: true })],
   ['--help', options => ({ ...options, help: true })],
-  ['--offline', options => ({ ...options, offline: true })],
+  ['--json', options => withExportFormat(options, 'json')],
+  ['--csv', options => withExportFormat(options, 'csv')],
+  ['--offline', options => withExportFormat(options, 'offline')],
 ]);
 
 const VALUE_UPDATERS = new Map<string, ValueUpdater>([
@@ -64,7 +65,7 @@ const VALUE_UPDATERS = new Map<string, ValueUpdater>([
 ]);
 
 /*** Recursively consume CLI tokens without mutable parser state. */
-function parseTokens(tokens: readonly string[], options: PkgvizCliOptions): PkgvizCliOptions {
+function parseTokens(tokens: readonly string[], options: AtlasCliOptions): AtlasCliOptions {
   if (tokens.length === 0) return options;
 
   const [argument] = tokens;
@@ -125,11 +126,22 @@ function profileTarget(value: string): AuditArchitectureTarget {
 
 /*** Accept exactly one explicit architecture enforcement target per CLI invocation. */
 function withArchitectureTarget(
-  options: PkgvizCliOptions,
+  options: AtlasCliOptions,
   architectureTarget: AuditArchitectureTarget
-): PkgvizCliOptions {
+): AtlasCliOptions {
   if (options.architectureTarget !== undefined) {
     throw new Error('Choose either --architecture-model or --architecture-profile exactly once.');
   }
   return { ...options, architectureTarget };
+}
+
+/*** Accept at most one explicit export format flag per invocation. */
+function withExportFormat(
+  options: AtlasCliOptions,
+  exportFormat: NonNullable<AtlasCliOptions['exportFormat']>
+): AtlasCliOptions {
+  if (options.exportFormat !== undefined) {
+    throw new Error('Choose only one of --json, --csv, or --offline.');
+  }
+  return { ...options, exportFormat };
 }

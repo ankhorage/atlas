@@ -5,7 +5,7 @@ import { toPortablePath } from '@ankhorage/utility/node/path';
 
 import type { ProjectFileMetadata, ProjectImportMetadata } from '@/types/projectFiles';
 
-/*** Read Python file metadata retained by PKGViz Tree and audit exports. */
+/*** Read Python file metadata retained by Atlas Tree and audit exports. */
 export function readPythonProjectFileMetadata(
   fullPath: string,
   projectRoot: string,

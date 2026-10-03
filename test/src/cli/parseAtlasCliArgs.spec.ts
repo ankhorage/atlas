@@ -1,10 +1,10 @@
 import { assert, describe, it } from '@artiphishle/testosterone';
 
-import { parsePkgvizCliArgs } from '@/cli/parsePkgvizCliArgs';
+import { parseAtlasCliArgs } from '@/cli/parseAtlasCliArgs';
 
-describe('[parsePkgvizCliArgs]', () => {
+describe('[parseAtlasCliArgs]', () => {
   it('returns the existing audit defaults without an architecture target', () => {
-    assert.deepEqual(parsePkgvizCliArgs(['bun', 'pkgviz']), {
+    assert.deepEqual(parseAtlasCliArgs(['bun', 'atlas']), {
       out: 'audit.json',
       open: false,
       serve: false,
@@ -14,16 +14,15 @@ describe('[parsePkgvizCliArgs]', () => {
       verbose: false,
       failOnRuleViolation: true,
       help: false,
-      offline: false,
       rules: [],
     });
   });
 
   it('parses viewer, output, rule, and explicit architecture model options', () => {
     assert.deepEqual(
-      parsePkgvizCliArgs([
+      parseAtlasCliArgs([
         'bun',
-        'pkgviz',
+        'atlas',
         '--out',
         'reports/audit.json',
         '--open',
@@ -54,7 +53,6 @@ describe('[parsePkgvizCliArgs]', () => {
         verbose: true,
         failOnRuleViolation: false,
         help: false,
-        offline: false,
         source: 'https://github.com/ankhorage/zora/tree/main',
         rules: [{ id: 'cyclic-dependencies', mode: 'audit' }],
       }
@@ -62,7 +60,7 @@ describe('[parsePkgvizCliArgs]', () => {
   });
 
   it('parses an explicit project profile independently from detection', () => {
-    assert.deepEqual(parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-profile', 'ankhorage']), {
+    assert.deepEqual(parseAtlasCliArgs(['bun', 'atlas', '--architecture-profile', 'ankhorage']), {
       architectureTarget: { kind: 'profile', id: 'ankhorage' },
       out: 'audit.json',
       open: false,
@@ -73,37 +71,51 @@ describe('[parsePkgvizCliArgs]', () => {
       verbose: false,
       failOnRuleViolation: true,
       help: false,
-      offline: false,
       rules: [],
     });
   });
 
-  it('parses an offline export request and local source', () => {
-    const result = parsePkgvizCliArgs(['bun', 'pkgviz', './project', '--offline']);
-    assert.equal(result.source, './project');
-    assert.equal(result.offline, true);
+  it('parses explicit export formats with JSON remaining the implicit default', () => {
+    assert.equal(parseAtlasCliArgs(['bun', 'atlas', './project']).exportFormat, undefined);
+    assert.equal(parseAtlasCliArgs(['bun', 'atlas', './project', '--json']).exportFormat, 'json');
+    assert.equal(parseAtlasCliArgs(['bun', 'atlas', './project', '--csv']).exportFormat, 'csv');
+    assert.equal(
+      parseAtlasCliArgs(['bun', 'atlas', './project', '--offline']).exportFormat,
+      'offline'
+    );
+  });
+
+  it('rejects multiple export formats', () => {
+    assert.throws(
+      () => parseAtlasCliArgs(['bun', 'atlas', '--json', '--csv']),
+      /Choose only one/
+    );
+    assert.throws(
+      () => parseAtlasCliArgs(['bun', 'atlas', '--csv', '--offline']),
+      /Choose only one/
+    );
   });
 
   it('rejects multiple sources and the removed ref option', () => {
     assert.throws(
-      () => parsePkgvizCliArgs(['bun', 'pkgviz', './one', './two']),
+      () => parseAtlasCliArgs(['bun', 'atlas', './one', './two']),
       /Only one project source/
     );
     assert.throws(
-      () => parsePkgvizCliArgs(['bun', 'pkgviz', '--ref', 'main']),
+      () => parseAtlasCliArgs(['bun', 'atlas', '--ref', 'main']),
       /Unknown option "--ref"/
     );
   });
 
   it('recognizes help without performing process I/O', () => {
-    assert.equal(parsePkgvizCliArgs(['bun', 'pkgviz', '--help']).help, true);
+    assert.equal(parseAtlasCliArgs(['bun', 'atlas', '--help']).help, true);
   });
 
   it('rejects malformed or unknown audit rule overrides', () => {
     const invalidMode = () =>
-      parsePkgvizCliArgs(['bun', 'pkgviz', '--rule', 'cyclic-dependencies=warn']);
-    const unknownRule = () => parsePkgvizCliArgs(['bun', 'pkgviz', '--rule', 'unknown=block']);
-    const missingRule = () => parsePkgvizCliArgs(['bun', 'pkgviz', '--rule']);
+      parseAtlasCliArgs(['bun', 'atlas', '--rule', 'cyclic-dependencies=warn']);
+    const unknownRule = () => parseAtlasCliArgs(['bun', 'atlas', '--rule', 'unknown=block']);
+    const missingRule = () => parseAtlasCliArgs(['bun', 'atlas', '--rule']);
 
     assert.throws(invalidMode, /Invalid mode/);
     assert.throws(unknownRule, /Unknown audit rule/);
@@ -112,13 +124,13 @@ describe('[parsePkgvizCliArgs]', () => {
 
   it('rejects unknown or multiple architecture targets', () => {
     const unknownModel = () =>
-      parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-model', 'invented']);
+      parseAtlasCliArgs(['bun', 'atlas', '--architecture-model', 'invented']);
     const unknownProfile = () =>
-      parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-profile', 'invented']);
+      parseAtlasCliArgs(['bun', 'atlas', '--architecture-profile', 'invented']);
     const multipleTargets = () =>
-      parsePkgvizCliArgs([
+      parseAtlasCliArgs([
         'bun',
-        'pkgviz',
+        'atlas',
         '--architecture-model',
         'clean',
         '--architecture-profile',

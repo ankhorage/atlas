@@ -6,7 +6,7 @@ import { readNodeDefinitionId } from '@/features/graph-view/utils/readNodeDefini
 import type { CycleHighlight } from '@/types/auditVisualization';
 
 /***
- * Projects PKGViz graph data into the engine-neutral ZORA GraphView contract.
+ * Projects Atlas graph data into the engine-neutral ZORA GraphView contract.
  * @performance
  * Performance invariant: build package and cycle indexes once per projection, then use lookups
  * in element conversion. Do not move full-graph or full-cycle scans into the node/edge callbacks.

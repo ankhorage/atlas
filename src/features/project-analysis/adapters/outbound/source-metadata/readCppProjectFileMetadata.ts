@@ -5,7 +5,7 @@ import { toPortablePath } from '@ankhorage/utility/node/path';
 
 import type { ProjectFileMetadata, ProjectImportMetadata } from '@/types/projectFiles';
 
-/*** Read C++ file metadata retained by PKGViz Tree and audit exports. */
+/*** Read C++ file metadata retained by Atlas Tree and audit exports. */
 export function readCppProjectFileMetadata(
   fullPath: string,
   projectRoot: string,
@@ -26,7 +26,7 @@ export function readCppProjectFileMetadata(
   };
 }
 
-/*** Extract the first namespace used as PKGViz package metadata. */
+/*** Extract the first namespace used as Atlas package metadata. */
 function extractNamespace(content: string): string {
   const match = /namespace\s+([a-zA-Z0-9_:]+)\s*\{/.exec(content);
   return match?.[1]?.replace(/::/g, '.') ?? '';
