@@ -4,7 +4,7 @@ export function getAtlasHelp(): string {
 Canonical Ankh commands:
   ankh atlas audit [source] [options]
   ankh atlas inspect [source] [options]
-  ankh atlas export [source] --offline --out <file>
+  ankh atlas export [source] [--json|--csv|--offline] [--out <file>]
 
 Standalone binary:
   bunx @ankhorage/atlas [source] [options]
@@ -18,10 +18,12 @@ Sources:
                       Normal GitHub tree/blob/commit URLs select their own revision
 
 Options:
-  -o, --out <file>    Output file (default: audit.json in caller's cwd)
-  --open              Open the viewer UI after export
-  --serve             Keep the standalone viewer running after export
+  -o, --out <file>    Output file (default: audit.json; audit.csv for --csv)
+  --json              Export Audit as JSON (default export format)
+  --csv               Export Audit as deterministic path/type/value CSV
   --offline           Request the self-contained HTML export owned by Atlas #261
+  --open              Open the viewer UI after standalone export
+  --serve             Keep the standalone viewer running after export
   --prod              Use "next start" if a build exists inside the package
   -p, --port <n>      Port to use (default: find free)
   --wait <ms>         Max wait for server & route (default: 90000)
@@ -38,7 +40,8 @@ Options:
 
 Behavior:
   - Local paths and GitHub sources use the same ProjectInspection, SourceGraph, Audit, and viewer pipeline.
-  - `inspect` opens the interactive viewer and keeps its local server running until the process exits.
+  - inspect opens the interactive viewer and keeps its local server running until the process exits.
+  - export defaults to JSON; --json, --csv, and --offline are mutually exclusive.
   - GitHub repositories are analyzed at an immutable resolved commit and cleaned up after use.
   - GitHub branch, tag, and commit selection comes from normal GitHub URLs; there is no separate ref syntax.
   - The audit is written before blocking rules are enforced.
