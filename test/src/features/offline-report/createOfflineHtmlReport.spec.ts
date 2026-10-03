@@ -79,6 +79,19 @@ describe('[createOfflineHtmlReport]', () => {
     expect(html.includes('EventSource')).toBe(false);
     expect(html.includes('navigator.sendBeacon')).toBe(false);
   });
+
+  it('embeds every runtime stylesheet, script and static resource in the document', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = createOfflineHtmlReport(audit);
+    const externalTag = /<(?:script|link|img|source|iframe|audio|video)\\b[^>]*(?:src|href)\\s*=/i;
+    const externalCss = /url\\(\\s*['"]?(?:https?:|\\/\\/)/i;
+
+    expect(externalTag.test(html)).toBe(false);
+    expect(externalCss.test(html)).toBe(false);
+    expect(html.includes('sourceMappingURL=')).toBe(false);
+    expect(html.includes('<style>')).toBe(true);
+    expect(html.includes('<script>')).toBe(true);
+  });
 });
 
 function readEmbeddedPayload(html: string): OfflinePayload {
