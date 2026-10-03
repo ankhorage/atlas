@@ -59,7 +59,7 @@
     "version-packages": "ankhorage-changeset version",
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
-    "zora:materialize": "bunx @ankhorage/ankh@0.10.84 zora sync --web",
+    "zora:materialize": "bunx @ankhorage/ankh@0.11.1 zora sync --web",
     "docs": "paradox",
     "typecheck": "bun x tsc --noEmit -p tsconfig.json"
   },

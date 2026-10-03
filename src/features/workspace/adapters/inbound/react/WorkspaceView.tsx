@@ -131,7 +131,6 @@ function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyPr
         selectedTreeIds={navigation.selectedTreeIds}
         onCycleInspectionChange={setCycleInspection}
         onProjectTreeSelect={navigation.selectProjectTreeNode}
-        onProjectTreeToggle={navigation.toggleProjectTreeNode}
       />
       <WorkspaceContent
         cycleInspection={cycleInspection}

@@ -5,8 +5,6 @@ import { applySelectionIntent, type SelectionIntent } from '@ankhorage/utility/s
 import { useMemo, useState } from 'react';
 
 import { resolveGraphProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection';
-import { resolveProjectTreeNavigation } from '@/features/project-tree/application/use-cases/resolveProjectTreeNavigation';
-import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTreeNode';
 import { resolveProjectTreeGraphNodeId } from '@/features/project-tree/utils/resolveProjectTreeGraphNodeId';
 import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
@@ -27,22 +25,11 @@ export function useWorkspaceNavigation(workspace: WorkspaceLoadResult) {
     setCurrentPackage(normalizeGraphPackage(path));
   };
 
-  /*** Navigate graph scope from an independent folder expansion or collapse action. */
-  const toggleProjectTreeNode = (node: ProjectTreeNode, expanded: boolean) => {
-    if (node.kind !== 'directory') return;
-    if (expanded) {
-      setCurrentPackage(resolveProjectTreeNavigation(node, packageIds, currentPackage));
-      return;
-    }
-    setCurrentPackage(resolveParentProjectTreeNavigation(projectTree, node, packageIds));
-  };
-
   return {
     currentPackage,
     navigateToPackage,
     packageGraph,
     projectTree,
-    toggleProjectTreeNode,
     ...selection,
   };
 }
@@ -157,36 +144,6 @@ function resolveGraphWorkspaceSelection(
     input.packageIds
   );
   return { graphNodeId, treeNodeId: treeNode?.id ?? null };
-}
-
-/*** Resolve a collapsed folder to the nearest represented ancestor scope, or Home when none exists. */
-function resolveParentProjectTreeNavigation(
-  nodes: readonly ProjectTreeNode[],
-  node: ProjectTreeNode,
-  graphNodeIds: readonly string[]
-): string {
-  const path = readDirectoryPath(node.id);
-  if (path === null) return '';
-
-  const segments = path.split('/').filter(Boolean);
-  const parentIds = Array.from({ length: Math.max(0, segments.length - 1) }, (_, index) => {
-    const length = segments.length - index - 1;
-    return `directory:${segments.slice(0, length).join('/')}`;
-  });
-
-  for (const parentId of parentIds) {
-    const parent = findProjectTreeNode(nodes, parentId);
-    if (parent === null) continue;
-    const resolved = resolveProjectTreeGraphNodeId(parent, graphNodeIds);
-    if (resolved !== null) return resolved;
-  }
-  return '';
-}
-
-/*** Reads the stable filesystem path encoded in one directory tree id. */
-function readDirectoryPath(id: string): string | null {
-  const prefix = 'directory:';
-  return id.startsWith(prefix) ? id.slice(prefix.length) : null;
 }
 
 /*** Normalize navigation paths to the package identity representation used by the graph view. */
