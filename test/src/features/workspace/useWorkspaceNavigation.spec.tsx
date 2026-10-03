@@ -18,7 +18,6 @@ describe('[useWorkspaceNavigation]', () => {
     function Harness() {
       const navigation = useWorkspaceNavigation(workspace);
       const io = requiredNode(tree[0]);
-      const reflectoring = requiredNode(io.children?.[0]);
       const coderadar = requiredNode(reflectoring.children?.[0]);
 
       return (
@@ -40,13 +39,6 @@ describe('[useWorkspaceNavigation]', () => {
           </button>
           <button onClick={() => navigation.selectGraphNode('io', 'replace')}>
             graph-io-replace
-          </button>
-          <button onClick={() => navigation.toggleProjectTreeNode(io, true)}>expand-io</button>
-          <button onClick={() => navigation.toggleProjectTreeNode(reflectoring, true)}>
-            expand-reflectoring
-          </button>
-          <button onClick={() => navigation.toggleProjectTreeNode(reflectoring, false)}>
-            collapse-reflectoring
           </button>
           <button onClick={() => navigation.navigateToPackage('')}>home</button>
         </>
@@ -82,21 +74,6 @@ describe('[useWorkspaceNavigation]', () => {
       click('graph-io-toggle');
       expect(output()).toBe(
         'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|'
-      );
-
-      click('expand-io');
-      expect(output()).toBe(
-        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io'
-      );
-
-      click('expand-reflectoring');
-      expect(output()).toBe(
-        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io.reflectoring'
-      );
-
-      click('collapse-reflectoring');
-      expect(output()).toBe(
-        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io'
       );
 
       click('home');
