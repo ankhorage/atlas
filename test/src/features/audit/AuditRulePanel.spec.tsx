@@ -61,7 +61,6 @@ const evaluation: Audit['evaluation'] = {
   ],
 };
 
-
 const architectureEvaluation: Audit['evaluation'] = {
   architecture: {
     candidates: [
