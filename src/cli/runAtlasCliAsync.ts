@@ -15,21 +15,21 @@ export async function runAtlasCliAsync(argv: readonly string[] = process.argv): 
       return;
     }
 
-    if (options.exportFormat === 'offline') {
-      throw new Error(
-        'Offline HTML export is not available yet; implementation is tracked by #261.'
-      );
-    }
-
     if (options.open || options.serve) {
       await startViewerSourceAsync(options);
       return;
     }
 
     if (options.exportFormat !== undefined) {
-      const artifactFormat = options.exportFormat === 'csv' ? 'csv' : 'json';
+      const artifactFormat = options.exportFormat;
       const out =
-        options.out === 'audit.json' && artifactFormat === 'csv' ? 'audit.csv' : options.out;
+        options.out === 'audit.json'
+          ? artifactFormat === 'csv'
+            ? 'audit.csv'
+            : artifactFormat === 'offline'
+              ? 'atlas-report.html'
+              : options.out
+          : options.out;
       const result = await runAuditSourceAsync(
         { ...options, out, failOnRuleViolation: false },
         artifactFormat

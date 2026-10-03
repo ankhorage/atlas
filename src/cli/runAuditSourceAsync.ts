@@ -6,7 +6,7 @@ import type { AtlasCliOptions } from '@/types/cli';
 /*** Resolve one local or GitHub source, run the canonical audit, and clean transient sources. */
 export async function runAuditSourceAsync(
   options: AtlasCliOptions,
-  artifactFormat: 'json' | 'csv' = 'json'
+  artifactFormat: 'json' | 'csv' | 'offline' = 'json'
 ) {
   const source = parseProjectSource(options.source ?? process.cwd());
   const resolved = await loadProjectSourceAsync(source);
