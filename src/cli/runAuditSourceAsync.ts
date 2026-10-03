@@ -5,7 +5,7 @@ import type { PkgvizCliOptions } from '@/types/cli';
 
 /*** Resolve one local or GitHub source, run the canonical audit, and clean transient sources. */
 export async function runAuditSourceAsync(options: PkgvizCliOptions) {
-  const source = parseProjectSource(options.source ?? process.cwd(), options.ref);
+  const source = parseProjectSource(options.source ?? process.cwd());
   const resolved = await loadProjectSourceAsync(source);
 
   try {
