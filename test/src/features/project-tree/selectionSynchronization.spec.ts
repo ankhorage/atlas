@@ -49,9 +49,9 @@ describe('[graph/tree selection synchronization]', () => {
     expect(resolveGraphProjectTreeSelection(tree, 'io.reflectoring', graphNodeIds)?.id).toBe(
       'directory:io/reflectoring'
     );
-    expect(resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', graphNodeIds)?.id).toBe(
-      'directory:io/reflectoring/coderadar'
-    );
+    expect(
+      resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', graphNodeIds)?.id
+    ).toBe('directory:io/reflectoring/coderadar');
   });
 });
 

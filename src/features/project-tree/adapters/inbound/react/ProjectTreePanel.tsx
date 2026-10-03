@@ -63,9 +63,8 @@ function getChangedExpansionId(
   nextIds: readonly string[]
 ): string | null {
   return (
-    [...previousIds, ...nextIds].find(
-      id => previousIds.includes(id) !== nextIds.includes(id)
-    ) ?? null
+    [...previousIds, ...nextIds].find(id => previousIds.includes(id) !== nextIds.includes(id)) ??
+    null
   );
 }
 

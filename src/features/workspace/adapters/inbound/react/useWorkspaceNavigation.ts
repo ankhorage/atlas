@@ -93,7 +93,11 @@ function resolveGraphWorkspaceSelection(
 ): WorkspaceSelection | null {
   const graphNodeId = normalizeGraphPackage(id);
   if (!graphNodeIdSet.has(graphNodeId)) return null;
-  const treeNode = resolveGraphProjectTreeSelection(input.projectTree, graphNodeId, input.packageIds);
+  const treeNode = resolveGraphProjectTreeSelection(
+    input.projectTree,
+    graphNodeId,
+    input.packageIds
+  );
   return { graphNodeId, treeNodeId: treeNode?.id ?? null };
 }
 

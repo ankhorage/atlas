@@ -27,7 +27,9 @@ describe('[useWorkspaceNavigation]', () => {
             {`${navigation.selectedGraphNodeId ?? ''}|${navigation.selectedTreeId ?? ''}|${navigation.currentPackage}`}
           </output>
           <button onClick={() => navigation.selectProjectTreeNode(io)}>tree-io</button>
-          <button onClick={() => navigation.selectProjectTreeNode(coderadar)}>tree-coderadar</button>
+          <button onClick={() => navigation.selectProjectTreeNode(coderadar)}>
+            tree-coderadar
+          </button>
           <button onClick={() => navigation.toggleProjectTreeNode(io, true)}>expand-io</button>
           <button onClick={() => navigation.toggleProjectTreeNode(reflectoring, true)}>
             expand-reflectoring
@@ -69,9 +71,7 @@ describe('[useWorkspaceNavigation]', () => {
       expect(output()).toBe('io|directory:io|io');
 
       click('tree-coderadar');
-      expect(output()).toBe(
-        'io.reflectoring.coderadar|directory:io/reflectoring/coderadar|io'
-      );
+      expect(output()).toBe('io.reflectoring.coderadar|directory:io/reflectoring/coderadar|io');
 
       click('expand-reflectoring');
       expect(output()).toBe(
