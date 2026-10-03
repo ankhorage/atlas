@@ -2,6 +2,7 @@ import { resolveFileSystemPathWithinRoot, writeFileWithinRoot } from '@ankhorage
 
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { hasBlockingAuditRuleFailure } from '@/features/audit/domain/hasBlockingAuditRuleFailure';
+import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
 import type { Audit, AuditMetaInput, ResolveAuditConfigurationInput } from '@/types/audit';
 
 /*** Creates, writes, and evaluates an audit while retaining the artifact on rule failure. */
@@ -10,9 +11,11 @@ export async function runAuditAsync(input: RunAuditInput): Promise<RunAuditResul
   const body =
     input.artifactFormat === 'csv'
       ? serializeAuditCsv(audit)
-      : input.pretty
-        ? JSON.stringify(audit, null, 2)
-        : JSON.stringify(audit);
+      : input.artifactFormat === 'offline'
+        ? createOfflineHtmlReport(audit)
+        : input.pretty
+          ? JSON.stringify(audit, null, 2)
+          : JSON.stringify(audit);
 
   await writeFileWithinRoot({
     rootPath: input.outputRootPath ?? input.projectPath,
@@ -87,7 +90,7 @@ interface RunAuditInput {
   readonly outputPath: string;
   readonly outputRootPath?: string;
   readonly pretty: boolean;
-  readonly artifactFormat?: 'json' | 'csv';
+  readonly artifactFormat?: 'json' | 'csv' | 'offline';
   readonly configuration?: ResolveAuditConfigurationInput;
   readonly meta?: AuditMetaInput;
 }
