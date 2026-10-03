@@ -1,6 +1,6 @@
 export type ProjectSource =
   | { readonly kind: 'filesystem'; readonly path: string }
-  | { readonly kind: 'github'; readonly url: string; readonly ref?: string };
+  | { readonly kind: 'github'; readonly url: string };
 
 export interface ResolvedProjectSource {
   readonly rootPath: string;
