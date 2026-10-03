@@ -52,7 +52,9 @@ describe('[TypeScript dependency graph migration]', () => {
     ).toBe(true);
   });
 
-  it('keeps declared vendor roots stable while resolving aliases from the canonical SourceGraph', async () => {
+  it(
+    'keeps declared vendor roots stable while resolving aliases from the canonical SourceGraph',
+    async () => {
     const projectRoot = await mkdtemp(join(tmpdir(), 'pkgviz-vendor-roots-'));
 
     try {
@@ -90,7 +92,10 @@ describe('[TypeScript dependency graph migration]', () => {
           '',
         ].join('\n')
       );
-      await writeFile(join(projectRoot, 'src', 'internal', 'value.ts'), 'export const value = 1;\n');
+      await writeFile(
+        join(projectRoot, 'src', 'internal', 'value.ts'),
+        'export const value = 1;\n'
+      );
 
       const { packageGraph, sourceGraph } = await readProjectSnapshotAsync(projectRoot);
       const nodes = new Map(packageGraph.nodes.map(node => [node.id, node.data]));
@@ -122,8 +127,9 @@ describe('[TypeScript dependency graph migration]', () => {
       expect(sourceSpecifiers).toContain('@ankhorage/zora/tree-view');
       expect(sourceSpecifiers).toContain('@/internal/value');
       expect(sourceSpecifiers).toContain('@/missing');
-    } finally {
-      await rm(projectRoot, { recursive: true, force: true });
+      } finally {
+        await rm(projectRoot, { recursive: true, force: true });
+      }
     }
-  });
+  );
 });
