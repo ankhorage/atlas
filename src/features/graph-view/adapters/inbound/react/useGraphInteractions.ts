@@ -52,5 +52,5 @@ export function useGraphInteractions(
     });
   };
 
-  return { ...presentation, handleNodeEvent };
+  return { ...presentation, selectedNodeIds: interaction.selectedNodeIds, handleNodeEvent };
 }
