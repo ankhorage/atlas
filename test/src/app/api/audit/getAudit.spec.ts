@@ -76,6 +76,12 @@ describe('[getAuditAction]', () => {
     expect(serialized.packageGraph).toEqual(audit.packageGraph);
     expect(deserializeSourceGraph(serialized.sourceGraph)).toEqual(sourceGraph);
 
+    expect(
+      audit.evaluation.genericRules.findings.some(
+        (finding) => finding.ruleId === 'cyclic-dependencies',
+      ),
+    ).toBe(true);
+
     const cyclicRule = audit.evaluation.rules.find(rule => rule.id === 'cyclic-dependencies');
     expect(cyclicRule?.status).toBe('failed');
     expect(cyclicRule?.policy).toBe('blocking');
