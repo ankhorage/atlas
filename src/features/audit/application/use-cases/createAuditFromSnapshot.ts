@@ -17,7 +17,7 @@ import { getProjectName } from '@/utils/getProjectName';
 /*** Evaluate provider-backed rules and architecture against the same retained canonical SourceGraph. */
 export function createAuditFromSnapshot(
   snapshot: ProjectSnapshot,
-  configurationInput: ResolveAuditConfigurationInput = {},
+  configurationInput: ResolveAuditConfigurationInput = {}
 ): Audit {
   const configuration = resolveAuditConfiguration(configurationInput);
   const cyclicPackages = getPackageCyclesWithMembers(snapshot.files, snapshot.packageGraph).cycles;
@@ -29,7 +29,7 @@ export function createAuditFromSnapshot(
   const architecture = detectArchitecture(snapshot.sourceGraph);
   const architectureEvaluation = evaluateArchitectureTarget(
     snapshot.sourceGraph,
-    configuration.architectureTarget,
+    configuration.architectureTarget
   );
 
   return {
@@ -56,7 +56,7 @@ export function createAuditFromSnapshot(
 /*** Merge target-independent and explicitly targeted generic findings into one Audit view. */
 function mergeRuleEvaluation(
   base: RuleEvaluationResult,
-  architecture: AuditArchitectureEvaluation | undefined,
+  architecture: AuditArchitectureEvaluation | undefined
 ): RuleEvaluationResult {
   if (architecture === undefined) return base;
   return {
