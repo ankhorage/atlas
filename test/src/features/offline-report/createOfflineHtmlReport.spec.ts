@@ -75,6 +75,17 @@ describe('[createOfflineHtmlReport]', () => {
     expect(payload.audit.evaluation.cyclicPackages).toEqual(audit.evaluation.cyclicPackages);
   });
 
+  it('round-trips analyzer capabilities and semantic SourceGraph evidence', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
+    const original = deserializeSourceGraph(audit.sourceGraph);
+    const restored = deserializeSourceGraph(payload.audit.sourceGraph);
+
+    expect(restored.capabilities).toEqual(original.capabilities);
+    expect(restored.graph.nodes).toEqual(original.graph.nodes);
+    expect(restored.graph.edges).toEqual(original.graph.edges);
+  });
+
   it('uses only inline startup resources so direct file URLs need no server', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const html = createOfflineHtmlReport(audit);
@@ -142,6 +153,7 @@ interface OfflinePayload {
       readonly projectName: string;
     };
     readonly packageGraph: unknown;
+    readonly sourceGraph: string;
     readonly sourceGraph: string;
   };
   readonly graph: {
