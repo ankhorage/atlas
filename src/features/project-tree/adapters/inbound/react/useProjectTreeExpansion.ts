@@ -9,7 +9,7 @@ export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
   selectedIds: readonly string[]
 ) {
-  const [state, setState] = useState(() => ({
+  const [state, setState] = useState<ProjectTreeExpansionState>(() => ({
     nodes,
     selectedIds,
     ids: revealSelections(
@@ -44,3 +44,8 @@ function revealSelections(
   return dedupeBy([...ids, ...requiredAncestorIds], value => value);
 }
 
+interface ProjectTreeExpansionState {
+  readonly nodes: readonly ProjectTreeNode[];
+  readonly selectedIds: readonly string[];
+  readonly ids: readonly string[];
+}
