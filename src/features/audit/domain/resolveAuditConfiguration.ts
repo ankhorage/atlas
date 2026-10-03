@@ -6,7 +6,7 @@ import type {
 
 /*** Resolve explicit audit overrides without inferring an architecture enforcement target. */
 export function resolveAuditConfiguration(
-  input: ResolveAuditConfigurationInput = {},
+  input: ResolveAuditConfigurationInput = {}
 ): AuditConfiguration {
   let cyclicDependenciesMode: AuditRuleConfiguration['mode'] = 'block';
 
