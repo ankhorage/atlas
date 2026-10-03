@@ -31,7 +31,7 @@ export function ArchitectureAnalysisPanel({
           {evaluation.architectureEvaluation.target.id}
         </Text>
       )}
-      {evaluation.architecture.candidates.map((candidate) => (
+      {evaluation.architecture.candidates.map(candidate => (
         <View key={candidate.modelId} gap="xs">
           <Text variant="label" weight="bold">
             {candidate.modelId} · confidence {formatPercent(candidate.confidence)} · score{' '}
