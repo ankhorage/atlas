@@ -21,6 +21,10 @@
   },
   "version": "0.8.3",
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artiphishle/pkgviz.git"
+  },
   "keywords": [
     "code-analysis",
     "dependency-graph",
