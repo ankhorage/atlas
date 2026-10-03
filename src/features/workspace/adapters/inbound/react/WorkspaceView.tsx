@@ -4,7 +4,7 @@ import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { Card } from '@zora/card';
 import { useZoraTheme } from '@zora/ZoraProvider';
-import { useState } from 'react';
+import { type FormEvent, useState } from 'react';
 
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
@@ -15,26 +15,38 @@ import { t } from '@/i18n/i18n';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
-import { getProjectName } from '@/utils/getProjectName';
 
 /*** Renders the active PKGViz workspace through its feature-owned React adapter. */
-export function WorkspaceView({ workspace }: WorkspaceViewProps) {
+export function WorkspaceView({
+  currentSource,
+  projectName,
+  sourceRevision,
+  workspace,
+}: WorkspaceViewProps) {
   const navigation = useWorkspaceNavigation(workspace);
 
   return (
     <>
       <WorkspaceHeader
         currentPackage={navigation.currentPackage}
+        currentSource={currentSource}
+        projectName={projectName}
+        sourceRevision={sourceRevision}
         onNavigate={navigation.navigateToPackage}
       />
       <SettingsProvider>
-        <WorkspaceBody workspace={workspace} navigation={navigation} />
+        <WorkspaceBody
+          currentSource={currentSource}
+          navigation={navigation}
+          sourceRevision={sourceRevision}
+          workspace={workspace}
+        />
       </SettingsProvider>
     </>
   );
 }
 
-/*** Renders workspace breadcrumbs and the theme action. */
+/*** Renders workspace breadcrumbs, source selector, and theme action. */
 function WorkspaceHeader(props: WorkspaceHeaderProps) {
   const { mode, setMode } = useZoraTheme();
   const isDark = mode === 'dark';
@@ -42,28 +54,78 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
   return (
     <AppBar
       actions={
-        <Button
-          leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
-          size="s"
-          variant="outline"
-          onPress={() => setMode(isDark ? 'light' : 'dark')}
-        >
-          {isDark ? 'Light' : 'Dark'}
-        </Button>
+        <div style={{ alignItems: 'center', display: 'flex', gap: 8 }}>
+          <ProjectSourceForm
+            currentSource={props.currentSource}
+            sourceRevision={props.sourceRevision}
+          />
+          <Button
+            leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
+            size="s"
+            variant="outline"
+            onPress={() => setMode(isDark ? 'light' : 'dark')}
+          >
+            {isDark ? 'Light' : 'Dark'}
+          </Button>
+        </div>
       }
       safeAreaTop={false}
     >
       <Breadcrumbs
         compact
-        items={createBreadcrumbItems(props.currentPackage)}
+        items={createBreadcrumbItems(props.projectName, props.currentPackage)}
         onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
       />
     </AppBar>
   );
 }
 
+/*** Navigates the workspace to one public GitHub repository URL without client-side source reads. */
+function ProjectSourceForm(props: ProjectSourceFormProps) {
+  const [source, setSource] = useState(props.currentSource ?? '');
+  const [revision, setRevision] = useState(props.sourceRevision ?? '');
+
+  const openSource = () => {
+    const normalizedSource = source.trim();
+    const params = new URLSearchParams();
+    if (normalizedSource !== '') params.set('source', normalizedSource);
+    if (normalizedSource !== '' && revision.trim() !== '') {
+      params.set('ref', revision.trim());
+    }
+    window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
+  };
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    openSource();
+  };
+
+  return (
+    <form onSubmit={submit} style={{ display: 'flex', gap: 6 }}>
+      <input
+        aria-label="GitHub repository URL"
+        placeholder="https://github.com/owner/repo"
+        type="url"
+        value={source}
+        onChange={event => setSource(event.currentTarget.value)}
+        style={{ minWidth: 280, padding: '6px 8px' }}
+      />
+      <input
+        aria-label="GitHub repository ref"
+        placeholder="ref"
+        value={revision}
+        onChange={event => setRevision(event.currentTarget.value)}
+        style={{ width: 96, padding: '6px 8px' }}
+      />
+      <Button size="s" variant="outline" onPress={openSource}>
+        Open
+      </Button>
+    </form>
+  );
+}
+
 /*** Renders workspace tools, graph content, cycle inspection, and persistent load errors. */
-function WorkspaceBody({ workspace, navigation }: WorkspaceBodyProps) {
+function WorkspaceBody({ currentSource, navigation, sourceRevision, workspace }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const projectError = workspace.ok ? null : workspace.error;
@@ -84,30 +146,43 @@ function WorkspaceBody({ workspace, navigation }: WorkspaceBodyProps) {
       }}
     >
       <WorkspaceSidebar
+        currentSource={currentSource}
+        cycleSelection={cycleSelection}
         evaluation={auditEvaluation}
+        inspectedCycleId={cycleInspection?.id ?? null}
         projectTree={navigation.projectTree}
         selectedTreeId={navigation.selectedTreeId}
-        onProjectTreeSelect={navigation.selectProjectTreeNode}
-        cycleSelection={cycleSelection}
-        inspectedCycleId={cycleInspection?.id ?? null}
+        sourceRevision={sourceRevision}
         onCycleInspectionChange={setCycleInspection}
+        onProjectTreeSelect={navigation.selectProjectTreeNode}
       />
-      {projectError === null ? (
-        <WorkspaceGraph
-          currentPackage={navigation.currentPackage}
-          cycleHighlights={cycleSelection.highlights}
-          cycleInspection={cycleInspection}
-          packageGraph={navigation.packageGraph}
-          selectedGraphNodeId={navigation.selectedGraphNodeId}
-          setCurrentPackage={navigation.navigateToPackage}
-          onGraphNodeSelect={navigation.selectGraphNode}
-          onGraphNodeUnselect={navigation.unselectGraphNode}
-          onCloseInspection={() => setCycleInspection(null)}
-        />
-      ) : (
-        <WorkspaceError message={projectError} />
-      )}
+      <WorkspaceContent
+        cycleInspection={cycleInspection}
+        cycleSelection={cycleSelection}
+        navigation={navigation}
+        projectError={projectError}
+        onCloseInspection={() => setCycleInspection(null)}
+      />
     </main>
+  );
+}
+
+/*** Renders the graph or the current project-source load error. */
+function WorkspaceContent(props: WorkspaceContentProps) {
+  if (props.projectError !== null) return <WorkspaceError message={props.projectError} />;
+
+  return (
+    <WorkspaceGraph
+      currentPackage={props.navigation.currentPackage}
+      cycleHighlights={props.cycleSelection.highlights}
+      cycleInspection={props.cycleInspection}
+      packageGraph={props.navigation.packageGraph}
+      selectedGraphNodeId={props.navigation.selectedGraphNodeId}
+      setCurrentPackage={props.navigation.navigateToPackage}
+      onCloseInspection={props.onCloseInspection}
+      onGraphNodeSelect={props.navigation.selectGraphNode}
+      onGraphNodeUnselect={props.navigation.unselectGraphNode}
+    />
   );
 }
 
@@ -130,7 +205,10 @@ function WorkspaceError({ message }: { readonly message: string }) {
 }
 
 /*** Creates interactive package breadcrumbs with a stable project and Packages root. */
-function createBreadcrumbItems(currentPackage: string): readonly BreadcrumbItem[] {
+function createBreadcrumbItems(
+  projectName: string,
+  currentPackage: string
+): readonly BreadcrumbItem[] {
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
     id: packageSegments.slice(0, index + 1).join('.'),
@@ -138,7 +216,7 @@ function createBreadcrumbItems(currentPackage: string): readonly BreadcrumbItem[
   }));
 
   return [
-    { id: '__project__', label: getProjectName(), disabled: true },
+    { id: '__project__', label: projectName, disabled: true },
     { id: '', label: t('nav.packages'), icon: { name: 'home-outline' } },
     ...packageItems,
   ];
@@ -152,17 +230,38 @@ function normalizeGraphPackage(path: string): string {
 const EMPTY_CYCLES: NonNullable<Audit['evaluation']>['cyclicPackages'] = [];
 
 interface WorkspaceViewProps {
+  readonly currentSource?: string;
+  readonly projectName: string;
+  readonly sourceRevision?: string;
   readonly workspace: WorkspaceLoadResult;
 }
 
 interface WorkspaceHeaderProps {
   readonly currentPackage: string;
+  readonly currentSource?: string;
+  readonly projectName: string;
+  readonly sourceRevision?: string;
   readonly onNavigate: (path: string) => void;
 }
 
+interface ProjectSourceFormProps {
+  readonly currentSource?: string;
+  readonly sourceRevision?: string;
+}
+
 interface WorkspaceBodyProps {
-  readonly workspace: WorkspaceLoadResult;
+  readonly currentSource?: string;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
+  readonly sourceRevision?: string;
+  readonly workspace: WorkspaceLoadResult;
+}
+
+interface WorkspaceContentProps {
+  readonly cycleInspection: CycleInspection | null;
+  readonly cycleSelection: ReturnType<typeof useCycleSelection>;
+  readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
+  readonly projectError: string | null;
+  readonly onCloseInspection: () => void;
 }
 
 interface BreadcrumbItem {

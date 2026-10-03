@@ -2,6 +2,8 @@ import type { AuditArchitectureTarget, AuditRuleConfiguration } from '@/types/au
 
 export interface PkgvizCliOptions {
   readonly architectureTarget?: AuditArchitectureTarget;
+  readonly source?: string;
+  readonly ref?: string;
   readonly out: string;
   readonly open: boolean;
   readonly serve: boolean;
@@ -11,6 +13,7 @@ export interface PkgvizCliOptions {
   readonly verbose: boolean;
   readonly failOnRuleViolation: boolean;
   readonly help: boolean;
+  readonly offline: boolean;
   readonly rules: readonly AuditRuleConfiguration[];
   readonly port?: number;
 }

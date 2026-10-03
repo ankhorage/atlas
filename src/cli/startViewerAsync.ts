@@ -11,7 +11,8 @@ import type { PkgvizCliOptions } from '@/types/cli';
 /*** Starts the packaged Next viewer and owns its browser and child-process lifecycle. */
 export async function startViewerAsync(
   callerRoot: string,
-  options: PkgvizCliOptions
+  options: PkgvizCliOptions,
+  cleanupAsync: () => Promise<void> = () => Promise.resolve()
 ): Promise<void> {
   const port = await findFreePortAsync(options.port);
   const packageRoot = resolvePackageRoot();
@@ -39,6 +40,9 @@ export async function startViewerAsync(
   openBrowser(`${baseUrl}/?cwd=${encodeURIComponent(callerRoot)}`);
 
   if (options.serve) {
+    child.once('exit', () => {
+      void cleanupAsync();
+    });
     console.log(`Serving UI at ${baseUrl} (NEXT_PUBLIC_PROJECT_PATH=${callerRoot})`);
     return;
   }
@@ -47,6 +51,7 @@ export async function startViewerAsync(
   stopProcess(child, 'SIGTERM');
   await delayAsync(800);
   stopProcess(child, 'SIGKILL');
+  await cleanupAsync();
 }
 
 /*** Finds the first available preferred or conventional viewer port. */

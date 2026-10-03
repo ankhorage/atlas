@@ -14,6 +14,7 @@ describe('[parsePkgvizCliArgs]', () => {
       verbose: false,
       failOnRuleViolation: true,
       help: false,
+      offline: false,
       rules: [],
     });
   });
@@ -39,6 +40,9 @@ describe('[parsePkgvizCliArgs]', () => {
         'hexagonal',
         '--no-fail-on-rule-violation',
         '--verbose',
+        'https://github.com/ankhorage/zora',
+        '--ref',
+        'main',
       ]),
       {
         architectureTarget: { kind: 'model', id: 'hexagonal' },
@@ -52,6 +56,9 @@ describe('[parsePkgvizCliArgs]', () => {
         verbose: true,
         failOnRuleViolation: false,
         help: false,
+        offline: false,
+        source: 'https://github.com/ankhorage/zora',
+        ref: 'main',
         rules: [{ id: 'cyclic-dependencies', mode: 'audit' }],
       }
     );
@@ -69,8 +76,22 @@ describe('[parsePkgvizCliArgs]', () => {
       verbose: false,
       failOnRuleViolation: true,
       help: false,
+      offline: false,
       rules: [],
     });
+  });
+
+  it('parses an offline export request and local source', () => {
+    const result = parsePkgvizCliArgs(['bun', 'pkgviz', './project', '--offline']);
+    assert.equal(result.source, './project');
+    assert.equal(result.offline, true);
+  });
+
+  it('rejects multiple sources and ref on local sources at source parsing time', () => {
+    assert.throws(
+      () => parsePkgvizCliArgs(['bun', 'pkgviz', './one', './two']),
+      /Only one project source/
+    );
   });
 
   it('recognizes help without performing process I/O', () => {

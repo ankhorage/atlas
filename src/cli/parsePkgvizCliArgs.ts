@@ -23,6 +23,7 @@ const DEFAULT_OPTIONS: PkgvizCliOptions = {
   verbose: false,
   failOnRuleViolation: true,
   help: false,
+  offline: false,
   rules: [],
 };
 
@@ -39,6 +40,7 @@ const FLAG_UPDATERS = new Map<string, FlagUpdater>([
   ['--verbose', options => ({ ...options, verbose: true })],
   ['-h', options => ({ ...options, help: true })],
   ['--help', options => ({ ...options, help: true })],
+  ['--offline', options => ({ ...options, offline: true })],
 ]);
 
 const VALUE_UPDATERS = new Map<string, ValueUpdater>([
@@ -47,6 +49,7 @@ const VALUE_UPDATERS = new Map<string, ValueUpdater>([
   ['-p', (options, value) => ({ ...options, port: Number(value) })],
   ['--port', (options, value) => ({ ...options, port: Number(value) })],
   ['--wait', (options, value) => ({ ...options, waitMs: Number(value) })],
+  ['--ref', (options, value) => ({ ...options, ref: value })],
   [
     '--rule',
     (options, value) => ({
@@ -71,7 +74,11 @@ function parseTokens(tokens: readonly string[], options: PkgvizCliOptions): Pkgv
   if (flagUpdater !== undefined) return parseTokens(rest, flagUpdater(options));
 
   const valueUpdater = VALUE_UPDATERS.get(argument);
-  if (valueUpdater === undefined) return parseTokens(rest, options);
+  if (valueUpdater === undefined) {
+    if (argument.startsWith('-')) throw new Error(`Unknown option "${argument}".`);
+    if (options.source !== undefined) throw new Error('Only one project source may be provided.');
+    return parseTokens(rest, { ...options, source: argument });
+  }
 
   const [value, ...tail] = readRequiredValue(argument, rest);
   return parseTokens(tail, valueUpdater(options, value));
