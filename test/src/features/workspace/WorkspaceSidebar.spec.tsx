@@ -42,10 +42,10 @@ describe('[WorkspaceSidebar]', () => {
             onProjectTreeSelect={() => undefined}
           />
         </SettingsProvider>
-      </ZoraProvider>,
+      </ZoraProvider>
     );
-    const rulesTab = Array.from(container.querySelectorAll<HTMLElement>('[role="tab"]')).find((tab) =>
-      tab.textContent?.includes('Rules'),
+    const rulesTab = Array.from(container.querySelectorAll<HTMLElement>('[role="tab"]')).find(tab =>
+      tab.textContent?.includes('Rules')
     );
 
     expect(rulesTab?.textContent).toContain('Rules');
