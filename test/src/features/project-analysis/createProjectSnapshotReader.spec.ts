@@ -56,6 +56,7 @@ function snapshot(projectPath: string, timeStart: number): ProjectSnapshot {
   return {
     files: {},
     packageGraph: { edges: [], nodes: [] },
+    sourceGraph: { capabilities: [], graph: { edges: [], nodes: [] }, version: 1 },
     language: {
       candidates: [],
       indicators: [],

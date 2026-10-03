@@ -38,6 +38,9 @@ async function runAuditCommandAsync(callerRoot: string, options: PkgvizCliOption
     outputPath: options.out,
     pretty: options.pretty,
     configuration: {
+      ...(options.architectureTarget === undefined
+        ? {}
+        : { architectureTarget: options.architectureTarget }),
       failOnRuleViolation: options.failOnRuleViolation,
       rules: options.rules,
     },

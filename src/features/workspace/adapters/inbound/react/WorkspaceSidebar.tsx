@@ -55,7 +55,7 @@ export function WorkspaceSidebar(props: WorkspaceSidebarProps) {
 /*** Renders the workspace tool selector and delegates panel content. */
 function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
   const findingCount = countRuleFindings(props.evaluation);
-  const hasRuleFindings = findingCount > 0;
+  const hasRuleContent = hasRulesContent(props.evaluation);
 
   return (
     <Tabs
@@ -67,20 +67,22 @@ function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
     >
       <TabList fill>
         <Tab label={t('settings.tree')} value="tree" />
-        {hasRuleFindings ? (
+        {hasRuleContent ? (
           <Tab
             label={t('settings.rules')}
             trailing={
-              <Badge color="danger" size="s">
-                {findingCount}
-              </Badge>
+              findingCount > 0 ? (
+                <Badge color="danger" size="s">
+                  {findingCount}
+                </Badge>
+              ) : undefined
             }
             value="rules"
           />
         ) : null}
         <Tab label={t('settings.export')} value="export" />
       </TabList>
-      <WorkspaceTabPanels {...props} hasRuleFindings={hasRuleFindings} />
+      <WorkspaceTabPanels {...props} hasRuleContent={hasRuleContent} />
     </Tabs>
   );
 }
@@ -98,7 +100,7 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
           />
         </ScrollView>
       </TabPanel>
-      {props.hasRuleFindings ? <WorkspaceRulesPanel {...props} /> : null}
+      {props.hasRuleContent ? <WorkspaceRulesPanel {...props} /> : null}
       <TabPanel flex={1} minHeight={0} value="export">
         <ScrollView flex={1} minHeight={0} testID="sidebar-export-scroll">
           <AuditExportPanel />
@@ -126,20 +128,33 @@ function WorkspaceRulesPanel(props: WorkspaceSidebarProps) {
   );
 }
 
-/*** Counts concrete audit findings represented by the workspace Rules tool. */
-function countRuleFindings(evaluation: Audit['evaluation'] | null): number {
+/*** Report whether the Rules tool has detection or finding content to inspect. */
+function hasRulesContent(evaluation: Audit['evaluation'] | null): boolean {
   return (
-    evaluation?.rules
-      .filter(rule => rule.status === 'failed')
-      .reduce(
-        (count, rule) =>
-          count +
-          (rule.id === 'cyclic-dependencies'
-            ? evaluation.cyclicPackages.length
-            : rule.details.length),
-        0
-      ) ?? 0
+    evaluation !== null &&
+    (evaluation.architecture.candidates.length > 0 ||
+      evaluation.architectureEvaluation !== undefined ||
+      countRuleFindings(evaluation) > 0)
   );
+}
+
+/*** Count canonical and specialized findings represented by the workspace Rules tool. */
+function countRuleFindings(evaluation: Audit['evaluation'] | null): number {
+  if (evaluation === null) return 0;
+  const specialized = evaluation.rules
+    .filter(rule => rule.status === 'failed')
+    .reduce(
+      (count, rule) =>
+        count +
+        (rule.id === 'cyclic-dependencies'
+          ? evaluation.cyclicPackages.length
+          : rule.details.length),
+      0
+    );
+  const generic = evaluation.genericRules.findings.filter(
+    ({ ruleId }) => ruleId !== 'cyclic-dependencies'
+  ).length;
+  return specialized + generic;
 }
 
 interface WorkspaceSidebarProps {
@@ -158,5 +173,5 @@ interface WorkspaceToolTabsProps extends WorkspaceSidebarProps {
 }
 
 interface WorkspaceTabPanelsProps extends WorkspaceToolTabsProps {
-  readonly hasRuleFindings: boolean;
+  readonly hasRuleContent: boolean;
 }
