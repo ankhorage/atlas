@@ -1,11 +1,13 @@
 'use client';
+import { View } from '@zora/view';
 import React from 'react';
 
+import { ArchitectureAnalysisPanel } from '@/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel';
 import { AuditRuleList } from '@/features/audit/adapters/inbound/react/AuditRuleList';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection, CycleSelection } from '@/types/auditVisualization';
 
-/*** Renders violated audit rules while the Rules sidebar tab is active. */
+/*** Render architecture analysis and audit findings while the Rules sidebar tab is active. */
 export function AuditRulePanel({
   evaluation,
   cycleSelection,
@@ -13,12 +15,15 @@ export function AuditRulePanel({
   onCycleInspectionChange,
 }: AuditRulePanelProps) {
   return (
-    <AuditRuleList
-      evaluation={evaluation}
-      cycleSelection={cycleSelection}
-      inspectedCycleId={inspectedCycleId}
-      onCycleInspectionChange={onCycleInspectionChange}
-    />
+    <View gap="l">
+      <ArchitectureAnalysisPanel evaluation={evaluation} />
+      <AuditRuleList
+        evaluation={evaluation}
+        cycleSelection={cycleSelection}
+        inspectedCycleId={inspectedCycleId}
+        onCycleInspectionChange={onCycleInspectionChange}
+      />
+    </View>
   );
 }
 
