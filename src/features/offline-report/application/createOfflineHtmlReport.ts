@@ -1,8 +1,11 @@
 import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
 import { isRecord } from '@ankhorage/utility/object';
 
+import {
+  OFFLINE_REPORT_RUNTIME,
+  OFFLINE_REPORT_STYLE,
+} from '@/features/offline-report/constants/offlineReportTemplate';
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
-import { OFFLINE_REPORT_RUNTIME, OFFLINE_REPORT_STYLE } from '@/features/offline-report/constants/offlineReportTemplate';
 import type { Audit } from '@/types/audit';
 
 /***
