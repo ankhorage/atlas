@@ -11,11 +11,7 @@ import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTr
 import type { ProjectTreeNode } from '@/types/projectTree';
 
 /*** Adapt Atlas's serializable project tree to the generated ZORA browser TreeView. */
-export function ProjectTreePanel({
-  nodes,
-  onSelect,
-  selectedIds,
-}: ProjectTreePanelProps) {
+export function ProjectTreePanel({ nodes, onSelect, selectedIds }: ProjectTreePanelProps) {
   const treeNodes = React.useMemo(() => nodes.map(node => toTreeItemNode(node)), [nodes]);
   const expansion = useProjectTreeExpansion(nodes, selectedIds);
 
