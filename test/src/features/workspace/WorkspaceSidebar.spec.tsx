@@ -28,6 +28,31 @@ describe('[WorkspaceSidebar]', () => {
     unmount();
   });
 
+  it('shows the Rules tab for architecture detection without any findings', () => {
+    const { container, unmount } = render(
+      <ZoraProvider mode="light">
+        <SettingsProvider>
+          <WorkspaceSidebar
+            cycleSelection={{ highlights: [], selectedIds: [], setSelected: () => undefined }}
+            evaluation={detectionEvaluation}
+            inspectedCycleId={null}
+            projectTree={[]}
+            selectedTreeId={null}
+            onCycleInspectionChange={() => undefined}
+            onProjectTreeSelect={() => undefined}
+          />
+        </SettingsProvider>
+      </ZoraProvider>,
+    );
+    const rulesTab = Array.from(container.querySelectorAll<HTMLElement>('[role="tab"]')).find((tab) =>
+      tab.textContent?.includes('Rules'),
+    );
+
+    expect(rulesTab?.textContent).toContain('Rules');
+    expect(rulesTab?.textContent).not.toContain('0');
+    unmount();
+  });
+
   it('fills visible tool tabs and renders the Rules count as a ZORA badge', () => {
     const { container, unmount } = render(
       <ZoraProvider mode="light">
@@ -127,4 +152,24 @@ const failedEvaluation: Audit['evaluation'] = {
       evidence: {},
     },
   ],
+};
+
+
+const detectionEvaluation: Audit['evaluation'] = {
+  architecture: {
+    candidates: [
+      {
+        modelId: 'layered',
+        confidence: 0.6,
+        score: 2,
+        roleAssignments: [],
+        supportingEvidence: [],
+        contradictions: [],
+        unavailableCapabilities: [],
+      },
+    ],
+  },
+  genericRules: { diagnostics: [], findings: [] },
+  cyclicPackages: [],
+  rules: [],
 };
