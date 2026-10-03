@@ -174,9 +174,11 @@ function readCycleLayoutMetrics(measurement: GraphViewMeasurement) {
     y2: node.position.y + node.size.height / 2,
   }));
   const distances = measurement.nodes.flatMap((node, index) =>
-    measurement.nodes.slice(index + 1).map(other =>
-      Math.hypot(node.position.x - other.position.x, node.position.y - other.position.y)
-    )
+    measurement.nodes
+      .slice(index + 1)
+      .map(other =>
+        Math.hypot(node.position.x - other.position.x, node.position.y - other.position.y)
+      )
   );
   const cycleWidth =
     Math.max(...nodeBounds.map(bounds => bounds.x2)) -
@@ -185,10 +187,8 @@ function readCycleLayoutMetrics(measurement: GraphViewMeasurement) {
     Math.max(...nodeBounds.map(bounds => bounds.y2)) -
     Math.min(...nodeBounds.map(bounds => bounds.y1));
   const averageNodeSize =
-    measurement.nodes.reduce(
-      (sum, node) => sum + Math.min(node.size.width, node.size.height),
-      0
-    ) / measurement.nodes.length;
+    measurement.nodes.reduce((sum, node) => sum + Math.min(node.size.width, node.size.height), 0) /
+    measurement.nodes.length;
   const averageNodeDistance =
     distances.length === 0
       ? 0
