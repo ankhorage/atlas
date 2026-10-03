@@ -1,8 +1,8 @@
 import {
-  listArchitectureModels,
-  listArchitectureProfiles,
   type ArchitectureModel,
   type ArchitectureProfile,
+  listArchitectureModels,
+  listArchitectureProfiles,
 } from '@ankhorage/rules-architecture';
 
 import type { AuditArchitectureTarget, AuditRuleConfiguration } from '@/types/audit';
@@ -30,15 +30,15 @@ type FlagUpdater = (options: PkgvizCliOptions) => PkgvizCliOptions;
 type ValueUpdater = (options: PkgvizCliOptions, value: string) => PkgvizCliOptions;
 
 const FLAG_UPDATERS = new Map<string, FlagUpdater>([
-  ['--open', (options) => ({ ...options, open: true })],
-  ['--serve', (options) => ({ ...options, serve: true })],
-  ['--prod', (options) => ({ ...options, prod: true })],
-  ['--no-pretty', (options) => ({ ...options, pretty: false })],
-  ['--no-fail-on-rule-violation', (options) => ({ ...options, failOnRuleViolation: false })],
-  ['-v', (options) => ({ ...options, verbose: true })],
-  ['--verbose', (options) => ({ ...options, verbose: true })],
-  ['-h', (options) => ({ ...options, help: true })],
-  ['--help', (options) => ({ ...options, help: true })],
+  ['--open', options => ({ ...options, open: true })],
+  ['--serve', options => ({ ...options, serve: true })],
+  ['--prod', options => ({ ...options, prod: true })],
+  ['--no-pretty', options => ({ ...options, pretty: false })],
+  ['--no-fail-on-rule-violation', options => ({ ...options, failOnRuleViolation: false })],
+  ['-v', options => ({ ...options, verbose: true })],
+  ['--verbose', options => ({ ...options, verbose: true })],
+  ['-h', options => ({ ...options, help: true })],
+  ['--help', options => ({ ...options, help: true })],
 ]);
 
 const VALUE_UPDATERS = new Map<string, ValueUpdater>([
@@ -54,10 +54,7 @@ const VALUE_UPDATERS = new Map<string, ValueUpdater>([
       rules: [...options.rules, parseRuleConfiguration(value)],
     }),
   ],
-  [
-    '--architecture-model',
-    (options, value) => withArchitectureTarget(options, modelTarget(value)),
-  ],
+  ['--architecture-model', (options, value) => withArchitectureTarget(options, modelTarget(value))],
   [
     '--architecture-profile',
     (options, value) => withArchitectureTarget(options, profileTarget(value)),
@@ -83,7 +80,7 @@ function parseTokens(tokens: readonly string[], options: PkgvizCliOptions): Pkgv
 /*** Read one required option value and return it together with the unconsumed tail. */
 function readRequiredValue(
   option: string,
-  tokens: readonly string[],
+  tokens: readonly string[]
 ): readonly [string, ...string[]] {
   if (tokens.length === 0) throw new Error(`${option} requires a value.`);
   return [tokens[0], ...tokens.slice(1)];
@@ -123,7 +120,7 @@ function profileTarget(value: string): AuditArchitectureTarget {
 /*** Accept exactly one explicit architecture enforcement target per CLI invocation. */
 function withArchitectureTarget(
   options: PkgvizCliOptions,
-  architectureTarget: AuditArchitectureTarget,
+  architectureTarget: AuditArchitectureTarget
 ): PkgvizCliOptions {
   if (options.architectureTarget !== undefined) {
     throw new Error('Choose either --architecture-model or --architecture-profile exactly once.');
