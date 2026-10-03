@@ -14,7 +14,6 @@ import type { ProjectTreeNode } from '@/types/projectTree';
 export function ProjectTreePanel({
   nodes,
   onSelect,
-  onToggleDirectory,
   selectedIds,
 }: ProjectTreePanelProps) {
   const treeNodes = React.useMemo(() => nodes.map(node => toTreeItemNode(node)), [nodes]);
@@ -28,13 +27,7 @@ export function ProjectTreePanel({
         expandedIds={expansion.expandedIds}
         nodes={treeNodes}
         selectedIds={selectedIds}
-        onExpandedChange={ids => {
-          const changedId = getChangedExpansionId(expansion.expandedIds, ids);
-          expansion.onExpandedChange(ids);
-          if (changedId === null) return;
-          const node = findProjectTreeNode(nodes, changedId);
-          if (node?.kind === 'directory') onToggleDirectory(node, ids.includes(changedId));
-        }}
+        onExpandedChange={expansion.onExpandedChange}
         onSelect={(id, intent) => {
           const node = findProjectTreeNode(nodes, id);
           if (node) onSelect(node, intent);
@@ -63,20 +56,8 @@ function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   };
 }
 
-/*** Identify the one folder id changed by an independent TreeView expansion control. */
-function getChangedExpansionId(
-  previousIds: readonly string[],
-  nextIds: readonly string[]
-): string | null {
-  return (
-    [...previousIds, ...nextIds].find(id => previousIds.includes(id) !== nextIds.includes(id)) ??
-    null
-  );
-}
-
 interface ProjectTreePanelProps {
   readonly nodes: readonly ProjectTreeNode[];
   readonly onSelect: (node: ProjectTreeNode, intent: SelectionIntent) => void;
-  readonly onToggleDirectory: (node: ProjectTreeNode, expanded: boolean) => void;
   readonly selectedIds: readonly string[];
 }
