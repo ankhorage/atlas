@@ -99,13 +99,16 @@ describe('[createGraphViewModel]', () => {
       },
     ]);
 
-    expect(model.nodes.find(node => node.id === 'neutral')).toMatchObject({
-      classes: '',
-      data: { id: 'neutral' },
-    });
-    expect(model.edges.find(edge => edge.id === 'neutral-edge')).toMatchObject({
-      classes: '',
-      data: { id: 'neutral-edge', source: 'b', target: 'neutral' },
+    const neutralNode = model.nodes.find(node => node.id === 'neutral');
+    const neutralEdge = model.edges.find(edge => edge.id === 'neutral-edge');
+
+    expect(neutralNode?.classes).toBe('');
+    expect(neutralNode?.data).toEqual({ id: 'neutral' });
+    expect(neutralEdge?.classes).toBe('');
+    expect(neutralEdge?.data).toEqual({
+      id: 'neutral-edge',
+      source: 'b',
+      target: 'neutral',
     });
   });
 
