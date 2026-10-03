@@ -2,14 +2,11 @@ import { materializeGitHubRepositoryAsync } from '@ankhorage/repository/github';
 
 import type { GitHubProjectMaterializer } from '@/types/projectSource';
 
-/*** Adapt the repository package's GitHub materialization capability to PKGViz project sources. */
+/*** Adapt Repository's GitHub materialization capability to PKGViz project sources. */
 export function createGitHubProjectMaterializer(): GitHubProjectMaterializer {
   return {
     materializeAsync: async source => {
-      const result = await materializeGitHubRepositoryAsync({
-        url: source.url,
-        ...(source.ref === undefined ? {} : { ref: source.ref }),
-      });
+      const result = await materializeGitHubRepositoryAsync({ url: source.url });
       return {
         rootPath: result.rootPath,
         projectName: result.repository.name,
