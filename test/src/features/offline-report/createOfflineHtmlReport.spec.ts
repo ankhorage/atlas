@@ -5,8 +5,25 @@ import { resolve } from 'node:path';
 
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
+import {
+  OFFLINE_REPORT_RUNTIME,
+  OFFLINE_REPORT_STYLE,
+} from '@/features/offline-report/constants/offlineReportTemplate';
 
 describe('[createOfflineHtmlReport]', () => {
+  it('embeds every runtime resource directly into the single HTML document', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = createOfflineHtmlReport(audit);
+
+    expect(html.includes('<style>\\n' + OFFLINE_REPORT_STYLE + '\\n</style>')).toBe(true);
+    expect(html.includes('<script>\\n' + OFFLINE_REPORT_RUNTIME + '\\n</script>')).toBe(true);
+    expect((html.match(/<style>/g) ?? []).length).toBe(1);
+    expect((html.match(/<script(?:\\s|>)/g) ?? []).length).toBe(2);
+    expect((html.match(/<script id="atlas-report-data" type="application\\/json">/g) ?? []).length).toBe(
+      1
+    );
+  });
+
   it('requires no external runtime resources or browser network APIs', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const html = createOfflineHtmlReport(audit);
