@@ -65,10 +65,10 @@ interface ProjectVisibleGraphResult {
  */
 function resolveRedirectPackage(input: ProjectVisibleGraphInput): string | null {
   const currentPackage = input.currentPackage.replaceAll('/', '.');
-  if (input.preservePackageScope) return null;
+  if (input.preservePackageScope || currentPackage !== '') return null;
 
-  const nextPackage = filterEmptyPackages(currentPackage, input.elements);
-  return nextPackage === currentPackage ? null : nextPackage;
+  const nextPackage = filterEmptyPackages('', input.elements);
+  return nextPackage === '' ? null : nextPackage;
 }
 
 /*** Adds package-relative display labels without changing graph ids. */
