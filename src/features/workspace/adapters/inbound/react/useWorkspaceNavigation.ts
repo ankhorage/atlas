@@ -130,10 +130,6 @@ function areWorkspaceSelectionsEqual(
   );
 }
 
-/*** Preserve first-seen selection order while removing duplicate presentation ids. */
-function dedupeBy(values: readonly string[]): readonly string[] {
-  return [...new Set(values)];
-}
 
 /*** Resolve one TreeView activation to that exact row and its directly represented graph identity. */
 function resolveTreeWorkspaceSelection(
