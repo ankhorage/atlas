@@ -23,9 +23,9 @@ describe('[evaluateArchitectureTarget]', () => {
       throw new Error('Expected model evaluation.');
     }
     expect(evaluation.result.modelId).toBe('layered');
-    expect(
-      evaluation.result.findings.some(({ ruleId }) => ruleId === 'cyclic-dependencies')
-    ).toBe(false);
+    expect(evaluation.result.findings.some(({ ruleId }) => ruleId === 'cyclic-dependencies')).toBe(
+      false
+    );
   });
 
   it('evaluates an explicit profile independently from architecture detection', () => {
@@ -51,14 +51,8 @@ function sourceGraph(): SourceGraph {
     version: 1,
     capabilities: [{ analyzerId: 'fixture', projectId: 'fixture', available: ['imports'] }],
     graph: {
-      nodes: [
-        fileNode(0, 'src/domain/a.ts'),
-        fileNode(1, 'src/adapters/b.ts'),
-      ],
-      edges: [
-        importEdge(0, 0, 1, 'src/domain/a.ts'),
-        importEdge(1, 1, 0, 'src/adapters/b.ts'),
-      ],
+      nodes: [fileNode(0, 'src/domain/a.ts'), fileNode(1, 'src/adapters/b.ts')],
+      edges: [importEdge(0, 0, 1, 'src/domain/a.ts'), importEdge(1, 1, 0, 'src/adapters/b.ts')],
     },
   };
 }

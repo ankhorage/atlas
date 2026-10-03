@@ -54,7 +54,9 @@ describe('[evaluateAuditRules]', () => {
     expect(presentation.details[0]).toBe('a → b → a');
     expect(JSON.stringify(presentation.evidence).includes('src/a.ts')).toBe(true);
     expect(result.genericRules.findings[0]?.ruleId).toBe('cyclic-dependencies');
-    expect(JSON.stringify(result.genericRules.findings[0]?.evidence).includes('package')).toBe(true);
+    expect(JSON.stringify(result.genericRules.findings[0]?.evidence).includes('package')).toBe(
+      true
+    );
   });
 
   it('omits disabled rules from generic and presentation evaluation', () => {
@@ -77,10 +79,7 @@ function sourceGraph(cyclic: boolean): SourceGraph {
     relation(0, 2, 0, 'declares-in', 'src/a/A.ts'),
     relation(1, 3, 1, 'declares-in', 'src/b/B.ts'),
     ...(cyclic
-      ? [
-          relation(2, 2, 3, 'imports', 'src/a/A.ts'),
-          relation(3, 3, 2, 'imports', 'src/b/B.ts'),
-        ]
+      ? [relation(2, 2, 3, 'imports', 'src/a/A.ts'), relation(3, 3, 2, 'imports', 'src/b/B.ts')]
       : []),
   ];
   return {

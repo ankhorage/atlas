@@ -58,22 +58,19 @@ describe('[parsePkgvizCliArgs]', () => {
   });
 
   it('parses an explicit project profile independently from detection', () => {
-    assert.deepEqual(
-      parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-profile', 'ankhorage']),
-      {
-        architectureTarget: { kind: 'profile', id: 'ankhorage' },
-        out: 'audit.json',
-        open: false,
-        serve: false,
-        prod: false,
-        waitMs: 90_000,
-        pretty: true,
-        verbose: false,
-        failOnRuleViolation: true,
-        help: false,
-        rules: [],
-      }
-    );
+    assert.deepEqual(parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-profile', 'ankhorage']), {
+      architectureTarget: { kind: 'profile', id: 'ankhorage' },
+      out: 'audit.json',
+      open: false,
+      serve: false,
+      prod: false,
+      waitMs: 90_000,
+      pretty: true,
+      verbose: false,
+      failOnRuleViolation: true,
+      help: false,
+      rules: [],
+    });
   });
 
   it('recognizes help without performing process I/O', () => {
