@@ -103,10 +103,7 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
       {props.hasRuleContent ? <WorkspaceRulesPanel {...props} /> : null}
       <TabPanel flex={1} minHeight={0} value="export">
         <ScrollView flex={1} minHeight={0} testID="sidebar-export-scroll">
-          <AuditExportPanel
-            source={props.currentSource}
-            sourceRevision={props.sourceRevision}
-          />
+          <AuditExportPanel source={props.currentSource} sourceRevision={props.sourceRevision} />
         </ScrollView>
       </TabPanel>
     </>
