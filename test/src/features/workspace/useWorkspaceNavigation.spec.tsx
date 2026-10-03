@@ -18,6 +18,7 @@ describe('[useWorkspaceNavigation]', () => {
     function Harness() {
       const navigation = useWorkspaceNavigation(workspace);
       const io = requiredNode(tree[0]);
+      const reflectoring = requiredNode(io.children?.[0]);
       const coderadar = requiredNode(reflectoring.children?.[0]);
 
       return (
