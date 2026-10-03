@@ -16,6 +16,7 @@ export function useGraphInteractions(
   edges: readonly GraphViewEdge[],
   selectedNodeId: string | null
 ) {
+  const nodeIds = useMemo(() => new Set(nodes.map(node => node.id)), [nodes]);
   const leafIds = useMemo(() => {
     const parents = new Set(nodes.map(node => node.parentId));
     return new Set(nodes.filter(node => !parents.has(node.id)).map(node => node.id));
@@ -24,9 +25,10 @@ export function useGraphInteractions(
   const interaction = useMemo<GraphInteractionState>(
     () => ({
       hoveredNodeId: hoveredNodeId !== null && leafIds.has(hoveredNodeId) ? hoveredNodeId : null,
-      selectedNodeIds: selectedNodeId === null ? [] : [selectedNodeId],
+      selectedNodeIds:
+        selectedNodeId === null || !nodeIds.has(selectedNodeId) ? [] : [selectedNodeId],
     }),
-    [hoveredNodeId, leafIds, selectedNodeId]
+    [hoveredNodeId, leafIds, nodeIds, selectedNodeId]
   );
   const presentation = useMemo(
     () => applyGraphInteractionPresentation(nodes, edges, interaction),
