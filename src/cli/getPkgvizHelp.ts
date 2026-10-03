@@ -13,7 +13,8 @@ Sources:
   <path>              Local project path (default: current working directory)
   https://github.com/<owner>/<repo>
                       Public GitHub repository materialized for analysis
-  --ref <ref>         GitHub branch, tag, or commit (default: repository default branch)
+  https://github.com/<owner>/<repo>/tree/<branch>
+                      Normal GitHub tree/blob/commit URLs select their own revision
 
 Options:
   -o, --out <file>    Output file (default: audit.json in caller's cwd)
@@ -37,6 +38,7 @@ Options:
 Behavior:
   - Local and GitHub sources use the same ProjectInspection, SourceGraph, Audit, and viewer pipeline.
   - GitHub repositories are analyzed at an immutable resolved commit and cleaned up after use.
+  - GitHub branch, tag, and commit selection comes from normal GitHub URLs; there is no separate ref syntax.
   - The audit is written before blocking rules are enforced.
   - Default rule policy: cyclic-dependencies=block.
 `;
