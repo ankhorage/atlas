@@ -14,7 +14,7 @@ describe('[AuditRulePanel]', () => {
           cycleSelection={{ highlights: [], selectedIds: [], setSelected: () => undefined }}
           onCycleInspectionChange={() => undefined}
         />
-      </ZoraProvider>,
+      </ZoraProvider>
     );
 
     expect(getByText('Architecture Analysis')).toBeDefined();
