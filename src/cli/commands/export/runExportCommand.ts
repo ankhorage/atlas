@@ -9,18 +9,13 @@ export async function runExportCommand(
   const options = parseAtlasCommandArgs(argv);
   const exportFormat = options.exportFormat ?? 'json';
 
-  if (exportFormat === 'offline') {
-    console.error(
-      'Offline HTML export is not available yet; implementation is tracked by Atlas #261.'
-    );
-    return { exitCode: 1 };
-  }
-
   const out = hasExplicitOutput(argv)
     ? options.out
     : exportFormat === 'csv'
       ? 'audit.csv'
-      : 'audit.json';
+      : exportFormat === 'offline'
+        ? 'atlas-report.html'
+        : 'audit.json';
 
   const result = await runAuditSourceAsync(
     {
