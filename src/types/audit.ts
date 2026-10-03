@@ -86,7 +86,7 @@ interface AuditEvaluation {
   readonly rules: readonly AuditRuleResult[];
 }
 
-export interface AuditSourceMetadata {
+interface AuditSourceMetadata {
   readonly kind: 'github';
   readonly revision: string;
   readonly url: string;
