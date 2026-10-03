@@ -140,15 +140,8 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const { viewport } = props;
-  const interactions = useGraphInteractions(props.model.nodes, props.model.edges);
+  const interactions = useGraphCanvasInteractions(props);
   const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
-
-  /*** Handles structural graph navigation without touching the rendering engine. */
-  const handleNodeEvent = (event: GraphViewElementEvent) => {
-    interactions.handleNodeEvent(event);
-    if (event.type !== 'double-press' || !props.model.parentNodeIds.has(event.id)) return;
-    props.setCurrentPackage(event.id);
-  };
 
   return (
     <div style={GRAPH_CANVAS_STYLE}>
@@ -162,10 +155,11 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           minReadableLabelSize={24}
           maxFitLabelSize={24}
           nodes={interactions.nodes}
+          selectedNodeIds={interactions.selectedNodeIds}
           zoomMode="fit-relative"
           sizeNodesToLabels
           onLayoutComplete={controller => viewport.handleLayoutComplete(controller, visibleNodeIds)}
-          onNodeEvent={handleNodeEvent}
+          onNodeEvent={interactions.handleNodeEvent}
           onReady={viewport.handleReady}
           onViewportChange={viewport.handleViewportChange}
           onSpacingFactorChange={viewport.handleSpacingFactorChange}
@@ -186,6 +180,37 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   );
 }
 
+/*** Compose local hover presentation with the workspace-owned controlled graph selection. */
+function useGraphCanvasInteractions(props: DependencyGraphCanvasProps) {
+  const interactions = useGraphInteractions(
+    props.model.nodes,
+    props.model.edges,
+    props.selectedNodeId
+  );
+  return {
+    ...interactions,
+    selectedNodeIds: props.selectedNodeId === null ? [] : [props.selectedNodeId],
+    handleNodeEvent: createGraphNodeEventHandler({
+      handleInteraction: interactions.handleNodeEvent,
+      onNodeSelect: props.onNodeSelect,
+      onNodeUnselect: props.onNodeUnselect,
+      parentNodeIds: props.model.parentNodeIds,
+      setCurrentPackage: props.setCurrentPackage,
+    }),
+  };
+}
+
+/*** Create the graph event bridge without coupling selection changes to layout or viewport work. */
+function createGraphNodeEventHandler(input: GraphNodeEventHandlerInput) {
+  return (event: GraphViewElementEvent) => {
+    input.handleInteraction(event);
+    if (event.type === 'select') return input.onNodeSelect(event.id);
+    if (event.type === 'unselect') return input.onNodeUnselect(event.id);
+    if (event.type !== 'double-press' || !input.parentNodeIds.has(event.id)) return;
+    input.setCurrentPackage(event.id);
+  };
+}
+
 /*** Narrows persisted Cytoscape layout names to the layouts supported by ZORA GraphView. */
 function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName {
   if (layout === 'breadthfirst') return 'breadthfirst';
@@ -195,10 +220,21 @@ function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName
   return 'concentric';
 }
 
+interface GraphNodeEventHandlerInput {
+  readonly handleInteraction: (event: GraphViewElementEvent) => void;
+  readonly onNodeSelect: (id: string) => void;
+  readonly onNodeUnselect: (id: string) => void;
+  readonly parentNodeIds: ReadonlySet<string>;
+  readonly setCurrentPackage: (path: string) => void;
+}
+
 interface DependencyGraphViewProps {
   readonly currentPackage: string;
   readonly packageGraph: PackageDependencyGraph;
+  readonly selectedNodeId: string | null;
   readonly setCurrentPackage: (path: string) => void;
+  readonly onNodeSelect: (id: string) => void;
+  readonly onNodeUnselect: (id: string) => void;
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly overlay?: React.ReactNode;
 }

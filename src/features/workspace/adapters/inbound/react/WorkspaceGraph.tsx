@@ -14,7 +14,10 @@ export function WorkspaceGraph({
   cycleHighlights,
   cycleInspection,
   packageGraph,
+  selectedGraphNodeId,
   setCurrentPackage,
+  onGraphNodeSelect,
+  onGraphNodeUnselect,
   onCloseInspection,
 }: WorkspaceGraphProps) {
   if (packageGraph === null) {
@@ -30,7 +33,10 @@ export function WorkspaceGraph({
       currentPackage={currentPackage}
       setCurrentPackage={setCurrentPackage}
       packageGraph={packageGraph}
+      selectedNodeId={selectedGraphNodeId}
       cycleHighlights={cycleHighlights}
+      onNodeSelect={onGraphNodeSelect}
+      onNodeUnselect={onGraphNodeUnselect}
       overlay={
         cycleInspection === null ? null : (
           <CycleInspector inspection={cycleInspection} onClose={onCloseInspection} />
@@ -45,6 +51,9 @@ interface WorkspaceGraphProps {
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly cycleInspection: CycleInspection | null;
   readonly packageGraph: PackageDependencyGraph | null;
+  readonly selectedGraphNodeId: string | null;
   readonly setCurrentPackage: (path: string) => void;
+  readonly onGraphNodeSelect: (id: string) => void;
+  readonly onGraphNodeUnselect: (id: string) => void;
   readonly onCloseInspection: () => void;
 }
