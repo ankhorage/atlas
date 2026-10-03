@@ -127,7 +127,7 @@ function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyPr
         evaluation={auditEvaluation}
         inspectedCycleId={cycleInspection?.id ?? null}
         projectTree={navigation.projectTree}
-        selectedTreeId={navigation.selectedTreeId}
+        selectedTreeIds={navigation.selectedTreeIds}
         onCycleInspectionChange={setCycleInspection}
         onProjectTreeSelect={navigation.selectProjectTreeNode}
         onProjectTreeToggle={navigation.toggleProjectTreeNode}
@@ -153,11 +153,10 @@ function WorkspaceContent(props: WorkspaceContentProps) {
       cycleHighlights={props.cycleSelection.highlights}
       cycleInspection={props.cycleInspection}
       packageGraph={props.navigation.packageGraph}
-      selectedGraphNodeId={props.navigation.selectedGraphNodeId}
+      selectedGraphNodeIds={props.navigation.selectedGraphNodeIds}
       setCurrentPackage={props.navigation.navigateToPackage}
       onCloseInspection={props.onCloseInspection}
       onGraphNodeSelect={props.navigation.selectGraphNode}
-      onGraphNodeUnselect={props.navigation.unselectGraphNode}
     />
   );
 }
