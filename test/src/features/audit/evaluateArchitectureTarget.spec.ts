@@ -23,9 +23,9 @@ describe('[evaluateArchitectureTarget]', () => {
       throw new Error('Expected model evaluation.');
     }
     expect(evaluation.result.modelId).toBe('layered');
-    expect(evaluation.result.findings.some(({ ruleId }) => ruleId === 'cyclic-dependencies')).toBe(
-      false,
-    );
+    expect(
+      evaluation.result.findings.some(({ ruleId }) => ruleId === 'cyclic-dependencies')
+    ).toBe(false);
   });
 
   it('evaluates an explicit profile independently from architecture detection', () => {
@@ -82,7 +82,7 @@ function importEdge(
   id: number,
   source: number,
   target: number,
-  sourcePath: string,
+  sourcePath: string
 ): SourceGraph['graph']['edges'][number] {
   return {
     id,
