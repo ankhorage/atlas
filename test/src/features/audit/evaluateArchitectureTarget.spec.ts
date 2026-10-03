@@ -15,7 +15,13 @@ describe('[evaluateArchitectureTarget]', () => {
     });
 
     expect(evaluation?.target).toEqual({ kind: 'model', id: 'layered' });
-    if (evaluation?.target.kind !== 'model') throw new Error('Expected model evaluation.');
+    if (
+      evaluation === undefined ||
+      evaluation.target.kind !== 'model' ||
+      !('modelId' in evaluation.result)
+    ) {
+      throw new Error('Expected model evaluation.');
+    }
     expect(evaluation.result.modelId).toBe('layered');
     expect(evaluation.result.findings.some(({ ruleId }) => ruleId === 'cyclic-dependencies')).toBe(
       false,
@@ -29,7 +35,13 @@ describe('[evaluateArchitectureTarget]', () => {
     });
 
     expect(evaluation?.target).toEqual({ kind: 'profile', id: 'ankhorage' });
-    if (evaluation?.target.kind !== 'profile') throw new Error('Expected profile evaluation.');
+    if (
+      evaluation === undefined ||
+      evaluation.target.kind !== 'profile' ||
+      !('profileId' in evaluation.result)
+    ) {
+      throw new Error('Expected profile evaluation.');
+    }
     expect(evaluation.result.profileId).toBe('ankhorage');
   });
 });
