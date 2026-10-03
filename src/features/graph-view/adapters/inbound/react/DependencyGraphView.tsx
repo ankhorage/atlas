@@ -46,13 +46,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
     onSpacingFactorChange: settings.setCytoscapeLayoutSpacing,
     spacingFactor: settings.cytoscapeLayoutSpacing,
   });
-  const packageGraph = useMemo(
-    () =>
-      toCytoscapeElements(props.packageGraph, {
-        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
-      }),
-    [props.packageGraph]
-  );
+  const packageGraph = usePackageGraphElements(props.packageGraph);
   const visibleElements = useGraphProjection({
     currentPackage: props.currentPackage,
     elements: packageGraph,
@@ -97,6 +91,17 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
   );
 }
 
+/*** Converts the dependency package graph once per source graph identity. */
+function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
+  return useMemo(
+    () =>
+      toCytoscapeElements(packageGraph, {
+        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
+      }),
+    [packageGraph]
+  );
+}
+
 /***
  * Memoizes GraphView model, style, and layout inputs from the active PKGViz projection.
  * @performance
@@ -134,7 +139,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
-  const viewport = props.viewport;
+  const { viewport } = props;
   const interactions = useGraphInteractions(props.model.nodes, props.model.edges);
   const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
 
@@ -159,9 +164,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           nodes={interactions.nodes}
           zoomMode="fit-relative"
           sizeNodesToLabels
-          onLayoutComplete={controller =>
-            viewport.handleLayoutComplete(controller, visibleNodeIds)
-          }
+          onLayoutComplete={controller => viewport.handleLayoutComplete(controller, visibleNodeIds)}
           onNodeEvent={handleNodeEvent}
           onReady={viewport.handleReady}
           onViewportChange={viewport.handleViewportChange}
