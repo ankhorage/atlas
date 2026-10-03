@@ -1,7 +1,14 @@
-import type { AuditRuleConfiguration } from '@/types/audit';
+import {
+  listArchitectureModels,
+  listArchitectureProfiles,
+  type ArchitectureModel,
+  type ArchitectureProfile,
+} from '@ankhorage/rules-architecture';
+
+import type { AuditArchitectureTarget, AuditRuleConfiguration } from '@/types/audit';
 import type { PkgvizCliOptions } from '@/types/cli';
 
-/*** Parses PKGViz command-line arguments into immutable CLI options. */
+/*** Parse PKGViz command-line arguments into immutable CLI options. */
 export function parsePkgvizCliArgs(argv: readonly string[]): PkgvizCliOptions {
   return parseTokens(argv.slice(2), DEFAULT_OPTIONS);
 }
@@ -23,15 +30,15 @@ type FlagUpdater = (options: PkgvizCliOptions) => PkgvizCliOptions;
 type ValueUpdater = (options: PkgvizCliOptions, value: string) => PkgvizCliOptions;
 
 const FLAG_UPDATERS = new Map<string, FlagUpdater>([
-  ['--open', options => ({ ...options, open: true })],
-  ['--serve', options => ({ ...options, serve: true })],
-  ['--prod', options => ({ ...options, prod: true })],
-  ['--no-pretty', options => ({ ...options, pretty: false })],
-  ['--no-fail-on-rule-violation', options => ({ ...options, failOnRuleViolation: false })],
-  ['-v', options => ({ ...options, verbose: true })],
-  ['--verbose', options => ({ ...options, verbose: true })],
-  ['-h', options => ({ ...options, help: true })],
-  ['--help', options => ({ ...options, help: true })],
+  ['--open', (options) => ({ ...options, open: true })],
+  ['--serve', (options) => ({ ...options, serve: true })],
+  ['--prod', (options) => ({ ...options, prod: true })],
+  ['--no-pretty', (options) => ({ ...options, pretty: false })],
+  ['--no-fail-on-rule-violation', (options) => ({ ...options, failOnRuleViolation: false })],
+  ['-v', (options) => ({ ...options, verbose: true })],
+  ['--verbose', (options) => ({ ...options, verbose: true })],
+  ['-h', (options) => ({ ...options, help: true })],
+  ['--help', (options) => ({ ...options, help: true })],
 ]);
 
 const VALUE_UPDATERS = new Map<string, ValueUpdater>([
@@ -47,9 +54,17 @@ const VALUE_UPDATERS = new Map<string, ValueUpdater>([
       rules: [...options.rules, parseRuleConfiguration(value)],
     }),
   ],
+  [
+    '--architecture-model',
+    (options, value) => withArchitectureTarget(options, modelTarget(value)),
+  ],
+  [
+    '--architecture-profile',
+    (options, value) => withArchitectureTarget(options, profileTarget(value)),
+  ],
 ]);
 
-/*** Recursively consumes CLI tokens without mutable parser state. */
+/*** Recursively consume CLI tokens without mutable parser state. */
 function parseTokens(tokens: readonly string[], options: PkgvizCliOptions): PkgvizCliOptions {
   if (tokens.length === 0) return options;
 
@@ -65,16 +80,16 @@ function parseTokens(tokens: readonly string[], options: PkgvizCliOptions): Pkgv
   return parseTokens(tail, valueUpdater(options, value));
 }
 
-/*** Reads one required option value and returns it together with the unconsumed tail. */
+/*** Read one required option value and return it together with the unconsumed tail. */
 function readRequiredValue(
   option: string,
-  tokens: readonly string[]
+  tokens: readonly string[],
 ): readonly [string, ...string[]] {
   if (tokens.length === 0) throw new Error(`${option} requires a value.`);
   return [tokens[0], ...tokens.slice(1)];
 }
 
-/*** Parses one CLI audit-rule override without accepting unknown rule IDs or modes. */
+/*** Parse one CLI audit-rule override without accepting unknown rule IDs or modes. */
 function parseRuleConfiguration(value: string): AuditRuleConfiguration {
   const separator = value.indexOf('=');
   if (separator <= 0 || separator === value.length - 1) {
@@ -89,4 +104,29 @@ function parseRuleConfiguration(value: string): AuditRuleConfiguration {
   }
 
   return { id, mode };
+}
+
+/*** Resolve one explicit built-in architecture model without using detection results. */
+function modelTarget(value: string): AuditArchitectureTarget {
+  const model = listArchitectureModels().find(({ id }) => id === value);
+  if (model === undefined) throw new Error(`Unknown architecture model "${value}".`);
+  return { kind: 'model', id: model.id satisfies ArchitectureModel['id'] };
+}
+
+/*** Resolve one explicit architecture profile without inferring project ownership. */
+function profileTarget(value: string): AuditArchitectureTarget {
+  const profile = listArchitectureProfiles().find(({ id }) => id === value);
+  if (profile === undefined) throw new Error(`Unknown architecture profile "${value}".`);
+  return { kind: 'profile', id: profile.id satisfies ArchitectureProfile['id'] };
+}
+
+/*** Accept exactly one explicit architecture enforcement target per CLI invocation. */
+function withArchitectureTarget(
+  options: PkgvizCliOptions,
+  architectureTarget: AuditArchitectureTarget,
+): PkgvizCliOptions {
+  if (options.architectureTarget !== undefined) {
+    throw new Error('Choose either --architecture-model or --architecture-profile exactly once.');
+  }
+  return { ...options, architectureTarget };
 }
