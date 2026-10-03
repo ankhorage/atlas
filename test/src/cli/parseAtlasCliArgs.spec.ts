@@ -86,10 +86,7 @@ describe('[parseAtlasCliArgs]', () => {
   });
 
   it('rejects multiple export formats', () => {
-    assert.throws(
-      () => parseAtlasCliArgs(['bun', 'atlas', '--json', '--csv']),
-      /Choose only one/
-    );
+    assert.throws(() => parseAtlasCliArgs(['bun', 'atlas', '--json', '--csv']), /Choose only one/);
     assert.throws(
       () => parseAtlasCliArgs(['bun', 'atlas', '--csv', '--offline']),
       /Choose only one/
