@@ -71,12 +71,76 @@ describe('[cycle projection workflow]', () => {
       expect(host.container.querySelector('output')?.textContent?.split('|')).toContain(ancestor);
       expect(host.container.querySelector('output')?.textContent?.split('|')).toContain(descendant);
       expect(transitions).toEqual(['io.reflectoring']);
+
       await act(async () => root.render(<Harness highlights={active} />));
-      expect(transitions).toEqual(['io.reflectoring']);
       await act(async () => root.render(<Harness highlights={[]} />));
-      expect(transitions).toEqual(['io.reflectoring']);
       await act(async () => root.render(<Harness highlights={active} />));
       expect(transitions).toEqual(['io.reflectoring']);
+    } finally {
+      await act(async () => root.unmount());
+      host.unmount();
+    }
+  });
+
+  it('preserves scope and depth when every active cycle package is already visible', async () => {
+    const transitions: string[] = [];
+    const depthChanges: number[] = [];
+    const host = render(<div />);
+    const root = createRoot(host.container);
+    const elements = {
+      nodes: ['app.a', 'app.b'].map(id => ({ data: { id } })),
+      edges: [{ data: { source: 'app.a', target: 'app.b', weight: 1 } }],
+    };
+    const active: readonly CycleHighlight[] = [
+      {
+        id: 'visible-cycle',
+        color: 'red',
+        cycle: { packages: ['app.a', 'app.b', 'app.a'], edges: [] },
+      },
+    ];
+
+    function Harness() {
+      const [currentPackage, setCurrentPackage] = useState('app');
+      const [subPackageDepth, setSubPackageDepth] = useState(1);
+      const [, setMaxSubPackageDepth] = useState(1);
+      const navigate = (scope: string) => {
+        transitions.push(scope);
+        setCurrentPackage(scope);
+      };
+      const setDepth = (depth: number) => {
+        depthChanges.push(depth);
+        setSubPackageDepth(depth);
+      };
+      const visibleElements = useGraphProjection({
+        currentPackage,
+        elements,
+        subPackageDepth,
+        preservePackageScope: true,
+        setCurrentPackage: navigate,
+        setMaxSubPackageDepth,
+        setSubPackageDepth: setDepth,
+        showCompoundNodes: false,
+        showVendorPackages: true,
+      });
+      useGraphFocus({
+        currentPackage,
+        cycleHighlights: active,
+        setCurrentPackage: navigate,
+        setSubPackageDepth: setDepth,
+        subPackageDepth,
+        visibleElements,
+      });
+      return <output>{visibleElements?.nodes.map(node => node.data.id).join('|')}</output>;
+    }
+
+    try {
+      await act(async () => root.render(<Harness />));
+      expect(host.container.querySelector('output')?.textContent?.split('|')).toEqual([
+        'app.a',
+        'app.b',
+      ]);
+      expect(transitions).toEqual([]);
+      expect(depthChanges).toEqual([]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
