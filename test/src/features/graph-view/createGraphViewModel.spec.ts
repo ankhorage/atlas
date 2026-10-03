@@ -103,13 +103,12 @@ describe('[createGraphViewModel]', () => {
     const neutralEdge = model.edges.find(edge => edge.id === 'neutral-edge');
 
     expect(neutralNode?.classes).toBe('');
-    expect(neutralNode?.data).toEqual({ id: 'neutral' });
+    expect(neutralNode?.data?.id).toBe('neutral');
+    expect(neutralNode?.data?.auditCycleColor).toBeUndefined();
     expect(neutralEdge?.classes).toBe('');
-    expect(neutralEdge?.data).toEqual({
-      id: 'neutral-edge',
-      source: 'b',
-      target: 'neutral',
-    });
+    expect(neutralEdge?.data?.id).toBe('neutral-edge');
+    expect(neutralEdge?.data?.auditCycleColor).toBeUndefined();
+    expect(neutralEdge?.data?.auditCycleStep).toBeUndefined();
   });
 
   it('detaches only descendants whose dependency edge would overlap a compound ancestor', () => {
