@@ -3,7 +3,7 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 import { parsePkgvizCliArgs } from '@/cli/parsePkgvizCliArgs';
 
 describe('[parsePkgvizCliArgs]', () => {
-  it('returns the existing audit defaults', () => {
+  it('returns the existing audit defaults without an architecture target', () => {
     assert.deepEqual(parsePkgvizCliArgs(['bun', 'pkgviz']), {
       out: 'audit.json',
       open: false,
@@ -18,7 +18,7 @@ describe('[parsePkgvizCliArgs]', () => {
     });
   });
 
-  it('parses viewer, output, and repeated audit policy options', () => {
+  it('parses viewer, output, rule, and explicit architecture model options', () => {
     assert.deepEqual(
       parsePkgvizCliArgs([
         'bun',
@@ -35,12 +35,13 @@ describe('[parsePkgvizCliArgs]', () => {
         '--no-pretty',
         '--rule',
         'cyclic-dependencies=audit',
-        '--rule',
-        'cyclic-dependencies=off',
+        '--architecture-model',
+        'hexagonal',
         '--no-fail-on-rule-violation',
         '--verbose',
       ]),
       {
+        architectureTarget: { kind: 'model', id: 'hexagonal' },
         out: 'reports/audit.json',
         open: true,
         serve: true,
@@ -51,11 +52,27 @@ describe('[parsePkgvizCliArgs]', () => {
         verbose: true,
         failOnRuleViolation: false,
         help: false,
-        rules: [
-          { id: 'cyclic-dependencies', mode: 'audit' },
-          { id: 'cyclic-dependencies', mode: 'off' },
-        ],
-      }
+        rules: [{ id: 'cyclic-dependencies', mode: 'audit' }],
+      },
+    );
+  });
+
+  it('parses an explicit project profile independently from detection', () => {
+    assert.deepEqual(
+      parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-profile', 'ankhorage']),
+      {
+        architectureTarget: { kind: 'profile', id: 'ankhorage' },
+        out: 'audit.json',
+        open: false,
+        serve: false,
+        prod: false,
+        waitMs: 90_000,
+        pretty: true,
+        verbose: false,
+        failOnRuleViolation: true,
+        help: false,
+        rules: [],
+      },
     );
   });
 
@@ -72,5 +89,25 @@ describe('[parsePkgvizCliArgs]', () => {
     assert.throws(invalidMode, /Invalid mode/);
     assert.throws(unknownRule, /Unknown audit rule/);
     assert.throws(missingRule, /--rule requires a value/);
+  });
+
+  it('rejects unknown or multiple architecture targets', () => {
+    const unknownModel = () =>
+      parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-model', 'invented']);
+    const unknownProfile = () =>
+      parsePkgvizCliArgs(['bun', 'pkgviz', '--architecture-profile', 'invented']);
+    const multipleTargets = () =>
+      parsePkgvizCliArgs([
+        'bun',
+        'pkgviz',
+        '--architecture-model',
+        'clean',
+        '--architecture-profile',
+        'ankhorage',
+      ]);
+
+    assert.throws(unknownModel, /Unknown architecture model/);
+    assert.throws(unknownProfile, /Unknown architecture profile/);
+    assert.throws(multipleTargets, /Choose either --architecture-model or --architecture-profile/);
   });
 });
