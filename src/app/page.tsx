@@ -5,7 +5,7 @@ import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/compositio
 
 /***
  * Loads one workspace per page request rather than starting analysis from client mount effects.
- * @performance Keep this request-time read dynamic: build-time or persistent caching would hide
+ * Performance: Keep this request-time read dynamic: build-time or persistent caching would hide
  * source edits. Client Strict Mode rendering must not trigger another filesystem analysis.
  */
 export default async function Home({ searchParams }: HomeProps) {

@@ -15,11 +15,21 @@ describe('[package manifest]', () => {
       '.next/*.json',
       '.next/server',
       '.next/static',
+      'README.md',
+      'CHANGELOG.md',
+      'LICENSE',
+      'paradox',
     ]);
     assert.equal(manifest.files.includes('.next'), false);
+    assert.equal(manifest.name, '@ankhorage/pkgviz');
+    assert.equal(manifest.bin.pkgviz, 'bin/pkgviz.ts');
+    assert.equal(manifest.exports['./cli'], './src/cli/index.ts');
   });
 });
 
 interface PackageManifest {
+  readonly bin: Readonly<Record<string, string>>;
+  readonly exports: Readonly<Record<string, string>>;
   readonly files: readonly string[];
+  readonly name: string;
 }

@@ -6,7 +6,7 @@ import { readGraphNodeId } from '@/features/graph-view/utils/readGraphNodeId';
 
 /***
  * Filters packages to a relative depth and lifts dependency edges onto the visible ancestors.
- * @performance Aggregate edge weights and origin IDs in local maps so large lifted bundles remain
+ * Performance: Aggregate edge weights and origin IDs in local maps so large lifted bundles remain
  * linear in edge count while source graph elements stay immutable.
  */
 export function filterSubPackagesByDepth(

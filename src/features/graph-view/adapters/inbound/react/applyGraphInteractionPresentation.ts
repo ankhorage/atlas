@@ -5,7 +5,7 @@ import type { GraphInteractionState } from '@/types/graphInteraction';
 
 /***
  * Projects PKGViz interaction classes into the public GraphView presentation contract.
- * @performance Reuse prepared model data and styles; interaction never rebuilds package/cycle indexes.
+ * Performance: Reuse prepared model data and styles; interaction never rebuilds package/cycle indexes.
  * Always start from the base model so pointer exit removes transient classes and preserves audit data.
  */
 export function applyGraphInteractionPresentation(

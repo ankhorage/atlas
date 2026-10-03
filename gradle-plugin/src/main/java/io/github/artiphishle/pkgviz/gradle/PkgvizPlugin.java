@@ -16,7 +16,7 @@ public final class PkgvizPlugin implements Plugin<Project> {
     final PkgvizExtension extension =
         project.getExtensions().create("pkgviz", PkgvizExtension.class);
     extension.getExecutable().convention("npx");
-    extension.getPackageSpec().convention("pkgviz");
+    extension.getPackageSpec().convention("@ankhorage/pkgviz");
     extension.getOutputFile().convention(project.getLayout().getBuildDirectory().file("pkgviz-audit.json"));
     extension.getRules().convention(List.of());
     extension.getFailOnRuleViolation().convention(true);

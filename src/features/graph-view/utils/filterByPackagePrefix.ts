@@ -2,7 +2,7 @@ import { isIntrinsicGraphNode } from '@/features/graph-view/utils/isIntrinsicGra
 
 /***
  * Filters project descendants while retaining their adjacent external dependency endpoints.
- * @performance Use endpoint sets to retain adjacent vendors without per-vendor edge scans.
+ * Performance: Use endpoint sets to retain adjacent vendors without per-vendor edge scans.
  */
 export function filterByPackagePrefix(
   allElements: cytoscape.ElementsDefinition,

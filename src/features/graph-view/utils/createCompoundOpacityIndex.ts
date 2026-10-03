@@ -1,6 +1,6 @@
 /***
  * Prepares paint-only depth steps with a bounded cumulative tint for nested compound surfaces.
- * @performance Memoize ancestry once per projection; never traverse parents in style callbacks.
+ * Performance: Memoize ancestry once per projection; never traverse parents in style callbacks.
  */
 export function createCompoundOpacityIndex(
   parents: ReadonlyMap<string, string>,

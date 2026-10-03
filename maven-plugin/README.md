@@ -86,7 +86,7 @@ For reproducible CI, pin `pkgviz.packageSpec` to the PKGViz release your pipelin
     </execution>
   </executions>
   <configuration>
-    <packageSpec>pkgviz@YOUR_VERSION</packageSpec>
+    <packageSpec>@ankhorage/pkgviz@YOUR_VERSION</packageSpec>
     <rules>
       <rule>cyclic-dependencies=block</rule>
     </rules>

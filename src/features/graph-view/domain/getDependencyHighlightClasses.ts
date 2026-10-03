@@ -2,7 +2,7 @@ import type { GraphEdge } from '@ankhorage/graph';
 
 /***
  * Assigns PKGViz highlight/hushed presentation to direct incoming and outgoing dependencies.
- * @performance Classify edges once per interaction, with set membership instead of per-node scans.
+ * Performance: Classify edges once per interaction, with set membership instead of per-node scans.
  * This is product presentation policy; generic graph traversal remains owned by @ankhorage/graph.
  */
 export function getDependencyHighlightClasses(

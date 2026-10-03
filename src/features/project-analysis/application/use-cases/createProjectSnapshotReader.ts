@@ -2,7 +2,7 @@ import type { ProjectSnapshot } from '@/types/projectAnalysis';
 
 /***
  * Shares only in-flight analysis of the same normalized project path within one server process.
- * @performance
+ * Performance:
  * Graph, tree and audit must share the parsed files and graph, not independently scan the project.
  * Entries are removed after success or failure so later loads observe source changes and can retry.
  */

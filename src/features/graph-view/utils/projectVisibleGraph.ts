@@ -60,7 +60,7 @@ interface ProjectVisibleGraphResult {
 /***
  * Calculates the first relevant branch only for Home/root navigation.
  * Explicit package scopes are stable, including empty/single-child structural nodes.
- * @performance
+ * Performance:
  * An active cycle can require the root scope as part of its projection. Redirecting while that
  * scope is preserved can cause an endless focus/redirect loop and repeatedly remount the renderer.
  */

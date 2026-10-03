@@ -33,7 +33,7 @@ plugins {
 }
 
 pkgviz {
-    packageSpec.set("pkgviz@YOUR_VERSION")
+    packageSpec.set("@ankhorage/pkgviz@YOUR_VERSION")
     rules.set(listOf("cyclic-dependencies=block"))
     failOnRuleViolation.set(true)
 }
@@ -47,7 +47,7 @@ plugins {
 }
 
 pkgviz {
-    packageSpec = 'pkgviz@YOUR_VERSION'
+    packageSpec = '@ankhorage/pkgviz@YOUR_VERSION'
     rules = ['cyclic-dependencies=block']
     failOnRuleViolation = true
 }

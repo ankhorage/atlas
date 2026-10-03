@@ -16,15 +16,15 @@ type ElkLayoutOptions = cytoscape.BaseLayoutOptions &
   };
 
 /***
- * @url https://eclipse.dev/elk/reference/algorithms/org-eclipse-elk-layered.html
+ * Reference: https://eclipse.dev/elk/reference/algorithms/org-eclipse-elk-layered.html
  */
 export const layout: ElkLayoutOptions = {
   name: 'elk',
 
   /***
-   * @url http://www.eclipse.org/elk/reference.html
-   * @info Drop prefix from options name, e.g. org.eclipse.elk.direction becomes elk.direction
-   * @info Enums use the name of the enum as string Direction.DOWN becomes elk.direction: 'DOWN'
+   * Reference: http://www.eclipse.org/elk/reference.html
+   * Info: Drop prefix from options name, e.g. org.eclipse.elk.direction becomes elk.direction
+   * Info: Enums use the name of the enum as string Direction.DOWN becomes elk.direction: 'DOWN'
    */
   elk: {
     algorithm: 'layered',
