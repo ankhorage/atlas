@@ -102,8 +102,8 @@ describe('[runAuditAsync]', () => {
     });
     expect(
       persisted.evaluation.genericRules.findings.some(({ ruleId }) =>
-        ruleId.startsWith('package.architecture.'),
-      ),
+        ruleId.startsWith('package.architecture.')
+      )
     ).toBe(true);
   });
 
