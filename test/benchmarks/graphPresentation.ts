@@ -1,6 +1,6 @@
 /***
  * Benchmarks synthetic graph projection and presentation CPU work, not browser rendering or layout.
- * Performance:
+ * @performance
  * Keep fixture size, warmups and sample counts comparable when updating the README evidence.
  */
 import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/react/createGraphViewModel';

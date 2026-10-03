@@ -104,7 +104,7 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
 
 /***
  * Memoizes GraphView model, style, and layout inputs from the active PKGViz projection.
- * Performance:
+ * @performance
  * Stable inputs avoid repeated projection work and let the owner distinguish presentation from
  * topology/layout changes. Do not recreate these objects on unrelated renders or add compensating
  * layout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.

@@ -30,7 +30,7 @@ export function getStyle(
 
 /***
  * Shows leaf neighborhoods without changing layout geometry or dimming compound descendants.
- * Performance: Use paint-only interaction styles; border size, labels and dimensions stay stable.
+ * @performance Use paint-only interaction styles; border size, labels and dimensions stay stable.
  */
 function getNodeInteractionStyles(colors: GraphPalette): StylesheetJson {
   return [
@@ -48,7 +48,7 @@ function getNodeInteractionStyles(colors: GraphPalette): StylesheetJson {
 
 /***
  * Maps prepared node presentation data without per-element style callbacks.
- * Performance:
+ * @performance
  * Preserve data(label): createGraphViewModel prepares labels outside Cytoscape style recalculation.
  * ZORA owns measured label width. Keep height independent of the previous rendered height, otherwise repeated
  * style updates can change geometry and trigger further layout work. The style regression tests
@@ -87,7 +87,7 @@ function getNodeBaseStyles(colors: GraphPalette): StylesheetJson {
 
 /***
  * Preserves selected-node and audit-cycle presentation.
- * Performance: Selection uses an outline: changing border width changes layout dimensions.
+ * @performance Selection uses an outline: changing border width changes layout dimensions.
  * Audit overlays retain their existing geometry and remain separate from transient interactions.
  */
 function getNodeStateStyles(colors: GraphPalette): StylesheetJson {
@@ -123,7 +123,7 @@ function getNodeStateStyles(colors: GraphPalette): StylesheetJson {
 
 /***
  * Shows softly tinted compound boundaries with bounded, prepared nested-depth opacity.
- * Performance: Keep grouping paint-only; do not add nested DOM surfaces or extra graph elements.
+ * @performance Keep grouping paint-only; do not add nested DOM surfaces or extra graph elements.
  */
 function getCompoundStyles(colors: GraphPalette): StylesheetJson {
   return [
@@ -173,7 +173,7 @@ function getCompoundStyles(colors: GraphPalette): StylesheetJson {
 
 /***
  * Emits one numeric paint rule per visible depth, including depths created by detached endpoints.
- * Performance: Bound stylesheet size by hierarchy depth, not node count; no style callbacks.
+ * @performance Bound stylesheet size by hierarchy depth, not node count; no style callbacks.
  */
 function getCompoundOpacityStyles(elements: ElementsDefinition): StylesheetJson {
   const ids = new Set(elements.nodes.map(node => node.data.id));
@@ -194,7 +194,7 @@ function getCompoundOpacityStyles(elements: ElementsDefinition): StylesheetJson 
 
 /***
  * Keeps ordinary directed edges opaque to avoid the extra rendering cost of translucent arrows.
- * Performance:
+ * @performance
  * Hushed edges are an intentional interaction state, not the base rendering policy. Retain arrows
  * and loop-capable routing: cheaper edge styles must not silently remove dependency direction or
  * lifted self-loops. Measure and discuss those visual tradeoffs before changing this baseline.

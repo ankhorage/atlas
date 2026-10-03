@@ -4,7 +4,7 @@ import { isIntrinsicGraphNode } from '@/features/graph-view/utils/isIntrinsicGra
 
 /***
  * Omits relationship-free containers in flat views, but preserves actual isolated leaf packages.
- * Performance: Index connected endpoints and ancestors once instead of scanning the graph per node.
+ * @performance Index connected endpoints and ancestors once instead of scanning the graph per node.
  */
 export function removeEmptyStructuralNodes(elements: ElementsDefinition): ElementsDefinition {
   const connected = new Set(elements.edges.flatMap(edge => [edge.data.source, edge.data.target]));

@@ -7,7 +7,7 @@ import type { CycleHighlight } from '@/types/auditVisualization';
 
 /***
  * Projects PKGViz graph data into the engine-neutral ZORA GraphView contract.
- * Performance:
+ * @performance
  * Performance invariant: build package and cycle indexes once per projection, then use lookups
  * in element conversion. Do not move full-graph or full-cycle scans into the node/edge callbacks.
  * Recheck test/benchmarks/graphPresentation.ts and the README Performance evidence when changing
@@ -50,7 +50,7 @@ interface GraphViewModel {
 
 /***
  * Indexes package ancestry once instead of scanning the full graph for each visible package.
- * Performance:
+ * @performance
  * Replacing this set with nodes.some(...) per visible node restores quadratic work for large
  * projections. Walk dotted boundaries, including missing intermediate packages, so hidden
  * descendants remain navigable without confusing sibling prefixes such as a.b and a.bc.
@@ -75,7 +75,7 @@ function indexPackageParents(elements: ElementsDefinition): ReadonlySet<string> 
 
 /***
  * Indexes cycle overlays with last-cycle precedence and the first matching directed-edge step.
- * Performance:
+ * @performance
  * Visit overlay membership once, not every cycle for every rendered element. The reverse edge
  * traversal makes the first occurrence win within a cycle; later cycles still overwrite earlier
  * ones. Keep directed source/target keys distinct. Model regression tests protect this precedence.
@@ -149,7 +149,7 @@ function isAncestor(
 
 /***
  * Converts one visible node using prepared parent and cycle lookups.
- * Performance:
+ * @performance
  * Resolve labels once per model update. ZORA measures styled labels during reconciliation;
  * do not restore character-count width estimates or per-frame consumer measurement callbacks.
  */

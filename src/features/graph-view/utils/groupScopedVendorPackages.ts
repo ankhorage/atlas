@@ -4,7 +4,7 @@ const VENDOR_SCOPE_NODE_PREFIX = 'vendor-scope:';
 
 /***
  * Groups visible canonical scoped vendor roots under presentation-only organization compounds.
- * Performance: Index scoped vendors once and only materialize compounds for scopes with siblings.
+ * @performance Index scoped vendors once and only materialize compounds for scopes with siblings.
  */
 export function groupScopedVendorPackages(elements: ElementsDefinition): ElementsDefinition {
   const packagesByScope = indexScopedVendorPackages(elements.nodes);

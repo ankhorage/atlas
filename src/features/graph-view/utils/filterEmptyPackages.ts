@@ -4,7 +4,7 @@ import { isIntrinsicGraphNode } from '@/features/graph-view/utils/isIntrinsicGra
 
 /***
  * Skips a unique chain of structural project packages, stopping before real dependency endpoints.
- * Performance: Use full-graph indexes: navigation must not depend on depth projection or vendors.
+ * @performance Use full-graph indexes: navigation must not depend on depth projection or vendors.
  * Preserve real isolated leaves and branching packages rather than silently filtering them away.
  */
 export function filterEmptyPackages(currentPackage: string, elements: ElementsDefinition): string {
