@@ -16,14 +16,14 @@ export function AuditRuleList({
   onCycleInspectionChange,
 }: AuditRuleListProps) {
   const genericFindings = evaluation.genericRules.findings.filter(
-    ({ ruleId }) => ruleId !== 'cyclic-dependencies',
+    ({ ruleId }) => ruleId !== 'cyclic-dependencies'
   );
 
   return (
     <View gap="l">
       {evaluation.rules
-        .filter((rule) => rule.status === 'failed')
-        .map((rule) => (
+        .filter(rule => rule.status === 'failed')
+        .map(rule => (
           <RuleDetails
             key={rule.id}
             evaluation={evaluation}
@@ -34,10 +34,7 @@ export function AuditRuleList({
           />
         ))}
       {genericFindings.map((finding, index) => (
-        <GenericRuleFindingDetails
-          key={finding.ruleId + ':' + index}
-          finding={finding}
-        />
+        <GenericRuleFindingDetails key={finding.ruleId + ':' + index} finding={finding} />
       ))}
     </View>
   );
@@ -84,7 +81,7 @@ function GenericRuleFindingDetails({ finding }: { readonly finding: RuleFinding 
         {finding.ruleId} · {finding.severity}
       </Text>
       <Text variant="caption">{finding.message}</Text>
-      {finding.subjects.map((subject) => (
+      {finding.subjects.map(subject => (
         <Text key={subject.id} numberOfLines={1} variant="code">
           {subject.path ?? subject.id}
         </Text>
