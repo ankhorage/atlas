@@ -1,0 +1,62 @@
+import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
+import { isRecord } from '@ankhorage/utility/object';
+
+import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
+import { OFFLINE_REPORT_RUNTIME, OFFLINE_REPORT_STYLE } from '@/features/offline-report/constants/offlineReportTemplate';
+import type { Audit } from '@/types/audit';
+
+/***
+ * Build one deterministic, self-contained HTML document from an already captured canonical Audit.
+ * @security Project-controlled data is encoded as JSON and escapes every HTML/script delimiter
+ * before insertion. The browser runtime renders payload strings only through DOM text nodes.
+ */
+export function createOfflineHtmlReport(audit: Audit): string {
+  const payload = {
+    audit,
+    graph: toCytoscapeElements(audit.packageGraph, {
+      nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
+    }),
+    tree: buildProjectTree(audit.files),
+    version: 1,
+  };
+  const serializedPayload = JSON.stringify(payload, (_key, value) =>
+    isRecord(value)
+      ? Object.fromEntries(
+          Object.entries(value)
+            .sort(([left], [right]) => left.localeCompare(right))
+            .map(([key, entry]) => [key, entry])
+        )
+      : value
+  )
+    .replaceAll('&', '\\u0026')
+    .replaceAll('<', '\\u003c')
+    .replaceAll('>', '\\u003e')
+    .replaceAll('\u2028', '\\u2028')
+    .replaceAll('\u2029', '\\u2029');
+
+  return [
+    '<!doctype html>',
+    '<html lang="en">',
+    '<head>',
+    '<meta charset="utf-8">',
+    '<meta name="viewport" content="width=device-width,initial-scale=1">',
+    '<meta name="color-scheme" content="light dark">',
+    '<meta name="generator" content="Ankhorage Atlas">',
+    '<title>Atlas Offline Report</title>',
+    '<style>',
+    OFFLINE_REPORT_STYLE,
+    '</style>',
+    '</head>',
+    '<body>',
+    '<div id="atlas-report-root" aria-live="polite"></div>',
+    '<script id="atlas-report-data" type="application/json">',
+    serializedPayload,
+    '</script>',
+    '<script>',
+    OFFLINE_REPORT_RUNTIME,
+    '</script>',
+    '</body>',
+    '</html>',
+    '',
+  ].join('\n');
+}
