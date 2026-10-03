@@ -2,15 +2,15 @@
 
 import { useMemo, useState } from 'react';
 
-import { getSelectableGraphNodeIds } from '@/features/graph-view/domain/getSelectableGraphNodeIds';
 import { resolveGraphProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection';
 import { resolveProjectTreeNavigation } from '@/features/project-tree/application/use-cases/resolveProjectTreeNavigation';
 import { resolveProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveProjectTreeSelection';
-import { findProjectTreeNodeByGraphPackage } from '@/features/project-tree/utils/findProjectTreeNodeByGraphPackage';
+import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTreeNode';
+import { resolveProjectTreeGraphNodeId } from '@/features/project-tree/utils/resolveProjectTreeGraphNodeId';
 import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
-/*** Own the single logical selection shared by workspace TreeView and GraphView surfaces. */
+/*** Own package-scope navigation and the independent logical selection shared by TreeView and GraphView. */
 export function useWorkspaceNavigation(workspace: WorkspaceLoadResult) {
   const [currentPackage, setCurrentPackage] = useState('');
   const packageGraph = workspace.ok ? workspace.value.packageGraph : null;
@@ -19,24 +19,21 @@ export function useWorkspaceNavigation(workspace: WorkspaceLoadResult) {
     () => packageGraph?.nodes.map(candidate => candidate.id) ?? [],
     [packageGraph]
   );
-  const selectableGraphNodeIds = useMemo(
-    () => (packageGraph === null ? [] : getSelectableGraphNodeIds(packageGraph)),
-    [packageGraph]
-  );
-  const selection = useWorkspaceSelection({
-    currentPackage,
-    packageIds,
-    projectTree,
-    selectableGraphNodeIds,
-    setCurrentPackage,
-  });
+  const selection = useWorkspaceSelection({ packageIds, projectTree });
 
-  /*** Navigate graph scope and mirror its tree location without inventing a graph selection. */
+  /*** Navigate to one explicit graph package without rewriting the current selection. */
   const navigateToPackage = (path: string) => {
-    const packageName = normalizeGraphPackage(path);
-    const matchingTreeNode = findProjectTreeNodeByGraphPackage(projectTree, packageName);
-    setCurrentPackage(packageName);
-    selection.setTreeOnly(matchingTreeNode?.id ?? null);
+    setCurrentPackage(normalizeGraphPackage(path));
+  };
+
+  /*** Navigate graph scope from an independent folder expansion or collapse action. */
+  const toggleProjectTreeNode = (node: ProjectTreeNode, expanded: boolean) => {
+    if (node.kind !== 'directory') return;
+    if (expanded) {
+      setCurrentPackage(resolveProjectTreeNavigation(node, packageIds, currentPackage));
+      return;
+    }
+    setCurrentPackage(resolveParentProjectTreeNavigation(projectTree, node, packageIds));
   };
 
   return {
@@ -44,29 +41,23 @@ export function useWorkspaceNavigation(workspace: WorkspaceLoadResult) {
     navigateToPackage,
     packageGraph,
     projectTree,
-    ...selection.publicState,
+    toggleProjectTreeNode,
+    ...selection,
   };
 }
 
-/*** Own selection transitions separately from package-scope navigation. */
+/*** Own selection transitions without coupling them to package-scope navigation. */
 function useWorkspaceSelection(input: WorkspaceSelectionInput) {
   const [selection, setSelection] = useState<WorkspaceSelection | null>(null);
-  const selectableGraphNodeIdSet = useMemo(
-    () => new Set(input.selectableGraphNodeIds),
-    [input.selectableGraphNodeIds]
-  );
+  const graphNodeIdSet = useMemo(() => new Set(input.packageIds), [input.packageIds]);
 
   const selectProjectTreeNode = (node: ProjectTreeNode) => {
-    const result = resolveTreeWorkspaceSelection(node, input.selectableGraphNodeIds);
-    setSelection(previous => keepStableSelection(previous, result.selection));
-    if (result.resolvedNode === null) return;
-    input.setCurrentPackage(
-      resolveProjectTreeNavigation(result.resolvedNode, input.packageIds, input.currentPackage)
-    );
+    const next = resolveTreeWorkspaceSelection(node, input.packageIds);
+    setSelection(previous => keepStableSelection(previous, next));
   };
 
   const selectGraphNode = (id: string) => {
-    const next = resolveGraphWorkspaceSelection(id, input, selectableGraphNodeIdSet);
+    const next = resolveGraphWorkspaceSelection(id, input, graphNodeIdSet);
     if (next !== null) setSelection(previous => keepStableSelection(previous, next));
   };
 
@@ -76,53 +67,67 @@ function useWorkspaceSelection(input: WorkspaceSelectionInput) {
   };
 
   return {
-    publicState: {
-      selectedGraphNodeId: selection?.graphNodeId ?? null,
-      selectedTreeId: selection?.treeNodeId ?? null,
-      selectGraphNode,
-      selectProjectTreeNode,
-      unselectGraphNode,
-    },
-    setTreeOnly: (treeNodeId: string | null) =>
-      setSelection(treeNodeId === null ? null : { graphNodeId: null, treeNodeId }),
+    selectedGraphNodeId: selection?.graphNodeId ?? null,
+    selectedTreeId: selection?.treeNodeId ?? null,
+    selectGraphNode,
+    selectProjectTreeNode,
+    unselectGraphNode,
   };
 }
 
-/*** Resolve one TreeView click into the canonical logical workspace selection. */
+/*** Resolve one TreeView click to that exact row and its directly represented graph identity. */
 function resolveTreeWorkspaceSelection(
   node: ProjectTreeNode,
-  selectableGraphNodeIds: readonly string[]
-): TreeWorkspaceSelectionResult {
-  const resolvedNode = resolveProjectTreeSelection(node, selectableGraphNodeIds);
+  graphNodeIds: readonly string[]
+): WorkspaceSelection {
+  const resolvedNode = resolveProjectTreeSelection(node, graphNodeIds);
   return {
-    resolvedNode,
-    selection: {
-      graphNodeId: resolvedNode === null ? null : normalizeGraphPackage(resolvedNode.graphPackage),
-      treeNodeId: resolvedNode?.id ?? node.id,
-    },
+    graphNodeId:
+      resolvedNode === null ? null : resolveProjectTreeGraphNodeId(resolvedNode, graphNodeIds),
+    treeNodeId: node.id,
   };
 }
 
-/*** Resolve one GraphView click into the canonical logical workspace selection. */
+/*** Resolve one GraphView click to the same graph node and its exact matching TreeView row. */
 function resolveGraphWorkspaceSelection(
   id: string,
   input: WorkspaceSelectionInput,
-  selectableGraphNodeIdSet: ReadonlySet<string>
+  graphNodeIdSet: ReadonlySet<string>
 ): WorkspaceSelection | null {
   const graphNodeId = normalizeGraphPackage(id);
-  const treeNode = resolveGraphProjectTreeSelection(
-    input.projectTree,
-    graphNodeId,
-    input.selectableGraphNodeIds
-  );
-  const resolvedGraphNodeId =
-    treeNode === null
-      ? selectableGraphNodeIdSet.has(graphNodeId)
-        ? graphNodeId
-        : null
-      : normalizeGraphPackage(treeNode.graphPackage);
-  if (resolvedGraphNodeId === null) return null;
-  return { graphNodeId: resolvedGraphNodeId, treeNodeId: treeNode?.id ?? null };
+  if (!graphNodeIdSet.has(graphNodeId)) return null;
+  const treeNode = resolveGraphProjectTreeSelection(input.projectTree, graphNodeId, input.packageIds);
+  return { graphNodeId, treeNodeId: treeNode?.id ?? null };
+}
+
+/*** Resolve a collapsed folder to the nearest represented ancestor scope, or Home when none exists. */
+function resolveParentProjectTreeNavigation(
+  nodes: readonly ProjectTreeNode[],
+  node: ProjectTreeNode,
+  graphNodeIds: readonly string[]
+): string {
+  const path = readDirectoryPath(node.id);
+  if (path === null) return '';
+
+  const segments = path.split('/').filter(Boolean);
+  const parentIds = Array.from({ length: Math.max(0, segments.length - 1) }, (_, index) => {
+    const length = segments.length - index - 1;
+    return `directory:${segments.slice(0, length).join('/')}`;
+  });
+
+  for (const parentId of parentIds) {
+    const parent = findProjectTreeNode(nodes, parentId);
+    if (parent === null) continue;
+    const resolved = resolveProjectTreeGraphNodeId(parent, graphNodeIds);
+    if (resolved !== null) return resolved;
+  }
+  return '';
+}
+
+/*** Reads the stable filesystem path encoded in one directory tree id. */
+function readDirectoryPath(id: string): string | null {
+  const prefix = 'directory:';
+  return id.startsWith(prefix) ? id.slice(prefix.length) : null;
 }
 
 /*** Reuse an equal selection object so controlled GraphView callbacks cannot create render loops. */
@@ -141,19 +146,11 @@ function normalizeGraphPackage(path: string): string {
 }
 
 interface WorkspaceSelectionInput {
-  readonly currentPackage: string;
   readonly packageIds: readonly string[];
   readonly projectTree: readonly ProjectTreeNode[];
-  readonly selectableGraphNodeIds: readonly string[];
-  readonly setCurrentPackage: (path: string) => void;
 }
 
 interface WorkspaceSelection {
   readonly graphNodeId: string | null;
   readonly treeNodeId: string | null;
-}
-
-interface TreeWorkspaceSelectionResult {
-  readonly resolvedNode: ProjectTreeNode | null;
-  readonly selection: WorkspaceSelection;
 }
