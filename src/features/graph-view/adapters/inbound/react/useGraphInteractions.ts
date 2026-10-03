@@ -37,12 +37,9 @@ export function useGraphInteractions(
 
   /*** Route only approved leaf hover events to local interaction state; selection is workspace-owned. */
   const handleNodeEvent = (event: GraphViewElementEvent) => {
-    if (
-      !leafIds.has(event.id) ||
-      (event.type !== 'pointer-enter' && event.type !== 'pointer-leave')
-    ) {
-      return;
-    }
+    if (!leafIds.has(event.id)) return;
+    if (event.type !== 'pointer-enter' && event.type !== 'pointer-leave') return;
+    const hoverEvent = { id: event.id, type: event.type } as const;
 
     setHoveredNodeId(previous => {
       const state = reduceGraphInteraction(
@@ -50,7 +47,7 @@ export function useGraphInteractions(
           hoveredNodeId: previous,
           selectedNodeIds: interaction.selectedNodeIds,
         },
-        event
+        hoverEvent
       );
       return state.hoveredNodeId;
     });
