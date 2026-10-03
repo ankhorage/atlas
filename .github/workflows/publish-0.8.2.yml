@@ -1,0 +1,51 @@
+name: Publish PKGViz 0.8.2
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    if: github.head_ref == 'release/pkgviz-0.8.2'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.NODE_AUTH_TOKEN }}
+    steps:
+      - name: Checkout release candidate
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build publish artifact
+        env:
+          NEXT_PUBLIC_PROJECT_PATH: ${{ github.workspace }}
+        run: bun run build
+
+      - name: Verify release version
+        run: |
+          test "$(node -p "require('./package.json').version")" = "0.8.2"
+          npm view pkgviz@0.8.2 version >/dev/null 2>&1 && {
+            echo "pkgviz@0.8.2 is already published"
+            exit 0
+          } || true
+
+      - name: Publish pkgviz
+        run: npm publish --access public --provenance
