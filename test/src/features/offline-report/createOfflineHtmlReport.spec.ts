@@ -68,6 +68,17 @@ describe('[createOfflineHtmlReport]', () => {
     expect(html.includes('type="module"')).toBe(false);
     expect(html.includes('id="atlas-report-root"')).toBe(true);
   });
+
+  it('does not use browser network APIs when the report opens', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = createOfflineHtmlReport(audit);
+
+    expect(html.includes('fetch(')).toBe(false);
+    expect(html.includes('XMLHttpRequest')).toBe(false);
+    expect(html.includes('WebSocket')).toBe(false);
+    expect(html.includes('EventSource')).toBe(false);
+    expect(html.includes('navigator.sendBeacon')).toBe(false);
+  });
 });
 
 function readEmbeddedPayload(html: string): OfflinePayload {
