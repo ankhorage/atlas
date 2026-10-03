@@ -53,19 +53,21 @@ function useWorkspaceSelection(input: WorkspaceSelectionInput) {
   const graphNodeIdSet = useMemo(() => new Set(input.packageIds), [input.packageIds]);
   const selectedGraphNodeIds = useMemo(
     () =>
-      dedupeStrings(
+      dedupeBy(
         selections.flatMap(selection =>
           selection.graphNodeId === null ? [] : [selection.graphNodeId]
-        )
+        ),
+        value => value
       ),
     [selections]
   );
   const selectedTreeIds = useMemo(
     () =>
-      dedupeStrings(
+      dedupeBy(
         selections.flatMap(selection =>
           selection.treeNodeId === null ? [] : [selection.treeNodeId]
-        )
+        ),
+        value => value
       ),
     [selections]
   );
@@ -129,7 +131,7 @@ function areWorkspaceSelectionsEqual(
 }
 
 /*** Preserve first-seen selection order while removing duplicate presentation ids. */
-function dedupeStrings(values: readonly string[]): readonly string[] {
+function dedupeBy(values: readonly string[]): readonly string[] {
   return [...new Set(values)];
 }
 
