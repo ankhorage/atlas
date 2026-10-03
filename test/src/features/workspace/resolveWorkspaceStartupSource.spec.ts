@@ -1,8 +1,6 @@
 import { assert, describe, it } from '@artiphishle/testosterone';
 
-import {
-  resolveWorkspaceStartupSource,
-} from '@/features/workspace/composition/resolveWorkspaceStartupSource';
+import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
 
 describe('[resolveWorkspaceStartupSource]', () => {
   it('prefers an explicit browser source over the configured local project', () => {
