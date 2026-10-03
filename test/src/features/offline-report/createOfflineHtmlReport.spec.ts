@@ -1,3 +1,4 @@
+import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
 import { describe, expect, it } from '@artiphishle/testosterone';
 import { resolve } from 'node:path';
 
@@ -13,8 +14,11 @@ describe('[createOfflineHtmlReport]', () => {
     expect(payload.audit.packageGraph).toEqual(audit.packageGraph);
     expect(payload.audit.meta).toEqual(audit.meta);
     expect(payload.tree.length > 0).toBe(true);
-    expect(payload.graph.nodes.length).toBe(audit.packageGraph.nodes.length);
-    expect(payload.graph.edges.length).toBe(audit.packageGraph.edges.length);
+    expect(payload.graph).toEqual(
+      toCytoscapeElements(audit.packageGraph, {
+        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
+      })
+    );
     expect(payload.audit.evaluation.architecture).toEqual(audit.evaluation.architecture);
     expect(payload.audit.evaluation.genericRules).toEqual(audit.evaluation.genericRules);
     expect(payload.audit.evaluation.rules).toEqual(audit.evaluation.rules);
