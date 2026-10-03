@@ -33,7 +33,7 @@ public final class PkgvizAuditMojo extends AbstractMojo {
   @Parameter(defaultValue = "npx", property = "pkgviz.executable", required = true)
   String executable;
 
-  @Parameter(defaultValue = "pkgviz", property = "pkgviz.packageSpec", required = true)
+  @Parameter(defaultValue = "@ankhorage/pkgviz", property = "pkgviz.packageSpec", required = true)
   String packageSpec;
 
   @Parameter(property = "pkgviz.cli")

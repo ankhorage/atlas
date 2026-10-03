@@ -104,7 +104,7 @@ final class PkgvizAuditMojoTest {
     mojo.outputFile = project.resolve("target/pkgviz-audit.json").toFile();
     mojo.executable = "bun";
     mojo.cliPath = repoRoot.resolve("bin/pkgviz.ts").toFile();
-    mojo.packageSpec = "pkgviz";
+    mojo.packageSpec = "@ankhorage/pkgviz";
     mojo.rules = List.of();
     mojo.failOnRuleViolation = true;
     return mojo;

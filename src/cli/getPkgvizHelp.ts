@@ -7,7 +7,7 @@ Canonical Ankh commands:
   ankh pkgviz export [source] --offline --out <file>
 
 Legacy binary:
-  bunx pkgviz [source] [options]
+  bunx @ankhorage/pkgviz [source] [options]
 
 Sources:
   <path>              Local project path (default: current working directory)

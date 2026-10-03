@@ -1,5 +1,5 @@
 {
-  "name": "pkgviz",
+  "name": "@ankhorage/pkgviz",
   "bin": {
     "pkgviz": "bin/pkgviz.ts"
   },
@@ -11,7 +11,11 @@
     ".next/*.js",
     ".next/*.json",
     ".next/server",
-    ".next/static"
+    ".next/static",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "paradox"
   ],
   "type": "module",
   "engines": {
@@ -23,7 +27,7 @@
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/artiphishle/pkgviz.git"
+    "url": "git+https://github.com/ankhorage/pkgviz.git"
   },
   "keywords": [
     "code-analysis",
@@ -55,7 +59,9 @@
     "version-packages": "ankhorage-changeset version",
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
-    "zora:materialize": "bunx @ankhorage/ankh@0.10.4 zora sync --web"
+    "zora:materialize": "bunx @ankhorage/ankh@0.10.84 zora sync --web",
+    "docs": "paradox",
+    "typecheck": "bun x tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@ankhorage/dependency-graph": "^1.1.1",
@@ -77,6 +83,7 @@
   },
   "devDependencies": {
     "@ankhorage/devtools": "^1.21.3",
+    "@ankhorage/paradox": "^0.2.27",
     "@types/bun": "^1.4.2",
     "@types/node": "^24.19.0",
     "@types/react": "^19.3.0",
@@ -97,5 +104,14 @@
   "exports": {
     "./cli": "./src/cli/index.ts",
     "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ankhorage/pkgviz#readme",
+  "bugs": {
+    "url": "https://github.com/ankhorage/pkgviz/issues"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
   }
 }
