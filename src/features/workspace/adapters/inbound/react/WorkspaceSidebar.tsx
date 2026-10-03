@@ -98,7 +98,6 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
             nodes={props.projectTree}
             selectedIds={props.selectedTreeIds}
             onSelect={props.onProjectTreeSelect}
-            onToggleDirectory={props.onProjectTreeToggle}
           />
         </ScrollView>
       </TabPanel>
@@ -161,7 +160,6 @@ interface WorkspaceSidebarProps {
   readonly projectTree: readonly ProjectTreeNode[];
   readonly selectedTreeIds: readonly string[];
   readonly onProjectTreeSelect: (node: ProjectTreeNode, intent: SelectionIntent) => void;
-  readonly onProjectTreeToggle: (node: ProjectTreeNode, expanded: boolean) => void;
   readonly cycleSelection: CycleSelection;
   readonly onCycleInspectionChange: (inspection: CycleInspection | null) => void;
 }
