@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0
+
+### Minor Changes
+
+- c4a94e5: Add self-contained offline HTML reports for captured Atlas audits.
+
 ## 0.9.2
 
 ### Patch Changes

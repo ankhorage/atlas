@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.9.2",
+      "value": "v0.10.0",
       "color": "cb3837"
     },
     {
@@ -288,6 +288,7 @@
       "dependencies": [
         "src/features/audit/composition/createAuditAsync.ts",
         "src/features/audit/domain/hasBlockingAuditRuleFailure.ts",
+        "src/features/offline-report/application/createOfflineHtmlReport.ts",
         "src/types/audit.ts"
       ],
       "exports": [
@@ -987,6 +988,63 @@
       "dependencies": [],
       "exports": [
         "toggleCompoundNodes"
+      ]
+    },
+    {
+      "path": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "src/features/offline-report/constants/offlineReportStyle.ts",
+        "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "src/types/audit.ts"
+      ],
+      "exports": [
+        "createOfflineHtmlReport"
+      ]
+    },
+    {
+      "path": "src/features/offline-report/constants/offlineReportRuntime.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/offline-report/constants/offlineReportRuntimePart1.ts",
+        "src/features/offline-report/constants/offlineReportRuntimePart2.ts",
+        "src/features/offline-report/constants/offlineReportRuntimePart3.ts"
+      ],
+      "exports": [
+        "OFFLINE_REPORT_RUNTIME"
+      ]
+    },
+    {
+      "path": "src/features/offline-report/constants/offlineReportRuntimePart1.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "OFFLINE_REPORT_RUNTIME_PART_1"
+      ]
+    },
+    {
+      "path": "src/features/offline-report/constants/offlineReportRuntimePart2.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "OFFLINE_REPORT_RUNTIME_PART_2"
+      ]
+    },
+    {
+      "path": "src/features/offline-report/constants/offlineReportRuntimePart3.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "OFFLINE_REPORT_RUNTIME_PART_3"
+      ]
+    },
+    {
+      "path": "src/features/offline-report/constants/offlineReportStyle.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "OFFLINE_REPORT_STYLE"
       ]
     },
     {
@@ -1961,6 +2019,19 @@
       "exports": []
     },
     {
+      "path": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/audit/composition/createAuditAsync.ts",
+        "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "src/features/offline-report/constants/offlineReportStyle.ts",
+        "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "src/types/audit.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -2344,7 +2415,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/commands/export/runExportCommand.ts",
-        "line": 39,
+        "line": 34,
         "column": 1
       }
     },
@@ -2509,7 +2580,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditAsync.ts",
-        "line": 8,
+        "line": 9,
         "column": 1
       }
     },
@@ -2520,7 +2591,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditAsync.ts",
-        "line": 39,
+        "line": 42,
         "column": 1
       }
     },
@@ -2531,7 +2602,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditAsync.ts",
-        "line": 45,
+        "line": 48,
         "column": 1
       }
     },
@@ -2542,7 +2613,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditAsync.ts",
-        "line": 67,
+        "line": 70,
         "column": 1
       }
     },
@@ -2553,7 +2624,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditAsync.ts",
-        "line": 76,
+        "line": 79,
         "column": 1
       }
     },
@@ -2564,7 +2635,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditAsync.ts",
-        "line": 81,
+        "line": 84,
         "column": 1
       }
     },
@@ -4417,6 +4488,28 @@
       }
     },
     {
+      "name": "createOfflineHtmlReport",
+      "description": "Build one deterministic, self-contained HTML document from an already captured canonical Audit.\nProject-controlled data is encoded as JSON and escapes every HTML/script delimiter before\ninsertion. The browser runtime renders payload strings only through DOM text nodes.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "name": "sortSerializableValue",
+      "description": "Recursively sort JSON object keys while preserving array order and scalar values.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "line": 60,
+        "column": 1
+      }
+    },
+    {
       "name": "inspectProjectForAnalysisAsync",
       "description": "Inspect one project through the canonical bounded filesystem owner.",
       "see": [],
@@ -5774,6 +5867,11 @@
       },
       {
         "fromPath": "src/cli/runAuditAsync.ts",
+        "toPath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "sourcePath": "src/cli/runAuditAsync.ts"
+      },
+      {
+        "fromPath": "src/cli/runAuditAsync.ts",
         "toPath": "src/types/audit.ts",
         "sourcePath": "src/cli/runAuditAsync.ts"
       },
@@ -6176,6 +6274,41 @@
         "fromPath": "src/features/graph-view/utils/removeEmptyStructuralNodes.ts",
         "toPath": "src/features/graph-view/utils/isIntrinsicGraphNode.ts",
         "sourcePath": "src/features/graph-view/utils/removeEmptyStructuralNodes.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportStyle.ts",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "toPath": "src/types/audit.ts",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportRuntimePart1.ts",
+        "sourcePath": "src/features/offline-report/constants/offlineReportRuntime.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportRuntimePart2.ts",
+        "sourcePath": "src/features/offline-report/constants/offlineReportRuntime.ts"
+      },
+      {
+        "fromPath": "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportRuntimePart3.ts",
+        "sourcePath": "src/features/offline-report/constants/offlineReportRuntime.ts"
       },
       {
         "fromPath": "src/features/project-analysis/composition/createProjectFileTreeAsync.ts",
@@ -6676,6 +6809,36 @@
         "fromPath": "test/src/features/graph-view/useGraphInteractions.spec.tsx",
         "toPath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
         "sourcePath": "test/src/features/graph-view/useGraphInteractions.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toPath": "src/features/audit/composition/createAuditAsync.ts",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toPath": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportRuntime.ts",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toPath": "src/features/offline-report/constants/offlineReportStyle.ts",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toPath": "src/types/audit.ts",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
       },
       {
         "fromPath": "test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts",
@@ -8008,6 +8171,12 @@
       },
       {
         "fromSymbol": "runAuditAsync",
+        "toSymbol": "createOfflineHtmlReport",
+        "callExpression": "createOfflineHtmlReport",
+        "sourcePath": "src/cli/runAuditAsync.ts"
+      },
+      {
+        "fromSymbol": "runAuditAsync",
         "toSymbol": "writeFileWithinRoot",
         "callExpression": "writeFileWithinRoot",
         "sourcePath": "src/cli/runAuditAsync.ts"
@@ -9019,6 +9188,36 @@
         "toSymbol": "toGraphString",
         "callExpression": "toGraphString",
         "sourcePath": "src/features/graph-view/utils/toggleCompoundNodes.ts"
+      },
+      {
+        "fromSymbol": "createOfflineHtmlReport",
+        "toSymbol": "toCytoscapeElements",
+        "callExpression": "toCytoscapeElements",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromSymbol": "createOfflineHtmlReport",
+        "toSymbol": "buildProjectTree",
+        "callExpression": "buildProjectTree",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromSymbol": "createOfflineHtmlReport",
+        "toSymbol": "sortSerializableValue",
+        "callExpression": "sortSerializableValue",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromSymbol": "sortSerializableValue",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
+      },
+      {
+        "fromSymbol": "src/features/offline-report/application/createOfflineHtmlReport.ts",
+        "toSymbol": "sortSerializableValue",
+        "callExpression": "sortSerializableValue",
+        "sourcePath": "src/features/offline-report/application/createOfflineHtmlReport.ts"
       },
       {
         "fromSymbol": "createProjectFileTreeAsync",
@@ -10627,6 +10826,78 @@
         "toSymbol": "flushSync",
         "callExpression": "flushSync",
         "sourcePath": "test/src/features/graph-view/useGraphInteractions.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "createAuditAsync",
+        "callExpression": "createAuditAsync",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "readEmbeddedPayload",
+        "callExpression": "readEmbeddedPayload",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "createOfflineHtmlReport",
+        "callExpression": "createOfflineHtmlReport",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "buildProjectTree",
+        "callExpression": "buildProjectTree",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "toCytoscapeElements",
+        "callExpression": "toCytoscapeElements",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "deserializeSourceGraph",
+        "callExpression": "deserializeSourceGraph",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "removeEmbeddedPayload",
+        "callExpression": "removeEmbeddedPayload",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts",
+        "toSymbol": "readInlineStyle",
+        "callExpression": "readInlineStyle",
+        "sourcePath": "test/src/features/offline-report/createOfflineHtmlReport.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts",

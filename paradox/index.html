@@ -482,6 +482,11 @@
       <small>4 functions</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/features/offline-report/application/createOfflineHtmlReport.ts">
+      src/features/offline-report/application/createOfflineHtmlReport.ts
+      <small>2 functions</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts">
       src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts
       <small>2 functions</small>
@@ -703,7 +708,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>199</strong><span class="muted">modules</span></div>
+        <div><strong>206</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -835,10 +840,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/cli/formatAuditRuleFailures.ts</code>, <code>src/cli/getAtlasHelp.ts</code>, <code>src/cli/parseAtlasCliArgs.ts</code>, <code>src/cli/runAuditSourceAsync.ts</code>, <code>src/cli/startViewerSourceAsync.ts</code></p>
     <p><strong>Exports:</strong> <code>runAtlasCliAsync</code></p>
-  </article><article class="item" data-search="src/cli/runAuditAsync.ts src/features/audit/composition/createAuditAsync.ts src/features/audit/domain/hasBlockingAuditRuleFailure.ts src/types/audit.ts runAuditAsync">
+  </article><article class="item" data-search="src/cli/runAuditAsync.ts src/features/audit/composition/createAuditAsync.ts src/features/audit/domain/hasBlockingAuditRuleFailure.ts src/features/offline-report/application/createOfflineHtmlReport.ts src/types/audit.ts runAuditAsync">
     <h3>src/cli/runAuditAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/audit/domain/hasBlockingAuditRuleFailure.ts</code>, <code>src/types/audit.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/audit/domain/hasBlockingAuditRuleFailure.ts</code>, <code>src/features/offline-report/application/createOfflineHtmlReport.ts</code>, <code>src/types/audit.ts</code></p>
     <p><strong>Exports:</strong> <code>runAuditAsync</code></p>
   </article><article class="item" data-search="src/cli/runAuditSourceAsync.ts src/cli/runAuditAsync.ts src/features/project-source/application/use-cases/parseProjectSource.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/types/cli.ts runAuditSourceAsync">
     <h3>src/cli/runAuditSourceAsync.ts</h3>
@@ -1155,6 +1160,36 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>toggleCompoundNodes</code></p>
+  </article><article class="item" data-search="src/features/offline-report/application/createOfflineHtmlReport.ts src/features/offline-report/constants/offlineReportRuntime.ts src/features/offline-report/constants/offlineReportStyle.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/audit.ts createOfflineHtmlReport">
+    <h3>src/features/offline-report/application/createOfflineHtmlReport.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/offline-report/constants/offlineReportRuntime.ts</code>, <code>src/features/offline-report/constants/offlineReportStyle.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/types/audit.ts</code></p>
+    <p><strong>Exports:</strong> <code>createOfflineHtmlReport</code></p>
+  </article><article class="item" data-search="src/features/offline-report/constants/offlineReportRuntime.ts src/features/offline-report/constants/offlineReportRuntimePart1.ts src/features/offline-report/constants/offlineReportRuntimePart2.ts src/features/offline-report/constants/offlineReportRuntimePart3.ts OFFLINE_REPORT_RUNTIME">
+    <h3>src/features/offline-report/constants/offlineReportRuntime.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/offline-report/constants/offlineReportRuntimePart1.ts</code>, <code>src/features/offline-report/constants/offlineReportRuntimePart2.ts</code>, <code>src/features/offline-report/constants/offlineReportRuntimePart3.ts</code></p>
+    <p><strong>Exports:</strong> <code>OFFLINE_REPORT_RUNTIME</code></p>
+  </article><article class="item" data-search="src/features/offline-report/constants/offlineReportRuntimePart1.ts OFFLINE_REPORT_RUNTIME_PART_1">
+    <h3>src/features/offline-report/constants/offlineReportRuntimePart1.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>OFFLINE_REPORT_RUNTIME_PART_1</code></p>
+  </article><article class="item" data-search="src/features/offline-report/constants/offlineReportRuntimePart2.ts OFFLINE_REPORT_RUNTIME_PART_2">
+    <h3>src/features/offline-report/constants/offlineReportRuntimePart2.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>OFFLINE_REPORT_RUNTIME_PART_2</code></p>
+  </article><article class="item" data-search="src/features/offline-report/constants/offlineReportRuntimePart3.ts OFFLINE_REPORT_RUNTIME_PART_3">
+    <h3>src/features/offline-report/constants/offlineReportRuntimePart3.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>OFFLINE_REPORT_RUNTIME_PART_3</code></p>
+  </article><article class="item" data-search="src/features/offline-report/constants/offlineReportStyle.ts OFFLINE_REPORT_STYLE">
+    <h3>src/features/offline-report/constants/offlineReportStyle.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>OFFLINE_REPORT_STYLE</code></p>
   </article><article class="item" data-search="src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts inspectProjectForAnalysisAsync">
     <h3>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1610,6 +1645,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/features/offline-report/createOfflineHtmlReport.spec.ts src/features/audit/composition/createAuditAsync.ts src/features/offline-report/application/createOfflineHtmlReport.ts src/features/offline-report/constants/offlineReportRuntime.ts src/features/offline-report/constants/offlineReportStyle.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/audit.ts">
+    <h3>test/src/features/offline-report/createOfflineHtmlReport.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/offline-report/application/createOfflineHtmlReport.ts</code>, <code>src/features/offline-report/constants/offlineReportRuntime.ts</code>, <code>src/features/offline-report/constants/offlineReportStyle.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/types/audit.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts src/features/project-analysis/composition/readProjectSnapshotAsync.ts src/types/projectFiles.ts">
     <h3>test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1861,6 +1901,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_domain_hasBlockingAuditRuleFailure_ts
+  module_src_cli_runAuditAsync_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts[&quot;src/cli/runAuditSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_runAuditSourceAsync_ts
@@ -2133,6 +2174,25 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts --&gt; module_src_features_graph_view_utils_isIntrinsicGraphNode_ts
   module_src_features_graph_view_utils_toggleCompoundNodes_ts[&quot;src/features/graph-view/utils/toggleCompoundNodes.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_utils_toggleCompoundNodes_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts[&quot;src/features/offline-report/application/createOfflineHtmlReport.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_types_audit_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts[&quot;src/features/offline-report/constants/offlineReportRuntime.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart1_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart2_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart3_ts
+  module_src_features_offline_report_constants_offlineReportRuntimePart1_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart1.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntimePart1_ts
+  module_src_features_offline_report_constants_offlineReportRuntimePart2_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart2.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntimePart2_ts
+  module_src_features_offline_report_constants_offlineReportRuntimePart3_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart3.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntimePart3_ts
+  module_src_features_offline_report_constants_offlineReportStyle_ts[&quot;src/features/offline-report/constants/offlineReportStyle.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
@@ -2520,6 +2580,14 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx[&quot;test/src/features/graph-view/useGraphInteractions.spec.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_graph_view_useGraphInteractions_spec_tsx
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphInteractions_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts[&quot;test/src/features/offline-report/createOfflineHtmlReport.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_types_audit_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts[&quot;test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
@@ -2699,6 +2767,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_domain_hasBlockingAuditRuleFailure_ts
+  module_src_cli_runAuditAsync_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts[&quot;src/cli/runAuditSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_runAuditSourceAsync_ts
@@ -2971,6 +3040,25 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts --&gt; module_src_features_graph_view_utils_isIntrinsicGraphNode_ts
   module_src_features_graph_view_utils_toggleCompoundNodes_ts[&quot;src/features/graph-view/utils/toggleCompoundNodes.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_utils_toggleCompoundNodes_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts[&quot;src/features/offline-report/application/createOfflineHtmlReport.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_types_audit_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts[&quot;src/features/offline-report/constants/offlineReportRuntime.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart1_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart2_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart3_ts
+  module_src_features_offline_report_constants_offlineReportRuntimePart1_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart1.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntimePart1_ts
+  module_src_features_offline_report_constants_offlineReportRuntimePart2_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart2.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntimePart2_ts
+  module_src_features_offline_report_constants_offlineReportRuntimePart3_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart3.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportRuntimePart3_ts
+  module_src_features_offline_report_constants_offlineReportStyle_ts[&quot;src/features/offline-report/constants/offlineReportStyle.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
@@ -3358,6 +3446,14 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx[&quot;test/src/features/graph-view/useGraphInteractions.spec.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_graph_view_useGraphInteractions_spec_tsx
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphInteractions_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts[&quot;test/src/features/offline-report/createOfflineHtmlReport.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_types_audit_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts[&quot;test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
@@ -3545,6 +3641,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_readNodeDefinitionId_ts[&quot;src/features/graph-view/utils/readNodeDefinitionId.ts&quot;]
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts[&quot;src/features/graph-view/utils/removeEmptyStructuralNodes.ts&quot;]
   module_src_features_graph_view_utils_toggleCompoundNodes_ts[&quot;src/features/graph-view/utils/toggleCompoundNodes.ts&quot;]
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts[&quot;src/features/offline-report/application/createOfflineHtmlReport.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntime_ts[&quot;src/features/offline-report/constants/offlineReportRuntime.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart1_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart1.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart2_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart2.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart3_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart3.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportStyle_ts[&quot;src/features/offline-report/constants/offlineReportStyle.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readDelphiProjectFileMetadata.ts&quot;]
@@ -3636,6 +3738,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_scopedVendorCompounds_spec_ts[&quot;test/src/features/graph-view/scopedVendorCompounds.spec.ts&quot;]
   module_test_src_features_graph_view_useGraphFocus_spec_tsx[&quot;test/src/features/graph-view/useGraphFocus.spec.tsx&quot;]
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx[&quot;test/src/features/graph-view/useGraphInteractions.spec.tsx&quot;]
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts[&quot;test/src/features/offline-report/createOfflineHtmlReport.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts[&quot;test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectSnapshotReader_spec_ts[&quot;test/src/features/project-analysis/createProjectSnapshotReader.spec.ts&quot;]
   module_test_src_features_project_analysis_inspectProjectForAnalysisAsync_spec_ts[&quot;test/src/features/project-analysis/inspectProjectForAnalysisAsync.spec.ts&quot;]
@@ -3696,6 +3799,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_startViewerSourceAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_domain_hasBlockingAuditRuleFailure_ts
+  module_src_cli_runAuditAsync_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
@@ -3842,6 +3946,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_projectVisibleGraph_ts --&gt; module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts
   module_src_features_graph_view_utils_projectVisibleGraph_ts --&gt; module_src_features_graph_view_utils_toggleCompoundNodes_ts
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts --&gt; module_src_features_graph_view_utils_isIntrinsicGraphNode_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_types_audit_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart1_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart2_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart3_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readJavaProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
@@ -4047,6 +4158,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_useGraphFocus_spec_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphProjection_ts
   module_test_src_features_graph_view_useGraphFocus_spec_tsx --&gt; module_src_types_auditVisualization_ts
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphInteractions_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_types_audit_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_features_project_analysis_createProjectSnapshotReader_spec_ts --&gt; module_src_features_project_analysis_application_use_cases_createProjectSnapshotReader_ts
@@ -4182,6 +4299,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_readNodeDefinitionId_ts[&quot;src/features/graph-view/utils/readNodeDefinitionId.ts&quot;]
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts[&quot;src/features/graph-view/utils/removeEmptyStructuralNodes.ts&quot;]
   module_src_features_graph_view_utils_toggleCompoundNodes_ts[&quot;src/features/graph-view/utils/toggleCompoundNodes.ts&quot;]
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts[&quot;src/features/offline-report/application/createOfflineHtmlReport.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntime_ts[&quot;src/features/offline-report/constants/offlineReportRuntime.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart1_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart1.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart2_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart2.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart3_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart3.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportStyle_ts[&quot;src/features/offline-report/constants/offlineReportStyle.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readDelphiProjectFileMetadata.ts&quot;]
@@ -4273,6 +4396,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_scopedVendorCompounds_spec_ts[&quot;test/src/features/graph-view/scopedVendorCompounds.spec.ts&quot;]
   module_test_src_features_graph_view_useGraphFocus_spec_tsx[&quot;test/src/features/graph-view/useGraphFocus.spec.tsx&quot;]
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx[&quot;test/src/features/graph-view/useGraphInteractions.spec.tsx&quot;]
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts[&quot;test/src/features/offline-report/createOfflineHtmlReport.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts[&quot;test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectSnapshotReader_spec_ts[&quot;test/src/features/project-analysis/createProjectSnapshotReader.spec.ts&quot;]
   module_test_src_features_project_analysis_inspectProjectForAnalysisAsync_spec_ts[&quot;test/src/features/project-analysis/inspectProjectForAnalysisAsync.spec.ts&quot;]
@@ -4333,6 +4457,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_startViewerSourceAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_domain_hasBlockingAuditRuleFailure_ts
+  module_src_cli_runAuditAsync_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
@@ -4479,6 +4604,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_projectVisibleGraph_ts --&gt; module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts
   module_src_features_graph_view_utils_projectVisibleGraph_ts --&gt; module_src_features_graph_view_utils_toggleCompoundNodes_ts
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts --&gt; module_src_features_graph_view_utils_isIntrinsicGraphNode_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts --&gt; module_src_types_audit_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart1_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart2_ts
+  module_src_features_offline_report_constants_offlineReportRuntime_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntimePart3_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readJavaProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
@@ -4684,6 +4816,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_useGraphFocus_spec_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphProjection_ts
   module_test_src_features_graph_view_useGraphFocus_spec_tsx --&gt; module_src_types_auditVisualization_ts
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphInteractions_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_application_createOfflineHtmlReport_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportRuntime_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_offline_report_constants_offlineReportStyle_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts --&gt; module_src_types_audit_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_features_project_analysis_createProjectSnapshotReader_spec_ts --&gt; module_src_features_project_analysis_application_use_cases_createProjectSnapshotReader_ts
@@ -4821,6 +4959,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_readNodeDefinitionId_ts[&quot;src/features/graph-view/utils/readNodeDefinitionId.ts&quot;]
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts[&quot;src/features/graph-view/utils/removeEmptyStructuralNodes.ts&quot;]
   module_src_features_graph_view_utils_toggleCompoundNodes_ts[&quot;src/features/graph-view/utils/toggleCompoundNodes.ts&quot;]
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts[&quot;src/features/offline-report/application/createOfflineHtmlReport.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntime_ts[&quot;src/features/offline-report/constants/offlineReportRuntime.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart1_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart1.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart2_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart2.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart3_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart3.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportStyle_ts[&quot;src/features/offline-report/constants/offlineReportStyle.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readDelphiProjectFileMetadata.ts&quot;]
@@ -4912,6 +5056,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_scopedVendorCompounds_spec_ts[&quot;test/src/features/graph-view/scopedVendorCompounds.spec.ts&quot;]
   module_test_src_features_graph_view_useGraphFocus_spec_tsx[&quot;test/src/features/graph-view/useGraphFocus.spec.tsx&quot;]
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx[&quot;test/src/features/graph-view/useGraphInteractions.spec.tsx&quot;]
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts[&quot;test/src/features/offline-report/createOfflineHtmlReport.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts[&quot;test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectSnapshotReader_spec_ts[&quot;test/src/features/project-analysis/createProjectSnapshotReader.spec.ts&quot;]
   module_test_src_features_project_analysis_inspectProjectForAnalysisAsync_spec_ts[&quot;test/src/features/project-analysis/inspectProjectForAnalysisAsync.spec.ts&quot;]
@@ -5028,6 +5173,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_utils_readNodeDefinitionId_ts[&quot;src/features/graph-view/utils/readNodeDefinitionId.ts&quot;]
   module_src_features_graph_view_utils_removeEmptyStructuralNodes_ts[&quot;src/features/graph-view/utils/removeEmptyStructuralNodes.ts&quot;]
   module_src_features_graph_view_utils_toggleCompoundNodes_ts[&quot;src/features/graph-view/utils/toggleCompoundNodes.ts&quot;]
+  module_src_features_offline_report_application_createOfflineHtmlReport_ts[&quot;src/features/offline-report/application/createOfflineHtmlReport.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntime_ts[&quot;src/features/offline-report/constants/offlineReportRuntime.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart1_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart1.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart2_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart2.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportRuntimePart3_ts[&quot;src/features/offline-report/constants/offlineReportRuntimePart3.ts&quot;]
+  module_src_features_offline_report_constants_offlineReportStyle_ts[&quot;src/features/offline-report/constants/offlineReportStyle.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readDelphiProjectFileMetadata.ts&quot;]
@@ -5119,6 +5270,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_graph_view_scopedVendorCompounds_spec_ts[&quot;test/src/features/graph-view/scopedVendorCompounds.spec.ts&quot;]
   module_test_src_features_graph_view_useGraphFocus_spec_tsx[&quot;test/src/features/graph-view/useGraphFocus.spec.tsx&quot;]
   module_test_src_features_graph_view_useGraphInteractions_spec_tsx[&quot;test/src/features/graph-view/useGraphInteractions.spec.tsx&quot;]
+  module_test_src_features_offline_report_createOfflineHtmlReport_spec_ts[&quot;test/src/features/offline-report/createOfflineHtmlReport.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectFileTreeAsync_spec_ts[&quot;test/src/features/project-analysis/createProjectFileTreeAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_createProjectSnapshotReader_spec_ts[&quot;test/src/features/project-analysis/createProjectSnapshotReader.spec.ts&quot;]
   module_test_src_features_project_analysis_inspectProjectForAnalysisAsync_spec_ts[&quot;test/src/features/project-analysis/inspectProjectForAnalysisAsync.spec.ts&quot;]
@@ -5229,7 +5381,7 @@ source edits. Client Strict Mode rendering must not trigger another filesystem a
     
   </article><article class="item" data-search="hasExplicitOutput src/cli/commands/export/runExportCommand.ts Detect whether the caller explicitly selected an output path.">
     <h3>hasExplicitOutput</h3>
-    <p class="muted"><code>src/cli/commands/export/runExportCommand.ts:39:1</code></p>
+    <p class="muted"><code>src/cli/commands/export/runExportCommand.ts:34:1</code></p>
     <p>Detect whether the caller explicitly selected an output path.</p>
     
   </article>
@@ -5344,32 +5496,32 @@ source edits. Client Strict Mode rendering must not trigger another filesystem a
       <h2>src/cli/runAuditAsync.ts</h2>
       <article class="item" data-search="runAuditAsync src/cli/runAuditAsync.ts Creates, writes, and evaluates an audit while retaining the artifact on rule failure.">
     <h3>runAuditAsync</h3>
-    <p class="muted"><code>src/cli/runAuditAsync.ts:8:1</code></p>
+    <p class="muted"><code>src/cli/runAuditAsync.ts:9:1</code></p>
     <p>Creates, writes, and evaluates an audit while retaining the artifact on rule failure.</p>
     
   </article><article class="item" data-search="serializeAuditCsv src/cli/runAuditAsync.ts Serializes the complete Audit as deterministic scalar JSON-pointer rows.">
     <h3>serializeAuditCsv</h3>
-    <p class="muted"><code>src/cli/runAuditAsync.ts:39:1</code></p>
+    <p class="muted"><code>src/cli/runAuditAsync.ts:42:1</code></p>
     <p>Serializes the complete Audit as deterministic scalar JSON-pointer rows.</p>
     
   </article><article class="item" data-search="flattenCsvValue src/cli/runAuditAsync.ts Flattens one Audit value without discarding empty containers or scalar types.">
     <h3>flattenCsvValue</h3>
-    <p class="muted"><code>src/cli/runAuditAsync.ts:45:1</code></p>
+    <p class="muted"><code>src/cli/runAuditAsync.ts:48:1</code></p>
     <p>Flattens one Audit value without discarding empty containers or scalar types.</p>
     
   </article><article class="item" data-search="serializeCsvPrimitive src/cli/runAuditAsync.ts Serializes one non-container Audit value without implicit object coercion.">
     <h3>serializeCsvPrimitive</h3>
-    <p class="muted"><code>src/cli/runAuditAsync.ts:67:1</code></p>
+    <p class="muted"><code>src/cli/runAuditAsync.ts:70:1</code></p>
     <p>Serializes one non-container Audit value without implicit object coercion.</p>
     
   </article><article class="item" data-search="escapeJsonPointerSegment src/cli/runAuditAsync.ts Escapes one JSON-pointer path segment for deterministic CSV paths.">
     <h3>escapeJsonPointerSegment</h3>
-    <p class="muted"><code>src/cli/runAuditAsync.ts:76:1</code></p>
+    <p class="muted"><code>src/cli/runAuditAsync.ts:79:1</code></p>
     <p>Escapes one JSON-pointer path segment for deterministic CSV paths.</p>
     
   </article><article class="item" data-search="escapeCsvField src/cli/runAuditAsync.ts Quotes one CSV field so arbitrary source evidence remains valid CSV.">
     <h3>escapeCsvField</h3>
-    <p class="muted"><code>src/cli/runAuditAsync.ts:81:1</code></p>
+    <p class="muted"><code>src/cli/runAuditAsync.ts:84:1</code></p>
     <p>Quotes one CSV field so arbitrary source evidence remains valid CSV.</p>
     
   </article>
@@ -6534,6 +6686,23 @@ scope is preserved can cause an endless focus/redirect loop and repeatedly remou
     <h3>toOptionalGraphString</h3>
     <p class="muted"><code>src/features/graph-view/utils/toggleCompoundNodes.ts:60:1</code></p>
     <p>Normalizes optional graph metadata without inventing an empty parent identity.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-offline-report-application-createofflinehtmlreport-ts" class="view" data-view="src/features/offline-report/application/createOfflineHtmlReport.ts" hidden>
+    <section class="panel">
+      <h2>src/features/offline-report/application/createOfflineHtmlReport.ts</h2>
+      <article class="item" data-search="createOfflineHtmlReport src/features/offline-report/application/createOfflineHtmlReport.ts Build one deterministic, self-contained HTML document from an already captured canonical Audit.&#10;Project-controlled data is encoded as JSON and escapes every HTML/script delimiter before&#10;insertion. The browser runtime renders payload strings only through DOM text nodes.">
+    <h3>createOfflineHtmlReport</h3>
+    <p class="muted"><code>src/features/offline-report/application/createOfflineHtmlReport.ts:14:1</code></p>
+    <p>Build one deterministic, self-contained HTML document from an already captured canonical Audit.
+Project-controlled data is encoded as JSON and escapes every HTML/script delimiter before
+insertion. The browser runtime renders payload strings only through DOM text nodes.</p>
+    
+  </article><article class="item" data-search="sortSerializableValue src/features/offline-report/application/createOfflineHtmlReport.ts Recursively sort JSON object keys while preserving array order and scalar values.">
+    <h3>sortSerializableValue</h3>
+    <p class="muted"><code>src/features/offline-report/application/createOfflineHtmlReport.ts:60:1</code></p>
+    <p>Recursively sort JSON object keys while preserving array order and scalar values.</p>
     
   </article>
     </section>
