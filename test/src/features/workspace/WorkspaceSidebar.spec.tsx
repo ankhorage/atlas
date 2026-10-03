@@ -49,7 +49,7 @@ describe('[WorkspaceSidebar]', () => {
     );
 
     expect(rulesTab?.textContent).toContain('Rules');
-    expect(rulesTab?.textContent).not.toContain('0');
+    expect(rulesTab?.textContent?.includes('0')).toBe(false);
     unmount();
   });
 
