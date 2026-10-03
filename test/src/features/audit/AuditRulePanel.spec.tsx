@@ -18,7 +18,7 @@ describe('[AuditRulePanel]', () => {
     );
 
     expect(getByText('Architecture Analysis')).toBeDefined();
-    expect(getByText(/hexagonal · confidence 75%/)).toBeDefined();
+    expect(getByText('hexagonal · confidence 75% · score 3.00')).toBeDefined();
     expect(getByText('+ Ports and adapters are separated.')).toBeDefined();
     expect(getByText('! Domain imports an adapter.')).toBeDefined();
     expect(getByText('Missing capabilities: implements')).toBeDefined();
