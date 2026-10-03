@@ -84,9 +84,7 @@ function useWorkspaceSelection(input: WorkspaceSelectionInput) {
       unselectGraphNode,
     },
     setTreeOnly: (treeNodeId: string | null) =>
-      setSelection(
-        treeNodeId === null ? null : { graphNodeId: null, treeNodeId }
-      ),
+      setSelection(treeNodeId === null ? null : { graphNodeId: null, treeNodeId }),
   };
 }
 
@@ -99,8 +97,7 @@ function resolveTreeWorkspaceSelection(
   return {
     resolvedNode,
     selection: {
-      graphNodeId:
-        resolvedNode === null ? null : normalizeGraphPackage(resolvedNode.graphPackage),
+      graphNodeId: resolvedNode === null ? null : normalizeGraphPackage(resolvedNode.graphPackage),
       treeNodeId: resolvedNode?.id ?? node.id,
     },
   };
