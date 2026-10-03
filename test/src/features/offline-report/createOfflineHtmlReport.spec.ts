@@ -51,6 +51,17 @@ describe('[createOfflineHtmlReport]', () => {
     expect(payload.audit.evaluation.rules).toEqual(audit.evaluation.rules);
     expect(payload.audit.evaluation.cyclicPackages).toEqual(audit.evaluation.cyclicPackages);
   });
+
+  it('uses only inline startup resources so direct file URLs need no server', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = createOfflineHtmlReport(audit);
+
+    expect(html.includes('<script src=')).toBe(false);
+    expect(html.includes('<link rel="stylesheet"')).toBe(false);
+    expect(html.includes('<base ')).toBe(false);
+    expect(html.includes('type="module"')).toBe(false);
+    expect(html.includes('id="atlas-report-root"')).toBe(true);
+  });
 });
 
 function readEmbeddedPayload(html: string): OfflinePayload {
