@@ -7,5 +7,6 @@ export function resolveProjectTreeNavigation(
   graphNodeIds: readonly string[],
   currentPackage: string
 ): string {
+  if (node.kind !== 'directory') return currentPackage;
   return resolveProjectTreeGraphNodeId(node, graphNodeIds) ?? currentPackage;
 }
