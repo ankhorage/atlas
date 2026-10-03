@@ -172,6 +172,12 @@ describe('[createOfflineHtmlReport]', () => {
     expect(payload.audit.meta).toEqual(poisonedAudit.meta);
   });
 
+  it('produces deterministic output for the same normalized Audit', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+
+    expect(createOfflineHtmlReport(audit)).toBe(createOfflineHtmlReport(audit));
+  });
+
   it('does not use browser network APIs when the report opens', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const html = createOfflineHtmlReport(audit);
