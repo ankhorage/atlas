@@ -15,7 +15,7 @@ describe('[createOfflineHtmlReport]', () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
 
-    expect(payload.audit).toEqual(audit);
+    expect(payload.audit).toEqual(JSON.parse(JSON.stringify(audit)) as Audit);
     expect(payload.tree).toEqual(buildProjectTree(audit.files));
     expect(payload.graph).toEqual(
       toCytoscapeElements(audit.packageGraph, {
@@ -48,7 +48,7 @@ describe('[createOfflineHtmlReport]', () => {
     expect(/<link[^>]+\bhref=/i.test(executableDocument)).toBe(false);
     expect(/<(?:img|iframe|audio|video|source)[^>]+\bsrc=/i.test(executableDocument)).toBe(false);
     expect(/@import\b/i.test(executableDocument)).toBe(false);
-    expect(/url\s*\(/i.test(executableDocument)).toBe(false);
+    expect(/url\s*\(/i.test(readInlineStyle(html))).toBe(false);
     expect(/sourceMappingURL/i.test(executableDocument)).toBe(false);
     expect(/\bfetch\s*\(/.test(executableDocument)).toBe(false);
     expect(
@@ -94,6 +94,18 @@ describe('[createOfflineHtmlReport]', () => {
     expect(createOfflineHtmlReport(audit)).toBe(createOfflineHtmlReport(audit));
   });
 });
+
+/*** Read the single inline stylesheet so CSS resource assertions do not inspect browser JavaScript APIs. */
+function readInlineStyle(html: string): string {
+  const startMarker = '<style>\n';
+  const endMarker = '\n</style>';
+  const start = html.indexOf(startMarker);
+  if (start < 0) throw new Error('Missing embedded Atlas report stylesheet.');
+  const contentStart = start + startMarker.length;
+  const end = html.indexOf(endMarker, contentStart);
+  if (end < 0) throw new Error('Missing embedded Atlas report stylesheet terminator.');
+  return html.slice(contentStart, end);
+}
 
 /*** Remove project-controlled JSON so resource assertions inspect executable report markup only. */
 function removeEmbeddedPayload(html: string): string {
