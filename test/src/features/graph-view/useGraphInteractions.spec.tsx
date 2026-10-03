@@ -14,12 +14,12 @@ describe('[useGraphInteractions]', () => {
 
     function Harness({
       visibleNodes,
-      selectedNodeId,
+      selectedNodeIds,
     }: {
       visibleNodes: typeof nodes;
-      selectedNodeId: string | null;
+      selectedNodeIds: readonly string[];
     }) {
-      const interaction = useGraphInteractions(visibleNodes, edges, selectedNodeId);
+      const interaction = useGraphInteractions(visibleNodes, edges, selectedNodeIds);
       return (
         <>
           <output>
@@ -35,9 +35,9 @@ describe('[useGraphInteractions]', () => {
       );
     }
 
-    const show = (visibleNodes: typeof nodes, selectedNodeId: string | null) =>
+    const show = (visibleNodes: typeof nodes, selectedNodeIds: readonly string[]) =>
       flushSync(() =>
-        root.render(<Harness visibleNodes={visibleNodes} selectedNodeId={selectedNodeId} />)
+        root.render(<Harness visibleNodes={visibleNodes} selectedNodeIds={selectedNodeIds} />)
       );
     const click = (label: string) =>
       flushSync(() => {
@@ -49,19 +49,19 @@ describe('[useGraphInteractions]', () => {
       });
     const output = () => host.container.querySelector('output')?.textContent;
     try {
-      show(nodes, 'a');
+      show(nodes, ['a']);
       expect(output()).toBe('p:hushed|a:highlight|b:highlight-outgoer');
       click('enter');
       expect(output()).toBe('p:hushed|a:highlight-incomer|b:highlight');
       click('leave');
       expect(output()).toBe('p:hushed|a:highlight|b:highlight-outgoer');
 
-      show(nodes, 'p');
+      show(nodes, ['p']);
       expect(output()).toBe('p:highlight|a:hushed|b:hushed');
 
-      show([{ id: 'b' }], 'a');
+      show([{ id: 'b' }], ['a']);
       expect(output()).toBe('b:');
-      show(nodes, 'a');
+      show(nodes, ['a']);
       expect(output()).toBe('p:hushed|a:highlight|b:highlight-outgoer');
     } finally {
       flushSync(() => root.unmount());
