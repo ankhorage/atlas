@@ -29,7 +29,7 @@ describe('[WorkspaceSidebar]', () => {
     unmount();
   });
 
-  it('shows the Rules tab for architecture detection without any findings', () => {
+  it('keeps architecture detection out of the Rules tab when there are no findings', () => {
     const { container, unmount } = render(
       <ZoraProvider mode="light">
         <SettingsProvider>
@@ -50,12 +50,11 @@ describe('[WorkspaceSidebar]', () => {
       tab.textContent?.includes('Rules')
     );
 
-    expect(rulesTab?.textContent).toContain('Rules');
-    expect(rulesTab?.textContent?.includes('0')).toBe(false);
+    expect(rulesTab).toBeUndefined();
     unmount();
   });
 
-  it('fills visible tool tabs and renders the Rules count as a ZORA badge', () => {
+  it('keeps tool tabs content-sized and renders the Rules count as a ZORA badge', () => {
     const { container, unmount } = render(
       <ZoraProvider mode="light">
         <SettingsProvider>
@@ -79,9 +78,9 @@ describe('[WorkspaceSidebar]', () => {
     );
 
     expect(tabWrappers.length).toBe(3);
-    expect(tabWrappers.every(wrapper => wrapper.getAttribute('style')?.includes('flex:1'))).toBe(
-      true
-    );
+    expect(
+      tabWrappers.some(wrapper => wrapper.getAttribute('style')?.includes('flex:1'))
+    ).toBe(false);
     expect(rulesTab?.textContent).toContain('Rules');
     expect(rulesTab?.textContent).toContain('2');
     expect(rulesTab?.textContent?.includes('Findings')).toBe(false);
