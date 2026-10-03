@@ -12,11 +12,11 @@ describe('[graph/tree selection synchronization]', () => {
     () => {
       const graph = createGraph(
         ['io', 'io.reflectoring', 'io.reflectoring.coderadar', 'lonely'],
-        [['io.reflectoring.coderadar', 'lonely']]
+        [['io.reflectoring.coderadar', 'lonely']],
       );
 
       expect(getSelectableGraphNodeIds(graph)).toEqual(['io.reflectoring.coderadar', 'lonely']);
-    }
+    },
   );
 
   it(
@@ -29,7 +29,7 @@ describe('[graph/tree selection synchronization]', () => {
 
       expect(resolved?.id).toBe('directory:io/reflectoring/coderadar');
       expect(resolved?.graphPackage).toBe('io.reflectoring.coderadar');
-    }
+    },
   );
 
   it('uses displayed child order for structural rows without a direct graph package', () => {
@@ -45,20 +45,20 @@ describe('[graph/tree selection synchronization]', () => {
     };
 
     expect(resolveProjectTreeSelection(structural, ['app.first', 'app.second'])?.id).toBe(
-      'directory:first'
+      'directory:first',
     );
   });
 
   it('maps structural GraphView packages through the same descendant policy into TreeView', () => {
     const tree = coderadarTree();
 
-    expect(
-      resolveGraphProjectTreeSelection(tree, 'io', ['io.reflectoring.coderadar'])?.id
-    ).toBe('directory:io/reflectoring/coderadar');
+    expect(resolveGraphProjectTreeSelection(tree, 'io', ['io.reflectoring.coderadar'])?.id).toBe(
+      'directory:io/reflectoring/coderadar',
+    );
     expect(
       resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', [
         'io.reflectoring.coderadar',
-      ])?.id
+      ])?.id,
     ).toBe('directory:io/reflectoring/coderadar');
   });
 });
@@ -102,10 +102,10 @@ function coderadarTree(): readonly ProjectTreeNode[] {
 /*** Create the minimal package graph shape required by endpoint-selection tests. */
 function createGraph(
   ids: readonly string[],
-  pairs: readonly (readonly [string, string])[]
+  pairs: readonly (readonly [string, string])[],
 ): PackageDependencyGraph {
   return {
-    nodes: ids.map(id => ({
+    nodes: ids.map((id) => ({
       id,
       data: {
         classification: 'intrinsic',
