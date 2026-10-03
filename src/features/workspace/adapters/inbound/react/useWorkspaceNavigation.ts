@@ -1,5 +1,6 @@
 'use client';
 
+import { dedupeBy } from '@ankhorage/utility/array';
 import { applySelectionIntent, type SelectionIntent } from '@ankhorage/utility/selection';
 import { useMemo, useState } from 'react';
 
@@ -52,7 +53,7 @@ function useWorkspaceSelection(input: WorkspaceSelectionInput) {
   const graphNodeIdSet = useMemo(() => new Set(input.packageIds), [input.packageIds]);
   const selectedGraphNodeIds = useMemo(
     () =>
-      uniqueStrings(
+      dedupeStrings(
         selections.flatMap(selection =>
           selection.graphNodeId === null ? [] : [selection.graphNodeId]
         )
@@ -61,7 +62,7 @@ function useWorkspaceSelection(input: WorkspaceSelectionInput) {
   );
   const selectedTreeIds = useMemo(
     () =>
-      uniqueStrings(
+      dedupeStrings(
         selections.flatMap(selection =>
           selection.treeNodeId === null ? [] : [selection.treeNodeId]
         )
@@ -128,7 +129,7 @@ function areWorkspaceSelectionsEqual(
 }
 
 /*** Preserve first-seen selection order while removing duplicate presentation ids. */
-function uniqueStrings(values: readonly string[]): readonly string[] {
+function dedupeStrings(values: readonly string[]): readonly string[] {
   return [...new Set(values)];
 }
 
