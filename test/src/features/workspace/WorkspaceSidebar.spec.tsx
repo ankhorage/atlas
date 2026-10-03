@@ -154,7 +154,6 @@ const failedEvaluation: Audit['evaluation'] = {
   ],
 };
 
-
 const detectionEvaluation: Audit['evaluation'] = {
   architecture: {
     candidates: [
