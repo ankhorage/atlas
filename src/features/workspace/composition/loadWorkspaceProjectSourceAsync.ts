@@ -4,6 +4,7 @@ import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 import { parseProjectSource } from '@/features/project-source/application/use-cases/parseProjectSource';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
+import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 import { getProjectName } from '@/utils/getProjectName';
 import { parseProjectPath } from '@/utils/parseProjectPath';
@@ -18,7 +19,12 @@ export interface WorkspaceProjectSourceResult {
 export async function loadWorkspaceProjectSourceAsync(
   sourceValue?: string
 ): Promise<WorkspaceProjectSourceResult> {
-  if (sourceValue === undefined || sourceValue.trim() === '') {
+  const startupSource = resolveWorkspaceStartupSource(
+    sourceValue,
+    process.env.NEXT_PUBLIC_PROJECT_PATH
+  );
+
+  if (startupSource.kind === 'filesystem') {
     const projectPath = parseProjectPath();
     return {
       projectName: getProjectName(projectPath),
@@ -27,7 +33,7 @@ export async function loadWorkspaceProjectSourceAsync(
   }
 
   try {
-    const source = parseProjectSource(normalizeGitHubRepositoryUrl(sourceValue));
+    const source = parseProjectSource(normalizeGitHubRepositoryUrl(startupSource.source));
     if (source.kind !== 'github') {
       throw new Error('The browser source field accepts GitHub repository URLs only.');
     }
@@ -43,7 +49,7 @@ export async function loadWorkspaceProjectSourceAsync(
     }
   } catch (error) {
     return {
-      currentSource: sourceValue,
+      currentSource: startupSource.source,
       projectName: '{unknown}',
       workspace: {
         ok: false,
