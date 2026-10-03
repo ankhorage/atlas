@@ -8,9 +8,9 @@ import { useState } from 'react';
 
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
+import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
-import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { t } from '@/i18n/i18n';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
