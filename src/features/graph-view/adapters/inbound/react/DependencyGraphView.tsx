@@ -41,7 +41,11 @@ const GRAPH_VIEWPORT_STYLE = {
 export function DependencyGraphView(props: DependencyGraphViewProps) {
   const settings = useSettings();
   const { theme } = useZoraTheme();
-  const viewport = useGraphViewport();
+  const viewport = useGraphViewport({
+    cycleHighlights: props.cycleHighlights,
+    onSpacingFactorChange: settings.setCytoscapeLayoutSpacing,
+    spacingFactor: settings.cytoscapeLayoutSpacing,
+  });
   const packageGraph = useMemo(
     () =>
       toCytoscapeElements(props.packageGraph, {
@@ -64,7 +68,6 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
   useGraphFocus({
     cycleHighlights: props.cycleHighlights,
     currentPackage: props.currentPackage,
-    requestCycleFocus: viewport.requestCycleFocus,
     setCurrentPackage: props.setCurrentPackage,
     setSubPackageDepth: settings.setSubPackageDepth,
     subPackageDepth: settings.subPackageDepth,
@@ -86,7 +89,6 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
       layout={presentation.layout}
       layoutOptions={presentation.layoutOptions}
       model={presentation.model}
-      onSpacingFactorChange={settings.setCytoscapeLayoutSpacing}
       spacingFactor={settings.cytoscapeLayoutSpacing}
       styles={presentation.styles}
       theme={theme}
@@ -134,6 +136,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const viewport = props.viewport;
   const interactions = useGraphInteractions(props.model.nodes, props.model.edges);
+  const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
 
   /*** Handles structural graph navigation without touching the rendering engine. */
   const handleNodeEvent = (event: GraphViewElementEvent) => {
@@ -156,11 +159,13 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           nodes={interactions.nodes}
           zoomMode="fit-relative"
           sizeNodesToLabels
-          onLayoutComplete={viewport.handleLayoutComplete}
+          onLayoutComplete={controller =>
+            viewport.handleLayoutComplete(controller, visibleNodeIds)
+          }
           onNodeEvent={handleNodeEvent}
           onReady={viewport.handleReady}
           onViewportChange={viewport.handleViewportChange}
-          onSpacingFactorChange={props.onSpacingFactorChange}
+          onSpacingFactorChange={viewport.handleSpacingFactorChange}
           spacingFactor={props.spacingFactor}
           style={{ background: props.theme.semantics.surface.default }}
           styleRules={props.styles}
@@ -204,7 +209,6 @@ interface GraphViewPresentationInput {
 }
 
 interface DependencyGraphCanvasProps extends DependencyGraphViewProps {
-  readonly onSpacingFactorChange: (spacingFactor: number) => void;
   readonly layout: GraphViewLayoutName;
   readonly layoutOptions: Readonly<Record<string, unknown>>;
   readonly model: NonNullable<ReturnType<typeof createGraphViewModel>>;

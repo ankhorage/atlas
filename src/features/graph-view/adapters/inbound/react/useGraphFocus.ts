@@ -1,77 +1,41 @@
 'use client';
 
 import type { ElementsDefinition } from 'cytoscape';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import { createCycleFocus } from '@/features/audit/utils/cycleVisualization';
 import { readNodeDefinitionId } from '@/features/graph-view/utils/readNodeDefinitionId';
 import type { CycleHighlight } from '@/types/auditVisualization';
 
-/*** Expands cycle projection only as needed, then requests one intentional whole-graph focus. */
+/*** Expands cycle projection only when the current view does not contain all active evidence. */
 export function useGraphFocus(input: UseGraphFocusInput) {
-  const handledCycleSignatureRef = useRef<string | null>(null);
   const {
     cycleHighlights,
     currentPackage,
-    requestCycleFocus,
     setCurrentPackage,
     setSubPackageDepth,
     subPackageDepth,
     visibleElements,
   } = input;
 
-  useEffect(
-    () =>
-      runCycleProjectionFocus(
-        {
-          cycleHighlights,
-          currentPackage,
-          requestCycleFocus,
-          setCurrentPackage,
-          setSubPackageDepth,
-          subPackageDepth,
-          visibleElements,
-        },
-        handledCycleSignatureRef
-      ),
-    [
+  useEffect(() => {
+    if (visibleElements === null || cycleHighlights.length === 0) return;
+    ensureCycleProjection({
       cycleHighlights,
       currentPackage,
-      requestCycleFocus,
       setCurrentPackage,
       setSubPackageDepth,
       subPackageDepth,
       visibleElements,
-    ]
-  );
-}
-
-/*** Runs one cycle-focus iteration, expanding projection before requesting canonical viewport focus. */
-function runCycleProjectionFocus(
-  input: UseGraphFocusInput,
-  handledCycleSignatureRef: { current: string | null }
-) {
-  if (input.visibleElements === null) return;
-
-  if (input.cycleHighlights.length === 0) {
-    handledCycleSignatureRef.current = null;
-    input.requestCycleFocus(null);
-    return;
-  }
-
-  const signature = getCycleSignature(input.cycleHighlights);
-  if (handledCycleSignatureRef.current === signature) return;
-  if (ensureCycleProjection(input)) return;
-  input.requestCycleFocus(signature);
-  handledCycleSignatureRef.current = signature;
-}
-
-/*** Returns a stable identity for the current active-cycle set. */
-function getCycleSignature(highlights: readonly CycleHighlight[]): string {
-  return highlights
-    .map(highlight => highlight.id)
-    .sort()
-    .join('|');
+    });
+  }, [
+    cycleHighlights,
+    currentPackage,
+    setCurrentPackage,
+    setSubPackageDepth,
+    subPackageDepth,
+    visibleElements,
+  ]);
 }
 
 /*** Expands only the projection dimensions required to expose every active cycle package. */
@@ -102,7 +66,6 @@ function ensureCycleProjection(input: UseGraphFocusInput): boolean {
 interface UseGraphFocusInput {
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly currentPackage: string;
-  readonly requestCycleFocus: (signature: string | null) => void;
   readonly setCurrentPackage: (path: string) => void;
   readonly setSubPackageDepth: (depth: number) => void;
   readonly subPackageDepth: number;

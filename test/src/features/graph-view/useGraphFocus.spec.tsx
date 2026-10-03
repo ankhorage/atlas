@@ -24,7 +24,6 @@ describe('[cycle projection workflow]', () => {
       },
     ];
     const transitions: string[] = [];
-    const focusRequests: (string | null)[] = [];
     const host = render(<div />);
     const root = createRoot(host.container);
 
@@ -51,7 +50,6 @@ describe('[cycle projection workflow]', () => {
       useGraphFocus({
         currentPackage,
         cycleHighlights: highlights,
-        requestCycleFocus: signature => focusRequests.push(signature),
         setCurrentPackage: navigate,
         setSubPackageDepth,
         subPackageDepth,
@@ -73,16 +71,11 @@ describe('[cycle projection workflow]', () => {
       expect(host.container.querySelector('output')?.textContent?.split('|')).toContain(ancestor);
       expect(host.container.querySelector('output')?.textContent?.split('|')).toContain(descendant);
       expect(transitions).toEqual(['io.reflectoring']);
-      expect(focusRequests).toEqual([null, 'ancestor-cycle']);
+
       await act(async () => root.render(<Harness highlights={active} />));
-      expect(transitions).toEqual(['io.reflectoring']);
-      expect(focusRequests).toEqual([null, 'ancestor-cycle']);
       await act(async () => root.render(<Harness highlights={[]} />));
-      expect(transitions).toEqual(['io.reflectoring']);
-      expect(focusRequests).toEqual([null, 'ancestor-cycle', null]);
       await act(async () => root.render(<Harness highlights={active} />));
       expect(transitions).toEqual(['io.reflectoring']);
-      expect(focusRequests).toEqual([null, 'ancestor-cycle', null, 'ancestor-cycle']);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
@@ -92,7 +85,6 @@ describe('[cycle projection workflow]', () => {
   it('preserves scope and depth when every active cycle package is already visible', async () => {
     const transitions: string[] = [];
     const depthChanges: number[] = [];
-    const focusRequests: (string | null)[] = [];
     const host = render(<div />);
     const root = createRoot(host.container);
     const elements = {
@@ -133,7 +125,6 @@ describe('[cycle projection workflow]', () => {
       useGraphFocus({
         currentPackage,
         cycleHighlights: active,
-        requestCycleFocus: signature => focusRequests.push(signature),
         setCurrentPackage: navigate,
         setSubPackageDepth: setDepth,
         subPackageDepth,
@@ -150,7 +141,6 @@ describe('[cycle projection workflow]', () => {
       ]);
       expect(transitions).toEqual([]);
       expect(depthChanges).toEqual([]);
-      expect(focusRequests).toEqual(['visible-cycle']);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
