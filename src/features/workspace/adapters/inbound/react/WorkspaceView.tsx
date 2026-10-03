@@ -7,16 +7,13 @@ import { useZoraTheme } from '@zora/ZoraProvider';
 import { useState } from 'react';
 
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
-import { resolveProjectTreeNavigation } from '@/features/project-tree/application/use-cases/resolveProjectTreeNavigation';
-import { findProjectTreeNodeByGraphPackage } from '@/features/project-tree/utils/findProjectTreeNodeByGraphPackage';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
+import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { t } from '@/i18n/i18n';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
-import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
-import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 import { getProjectName } from '@/utils/getProjectName';
 
@@ -35,43 +32,6 @@ export function WorkspaceView({ workspace }: WorkspaceViewProps) {
       </SettingsProvider>
     </>
   );
-}
-
-/*** Owns package and tree navigation state shared by workspace graph and tree surfaces. */
-function useWorkspaceNavigation(workspace: WorkspaceLoadResult): WorkspaceNavigation {
-  const [currentPackage, setCurrentPackage] = useState('');
-  const [selectedTreeId, setSelectedTreeId] = useState<string | null>(null);
-  const packageGraph = workspace.ok ? workspace.value.packageGraph : null;
-  const projectTree = workspace.ok ? workspace.value.tree : [];
-
-  /*** Navigates graph scope and mirrors the matching package selection in the project tree. */
-  const navigateToPackage = (path: string) => {
-    const packageName = normalizeGraphPackage(path);
-    const matchingTreeNode = findProjectTreeNodeByGraphPackage(projectTree, packageName);
-    setCurrentPackage(packageName);
-    setSelectedTreeId(matchingTreeNode?.id ?? null);
-  };
-
-  /*** Navigates only into packages with graph descendants while preserving leaf selection. */
-  const selectProjectTreeNode = (node: ProjectTreeNode) => {
-    setSelectedTreeId(node.id);
-    setCurrentPackage(
-      resolveProjectTreeNavigation(
-        node,
-        packageGraph?.nodes.map(candidate => candidate.id) ?? [],
-        currentPackage
-      )
-    );
-  };
-
-  return {
-    currentPackage,
-    navigateToPackage,
-    packageGraph,
-    projectTree,
-    selectedTreeId,
-    selectProjectTreeNode,
-  };
 }
 
 /*** Renders workspace breadcrumbs and the theme action. */
@@ -138,7 +98,10 @@ function WorkspaceBody({ workspace, navigation }: WorkspaceBodyProps) {
           cycleHighlights={cycleSelection.highlights}
           cycleInspection={cycleInspection}
           packageGraph={navigation.packageGraph}
+          selectedGraphNodeId={navigation.selectedGraphNodeId}
           setCurrentPackage={navigation.navigateToPackage}
+          onGraphNodeSelect={navigation.selectGraphNode}
+          onGraphNodeUnselect={navigation.unselectGraphNode}
           onCloseInspection={() => setCycleInspection(null)}
         />
       ) : (
@@ -192,15 +155,6 @@ interface WorkspaceViewProps {
   readonly workspace: WorkspaceLoadResult;
 }
 
-interface WorkspaceNavigation {
-  readonly currentPackage: string;
-  readonly navigateToPackage: (path: string) => void;
-  readonly packageGraph: PackageDependencyGraph | null;
-  readonly projectTree: readonly ProjectTreeNode[];
-  readonly selectedTreeId: string | null;
-  readonly selectProjectTreeNode: (node: ProjectTreeNode) => void;
-}
-
 interface WorkspaceHeaderProps {
   readonly currentPackage: string;
   readonly onNavigate: (path: string) => void;
@@ -208,7 +162,7 @@ interface WorkspaceHeaderProps {
 
 interface WorkspaceBodyProps {
   readonly workspace: WorkspaceLoadResult;
-  readonly navigation: WorkspaceNavigation;
+  readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
 }
 
 interface BreadcrumbItem {
