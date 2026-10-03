@@ -101,6 +101,27 @@ jobs:
             echo "No test script found; skipping."
           fi
 
+      - name: Verify offline report in browser
+        run: |
+          bun bin/atlas.ts examples/java/my-app --offline --out offline-smoke.html
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          timeout 30s "$CHROME" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --disable-background-networking \
+            --disable-component-update \
+            --disable-default-apps \
+            --disable-sync \
+            --host-resolver-rules="MAP * 0.0.0.0" \
+            --dump-dom \
+            "file://${GITHUB_WORKSPACE}/offline-smoke.html" > offline-smoke-dom.html
+          grep -F "Atlas · my-app" offline-smoke-dom.html
+          grep -F "Project tree" offline-smoke-dom.html
+          grep -E "[0-9]+ nodes · [0-9]+ edges" offline-smoke-dom.html
+          rm offline-smoke.html offline-smoke-dom.html
+
       - name: Run typecheck
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.typecheck ? 0 : 1)"; then
