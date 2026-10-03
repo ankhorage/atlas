@@ -40,9 +40,16 @@ describe('[graph view projection]', () => {
     expect(maximum.elements).toEqual(excessive.elements);
   });
 
-  it('skips single-child package levels until the first relevant branching scope', () => {
+  it('calculates the highest relevant branch only from Home and preserves explicit scopes', () => {
     const elements = createDeepElements();
 
+    const home = projectVisibleGraph({
+      currentPackage: '',
+      elements,
+      showCompoundNodes: false,
+      showVendorPackages: true,
+      subPackageDepth: 1,
+    });
     const src = projectVisibleGraph({
       currentPackage: 'src',
       elements,
@@ -57,17 +64,10 @@ describe('[graph view projection]', () => {
       showVendorPackages: true,
       subPackageDepth: 1,
     });
-    const reflectoring = projectVisibleGraph({
-      currentPackage: 'src.io.reflectoring',
-      elements,
-      showCompoundNodes: false,
-      showVendorPackages: true,
-      subPackageDepth: 1,
-    });
 
-    expect(src.redirectPackage).toBe('src.io.reflectoring');
-    expect(io.redirectPackage).toBe('src.io.reflectoring');
-    expect(reflectoring.redirectPackage).toBeNull();
+    expect(home.redirectPackage).toBe('src.io.reflectoring');
+    expect(src.redirectPackage).toBeNull();
+    expect(io.redirectPackage).toBeNull();
   });
 
   it('does not skip an explicit cycle scope even when it has only one direct package', () => {

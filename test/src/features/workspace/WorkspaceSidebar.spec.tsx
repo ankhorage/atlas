@@ -19,6 +19,7 @@ describe('[WorkspaceSidebar]', () => {
             selectedTreeId={null}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
+            onProjectTreeToggle={() => undefined}
           />
         </SettingsProvider>
       </ZoraProvider>
@@ -40,6 +41,7 @@ describe('[WorkspaceSidebar]', () => {
             selectedTreeId={null}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
+            onProjectTreeToggle={() => undefined}
           />
         </SettingsProvider>
       </ZoraProvider>
@@ -65,6 +67,7 @@ describe('[WorkspaceSidebar]', () => {
             selectedTreeId={null}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
+            onProjectTreeToggle={() => undefined}
           />
         </SettingsProvider>
       </ZoraProvider>
@@ -97,6 +100,7 @@ describe('[WorkspaceSidebar]', () => {
             selectedTreeId={null}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
+            onProjectTreeToggle={() => undefined}
           />
         </SettingsProvider>
       </ZoraProvider>

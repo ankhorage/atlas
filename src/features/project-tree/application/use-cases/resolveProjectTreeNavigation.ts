@@ -1,13 +1,12 @@
+import { resolveProjectTreeGraphNodeId } from '@/features/project-tree/utils/resolveProjectTreeGraphNodeId';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Resolves tree selection using the same package-descendant rule as graph double-press navigation. */
+/*** Resolves folder navigation to the exact represented graph scope without descending. */
 export function resolveProjectTreeNavigation(
   node: ProjectTreeNode,
-  packageIds: readonly string[],
+  graphNodeIds: readonly string[],
   currentPackage: string
 ): string {
-  const packageId = node.graphPackage.replaceAll('/', '.').replace(/^\.+|\.+$/g, '');
-  if (!packageId) return currentPackage;
-  const descendantPrefix = packageId + '.';
-  return packageIds.some(id => id.startsWith(descendantPrefix)) ? packageId : currentPackage;
+  if (node.kind !== 'directory') return currentPackage;
+  return resolveProjectTreeGraphNodeId(node, graphNodeIds) ?? currentPackage;
 }

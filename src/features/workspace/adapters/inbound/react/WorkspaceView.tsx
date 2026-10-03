@@ -160,6 +160,7 @@ function WorkspaceBody({
         sourceRevision={sourceRevision}
         onCycleInspectionChange={setCycleInspection}
         onProjectTreeSelect={navigation.selectProjectTreeNode}
+        onProjectTreeToggle={navigation.toggleProjectTreeNode}
       />
       <WorkspaceContent
         cycleInspection={cycleInspection}

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 
-import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTreeNode';
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Opens a navigated folder once while preserving subsequent manual collapse and expansion. */
+/*** Preserves manual folder expansion while revealing only ancestors required by selection. */
 export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
   selectedId: string | null
@@ -28,19 +27,12 @@ export function useProjectTreeExpansion(
   };
 }
 
-/*** Adds ancestors and the selected directory without turning files into expandable items. */
+/*** Adds only the ancestors required to reveal a selection without opening the selected folder. */
 function revealSelection(
   nodes: readonly ProjectTreeNode[],
   selectedId: string | null,
   ids: readonly string[]
 ) {
   if (selectedId === null) return ids;
-  const selected = findProjectTreeNode(nodes, selectedId);
-  return [
-    ...new Set([
-      ...ids,
-      ...getProjectTreeAncestorIds(nodes, selectedId),
-      ...(selected?.kind === 'directory' ? [selectedId] : []),
-    ]),
-  ];
+  return [...new Set([...ids, ...getProjectTreeAncestorIds(nodes, selectedId)])];
 }
