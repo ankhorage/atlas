@@ -51,8 +51,8 @@ function flattenCsvValue(value: unknown, path: string): readonly CsvRow[] {
   }
 
   if (typeof value === 'object') {
-    const entries = Object.entries(value as Readonly<Record<string, unknown>>).sort(([left], [right]) =>
-      left.localeCompare(right)
+    const entries = Object.entries(value as Readonly<Record<string, unknown>>).sort(
+      ([left], [right]) => left.localeCompare(right)
     );
     if (entries.length === 0) return [[path || '/', 'object', '']];
     return entries.flatMap(([key, entry]) =>
