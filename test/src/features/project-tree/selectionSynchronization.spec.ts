@@ -1,32 +1,22 @@
 import { describe, expect, it } from '@artiphishle/testosterone';
 
-import { getSelectableGraphNodeIds } from '@/features/graph-view/domain/getSelectableGraphNodeIds';
 import { resolveGraphProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection';
 import { resolveProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveProjectTreeSelection';
-import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
 describe('[graph/tree selection synchronization]', () => {
-  it('treats relationship-free containers as structural while preserving dependency endpoints and leaves', () => {
-    const graph = createGraph(
-      ['io', 'io.reflectoring', 'io.reflectoring.coderadar', 'lonely'],
-      [['io.reflectoring.coderadar', 'lonely']]
-    );
+  const graphNodeIds = ['io', 'io.reflectoring', 'io.reflectoring.coderadar'];
 
-    expect(getSelectableGraphNodeIds(graph)).toEqual(['io.reflectoring.coderadar', 'lonely']);
-  });
-
-  it('resolves the io/reflectoring/coderadar filesystem chain to the deepest graph-backed directory', () => {
+  it('selects the exact visible structural row instead of its first dependency descendant', () => {
     const io = coderadarTree()[0];
     if (!io) throw new Error('Missing io fixture');
 
-    const resolved = resolveProjectTreeSelection(io, ['io.reflectoring.coderadar']);
+    const resolved = resolveProjectTreeSelection(io, graphNodeIds);
 
-    expect(resolved?.id).toBe('directory:io/reflectoring/coderadar');
-    expect(resolved?.graphPackage).toBe('io.reflectoring.coderadar');
+    expect(resolved?.id).toBe('directory:io');
   });
 
-  it('uses displayed child order for structural rows without a direct graph package', () => {
+  it('does not replace an unmapped structural row with a displayed child', () => {
     const structural: ProjectTreeNode = {
       id: 'directory:src',
       graphPackage: '',
@@ -38,26 +28,36 @@ describe('[graph/tree selection synchronization]', () => {
       ],
     };
 
-    expect(resolveProjectTreeSelection(structural, ['app.first', 'app.second'])?.id).toBe(
-      'directory:first'
+    expect(resolveProjectTreeSelection(structural, ['app.first', 'app.second'])).toBeNull();
+  });
+
+  it('selects an exact nested folder such as src/features/accordion/adapters', () => {
+    const adapters: ProjectTreeNode = {
+      id: 'directory:src/features/accordion/adapters',
+      graphPackage: 'src.features.accordion.adapters',
+      kind: 'directory',
+      label: 'adapters',
+    };
+
+    expect(resolveProjectTreeSelection(adapters, ['src.features.accordion.adapters'])?.id).toBe(
+      'directory:src/features/accordion/adapters'
     );
   });
 
-  it('maps structural GraphView packages through the same descendant policy into TreeView', () => {
+  it('maps structural GraphView packages to their matching filesystem rows without descending', () => {
     const tree = coderadarTree();
 
-    expect(resolveGraphProjectTreeSelection(tree, 'io', ['io.reflectoring.coderadar'])?.id).toBe(
+    expect(resolveGraphProjectTreeSelection(tree, 'io', graphNodeIds)?.id).toBe('directory:io');
+    expect(resolveGraphProjectTreeSelection(tree, 'io.reflectoring', graphNodeIds)?.id).toBe(
+      'directory:io/reflectoring'
+    );
+    expect(resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', graphNodeIds)?.id).toBe(
       'directory:io/reflectoring/coderadar'
     );
-    expect(
-      resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', [
-        'io.reflectoring.coderadar',
-      ])?.id
-    ).toBe('directory:io/reflectoring/coderadar');
   });
 });
 
-/*** Build the regression tree where several filesystem containers represent one Java package. */
+/*** Build a regression tree whose source containers previously collapsed to the deepest package. */
 function coderadarTree(): readonly ProjectTreeNode[] {
   return [
     {
@@ -91,30 +91,4 @@ function coderadarTree(): readonly ProjectTreeNode[] {
       ],
     },
   ];
-}
-
-/*** Create the minimal package graph shape required by endpoint-selection tests. */
-function createGraph(
-  ids: readonly string[],
-  pairs: readonly (readonly [string, string])[]
-): PackageDependencyGraph {
-  return {
-    nodes: ids.map(id => ({
-      id,
-      data: {
-        classification: 'intrinsic',
-        path: id,
-        parent: id.includes('.') ? id.split('.').slice(0, -1).join('.') : '',
-        label: id,
-        name: id,
-        isIntrinsic: true,
-      },
-    })),
-    edges: pairs.map(([source, target]) => ({
-      id: `${source}->${target}`,
-      source,
-      target,
-      data: { weight: 1, evidence: [] },
-    })),
-  };
 }
