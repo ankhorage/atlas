@@ -26,7 +26,7 @@ export function ProjectTreePanel({
         expansionIndicator="chevron"
         expandedIds={expansion.expandedIds}
         nodes={treeNodes}
-        selectedId={selectedId ?? undefined}
+        selectedIds={selectedId === null ? [] : [selectedId]}
         onExpandedChange={ids => {
           const changedId = getChangedExpansionId(expansion.expandedIds, ids);
           expansion.onExpandedChange(ids);
