@@ -65,6 +65,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
       <Breadcrumbs
         compact
         items={createBreadcrumbItems(props.projectName, props.currentPackage)}
+        separator="›"
         onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
       />
     </AppBar>
@@ -192,7 +193,7 @@ function createBreadcrumbItems(
 
   return [
     { id: '__project__', label: projectName, disabled: true },
-    { id: '', label: t('nav.packages'), icon: { name: 'home-outline' } },
+    { id: '', label: t('nav.packages') },
     ...packageItems,
   ];
 }
@@ -239,5 +240,4 @@ interface BreadcrumbItem {
   readonly id: string;
   readonly label: string;
   readonly disabled?: boolean;
-  readonly icon?: { readonly name: string };
 }

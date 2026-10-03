@@ -2,18 +2,15 @@ import { describe, expect, it, render } from '@artiphishle/testosterone';
 import { ZoraProvider } from '@zora/ZoraProvider';
 import React from 'react';
 
+import { ArchitectureAnalysisPanel } from '@/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel';
 import { AuditRulePanel } from '@/features/audit/adapters/inbound/react/AuditRulePanel';
 import type { Audit } from '@/types/audit';
 
 describe('[AuditRulePanel]', () => {
-  it('renders architecture detection evidence independently from rule enforcement', () => {
+  it('keeps architecture analysis available independently from the Rules presentation', () => {
     const { getByText } = render(
       <ZoraProvider mode="light">
-        <AuditRulePanel
-          evaluation={architectureEvaluation}
-          cycleSelection={{ highlights: [], selectedIds: [], setSelected: () => undefined }}
-          onCycleInspectionChange={() => undefined}
-        />
+        <ArchitectureAnalysisPanel evaluation={architectureEvaluation} />
       </ZoraProvider>
     );
 
@@ -23,6 +20,21 @@ describe('[AuditRulePanel]', () => {
     expect(getByText('! Domain imports an adapter.')).toBeDefined();
     expect(getByText('Missing capabilities: implements')).toBeDefined();
     expect(getByText('Detection only · no enforcement target selected')).toBeDefined();
+  });
+
+  it('does not present architecture detection as a rule finding', () => {
+    const { container } = render(
+      <ZoraProvider mode="light">
+        <AuditRulePanel
+          evaluation={architectureEvaluation}
+          cycleSelection={{ highlights: [], selectedIds: [], setSelected: () => undefined }}
+          onCycleInspectionChange={() => undefined}
+        />
+      </ZoraProvider>
+    );
+
+    expect(container.textContent?.includes('Architecture Analysis')).toBe(false);
+    expect(container.textContent?.includes('hexagonal')).toBe(false);
   });
 
   it('renders violated rule content supplied by the composition root', () => {

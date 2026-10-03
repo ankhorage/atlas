@@ -43,7 +43,7 @@ export function WorkspaceSidebar(props: WorkspaceSidebarProps) {
         width: 288,
       }}
     >
-      <Surface style={{ height: '100%', overflow: 'hidden' }} variant="subtle">
+      <Surface style={{ height: '100%', overflow: 'hidden' }}>
         <View flex={1} style={{ minHeight: 0, overflow: 'hidden' }}>
           <WorkspaceToolTabs {...props} activeTool={activeTool} onValueChange={selectTool} />
         </View>
@@ -66,7 +66,7 @@ function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
       value={props.activeTool}
       onValueChange={props.onValueChange}
     >
-      <TabList fill>
+      <TabList>
         <Tab label={t('settings.tree')} value="tree" />
         {hasRuleContent ? (
           <Tab
@@ -130,14 +130,9 @@ function WorkspaceRulesPanel(props: WorkspaceSidebarProps) {
   );
 }
 
-/*** Report whether the Rules tool has detection or finding content to inspect. */
+/*** Report whether the Rules tool has actual rule findings to inspect. */
 function hasRulesContent(evaluation: Audit['evaluation'] | null): boolean {
-  return (
-    evaluation !== null &&
-    (evaluation.architecture.candidates.length > 0 ||
-      evaluation.architectureEvaluation !== undefined ||
-      countRuleFindings(evaluation) > 0)
-  );
+  return evaluation !== null && countRuleFindings(evaluation) > 0;
 }
 
 /*** Count canonical and specialized findings represented by the workspace Rules tool. */
