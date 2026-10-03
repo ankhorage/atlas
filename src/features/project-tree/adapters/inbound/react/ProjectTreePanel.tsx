@@ -1,4 +1,5 @@
 'use client';
+import { Icon } from '@zora/icon';
 import { type TreeItemNode, TreeView } from '@zora/tree-view';
 import { View } from '@zora/view';
 import React from 'react';
@@ -46,9 +47,12 @@ function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   return {
     id: node.id,
     label: node.label,
-    icon: {
-      name: node.kind === 'directory' ? 'folder-outline' : 'document-text-outline',
-    },
+    icon: (
+      <Icon
+        name={node.kind === 'directory' ? 'folder-outline' : 'document-text-outline'}
+        size="s"
+      />
+    ),
     ...(node.children ? { children: node.children.map(child => toTreeItemNode(child)) } : {}),
   };
 }
