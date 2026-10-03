@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 
 import { resolveGraphProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection';
 import { resolveProjectTreeNavigation } from '@/features/project-tree/application/use-cases/resolveProjectTreeNavigation';
-import { resolveProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveProjectTreeSelection';
 import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTreeNode';
 import { resolveProjectTreeGraphNodeId } from '@/features/project-tree/utils/resolveProjectTreeGraphNodeId';
 import type { ProjectTreeNode } from '@/types/projectTree';
@@ -80,10 +79,8 @@ function resolveTreeWorkspaceSelection(
   node: ProjectTreeNode,
   graphNodeIds: readonly string[]
 ): WorkspaceSelection {
-  const resolvedNode = resolveProjectTreeSelection(node, graphNodeIds);
   return {
-    graphNodeId:
-      resolvedNode === null ? null : resolveProjectTreeGraphNodeId(resolvedNode, graphNodeIds),
+    graphNodeId: resolveProjectTreeGraphNodeId(node, graphNodeIds),
     treeNodeId: node.id,
   };
 }
