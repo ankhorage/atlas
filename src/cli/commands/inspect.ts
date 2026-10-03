@@ -3,7 +3,7 @@ import { parseAtlasCommandArgs } from '@/cli/parseAtlasCommandArgs';
 import { startViewerSourceAsync } from '@/cli/startViewerSourceAsync';
 
 /*** Execute `ankh atlas inspect` through the canonical project-source and viewer boundaries. */
-export async function inspect(request: AtlasCommandRequest): Promise<{ readonly exitCode: number }> {
+export async function inspect(\n  request: AtlasCommandRequest\n): Promise<{ readonly exitCode: number }> {
   const options = parseAtlasCommandArgs(request.argv ?? []);
   if (options.help) {
     console.log(getAtlasHelp());

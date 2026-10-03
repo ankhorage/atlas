@@ -10,7 +10,7 @@ export async function runExportCommand(
   const exportFormat = options.exportFormat ?? 'json';
 
   if (exportFormat === 'offline') {
-    console.error('Offline HTML export is not available yet; implementation is tracked by Atlas #261.');
+    console.error(\n      'Offline HTML export is not available yet; implementation is tracked by Atlas #261.'\n    );
     return { exitCode: 1 };
   }
 

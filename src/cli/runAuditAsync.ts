@@ -51,15 +51,25 @@ function flattenCsvValue(value: unknown, path: string): readonly CsvRow[] {
   }
 
   if (typeof value === 'object') {
-    const record = value as Readonly<Record<string, unknown>>;
-    const keys = Object.keys(record).sort();
-    if (keys.length === 0) return [[path || '/', 'object', '']];
-    return keys.flatMap(key =>
-      flattenCsvValue(record[key], `${path}/${escapeJsonPointerSegment(key)}`)
+    const entries = Object.entries(value as Readonly<Record<string, unknown>>).sort(([left], [right]) =>
+      left.localeCompare(right)
+    );
+    if (entries.length === 0) return [[path || '/', 'object', '']];
+    return entries.flatMap(([key, entry]) =>
+      flattenCsvValue(entry, `${path}/${escapeJsonPointerSegment(key)}`)
     );
   }
 
-  return [[path || '/', typeof value, String(value)]];
+  return [[path || '/', typeof value, serializeCsvPrimitive(value)]];
+}
+
+/*** Serializes one non-container Audit value without implicit object coercion. */
+function serializeCsvPrimitive(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'bigint') return value.toString();
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (value === undefined) return '';
+  throw new Error(`Unsupported Audit CSV value type: ${typeof value}.`);
 }
 
 /*** Escapes one JSON-pointer path segment for deterministic CSV paths. */

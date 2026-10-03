@@ -11,10 +11,9 @@ export function parseProjectSource(value: string): ProjectSource {
     return { kind: 'github', url: normalizeGitHubRepositoryUrl(source) };
   } catch (error) {
     if (source.includes('://') || source.startsWith('github.com/')) {
-      throw new Error(
-        'Only local project paths and GitHub repository sources are supported.',
-        { cause: error }
-      );
+      throw new Error('Only local project paths and GitHub repository sources are supported.', {
+        cause: error,
+      });
     }
     return { kind: 'filesystem', path: source };
   }
