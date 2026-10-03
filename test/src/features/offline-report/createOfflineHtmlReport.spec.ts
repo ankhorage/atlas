@@ -7,6 +7,23 @@ import { createAuditAsync } from '@/features/audit/composition/createAuditAsync'
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
 
 describe('[createOfflineHtmlReport]', () => {
+  it('requires no external runtime resources or browser network APIs', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = createOfflineHtmlReport(audit);
+    const executableDocument = removeEmbeddedPayload(html);
+
+    expect(/<script[^>]+\\bsrc=/i.test(executableDocument)).toBe(false);
+    expect(/<link[^>]+\\bhref=/i.test(executableDocument)).toBe(false);
+    expect(/<(?:img|iframe|audio|video|source)[^>]+\\bsrc=/i.test(executableDocument)).toBe(false);
+    expect(/@import\\b/i.test(executableDocument)).toBe(false);
+    expect(/url\\s*\\(/i.test(executableDocument)).toBe(false);
+    expect(/sourceMappingURL/i.test(executableDocument)).toBe(false);
+    expect(/\\bfetch\\s*\\(/.test(executableDocument)).toBe(false);
+    expect(/XMLHttpRequest|WebSocket|EventSource|sendBeacon|importScripts/.test(executableDocument)).toBe(
+      false
+    );
+  });
+
   it('is byte-deterministic for the same normalized captured Audit', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
 
@@ -93,6 +110,15 @@ describe('[createOfflineHtmlReport]', () => {
     expect(html.includes('<script>')).toBe(true);
   });
 });
+
+function removeEmbeddedPayload(html: string): string {
+  const marker = '<script id="atlas-report-data" type="application/json">\\n';
+  const start = html.indexOf(marker);
+  if (start < 0) throw new Error('Missing embedded Atlas report payload.');
+  const end = html.indexOf('\\n</script>', start + marker.length);
+  if (end < 0) throw new Error('Missing embedded Atlas report payload terminator.');
+  return html.slice(0, start) + html.slice(end + '\\n</script>'.length);
+}
 
 function readEmbeddedPayload(html: string): OfflinePayload {
   const marker = '<script id="atlas-report-data" type="application/json">\n';
