@@ -32,6 +32,17 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10'
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 

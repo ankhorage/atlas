@@ -124,6 +124,39 @@ See [maven-plugin/README.md](./maven-plugin/README.md) for the complete Maven co
 
 </details>
 
+
+<details>
+  <summary>Gradle</summary>
+
+The Gradle adapter runs the same PKGViz audit/rule contract from `pkgvizAudit`, wires that task
+into Gradle's `check` lifecycle, and writes `build/pkgviz-audit.json`.
+
+```kotlin
+plugins {
+    id("io.github.artiphishle.pkgviz") version "YOUR_VERSION"
+}
+
+pkgviz {
+    packageSpec.set("pkgviz@YOUR_VERSION")
+    rules.set(listOf("cyclic-dependencies=block"))
+    failOnRuleViolation.set(true)
+}
+```
+
+The plugin is language-neutral at the build-tool boundary and supports both Java and Kotlin
+projects through the same canonical PKGViz analyzers. Use `audit` instead of `block` to keep
+cycle findings advisory, or `off` to disable the rule.
+
+For local development of the adapter:
+
+```bash
+gradle -p gradle-plugin test
+```
+
+See [gradle-plugin/README.md](./gradle-plugin/README.md) for the complete configuration.
+
+</details>
+
 <details>
   <summary>GitHub Actions</summary>
 
