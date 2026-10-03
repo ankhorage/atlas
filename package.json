@@ -19,7 +19,7 @@
     "bun": ">=1.2.18",
     "npm": ">=10.9.2"
   },
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
   "keywords": [
     "code-analysis",
