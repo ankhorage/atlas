@@ -130,16 +130,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const viewport = useGraphViewport();
-  const interactions = useGraphInteractions(props.model.nodes, props.model.edges, props.selectedNodeId);
-  const selectedNodeIds = readSelectedNodeIds(props.selectedNodeId);
-
-  const handleNodeEvent = createGraphNodeEventHandler({
-    handleInteraction: interactions.handleNodeEvent,
-    onNodeSelect: props.onNodeSelect,
-    onNodeUnselect: props.onNodeUnselect,
-    parentNodeIds: props.model.parentNodeIds,
-    setCurrentPackage: props.setCurrentPackage,
-  });
+  const interactions = useGraphCanvasInteractions(props);
 
   return (
     <div style={GRAPH_CANVAS_STYLE}>
@@ -153,11 +144,11 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           minReadableLabelSize={24}
           maxFitLabelSize={24}
           nodes={interactions.nodes}
-          selectedNodeIds={selectedNodeIds}
+          selectedNodeIds={interactions.selectedNodeIds}
           zoomMode="fit-relative"
           sizeNodesToLabels
           onLayoutComplete={viewport.handleLayoutComplete}
-          onNodeEvent={handleNodeEvent}
+          onNodeEvent={interactions.handleNodeEvent}
           onReady={viewport.handleReady}
           onViewportChange={viewport.handleViewportChange}
           onSpacingFactorChange={props.onSpacingFactorChange}
@@ -178,9 +169,24 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   );
 }
 
-/*** Return the controlled GraphView selection shape without owning selection state locally. */
-function readSelectedNodeIds(selectedNodeId: string | null): readonly string[] {
-  return selectedNodeId === null ? [] : [selectedNodeId];
+/*** Compose local hover presentation with the workspace-owned controlled graph selection. */
+function useGraphCanvasInteractions(props: DependencyGraphCanvasProps) {
+  const interactions = useGraphInteractions(
+    props.model.nodes,
+    props.model.edges,
+    props.selectedNodeId
+  );
+  return {
+    ...interactions,
+    selectedNodeIds: props.selectedNodeId === null ? [] : [props.selectedNodeId],
+    handleNodeEvent: createGraphNodeEventHandler({
+      handleInteraction: interactions.handleNodeEvent,
+      onNodeSelect: props.onNodeSelect,
+      onNodeUnselect: props.onNodeUnselect,
+      parentNodeIds: props.model.parentNodeIds,
+      setCurrentPackage: props.setCurrentPackage,
+    }),
+  };
 }
 
 /*** Create the graph event bridge without coupling selection changes to layout or viewport work. */
