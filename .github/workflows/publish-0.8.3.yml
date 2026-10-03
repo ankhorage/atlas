@@ -1,0 +1,56 @@
+name: Publish PKGViz 0.8.3
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    if: github.head_ref == 'release/pkgviz-0.8.3'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.NODE_AUTH_TOKEN }}
+    steps:
+      - name: Checkout release candidate
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build publish artifact
+        env:
+          NEXT_PUBLIC_PROJECT_PATH: ${{ github.workspace }}
+        run: bun run build
+
+      - name: Check registry
+        id: registry
+        run: |
+          if npm view pkgviz@0.8.3 version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish pkgviz
+        if: steps.registry.outputs.exists != 'true'
+        run: npm publish --access public --provenance
+
+      - name: Verify published release
+        run: test "$(npm view pkgviz@0.8.3 version)" = "0.8.3"
