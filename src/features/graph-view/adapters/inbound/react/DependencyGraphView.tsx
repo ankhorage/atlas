@@ -130,15 +130,8 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const viewport = useGraphViewport();
-  const interactions = useGraphInteractions(
-    props.model.nodes,
-    props.model.edges,
-    props.selectedNodeId
-  );
-  const selectedNodeIds = useMemo(
-    () => (props.selectedNodeId === null ? [] : [props.selectedNodeId]),
-    [props.selectedNodeId]
-  );
+  const interactions = useGraphInteractions(props.model.nodes, props.model.edges, props.selectedNodeId);
+  const selectedNodeIds = readSelectedNodeIds(props.selectedNodeId);
 
   const handleNodeEvent = createGraphNodeEventHandler({
     handleInteraction: interactions.handleNodeEvent,
@@ -183,6 +176,11 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
       />
     </div>
   );
+}
+
+/*** Return the controlled GraphView selection shape without owning selection state locally. */
+function readSelectedNodeIds(selectedNodeId: string | null): readonly string[] {
+  return selectedNodeId === null ? [] : [selectedNodeId];
 }
 
 /*** Create the graph event bridge without coupling selection changes to layout or viewport work. */
