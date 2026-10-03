@@ -33,4 +33,9 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
     systemProperty("pkgviz.repoRoot", rootProject.projectDir.parentFile.absolutePath)
+    testLogging {
+        events("failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
 }
