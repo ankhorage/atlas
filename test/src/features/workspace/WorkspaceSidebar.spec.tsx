@@ -95,6 +95,7 @@ describe('[WorkspaceSidebar]', () => {
 });
 
 const passedEvaluation: Audit['evaluation'] = {
+  architecture: { candidates: [] },
   cyclicPackages: [],
   rules: [
     {
@@ -109,6 +110,7 @@ const passedEvaluation: Audit['evaluation'] = {
 };
 
 const failedEvaluation: Audit['evaluation'] = {
+  architecture: { candidates: [] },
   cyclicPackages: [
     { packages: ['app.a', 'app.b', 'app.a'], edges: [] },
     { packages: ['app.c', 'app.d', 'app.c'], edges: [] },

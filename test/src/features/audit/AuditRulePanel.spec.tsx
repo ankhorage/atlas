@@ -22,6 +22,7 @@ describe('[AuditRulePanel]', () => {
 });
 
 const evaluation: Audit['evaluation'] = {
+  architecture: { candidates: [] },
   cyclicPackages: [
     {
       packages: ['app.a', 'app.b', 'app.a'],

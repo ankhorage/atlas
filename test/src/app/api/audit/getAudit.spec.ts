@@ -1,3 +1,5 @@
+import { deserializeSourceGraph } from '@ankhorage/dependency-graph';
+
 import { Language } from '@/types/language';
 import type { ProjectFileMetadata } from '@/types/projectFiles';
 
@@ -58,8 +60,21 @@ describe('[getAuditAction]', () => {
     expect(appToA?.data.weight).toBe(1);
     expect(appToA?.data.evidence.length).toBe(1);
 
+    const sourceGraph = deserializeSourceGraph(audit.sourceGraph);
+    expect(sourceGraph.graph.nodes.length > 0).toBe(true);
+    expect(sourceGraph.capabilities.some(report => report.available.includes('declarations'))).toBe(
+      true
+    );
+
+    const modelIds = audit.evaluation.architecture.candidates.map(candidate => candidate.modelId);
+    expect(modelIds).toContain('hexagonal');
+    expect(modelIds).toContain('clean');
+    expect(modelIds).toContain('onion');
+    expect(modelIds).toContain('layered');
+
     const serialized = JSON.parse(JSON.stringify(audit)) as typeof audit;
     expect(serialized.packageGraph).toEqual(audit.packageGraph);
+    expect(deserializeSourceGraph(serialized.sourceGraph)).toEqual(sourceGraph);
 
     const cyclicRule = audit.evaluation.rules.find(rule => rule.id === 'cyclic-dependencies');
     expect(cyclicRule?.status).toBe('failed');

@@ -9,7 +9,7 @@ import { selectParserLanguage } from '@/features/project-analysis/application/us
 import { createProjectFileTreeAsync } from '@/features/project-analysis/composition/createProjectFileTreeAsync';
 import type { ProjectSnapshot } from '@/types/projectAnalysis';
 
-/*** Read one project inspection and derive Tree metadata plus the canonical package graph. */
+/*** Read one project inspection and retain its canonical SourceGraph plus derived package view. */
 export async function readProjectSnapshotAsync(projectPath: string): Promise<ProjectSnapshot> {
   const timeStart = Date.now();
   const inspection = await inspectProjectForAnalysisAsync(projectPath);
@@ -25,5 +25,5 @@ export async function readProjectSnapshotAsync(projectPath: string): Promise<Pro
   );
   const packageGraph = projectDependencyGraph(dependencyGraph);
 
-  return { files, packageGraph, language, projectPath, timeStart };
+  return { files, packageGraph, sourceGraph, language, projectPath, timeStart };
 }
