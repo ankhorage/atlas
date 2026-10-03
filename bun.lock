@@ -12,7 +12,7 @@
         "@ankhorage/repository": "^0.5.1",
         "@ankhorage/rules": "^0.2.0",
         "@ankhorage/rules-architecture": "^0.5.0",
-        "@ankhorage/utility": "^1.9.83",
+        "@ankhorage/utility": "^1.9.84",
         "@artiphishle/testosterone": "^0.3.9",
         "ankh-hooks": "^1.5.2",
         "cytoscape": "^3.34.3",
@@ -62,7 +62,7 @@
 
     "@ankhorage/rules-documentation": ["@ankhorage/rules-documentation@0.3.4", "", { "dependencies": { "@ankhorage/rules": "^0.2.0" } }, "sha512-UdjehHVOajgMQo1yQFUxQ7S1quWTvslnI/FveSGQomuTGXTj//k8Tm3QTiYijcO3qHiWAKByI311Q1IjZpLOMQ=="],
 
-    "@ankhorage/utility": ["@ankhorage/utility@1.9.83", "", { "peerDependencies": { "fastify": "^5.12.5" }, "optionalPeers": ["fastify"] }, "sha512-7g+XW+I6evrkOX/OxwksEZb18THHNz/4tMJACG5t3Opq6O7muNkBvqWjRjiY3VMmQuM9v+t86nNN513I+Z3NqA=="],
+    "@ankhorage/utility": ["@ankhorage/utility@1.9.84", "", { "peerDependencies": { "fastify": "^5.12.5" }, "optionalPeers": ["fastify"] }, "sha512-7OnmIbXffYvpXjS6NcWadYupyrShCS/nkIhrIcsW/++B1FsWW+KZKjukcvKX4H3aAYlTs4b35OVk0lQb1ClnaA=="],
 
     "@artiphishle/testosterone": ["@artiphishle/testosterone@0.3.9", "", { "dependencies": { "@types/jsdom": "^21.1.7", "@types/react": "^19.3.0", "@types/react-dom": "^19.3.0", "c8": "^10.1.3", "chalk": "^5.6.2", "commander": "^13.1.0", "glob": "^11.1.0", "jsdom": "^26.1.0", "react": "^19.3.0", "react-dom": "^19.3.0", "tsx": "^4.23.13" }, "bin": { "testosterone": "src/cli.ts" } }, "sha512-zq+SNJLtJSBbK3oZG2vzM++gWDzIJjknnAa+m9sxpVK1RV+JgZ0Ek2amj3xfXIkmSmjCDSfn9FU4tQxRxSc4cA=="],
 
