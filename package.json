@@ -71,7 +71,7 @@
     "@ankhorage/repository": "^0.5.1",
     "@ankhorage/rules": "^0.2.0",
     "@ankhorage/rules-architecture": "^0.5.0",
-    "@ankhorage/utility": "^1.9.83",
+    "@ankhorage/utility": "^1.9.84",
     "@artiphishle/testosterone": "^0.3.9",
     "ankh-hooks": "^1.5.2",
     "cytoscape": "^3.34.3",

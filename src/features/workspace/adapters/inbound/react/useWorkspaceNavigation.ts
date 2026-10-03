@@ -1,5 +1,7 @@
 'use client';
 
+import { dedupeBy } from '@ankhorage/utility/array';
+import { applySelectionIntent, type SelectionIntent } from '@ankhorage/utility/selection';
 import { useMemo, useState } from 'react';
 
 import { resolveGraphProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection';
@@ -45,36 +47,92 @@ export function useWorkspaceNavigation(workspace: WorkspaceLoadResult) {
   };
 }
 
-/*** Own selection transitions without coupling them to package-scope navigation. */
+/*** Own semantic selection transitions without coupling them to package-scope navigation. */
 function useWorkspaceSelection(input: WorkspaceSelectionInput) {
-  const [selection, setSelection] = useState<WorkspaceSelection | null>(null);
+  const [selections, setSelections] = useState<readonly WorkspaceSelection[]>([]);
   const graphNodeIdSet = useMemo(() => new Set(input.packageIds), [input.packageIds]);
+  const selectedGraphNodeIds = useMemo(
+    () =>
+      dedupeBy(
+        selections.flatMap(selection =>
+          selection.graphNodeId === null ? [] : [selection.graphNodeId]
+        ),
+        value => value
+      ),
+    [selections]
+  );
+  const selectedTreeIds = useMemo(
+    () =>
+      dedupeBy(
+        selections.flatMap(selection =>
+          selection.treeNodeId === null ? [] : [selection.treeNodeId]
+        ),
+        value => value
+      ),
+    [selections]
+  );
 
-  const selectProjectTreeNode = (node: ProjectTreeNode) => {
+  const selectProjectTreeNode = (node: ProjectTreeNode, intent: SelectionIntent) => {
     const next = resolveTreeWorkspaceSelection(node, input.packageIds);
-    setSelection(previous => keepStableSelection(previous, next));
+    setSelections(previous => applyWorkspaceSelection(previous, next, intent));
   };
 
-  const selectGraphNode = (id: string) => {
+  const selectGraphNode = (id: string, intent: SelectionIntent) => {
     const next = resolveGraphWorkspaceSelection(id, input, graphNodeIdSet);
-    if (next !== null) setSelection(previous => keepStableSelection(previous, next));
-  };
-
-  const unselectGraphNode = (id: string) => {
-    const graphNodeId = normalizeGraphPackage(id);
-    setSelection(previous => (previous?.graphNodeId === graphNodeId ? null : previous));
+    if (next !== null) {
+      setSelections(previous => applyWorkspaceSelection(previous, next, intent));
+    }
   };
 
   return {
-    selectedGraphNodeId: selection?.graphNodeId ?? null,
-    selectedTreeId: selection?.treeNodeId ?? null,
+    selectedGraphNodeIds,
+    selectedTreeIds,
     selectGraphNode,
     selectProjectTreeNode,
-    unselectGraphNode,
   };
 }
 
-/*** Resolve one TreeView click to that exact row and its directly represented graph identity. */
+/*** Apply one Utility-owned selection intent while retaining Atlas tree/graph mapping metadata. */
+function applyWorkspaceSelection(
+  previous: readonly WorkspaceSelection[],
+  next: WorkspaceSelection,
+  intent: SelectionIntent
+): readonly WorkspaceSelection[] {
+  const nextKey = getWorkspaceSelectionKey(next);
+  const previousKeys = previous.map(getWorkspaceSelectionKey);
+  const nextKeys = applySelectionIntent(previousKeys, nextKey, intent);
+  const result = nextKeys.map(key => {
+    if (key === nextKey) return next;
+    return previous.find(selection => getWorkspaceSelectionKey(selection) === key) ?? next;
+  });
+  return areWorkspaceSelectionsEqual(previous, result) ? previous : result;
+}
+
+/*** Return one stable identity shared by synchronized TreeView and GraphView selection. */
+function getWorkspaceSelectionKey(selection: WorkspaceSelection): string {
+  return selection.graphNodeId === null
+    ? `tree:${selection.treeNodeId ?? ''}`
+    : `graph:${selection.graphNodeId}`;
+}
+
+/*** Compare ordered Atlas selection mappings without reallocating stable state. */
+function areWorkspaceSelectionsEqual(
+  left: readonly WorkspaceSelection[],
+  right: readonly WorkspaceSelection[]
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every((selection, index) => {
+      const rightSelection = right.at(index);
+      return (
+        selection.graphNodeId === rightSelection?.graphNodeId &&
+        selection.treeNodeId === rightSelection.treeNodeId
+      );
+    })
+  );
+}
+
+/*** Resolve one TreeView activation to that exact row and its directly represented graph identity. */
 function resolveTreeWorkspaceSelection(
   node: ProjectTreeNode,
   graphNodeIds: readonly string[]
@@ -85,7 +143,7 @@ function resolveTreeWorkspaceSelection(
   };
 }
 
-/*** Resolve one GraphView click to the same graph node and its exact matching TreeView row. */
+/*** Resolve one GraphView activation to the same graph node and its exact matching TreeView row. */
 function resolveGraphWorkspaceSelection(
   id: string,
   input: WorkspaceSelectionInput,
@@ -129,16 +187,6 @@ function resolveParentProjectTreeNavigation(
 function readDirectoryPath(id: string): string | null {
   const prefix = 'directory:';
   return id.startsWith(prefix) ? id.slice(prefix.length) : null;
-}
-
-/*** Reuse an equal selection object so controlled GraphView callbacks cannot create render loops. */
-function keepStableSelection(
-  previous: WorkspaceSelection | null,
-  next: WorkspaceSelection
-): WorkspaceSelection {
-  return previous?.graphNodeId === next.graphNodeId && previous.treeNodeId === next.treeNodeId
-    ? previous
-    : next;
 }
 
 /*** Normalize navigation paths to the package identity representation used by the graph view. */

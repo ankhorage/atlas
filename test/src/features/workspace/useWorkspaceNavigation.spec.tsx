@@ -9,7 +9,7 @@ import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
 describe('[useWorkspaceNavigation]', () => {
-  it('keeps exact selection independent from folder and breadcrumb navigation', () => {
+  it('synchronizes replace and toggle selection across tree and graph without changing navigation', () => {
     const tree = coderadarTree();
     const workspace = createWorkspace(tree);
     const host = render(<div />);
@@ -24,11 +24,22 @@ describe('[useWorkspaceNavigation]', () => {
       return (
         <>
           <output>
-            {`${navigation.selectedGraphNodeId ?? ''}|${navigation.selectedTreeId ?? ''}|${navigation.currentPackage}`}
+            {`${navigation.selectedGraphNodeIds.join(',')}|${navigation.selectedTreeIds.join(',')}|${navigation.currentPackage}`}
           </output>
-          <button onClick={() => navigation.selectProjectTreeNode(io)}>tree-io</button>
-          <button onClick={() => navigation.selectProjectTreeNode(coderadar)}>
-            tree-coderadar
+          <button onClick={() => navigation.selectProjectTreeNode(io, 'replace')}>
+            tree-io-replace
+          </button>
+          <button onClick={() => navigation.selectProjectTreeNode(coderadar, 'toggle')}>
+            tree-coderadar-toggle
+          </button>
+          <button onClick={() => navigation.selectGraphNode('external', 'toggle')}>
+            graph-external-toggle
+          </button>
+          <button onClick={() => navigation.selectGraphNode('io', 'toggle')}>
+            graph-io-toggle
+          </button>
+          <button onClick={() => navigation.selectGraphNode('io', 'replace')}>
+            graph-io-replace
           </button>
           <button onClick={() => navigation.toggleProjectTreeNode(io, true)}>expand-io</button>
           <button onClick={() => navigation.toggleProjectTreeNode(reflectoring, true)}>
@@ -37,16 +48,6 @@ describe('[useWorkspaceNavigation]', () => {
           <button onClick={() => navigation.toggleProjectTreeNode(reflectoring, false)}>
             collapse-reflectoring
           </button>
-          <button onClick={() => navigation.toggleProjectTreeNode(io, false)}>collapse-io</button>
-          <button onClick={() => navigation.selectGraphNode('io')}>graph-io</button>
-          <button onClick={() => navigation.selectGraphNode('io.reflectoring.coderadar')}>
-            graph-coderadar
-          </button>
-          <button onClick={() => navigation.selectGraphNode('external')}>graph-external</button>
-          <button onClick={() => navigation.unselectGraphNode('io.reflectoring.coderadar')}>
-            stale-unselect
-          </button>
-          <button onClick={() => navigation.unselectGraphNode('external')}>clear-external</button>
           <button onClick={() => navigation.navigateToPackage('')}>home</button>
         </>
       );
@@ -61,45 +62,50 @@ describe('[useWorkspaceNavigation]', () => {
         button.click();
       });
     const output = () => host.container.querySelector('output')?.textContent;
+
     try {
       flushSync(() => root.render(<Harness />));
 
-      click('tree-io');
+      click('tree-io-replace');
       expect(output()).toBe('io|directory:io|');
 
-      click('expand-io');
-      expect(output()).toBe('io|directory:io|io');
+      click('tree-coderadar-toggle');
+      expect(output()).toBe(
+        'io,io.reflectoring.coderadar|directory:io,directory:io/reflectoring/coderadar|'
+      );
 
-      click('tree-coderadar');
-      expect(output()).toBe('io.reflectoring.coderadar|directory:io/reflectoring/coderadar|io');
+      click('graph-external-toggle');
+      expect(output()).toBe(
+        'io,io.reflectoring.coderadar,external|directory:io,directory:io/reflectoring/coderadar|'
+      );
+
+      click('graph-io-toggle');
+      expect(output()).toBe(
+        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|'
+      );
+
+      click('expand-io');
+      expect(output()).toBe(
+        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io'
+      );
 
       click('expand-reflectoring');
       expect(output()).toBe(
-        'io.reflectoring.coderadar|directory:io/reflectoring/coderadar|io.reflectoring'
+        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io.reflectoring'
       );
 
       click('collapse-reflectoring');
-      expect(output()).toBe('io.reflectoring.coderadar|directory:io/reflectoring/coderadar|io');
+      expect(output()).toBe(
+        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io'
+      );
 
-      click('graph-io');
-      expect(output()).toBe('io|directory:io|io');
-
-      click('collapse-io');
-      expect(output()).toBe('io|directory:io|');
-
-      click('graph-coderadar');
-      expect(output()).toBe('io.reflectoring.coderadar|directory:io/reflectoring/coderadar|');
-
-      click('graph-external');
-      expect(output()).toBe('external||');
-      click('stale-unselect');
-      expect(output()).toBe('external||');
-      click('clear-external');
-      expect(output()).toBe('||');
-
-      click('expand-io');
       click('home');
-      expect(output()).toBe('||');
+      expect(output()).toBe(
+        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|'
+      );
+
+      click('graph-io-replace');
+      expect(output()).toBe('io|directory:io|');
     } finally {
       flushSync(() => root.unmount());
       host.unmount();

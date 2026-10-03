@@ -1,38 +1,51 @@
+import { arraysEqual, dedupeBy } from '@ankhorage/utility/array';
 import { useState } from 'react';
 
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Preserves manual folder expansion while revealing only ancestors required by selection. */
+/*** Preserve manual folder expansion while revealing ancestors required by every selected row. */
 export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
-  selectedId: string | null
+  selectedIds: readonly string[]
 ) {
-  const [state, setState] = useState(() => ({
+  const [state, setState] = useState<ProjectTreeExpansionState>(() => ({
     nodes,
-    selectedId,
-    ids: revealSelection(
+    selectedIds,
+    ids: revealSelections(
       nodes,
-      selectedId,
+      selectedIds,
       nodes.filter(node => node.kind === 'directory').map(node => node.id)
     ),
   }));
-  if (state.nodes !== nodes || state.selectedId !== selectedId) {
-    setState({ nodes, selectedId, ids: revealSelection(nodes, selectedId, state.ids) });
+  if (state.nodes !== nodes || !arraysEqual(state.selectedIds, selectedIds)) {
+    setState({
+      nodes,
+      selectedIds,
+      ids: revealSelections(nodes, selectedIds, state.ids),
+    });
   }
 
   return {
     expandedIds: state.ids,
-    onExpandedChange: (ids: readonly string[]) => setState({ nodes, selectedId, ids }),
+    onExpandedChange: (ids: readonly string[]) => setState({ nodes, selectedIds, ids }),
   };
 }
 
-/*** Adds only the ancestors required to reveal a selection without opening the selected folder. */
-function revealSelection(
+/*** Add only the ancestors required to reveal all selections without opening selected folders. */
+function revealSelections(
   nodes: readonly ProjectTreeNode[],
-  selectedId: string | null,
+  selectedIds: readonly string[],
   ids: readonly string[]
 ) {
-  if (selectedId === null) return ids;
-  return [...new Set([...ids, ...getProjectTreeAncestorIds(nodes, selectedId)])];
+  const requiredAncestorIds = selectedIds.flatMap(selectedId =>
+    getProjectTreeAncestorIds(nodes, selectedId)
+  );
+  return dedupeBy([...ids, ...requiredAncestorIds], value => value);
+}
+
+interface ProjectTreeExpansionState {
+  readonly nodes: readonly ProjectTreeNode[];
+  readonly selectedIds: readonly string[];
+  readonly ids: readonly string[];
 }

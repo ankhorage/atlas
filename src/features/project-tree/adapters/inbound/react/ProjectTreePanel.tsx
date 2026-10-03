@@ -1,4 +1,5 @@
 'use client';
+import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { Icon } from '@zora/icon';
 import { Text } from '@zora/text';
 import { type TreeItemNode, TreeView } from '@zora/tree-view';
@@ -9,15 +10,15 @@ import { useProjectTreeExpansion } from '@/features/project-tree/adapters/inboun
 import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTreeNode';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Adapts Atlas's serializable project tree to the generated ZORA browser TreeView. */
+/*** Adapt Atlas's serializable project tree to the generated ZORA browser TreeView. */
 export function ProjectTreePanel({
   nodes,
   onSelect,
   onToggleDirectory,
-  selectedId,
+  selectedIds,
 }: ProjectTreePanelProps) {
   const treeNodes = React.useMemo(() => nodes.map(node => toTreeItemNode(node)), [nodes]);
-  const expansion = useProjectTreeExpansion(nodes, selectedId);
+  const expansion = useProjectTreeExpansion(nodes, selectedIds);
 
   return (
     <View p="xs">
@@ -26,7 +27,7 @@ export function ProjectTreePanel({
         expansionIndicator="chevron"
         expandedIds={expansion.expandedIds}
         nodes={treeNodes}
-        selectedIds={selectedId === null ? [] : [selectedId]}
+        selectedIds={selectedIds}
         onExpandedChange={ids => {
           const changedId = getChangedExpansionId(expansion.expandedIds, ids);
           expansion.onExpandedChange(ids);
@@ -34,16 +35,16 @@ export function ProjectTreePanel({
           const node = findProjectTreeNode(nodes, changedId);
           if (node?.kind === 'directory') onToggleDirectory(node, ids.includes(changedId));
         }}
-        onSelect={id => {
+        onSelect={(id, intent) => {
           const node = findProjectTreeNode(nodes, id);
-          if (node) onSelect(node);
+          if (node) onSelect(node, intent);
         }}
       />
     </View>
   );
 }
 
-/*** Maps a portable project-tree node into the ZORA TreeView presentation contract. */
+/*** Map a portable project-tree node into the ZORA TreeView presentation contract. */
 function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   return {
     id: node.id,
@@ -62,7 +63,7 @@ function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   };
 }
 
-/*** Identifies the one folder id changed by an independent TreeView expansion control. */
+/*** Identify the one folder id changed by an independent TreeView expansion control. */
 function getChangedExpansionId(
   previousIds: readonly string[],
   nextIds: readonly string[]
@@ -75,7 +76,7 @@ function getChangedExpansionId(
 
 interface ProjectTreePanelProps {
   readonly nodes: readonly ProjectTreeNode[];
-  readonly onSelect: (node: ProjectTreeNode) => void;
+  readonly onSelect: (node: ProjectTreeNode, intent: SelectionIntent) => void;
   readonly onToggleDirectory: (node: ProjectTreeNode, expanded: boolean) => void;
-  readonly selectedId: string | null;
+  readonly selectedIds: readonly string[];
 }

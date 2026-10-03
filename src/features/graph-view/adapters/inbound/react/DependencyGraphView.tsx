@@ -1,6 +1,7 @@
 'use client';
 
 import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
+import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { GraphView, type GraphViewElementEvent, type GraphViewLayoutName } from '@zora/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@zora/ZoraProvider';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
@@ -37,7 +38,7 @@ const GRAPH_VIEWPORT_STYLE = {
   position: 'relative',
 } as const;
 
-/*** Renders Atlas graph policy through the materialized ZORA GraphView runtime. */
+/*** Render Atlas graph policy through the materialized ZORA GraphView runtime. */
 export function DependencyGraphView(props: DependencyGraphViewProps) {
   const settings = useSettings();
   const { theme } = useZoraTheme();
@@ -91,7 +92,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
   );
 }
 
-/*** Converts the dependency package graph once per source graph identity. */
+/*** Convert the dependency package graph once per source graph identity. */
 function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
   return useMemo(
     () =>
@@ -103,7 +104,7 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
 }
 
 /***
- * Memoizes GraphView model, style, and layout inputs from the active Atlas projection.
+ * Memoize GraphView model, style, and layout inputs from the active Atlas projection.
  * @performance
  * Stable inputs avoid repeated projection work and let the owner distinguish presentation from
  * topology/layout changes. Do not recreate these objects on unrelated renders or add compensating
@@ -137,7 +138,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
   };
 }
 
-/*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
+/*** Own GraphView controller callbacks and render the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const { viewport } = props;
   const interactions = useGraphCanvasInteractions(props);
@@ -180,38 +181,38 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   );
 }
 
-/*** Compose local hover presentation with the workspace-owned controlled graph selection. */
+/*** Compose local hover presentation with workspace-owned controlled graph selection. */
 function useGraphCanvasInteractions(props: DependencyGraphCanvasProps) {
   const interactions = useGraphInteractions(
     props.model.nodes,
     props.model.edges,
-    props.selectedNodeId
+    props.selectedNodeIds
   );
   return {
     ...interactions,
-    selectedNodeIds: props.selectedNodeId === null ? [] : [props.selectedNodeId],
     handleNodeEvent: createGraphNodeEventHandler({
       handleInteraction: interactions.handleNodeEvent,
       onNodeSelect: props.onNodeSelect,
-      onNodeUnselect: props.onNodeUnselect,
       parentNodeIds: props.model.parentNodeIds,
       setCurrentPackage: props.setCurrentPackage,
     }),
   };
 }
 
-/*** Create the graph event bridge without coupling selection changes to layout or viewport work. */
+/*** Bridge semantic GraphView press intent without coupling selection to renderer select events. */
 function createGraphNodeEventHandler(input: GraphNodeEventHandlerInput) {
   return (event: GraphViewElementEvent) => {
     input.handleInteraction(event);
-    if (event.type === 'select') return input.onNodeSelect(event.id);
-    if (event.type === 'unselect') return input.onNodeUnselect(event.id);
+    if (event.type === 'press' && event.selectionIntent !== undefined) {
+      input.onNodeSelect(event.id, event.selectionIntent);
+      return;
+    }
     if (event.type !== 'double-press' || !input.parentNodeIds.has(event.id)) return;
     input.setCurrentPackage(event.id);
   };
 }
 
-/*** Narrows persisted Cytoscape layout names to the layouts supported by ZORA GraphView. */
+/*** Narrow persisted Cytoscape layout names to the layouts supported by ZORA GraphView. */
 function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName {
   if (layout === 'breadthfirst') return 'breadthfirst';
   if (layout === 'circle') return 'circle';
@@ -222,8 +223,7 @@ function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName
 
 interface GraphNodeEventHandlerInput {
   readonly handleInteraction: (event: GraphViewElementEvent) => void;
-  readonly onNodeSelect: (id: string) => void;
-  readonly onNodeUnselect: (id: string) => void;
+  readonly onNodeSelect: (id: string, intent: SelectionIntent) => void;
   readonly parentNodeIds: ReadonlySet<string>;
   readonly setCurrentPackage: (path: string) => void;
 }
@@ -231,10 +231,9 @@ interface GraphNodeEventHandlerInput {
 interface DependencyGraphViewProps {
   readonly currentPackage: string;
   readonly packageGraph: PackageDependencyGraph;
-  readonly selectedNodeId: string | null;
+  readonly selectedNodeIds: readonly string[];
   readonly setCurrentPackage: (path: string) => void;
-  readonly onNodeSelect: (id: string) => void;
-  readonly onNodeUnselect: (id: string) => void;
+  readonly onNodeSelect: (id: string, intent: SelectionIntent) => void;
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly overlay?: React.ReactNode;
 }
