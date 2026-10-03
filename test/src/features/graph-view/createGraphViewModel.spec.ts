@@ -79,6 +79,36 @@ describe('[createGraphViewModel]', () => {
     expect(elements).toEqual(before);
   });
 
+  it('keeps unrelated graph elements visually neutral while a cycle overlay is active', () => {
+    const elements = {
+      nodes: ['a', 'b', 'neutral'].map(id => ({ data: { id } })),
+      edges: [
+        { data: { id: 'ab', source: 'a', target: 'b' } },
+        { data: { id: 'neutral-edge', source: 'b', target: 'neutral' } },
+      ],
+    };
+
+    const model = createGraphViewModel(elements, elements, [
+      {
+        id: 'cycle',
+        color: 'red',
+        cycle: {
+          packages: ['a', 'b', 'a'],
+          edges: [{ from: 'a', to: 'b', via: [] }],
+        },
+      },
+    ]);
+
+    expect(model.nodes.find(node => node.id === 'neutral')).toMatchObject({
+      classes: '',
+      data: { id: 'neutral' },
+    });
+    expect(model.edges.find(edge => edge.id === 'neutral-edge')).toMatchObject({
+      classes: '',
+      data: { id: 'neutral-edge', source: 'b', target: 'neutral' },
+    });
+  });
+
   it('detaches only descendants whose dependency edge would overlap a compound ancestor', () => {
     const elements: ElementsDefinition = {
       nodes: [
