@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.NODE_AUTH_TOKEN }}
     steps:
       - name: Checkout release candidate
         uses: actions/checkout@v4
@@ -50,9 +51,9 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish through npm Trusted Publishing
+      - name: Publish authenticated release
         if: steps.registry.outputs.exists != 'true'
-        run: npm publish --access public
+        run: npm publish --access public --provenance
 
       - name: Verify published release
         run: test "$(npm view pkgviz@0.8.3 version)" = "0.8.3"
