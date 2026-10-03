@@ -5,10 +5,8 @@ import { resolve } from 'node:path';
 
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
-import {
-  OFFLINE_REPORT_RUNTIME,
-  OFFLINE_REPORT_STYLE,
-} from '@/features/offline-report/constants/offlineReportTemplate';
+import { OFFLINE_REPORT_RUNTIME } from '@/features/offline-report/constants/offlineReportRuntime';
+import { OFFLINE_REPORT_STYLE } from '@/features/offline-report/constants/offlineReportStyle';
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import type { Audit } from '@/types/audit';
 
