@@ -19,7 +19,15 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.4.2'
-      - run: bun install
+      - name: Refresh dependencies after npm propagation
+        run: |
+          for attempt in {1..24}; do
+            if bun install; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
       - name: Commit lockfile
         run: |
           if git diff --quiet -- bun.lock; then
