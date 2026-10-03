@@ -16,7 +16,7 @@ describe('[WorkspaceSidebar]', () => {
             evaluation={passedEvaluation}
             inspectedCycleId={null}
             projectTree={[]}
-            selectedTreeId={null}
+            selectedTreeIds={[]}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
             onProjectTreeToggle={() => undefined}
@@ -38,7 +38,7 @@ describe('[WorkspaceSidebar]', () => {
             evaluation={detectionEvaluation}
             inspectedCycleId={null}
             projectTree={[]}
-            selectedTreeId={null}
+            selectedTreeIds={[]}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
             onProjectTreeToggle={() => undefined}
@@ -64,7 +64,7 @@ describe('[WorkspaceSidebar]', () => {
             evaluation={failedEvaluation}
             inspectedCycleId={null}
             projectTree={[]}
-            selectedTreeId={null}
+            selectedTreeIds={[]}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
             onProjectTreeToggle={() => undefined}
@@ -97,7 +97,7 @@ describe('[WorkspaceSidebar]', () => {
             evaluation={passedEvaluation}
             inspectedCycleId={null}
             projectTree={[{ graphPackage: 'app', id: 'app', kind: 'directory', label: 'app' }]}
-            selectedTreeId={null}
+            selectedTreeIds={[]}
             onCycleInspectionChange={() => undefined}
             onProjectTreeSelect={() => undefined}
             onProjectTreeToggle={() => undefined}
