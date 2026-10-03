@@ -10,8 +10,8 @@ import type { Audit } from '@/types/audit';
 
 /***
  * Build one deterministic, self-contained HTML document from an already captured canonical Audit.
- * @security Project-controlled data is encoded as JSON and escapes every HTML/script delimiter
- * before insertion. The browser runtime renders payload strings only through DOM text nodes.
+ * Project-controlled data is encoded as JSON and escapes every HTML/script delimiter before
+ * insertion. The browser runtime renders payload strings only through DOM text nodes.
  */
 export function createOfflineHtmlReport(audit: Audit): string {
   const payload = {
