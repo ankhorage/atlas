@@ -140,15 +140,17 @@ function hasRulesContent(evaluation: Audit['evaluation'] | null): boolean {
 function countRuleFindings(evaluation: Audit['evaluation'] | null): number {
   if (evaluation === null) return 0;
   const specialized = evaluation.rules
-    .filter((rule) => rule.status === 'failed')
+    .filter(rule => rule.status === 'failed')
     .reduce(
       (count, rule) =>
         count +
-        (rule.id === 'cyclic-dependencies' ? evaluation.cyclicPackages.length : rule.details.length),
-      0,
+        (rule.id === 'cyclic-dependencies'
+          ? evaluation.cyclicPackages.length
+          : rule.details.length),
+      0
     );
   const generic = evaluation.genericRules.findings.filter(
-    ({ ruleId }) => ruleId !== 'cyclic-dependencies',
+    ({ ruleId }) => ruleId !== 'cyclic-dependencies'
   ).length;
   return specialized + generic;
 }
