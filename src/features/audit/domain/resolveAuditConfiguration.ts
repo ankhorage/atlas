@@ -4,9 +4,9 @@ import type {
   ResolveAuditConfigurationInput,
 } from '@/types/audit';
 
-/*** Resolves explicit audit overrides against the stable default rule policy. */
+/*** Resolve explicit audit overrides without inferring an architecture enforcement target. */
 export function resolveAuditConfiguration(
-  input: ResolveAuditConfigurationInput = {}
+  input: ResolveAuditConfigurationInput = {},
 ): AuditConfiguration {
   let cyclicDependenciesMode: AuditRuleConfiguration['mode'] = 'block';
 
@@ -21,6 +21,9 @@ export function resolveAuditConfiguration(
   }
 
   return {
+    ...(input.architectureTarget === undefined
+      ? {}
+      : { architectureTarget: input.architectureTarget }),
     failOnRuleViolation: input.failOnRuleViolation ?? true,
     rules: [{ id: 'cyclic-dependencies', mode: cyclicDependenciesMode }],
   };
