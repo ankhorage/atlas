@@ -65,11 +65,9 @@ jobs:
 
       - name: Run format check
         run: |
-          if node -e "const p=require('./package.json'); process.exit(p.scripts?.['format:check'] ? 0 : 1)"; then
-            bun run format:check
-          else
-            echo "No format:check script found; skipping."
-          fi
+          ./node_modules/.bin/ankhorage-prettier --write test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts
+          git diff -- test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts
+          exit 1
 
       - name: Run Knip
         run: |
