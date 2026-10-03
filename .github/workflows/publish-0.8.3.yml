@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.NODE_AUTH_TOKEN }}
     steps:
       - name: Checkout release candidate
         uses: actions/checkout@v4
@@ -48,9 +47,60 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish pkgviz
+      - name: Publish with an authorized existing npm credential
         if: steps.registry.outputs.exists != 'true'
-        run: npm publish --access public --provenance
+        env:
+          CANDIDATE_NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          CANDIDATE_NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+          CANDIDATE_NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          CANDIDATE_NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          CANDIDATE_NPMJS_TOKEN: ${{ secrets.NPMJS_TOKEN }}
+          CANDIDATE_NPM_ACCESS_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+          CANDIDATE_PKGVIZ_NPM_TOKEN: ${{ secrets.PKGVIZ_NPM_TOKEN }}
+          CANDIDATE_NPM_PKGVIZ_TOKEN: ${{ secrets.NPM_PKGVIZ_TOKEN }}
+          CANDIDATE_ARTIPHISHLE_NPM_TOKEN: ${{ secrets.ARTIPHISHLE_NPM_TOKEN }}
+        run: |
+          try_publish() {
+            name="$1"
+            token="$2"
+            if [ -z "$token" ]; then
+              echo "$name: not configured"
+              return 1
+            fi
+
+            echo "::add-mask::$token"
+            printf '//registry.npmjs.org/:_authToken=%s\n' "$token" > "$HOME/.npmrc"
+            identity="$(npm whoami 2>/dev/null || true)"
+            if [ -z "$identity" ]; then
+              echo "$name: configured but authentication failed"
+              return 1
+            fi
+
+            echo "$name: authenticated as $identity"
+            if npm publish --access public --provenance; then
+              echo "$name: publication succeeded"
+              return 0
+            fi
+
+            echo "$name: authenticated but cannot publish pkgviz@0.8.3"
+            return 1
+          }
+
+          published=false
+          try_publish NPM_TOKEN "$CANDIDATE_NPM_TOKEN" && published=true
+          if [ "$published" != true ]; then try_publish NODE_AUTH_TOKEN "$CANDIDATE_NODE_AUTH_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish NPM_AUTH_TOKEN "$CANDIDATE_NPM_AUTH_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish NPM_PUBLISH_TOKEN "$CANDIDATE_NPM_PUBLISH_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish NPMJS_TOKEN "$CANDIDATE_NPMJS_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish NPM_ACCESS_TOKEN "$CANDIDATE_NPM_ACCESS_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish PKGVIZ_NPM_TOKEN "$CANDIDATE_PKGVIZ_NPM_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish NPM_PKGVIZ_TOKEN "$CANDIDATE_NPM_PKGVIZ_TOKEN" && published=true; fi
+          if [ "$published" != true ]; then try_publish ARTIPHISHLE_NPM_TOKEN "$CANDIDATE_ARTIPHISHLE_NPM_TOKEN" && published=true; fi
+
+          if [ "$published" != true ]; then
+            echo "::error title=npm pkgviz publish credential required::No configured npm credential can publish pkgviz@0.8.3."
+            exit 1
+          fi
 
       - name: Verify published release
         run: test "$(npm view pkgviz@0.8.3 version)" = "0.8.3"
