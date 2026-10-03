@@ -1,0 +1,45 @@
+name: Format 262 branch
+
+on:
+  push:
+    branches:
+      - feat/262-source-graph-rules-architecture
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/262-source-graph-rules-architecture
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Apply canonical formatting
+        run: bun run format
+      - name: Commit formatter output
+        run: |
+          if git diff --quiet; then
+            echo "No formatting changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add test/src/cli/parsePkgvizCliArgs.spec.ts
+          git add test/src/features/audit/evaluateArchitectureTarget.spec.ts
+          git add test/src/features/audit/evaluateAuditRules.spec.ts
+          git commit -m "style(test): apply canonical formatting"
+          git push origin HEAD:feat/262-source-graph-rules-architecture
