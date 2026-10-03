@@ -16,7 +16,9 @@ export async function runAtlasCliAsync(argv: readonly string[] = process.argv): 
     }
 
     if (options.exportFormat === 'offline') {
-      throw new Error(\n        'Offline HTML export is not available yet; implementation is tracked by #261.'\n      );
+      throw new Error(
+        'Offline HTML export is not available yet; implementation is tracked by #261.'
+      );
     }
 
     if (options.open || options.serve) {
