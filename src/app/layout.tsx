@@ -5,8 +5,8 @@ import type { Metadata } from 'next';
 import { ZoraRuntimeProvider } from '@/features/theme/adapters/inbound/react/ZoraRuntimeProvider';
 
 export const metadata: Metadata = {
-  title: 'Package Visualizer',
-  description: 'Package visualization',
+  title: 'Atlas',
+  description: 'Codebase dependency and architecture analysis',
 };
 
 /*** Renders the application root layout under the single ZORA theme runtime. */
