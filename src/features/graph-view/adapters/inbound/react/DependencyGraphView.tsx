@@ -130,11 +130,27 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const viewport = useGraphViewport();
-  const interactions = useGraphInteractions(props.model.nodes, props.model.edges);
+  const interactions = useGraphInteractions(
+    props.model.nodes,
+    props.model.edges,
+    props.selectedNodeId
+  );
+  const selectedNodeIds = useMemo(
+    () => (props.selectedNodeId === null ? [] : [props.selectedNodeId]),
+    [props.selectedNodeId]
+  );
 
   /*** Handles structural graph navigation without touching the rendering engine. */
   const handleNodeEvent = (event: GraphViewElementEvent) => {
     interactions.handleNodeEvent(event);
+    if (event.type === 'select') {
+      props.onNodeSelect(event.id);
+      return;
+    }
+    if (event.type === 'unselect') {
+      props.onNodeUnselect(event.id);
+      return;
+    }
     if (event.type !== 'double-press' || !props.model.parentNodeIds.has(event.id)) return;
     props.setCurrentPackage(event.id);
   };
@@ -151,6 +167,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           minReadableLabelSize={24}
           maxFitLabelSize={24}
           nodes={interactions.nodes}
+          selectedNodeIds={selectedNodeIds}
           zoomMode="fit-relative"
           sizeNodesToLabels
           onLayoutComplete={viewport.handleLayoutComplete}
@@ -187,7 +204,10 @@ function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName
 interface DependencyGraphViewProps {
   readonly currentPackage: string;
   readonly packageGraph: PackageDependencyGraph;
+  readonly selectedNodeId: string | null;
   readonly setCurrentPackage: (path: string) => void;
+  readonly onNodeSelect: (id: string) => void;
+  readonly onNodeUnselect: (id: string) => void;
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly overlay?: React.ReactNode;
 }
