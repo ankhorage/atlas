@@ -32,20 +32,20 @@ function Harness({ selectedId }: { selectedId: string }) {
   );
 }
 
-describe('[project tree navigation expansion]', () => {
-  it('opens the target folder, permits manual collapse, and reopens on navigation back', async () => {
+describe('[project tree selection reveal]', () => {
+  it('opens only ancestors needed to reveal selection and never opens the selected folder itself', async () => {
     const host = render(<div />);
     const root = createRoot(host.container);
     try {
       await act(async () => root.render(<Harness selectedId="nested" />));
-      expect(host.container.textContent).toBe('root|nested');
+      expect(host.container.textContent).toBe('root');
       await act(async () => host.container.querySelector('button')?.click());
       expect(host.container.textContent).toBe('');
       await act(async () => root.render(<Harness selectedId="nested" />));
       expect(host.container.textContent).toBe('');
       await act(async () => root.render(<Harness selectedId="root" />));
       await act(async () => root.render(<Harness selectedId="nested" />));
-      expect(host.container.textContent).toBe('root|nested');
+      expect(host.container.textContent).toBe('root');
     } finally {
       await act(async () => root.unmount());
       host.unmount();
