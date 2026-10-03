@@ -41,13 +41,12 @@ const GRAPH_VIEWPORT_STYLE = {
 export function DependencyGraphView(props: DependencyGraphViewProps) {
   const settings = useSettings();
   const { theme } = useZoraTheme();
-  const packageGraph = useMemo(
-    () =>
-      toCytoscapeElements(props.packageGraph, {
-        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
-      }),
-    [props.packageGraph]
-  );
+  const viewport = useGraphViewport({
+    cycleHighlights: props.cycleHighlights,
+    onSpacingFactorChange: settings.setCytoscapeLayoutSpacing,
+    spacingFactor: settings.cytoscapeLayoutSpacing,
+  });
+  const packageGraph = usePackageGraphElements(props.packageGraph);
   const visibleElements = useGraphProjection({
     currentPackage: props.currentPackage,
     elements: packageGraph,
@@ -84,11 +83,22 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
       layout={presentation.layout}
       layoutOptions={presentation.layoutOptions}
       model={presentation.model}
-      onSpacingFactorChange={settings.setCytoscapeLayoutSpacing}
       spacingFactor={settings.cytoscapeLayoutSpacing}
       styles={presentation.styles}
       theme={theme}
+      viewport={viewport}
     />
+  );
+}
+
+/*** Converts the dependency package graph once per source graph identity. */
+function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
+  return useMemo(
+    () =>
+      toCytoscapeElements(packageGraph, {
+        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
+      }),
+    [packageGraph]
   );
 }
 
@@ -129,8 +139,9 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 
 /*** Owns GraphView controller callbacks and renders the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
-  const viewport = useGraphViewport();
+  const { viewport } = props;
   const interactions = useGraphInteractions(props.model.nodes, props.model.edges);
+  const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
 
   /*** Handles structural graph navigation without touching the rendering engine. */
   const handleNodeEvent = (event: GraphViewElementEvent) => {
@@ -153,11 +164,11 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           nodes={interactions.nodes}
           zoomMode="fit-relative"
           sizeNodesToLabels
-          onLayoutComplete={viewport.handleLayoutComplete}
+          onLayoutComplete={controller => viewport.handleLayoutComplete(controller, visibleNodeIds)}
           onNodeEvent={handleNodeEvent}
           onReady={viewport.handleReady}
           onViewportChange={viewport.handleViewportChange}
-          onSpacingFactorChange={props.onSpacingFactorChange}
+          onSpacingFactorChange={viewport.handleSpacingFactorChange}
           spacingFactor={props.spacingFactor}
           style={{ background: props.theme.semantics.surface.default }}
           styleRules={props.styles}
@@ -201,11 +212,11 @@ interface GraphViewPresentationInput {
 }
 
 interface DependencyGraphCanvasProps extends DependencyGraphViewProps {
-  readonly onSpacingFactorChange: (spacingFactor: number) => void;
   readonly layout: GraphViewLayoutName;
   readonly layoutOptions: Readonly<Record<string, unknown>>;
   readonly model: NonNullable<ReturnType<typeof createGraphViewModel>>;
   readonly spacingFactor: number;
   readonly styles: ReturnType<typeof createGraphViewStyles>;
   readonly theme: ZoraRuntimeTheme;
+  readonly viewport: ReturnType<typeof useGraphViewport>;
 }

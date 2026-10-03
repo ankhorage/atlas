@@ -2,4 +2,4 @@
 'pkgviz': patch
 ---
 
-Automatically focus the graph scope, package depth, circle layout, spacing, and viewport on active cyclic dependencies.
+Focus active dependency cycles with the canonical whole-graph Fit operation after expanding only the projection needed to reveal their evidence, while preserving the selected layout and manual positioning outside intentional cycle focus.
