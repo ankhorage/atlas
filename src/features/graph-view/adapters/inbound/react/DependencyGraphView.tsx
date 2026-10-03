@@ -140,20 +140,13 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
     [props.selectedNodeId]
   );
 
-  /*** Handles structural graph navigation without touching the rendering engine. */
-  const handleNodeEvent = (event: GraphViewElementEvent) => {
-    interactions.handleNodeEvent(event);
-    if (event.type === 'select') {
-      props.onNodeSelect(event.id);
-      return;
-    }
-    if (event.type === 'unselect') {
-      props.onNodeUnselect(event.id);
-      return;
-    }
-    if (event.type !== 'double-press' || !props.model.parentNodeIds.has(event.id)) return;
-    props.setCurrentPackage(event.id);
-  };
+  const handleNodeEvent = createGraphNodeEventHandler({
+    handleInteraction: interactions.handleNodeEvent,
+    onNodeSelect: props.onNodeSelect,
+    onNodeUnselect: props.onNodeUnselect,
+    parentNodeIds: props.model.parentNodeIds,
+    setCurrentPackage: props.setCurrentPackage,
+  });
 
   return (
     <div style={GRAPH_CANVAS_STYLE}>
@@ -192,6 +185,17 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   );
 }
 
+/*** Create the graph event bridge without coupling selection changes to layout or viewport work. */
+function createGraphNodeEventHandler(input: GraphNodeEventHandlerInput) {
+  return (event: GraphViewElementEvent) => {
+    input.handleInteraction(event);
+    if (event.type === 'select') return input.onNodeSelect(event.id);
+    if (event.type === 'unselect') return input.onNodeUnselect(event.id);
+    if (event.type !== 'double-press' || !input.parentNodeIds.has(event.id)) return;
+    input.setCurrentPackage(event.id);
+  };
+}
+
 /*** Narrows persisted Cytoscape layout names to the layouts supported by ZORA GraphView. */
 function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName {
   if (layout === 'breadthfirst') return 'breadthfirst';
@@ -199,6 +203,14 @@ function readGraphViewLayout(layout: LayoutOptions['name']): GraphViewLayoutName
   if (layout === 'elk') return 'elk';
   if (layout === 'grid') return 'grid';
   return 'concentric';
+}
+
+interface GraphNodeEventHandlerInput {
+  readonly handleInteraction: (event: GraphViewElementEvent) => void;
+  readonly onNodeSelect: (id: string) => void;
+  readonly onNodeUnselect: (id: string) => void;
+  readonly parentNodeIds: ReadonlySet<string>;
+  readonly setCurrentPackage: (path: string) => void;
 }
 
 interface DependencyGraphViewProps {
