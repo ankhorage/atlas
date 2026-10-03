@@ -1,3 +1,4 @@
+import { deserializeSourceGraph } from '@ankhorage/dependency-graph';
 import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
 import { describe, expect, it } from '@artiphishle/testosterone';
 import { resolve } from 'node:path';
@@ -6,6 +7,17 @@ import { createAuditAsync } from '@/features/audit/composition/createAuditAsync'
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
 
 describe('[createOfflineHtmlReport]', () => {
+  it('preserves analyzer capability reports and semantic source evidence through export/import', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
+    const sourceGraph = deserializeSourceGraph(payload.audit.sourceGraph);
+    const original = deserializeSourceGraph(audit.sourceGraph);
+
+    expect(sourceGraph).toEqual(original);
+    expect(sourceGraph.capabilities.some(report => report.available.length > 0)).toBe(true);
+    expect(JSON.stringify(sourceGraph.graph.edges).includes('sourcePath')).toBe(true);
+  });
+
   it('escapes project-controlled payload strings without changing their imported value', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const projectName = '</script><script>globalThis.compromised=true</script>&<img src=x>\u2028\u2029';
@@ -63,6 +75,7 @@ interface OfflinePayload {
       readonly projectName: string;
     };
     readonly packageGraph: unknown;
+    readonly sourceGraph: string;
   };
   readonly graph: {
     readonly edges: readonly unknown[];
