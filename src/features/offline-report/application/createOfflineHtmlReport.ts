@@ -21,7 +21,6 @@ export function createOfflineHtmlReport(audit: Audit): string {
     version: 1,
   };
   const json = JSON.stringify(sortSerializableValue(payload));
-  if (json === undefined) throw new Error('Unable to serialize Atlas offline report payload.');
   const serializedPayload = json
     .replaceAll('&', '\\u0026')
     .replaceAll('<', '\\u003c')
@@ -56,7 +55,6 @@ export function createOfflineHtmlReport(audit: Audit): string {
     '',
   ].join('\n');
 }
-
 
 /*** Recursively sort JSON object keys while preserving array order and scalar values. */
 function sortSerializableValue(value: unknown): unknown {
