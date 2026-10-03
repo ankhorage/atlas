@@ -8,13 +8,13 @@ import { reduceGraphInteraction } from '@/features/graph-view/domain/reduceGraph
 import type { GraphInteractionState } from '@/types/graphInteraction';
 
 /***
- * Owns hover state while rendering the workspace-controlled logical selection declaratively.
- * Compound hover remains ignored, while a selected dependency endpoint may itself be compound.
+ * Own hover state while rendering the workspace-controlled logical selection declaratively.
+ * Compound hover remains ignored, while selected dependency endpoints may themselves be compound.
  */
 export function useGraphInteractions(
   nodes: readonly GraphViewNode[],
   edges: readonly GraphViewEdge[],
-  selectedNodeId: string | null
+  selectedNodeIds: readonly string[]
 ) {
   const nodeIds = useMemo(() => new Set(nodes.map(node => node.id)), [nodes]);
   const leafIds = useMemo(() => {
@@ -25,10 +25,9 @@ export function useGraphInteractions(
   const interaction = useMemo<GraphInteractionState>(
     () => ({
       hoveredNodeId: hoveredNodeId !== null && leafIds.has(hoveredNodeId) ? hoveredNodeId : null,
-      selectedNodeIds:
-        selectedNodeId === null || !nodeIds.has(selectedNodeId) ? [] : [selectedNodeId],
+      selectedNodeIds: selectedNodeIds.filter(id => nodeIds.has(id)),
     }),
-    [hoveredNodeId, leafIds, nodeIds, selectedNodeId]
+    [hoveredNodeId, leafIds, nodeIds, selectedNodeIds]
   );
   const presentation = useMemo(
     () => applyGraphInteractionPresentation(nodes, edges, interaction),
