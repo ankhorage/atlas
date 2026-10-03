@@ -35,6 +35,15 @@ Dependency direction is always inward:
 - Domain -> domain-only abstractions (no framework or infrastructure dependencies)
 - Domain -> nothing external
 
+## Structural rule
+
+Hexagonal architecture does not prescribe one mandatory directory tree or a fixed number of ports.
+The enforceable contract is dependency direction and replaceability: inner policy must remain
+independent from outer technology, and adapters translate external mechanisms at explicit
+boundaries. Use the repository's managed `ankhorage-project-structure` skill to select a concrete
+profile and validate folder-role combinations. Do not create empty layers or ports merely to match
+a diagram.
+
 ## How It Works
 
 ### Step 1: Model a use case boundary
@@ -147,7 +156,7 @@ type CreateOrderOutput = {
 export class CreateOrderUseCase {
   constructor(
     private readonly orderRepository: OrderRepositoryPort,
-    private readonly paymentGateway: PaymentGatewayPort
+    private readonly paymentGateway: PaymentGatewayPort,
   ) {}
 
   async execute(input: CreateOrderInput): Promise<CreateOrderOutput> {
@@ -179,7 +188,7 @@ export class PostgresOrderRepository implements OrderRepositoryPort {
   async save(order: Order): Promise<void> {
     await this.db.query(
       'insert into orders (id, amount_cents, status, authorization_id) values ($1, $2, $3, $4)',
-      [order.id, order.amountCents, order.status, order.authorizationId]
+      [order.id, order.amountCents, order.status, order.authorizationId],
     );
   }
 
