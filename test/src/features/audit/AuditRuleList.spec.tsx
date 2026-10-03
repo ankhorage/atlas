@@ -91,11 +91,13 @@ const passedRule: AuditRuleResult = {
 };
 
 const failedEvaluation: Audit['evaluation'] = {
+  architecture: { candidates: [] },
   cyclicPackages: cycles,
   rules: [failedRule],
 };
 
 const passedEvaluation: Audit['evaluation'] = {
+  architecture: { candidates: [] },
   cyclicPackages: [],
   rules: [passedRule],
 };
