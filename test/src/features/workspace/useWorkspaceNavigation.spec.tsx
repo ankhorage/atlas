@@ -44,7 +44,7 @@ describe('[useWorkspaceNavigation]', () => {
       const click = (label: string) =>
         flushSync(() => {
           const button = Array.from(host.container.querySelectorAll('button')).find(
-            node => node.textContent === label
+            (node) => node.textContent === label,
           );
           if (!button) throw new Error(`Missing ${label} button`);
           button.click();
@@ -55,17 +55,17 @@ describe('[useWorkspaceNavigation]', () => {
 
         click('tree-io');
         expect(output()).toBe(
-          'io.reflectoring.coderadar|directory:io/reflectoring/coderadar'
+          'io.reflectoring.coderadar|directory:io/reflectoring/coderadar',
         );
 
         click('graph-io');
         expect(output()).toBe(
-          'io.reflectoring.coderadar|directory:io/reflectoring/coderadar'
+          'io.reflectoring.coderadar|directory:io/reflectoring/coderadar',
         );
 
         click('graph-coderadar');
         expect(output()).toBe(
-          'io.reflectoring.coderadar|directory:io/reflectoring/coderadar'
+          'io.reflectoring.coderadar|directory:io/reflectoring/coderadar',
         );
 
         click('graph-external');
@@ -78,7 +78,7 @@ describe('[useWorkspaceNavigation]', () => {
         flushSync(() => root.unmount());
         host.unmount();
       }
-    }
+    },
   );
 });
 
@@ -103,7 +103,7 @@ function createWorkspace(tree: readonly ProjectTreeNode[]): WorkspaceLoadResult 
 function createGraph(): PackageDependencyGraph {
   const ids = ['io', 'io.reflectoring', 'io.reflectoring.coderadar', 'external'];
   return {
-    nodes: ids.map(id => ({
+    nodes: ids.map((id) => ({
       id,
       data: {
         classification: id === 'external' ? 'vendor' : 'intrinsic',
