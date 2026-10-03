@@ -1,4 +1,4 @@
-import { arraysEqual } from '@ankhorage/utility/array';
+import { arraysEqual, dedupeBy } from '@ankhorage/utility/array';
 import { useState } from 'react';
 
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
@@ -41,6 +41,6 @@ function revealSelections(
   const requiredAncestorIds = selectedIds.flatMap(selectedId =>
     getProjectTreeAncestorIds(nodes, selectedId)
   );
-  return [...new Set([...ids, ...requiredAncestorIds])];
+  return dedupeBy([...ids, ...requiredAncestorIds], value => value);
 }
 
