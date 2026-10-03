@@ -7,6 +7,12 @@ import { createAuditAsync } from '@/features/audit/composition/createAuditAsync'
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
 
 describe('[createOfflineHtmlReport]', () => {
+  it('is byte-deterministic for the same normalized captured Audit', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+
+    expect(createOfflineHtmlReport(audit)).toBe(createOfflineHtmlReport(audit));
+  });
+
   it('preserves analyzer capability reports and semantic source evidence through export/import', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
