@@ -53,7 +53,7 @@ describe('[parsePkgvizCliArgs]', () => {
         failOnRuleViolation: false,
         help: false,
         rules: [{ id: 'cyclic-dependencies', mode: 'audit' }],
-      },
+      }
     );
   });
 
@@ -72,7 +72,7 @@ describe('[parsePkgvizCliArgs]', () => {
         failOnRuleViolation: true,
         help: false,
         rules: [],
-      },
+      }
     );
   });
 
