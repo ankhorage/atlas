@@ -1,4 +1,5 @@
 'use client';
+import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { Badge } from '@zora/badge';
 import { ScrollView } from '@zora/scroll-view';
 import { Surface } from '@zora/surface';
@@ -16,12 +17,12 @@ import type { Audit } from '@/types/audit';
 import type { CycleInspection, CycleSelection } from '@/types/auditVisualization';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Composes workspace tools and persistent graph settings from generated ZORA elements. */
+/*** Compose workspace tools and persistent graph settings from generated ZORA elements. */
 export function WorkspaceSidebar(props: WorkspaceSidebarProps) {
   const { theme } = useZoraTheme();
   const [activeTool, setActiveTool] = React.useState('tree');
 
-  /*** Closes cycle evidence when leaving the Rules tool and updates the active tab. */
+  /*** Close cycle evidence when leaving the Rules tool and update the active tab. */
   const selectTool = (value: string) => {
     if (activeTool === 'rules' && value !== 'rules') props.onCycleInspectionChange(null);
     setActiveTool(value);
@@ -52,7 +53,7 @@ export function WorkspaceSidebar(props: WorkspaceSidebarProps) {
   );
 }
 
-/*** Renders the workspace tool selector and delegates panel content. */
+/*** Render the workspace tool selector and delegate panel content. */
 function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
   const findingCount = countRuleFindings(props.evaluation);
   const hasRuleContent = hasRulesContent(props.evaluation);
@@ -87,7 +88,7 @@ function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
   );
 }
 
-/*** Renders Tree, Rules, and Export panel bodies inside the workspace tabs. */
+/*** Render Tree, Rules, and Export panel bodies inside the workspace tabs. */
 function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
   return (
     <>
@@ -95,7 +96,7 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
         <ScrollView flex={1} minHeight={0} testID="sidebar-tree-scroll">
           <ProjectTreePanel
             nodes={props.projectTree}
-            selectedId={props.selectedTreeId}
+            selectedIds={props.selectedTreeIds}
             onSelect={props.onProjectTreeSelect}
             onToggleDirectory={props.onProjectTreeToggle}
           />
@@ -111,7 +112,7 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
   );
 }
 
-/*** Renders audit-rule findings and cycle inspection controls for the Rules tab. */
+/*** Render audit-rule findings and cycle inspection controls for the Rules tab. */
 function WorkspaceRulesPanel(props: WorkspaceSidebarProps) {
   return (
     <TabPanel flex={1} minHeight={0} value="rules">
@@ -163,8 +164,8 @@ interface WorkspaceSidebarProps {
   readonly inspectedCycleId: string | null;
   readonly evaluation: Audit['evaluation'] | null;
   readonly projectTree: readonly ProjectTreeNode[];
-  readonly selectedTreeId: string | null;
-  readonly onProjectTreeSelect: (node: ProjectTreeNode) => void;
+  readonly selectedTreeIds: readonly string[];
+  readonly onProjectTreeSelect: (node: ProjectTreeNode, intent: SelectionIntent) => void;
   readonly onProjectTreeToggle: (node: ProjectTreeNode, expanded: boolean) => void;
   readonly cycleSelection: CycleSelection;
   readonly onCycleInspectionChange: (inspection: CycleInspection | null) => void;
