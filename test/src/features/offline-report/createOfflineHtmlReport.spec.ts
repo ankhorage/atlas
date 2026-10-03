@@ -6,12 +6,29 @@ import { resolve } from 'node:path';
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
+import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import {
   OFFLINE_REPORT_RUNTIME,
   OFFLINE_REPORT_STYLE,
 } from '@/features/offline-report/constants/offlineReportTemplate';
 
 describe('[createOfflineHtmlReport]', () => {
+  it('reconstructs the captured viewer views and evidence from the serialized payload', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
+
+    expect(payload.audit).toEqual(audit);
+    expect(payload.tree).toEqual(buildProjectTree(audit.files));
+    expect(payload.graph).toEqual(
+      toCytoscapeElements(audit.packageGraph, {
+        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
+      })
+    );
+    expect(deserializeSourceGraph(payload.audit.sourceGraph)).toEqual(
+      deserializeSourceGraph(audit.sourceGraph)
+    );
+  });
+
   it('embeds every runtime resource directly into the single HTML document', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const html = createOfflineHtmlReport(audit);
