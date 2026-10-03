@@ -30,7 +30,11 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
         onNavigate={navigation.navigateToPackage}
       />
       <SettingsProvider>
-        <WorkspaceBody currentSource={currentSource} navigation={navigation} workspace={workspace} />
+        <WorkspaceBody
+          currentSource={currentSource}
+          navigation={navigation}
+          workspace={workspace}
+        />
       </SettingsProvider>
     </>
   );
