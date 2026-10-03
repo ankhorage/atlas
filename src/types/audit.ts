@@ -1,3 +1,5 @@
+import type { SourceGraph } from '@ankhorage/dependency-graph';
+import type { RuleEvaluationResult } from '@ankhorage/rules';
 import type { ArchitectureDetectionResult } from '@ankhorage/rules-architecture';
 
 import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
@@ -57,6 +59,7 @@ export interface CyclicDependenciesEvidence {
 interface AuditEvaluation {
   readonly architecture: ArchitectureDetectionResult;
   readonly cyclicPackages: readonly PackageCycleDetail[];
+  readonly genericRules: RuleEvaluationResult;
   readonly rules: readonly AuditRuleResult[];
 }
 
@@ -79,4 +82,10 @@ export interface Audit {
 export interface EvaluateAuditRulesInput {
   readonly configuration: AuditConfiguration;
   readonly cyclicPackages: readonly PackageCycleDetail[];
+  readonly sourceGraph: SourceGraph;
+}
+
+export interface EvaluateAuditRulesResult {
+  readonly genericRules: RuleEvaluationResult;
+  readonly rules: readonly AuditRuleResult[];
 }
