@@ -1,3 +1,4 @@
+import { arraysEqual } from '@ankhorage/utility/array';
 import { useState } from 'react';
 
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
@@ -17,7 +18,7 @@ export function useProjectTreeExpansion(
       nodes.filter(node => node.kind === 'directory').map(node => node.id)
     ),
   }));
-  if (state.nodes !== nodes || !areIdsEqual(state.selectedIds, selectedIds)) {
+  if (state.nodes !== nodes || !arraysEqual(state.selectedIds, selectedIds)) {
     setState({
       nodes,
       selectedIds,
@@ -43,10 +44,3 @@ function revealSelections(
   return [...new Set([...ids, ...requiredAncestorIds])];
 }
 
-/*** Compare selected row identities by value so equal controlled arrays keep expansion state stable. */
-function areIdsEqual(left: readonly string[], right: readonly string[]): boolean {
-  return (
-    left.length === right.length &&
-    left.every((value, index) => value === right[index])
-  );
-}
