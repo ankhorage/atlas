@@ -126,7 +126,7 @@ function areWorkspaceSelectionsEqual(
       const rightSelection = right.at(index);
       return (
         selection.graphNodeId === rightSelection?.graphNodeId &&
-        selection.treeNodeId === rightSelection?.treeNodeId
+        selection.treeNodeId === rightSelection.treeNodeId
       );
     })
   );
