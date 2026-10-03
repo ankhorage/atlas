@@ -32,7 +32,7 @@ export function evaluateAuditRules(input: EvaluateAuditRulesInput): EvaluateAudi
 function presentCyclicDependencies(
   cycles: readonly PackageCycleDetail[],
   mode: Exclude<AuditRuleConfiguration['mode'], 'off'>,
-  genericRules: RuleEvaluationResult,
+  genericRules: RuleEvaluationResult
 ): AuditRuleResult<CyclicDependenciesEvidence> {
   const findings = genericRules.findings.filter(({ ruleId }) => ruleId === 'cyclic-dependencies');
   const failed = findings.length > 0;
@@ -43,7 +43,7 @@ function presentCyclicDependencies(
     message: failed
       ? `Detected ${findings.length} cyclic package dependenc${findings.length === 1 ? 'y' : 'ies'}.`
       : 'No cyclic package dependencies detected.',
-    details: cycles.map((cycle) => cycle.packages.join(' → ')),
+    details: cycles.map(cycle => cycle.packages.join(' → ')),
     evidence: { cycles },
   };
 }
@@ -52,10 +52,10 @@ function presentCyclicDependencies(
 function sourceRuleCapabilities(graph: SourceGraph): readonly string[] {
   const projectIds = new Set(graph.capabilities.map(({ projectId }) => projectId));
   if (projectIds.size === 0) return [];
-  const importsAvailable = [...projectIds].every((projectId) =>
+  const importsAvailable = [...projectIds].every(projectId =>
     graph.capabilities.some(
-      (report) => report.projectId === projectId && report.available.includes('imports'),
-    ),
+      report => report.projectId === projectId && report.available.includes('imports')
+    )
   );
   return importsAvailable ? ['source-graph.imports'] : [];
 }
@@ -68,7 +68,7 @@ function emptyRuleEvaluation(): RuleEvaluationResult {
 /*** Return the effective mode for one known PKGViz audit rule. */
 function findRuleMode(
   rules: readonly AuditRuleConfiguration[],
-  id: AuditRuleConfiguration['id'],
+  id: AuditRuleConfiguration['id']
 ): AuditRuleConfiguration['mode'] {
-  return rules.find((rule) => rule.id === id)?.mode ?? 'off';
+  return rules.find(rule => rule.id === id)?.mode ?? 'off';
 }
