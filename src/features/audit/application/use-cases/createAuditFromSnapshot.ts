@@ -1,10 +1,16 @@
 import { serializeSourceGraph } from '@ankhorage/dependency-graph';
+import type { RuleEvaluationResult } from '@ankhorage/rules';
 import { detectArchitecture } from '@ankhorage/rules-architecture';
 
 import { getPackageCyclesWithMembers } from '@/features/audit/application/use-cases/getPackageCyclesWithMembers';
+import { evaluateArchitectureTarget } from '@/features/audit/domain/evaluateArchitectureTarget';
 import { evaluateAuditRules } from '@/features/audit/domain/evaluateAuditRules';
 import { resolveAuditConfiguration } from '@/features/audit/domain/resolveAuditConfiguration';
-import type { Audit, ResolveAuditConfigurationInput } from '@/types/audit';
+import type {
+  Audit,
+  AuditArchitectureEvaluation,
+  ResolveAuditConfigurationInput,
+} from '@/types/audit';
 import type { ProjectSnapshot } from '@/types/projectAnalysis';
 import { getProjectName } from '@/utils/getProjectName';
 
@@ -21,13 +27,18 @@ export function createAuditFromSnapshot(
     sourceGraph: snapshot.sourceGraph,
   });
   const architecture = detectArchitecture(snapshot.sourceGraph);
+  const architectureEvaluation = evaluateArchitectureTarget(
+    snapshot.sourceGraph,
+    configuration.architectureTarget,
+  );
 
   return {
     configuration,
     evaluation: {
       architecture,
+      ...(architectureEvaluation === undefined ? {} : { architectureEvaluation }),
       cyclicPackages,
-      genericRules: ruleEvaluation.genericRules,
+      genericRules: mergeRuleEvaluation(ruleEvaluation.genericRules, architectureEvaluation),
       rules: ruleEvaluation.rules,
     },
     files: snapshot.files,
@@ -39,5 +50,17 @@ export function createAuditFromSnapshot(
       timeStart: snapshot.timeStart,
       timeEnd: Date.now(),
     },
+  };
+}
+
+/*** Merge target-independent and explicitly targeted generic findings into one Audit view. */
+function mergeRuleEvaluation(
+  base: RuleEvaluationResult,
+  architecture: AuditArchitectureEvaluation | undefined,
+): RuleEvaluationResult {
+  if (architecture === undefined) return base;
+  return {
+    diagnostics: [...base.diagnostics, ...architecture.result.diagnostics],
+    findings: [...base.findings, ...architecture.result.findings],
   };
 }
