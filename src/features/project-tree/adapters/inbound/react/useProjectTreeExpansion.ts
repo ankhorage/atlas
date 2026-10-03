@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Opens a navigated folder once while preserving subsequent manual collapse and expansion. */
+/*** Preserves manual folder expansion while revealing only ancestors required by selection. */
 export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
   selectedId: string | null
