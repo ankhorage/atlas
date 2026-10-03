@@ -78,8 +78,8 @@ describe('[getAuditAction]', () => {
 
     expect(
       audit.evaluation.genericRules.findings.some(
-        (finding) => finding.ruleId === 'cyclic-dependencies',
-      ),
+        finding => finding.ruleId === 'cyclic-dependencies'
+      )
     ).toBe(true);
 
     const cyclicRule = audit.evaluation.rules.find(rule => rule.id === 'cyclic-dependencies');
