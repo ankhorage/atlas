@@ -156,6 +156,22 @@ describe('[createOfflineHtmlReport]', () => {
     expect(html.includes('id="atlas-report-root"')).toBe(true);
   });
 
+  it('escapes project-controlled data without changing the reconstructed Audit', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const dangerous = '</script><script>globalThis.atlasInjected=true</script>&';
+    const poisonedAudit = {
+      ...audit,
+      meta: { ...audit.meta, projectName: dangerous },
+    };
+    const html = createOfflineHtmlReport(poisonedAudit);
+    const payload = readEmbeddedPayload(html);
+
+    expect(html.includes(dangerous)).toBe(false);
+    expect(html.includes('\\u003c/script\\u003e')).toBe(true);
+    expect(html.includes('\\u0026')).toBe(true);
+    expect(payload.audit.meta).toEqual(poisonedAudit.meta);
+  });
+
   it('does not use browser network APIs when the report opens', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const html = createOfflineHtmlReport(audit);
