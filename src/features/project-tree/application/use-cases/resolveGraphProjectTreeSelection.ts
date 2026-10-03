@@ -1,58 +1,35 @@
-import { resolveProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveProjectTreeSelection';
 import { findProjectTreeNodeByGraphPackage } from '@/features/project-tree/utils/findProjectTreeNodeByGraphPackage';
+import { resolveProjectTreeGraphNodeId } from '@/features/project-tree/utils/resolveProjectTreeGraphNodeId';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/***
- * Maps a selected graph package onto the canonical TreeView row using the same descendant policy.
- * Direct endpoints prefer their deepest exact tree representation; structural nodes resolve below it.
- */
+/*** Maps one graph node to the exact visible TreeView row that represents its package/path. */
 export function resolveGraphProjectTreeSelection(
   nodes: readonly ProjectTreeNode[],
   graphNodeId: string,
-  selectableGraphNodeIds: readonly string[]
+  graphNodeIds: readonly string[]
 ): ProjectTreeNode | null {
   const normalizedId = normalizeGraphPackage(graphNodeId);
-  const selectable = new Set(selectableGraphNodeIds);
-
-  if (selectable.has(normalizedId)) {
-    const exact = findProjectTreeNodeByGraphPackage(nodes, normalizedId);
-    if (exact !== null) return exact;
-  }
-
-  for (const node of nodes) {
-    const resolved = resolveScopedTreeSelection(node, normalizedId, selectableGraphNodeIds);
-    if (resolved !== null) return resolved;
-  }
-  return null;
+  if (!graphNodeIds.includes(normalizedId)) return null;
+  return (
+    findProjectTreeNodeByResolvedGraphId(nodes, normalizedId, graphNodeIds) ??
+    findProjectTreeNodeByGraphPackage(nodes, normalizedId)
+  );
 }
 
-/*** Search one tree subtree in displayed order for a selection contained by the graph package scope. */
-function resolveScopedTreeSelection(
-  node: ProjectTreeNode,
+/*** Finds a row by its exact graph identity without substituting a descendant. */
+function findProjectTreeNodeByResolvedGraphId(
+  nodes: readonly ProjectTreeNode[],
   graphNodeId: string,
-  selectableGraphNodeIds: readonly string[]
+  graphNodeIds: readonly string[]
 ): ProjectTreeNode | null {
-  const packageId = normalizeGraphPackage(node.graphPackage);
-  if (isGraphDescendant(packageId, graphNodeId)) {
-    const resolved = resolveProjectTreeSelection(node, selectableGraphNodeIds);
-    if (
-      resolved !== null &&
-      isGraphDescendant(normalizeGraphPackage(resolved.graphPackage), graphNodeId)
-    ) {
-      return resolved;
-    }
-  }
-
-  for (const child of node.children ?? []) {
-    const resolved = resolveScopedTreeSelection(child, graphNodeId, selectableGraphNodeIds);
-    if (resolved !== null) return resolved;
+  for (const node of nodes) {
+    if (resolveProjectTreeGraphNodeId(node, graphNodeIds) === graphNodeId) return node;
+    const nested = node.children
+      ? findProjectTreeNodeByResolvedGraphId(node.children, graphNodeId, graphNodeIds)
+      : null;
+    if (nested !== null) return nested;
   }
   return null;
-}
-
-/*** Return whether a package is the selected graph scope or one of its dotted descendants. */
-function isGraphDescendant(packageId: string, graphNodeId: string): boolean {
-  return packageId === graphNodeId || packageId.startsWith(graphNodeId + '.');
 }
 
 /*** Normalize filesystem-style package separators to the graph identity representation. */
