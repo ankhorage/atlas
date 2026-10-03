@@ -1,5 +1,6 @@
 'use client';
 import { Icon } from '@zora/icon';
+import { Text } from '@zora/text';
 import { type TreeItemNode, TreeView } from '@zora/tree-view';
 import { View } from '@zora/view';
 import React from 'react';
@@ -19,13 +20,13 @@ export function ProjectTreePanel({
   const expansion = useProjectTreeExpansion(nodes, selectedId);
 
   return (
-    <View p="s">
+    <View p="xs">
       <TreeView
         ariaLabel="Project tree"
-        expansionIndicator="folder"
+        expansionIndicator="chevron"
         expandedIds={expansion.expandedIds}
         nodes={treeNodes}
-        selectedId={selectedId ?? undefined}
+        selectedIds={selectedId === null ? [] : [selectedId]}
         onExpandedChange={ids => {
           const changedId = getChangedExpansionId(expansion.expandedIds, ids);
           expansion.onExpandedChange(ids);
@@ -46,11 +47,15 @@ export function ProjectTreePanel({
 function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   return {
     id: node.id,
-    label: node.label,
+    label: (
+      <Text numberOfLines={1} variant="bodySmall">
+        {node.label}
+      </Text>
+    ),
     icon: (
       <Icon
         name={node.kind === 'directory' ? 'folder-outline' : 'document-text-outline'}
-        size={14}
+        size="s"
       />
     ),
     ...(node.children ? { children: node.children.map(child => toTreeItemNode(child)) } : {}),
