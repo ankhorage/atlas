@@ -9,7 +9,12 @@ import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTr
 import type { ProjectTreeNode } from '@/types/projectTree';
 
 /*** Adapts PKGViz's serializable project tree to the generated ZORA browser TreeView. */
-export function ProjectTreePanel({ nodes, onSelect, selectedId }: ProjectTreePanelProps) {
+export function ProjectTreePanel({
+  nodes,
+  onSelect,
+  onToggleDirectory,
+  selectedId,
+}: ProjectTreePanelProps) {
   const treeNodes = React.useMemo(() => nodes.map(node => toTreeItemNode(node)), [nodes]);
   const expansion = useProjectTreeExpansion(nodes, selectedId);
 
@@ -21,7 +26,13 @@ export function ProjectTreePanel({ nodes, onSelect, selectedId }: ProjectTreePan
         expandedIds={expansion.expandedIds}
         nodes={treeNodes}
         selectedId={selectedId ?? undefined}
-        onExpandedChange={expansion.onExpandedChange}
+        onExpandedChange={ids => {
+          const changedId = getChangedExpansionId(expansion.expandedIds, ids);
+          expansion.onExpandedChange(ids);
+          if (changedId === null) return;
+          const node = findProjectTreeNode(nodes, changedId);
+          if (node?.kind === 'directory') onToggleDirectory(node, ids.includes(changedId));
+        }}
         onSelect={id => {
           const node = findProjectTreeNode(nodes, id);
           if (node) onSelect(node);
@@ -46,8 +57,21 @@ function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   };
 }
 
+/*** Identifies the one folder id changed by an independent TreeView expansion control. */
+function getChangedExpansionId(
+  previousIds: readonly string[],
+  nextIds: readonly string[]
+): string | null {
+  return (
+    [...previousIds, ...nextIds].find(
+      id => previousIds.includes(id) !== nextIds.includes(id)
+    ) ?? null
+  );
+}
+
 interface ProjectTreePanelProps {
   readonly nodes: readonly ProjectTreeNode[];
   readonly onSelect: (node: ProjectTreeNode) => void;
+  readonly onToggleDirectory: (node: ProjectTreeNode, expanded: boolean) => void;
   readonly selectedId: string | null;
 }
