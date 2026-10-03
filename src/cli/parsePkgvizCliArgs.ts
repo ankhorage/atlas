@@ -49,7 +49,6 @@ const VALUE_UPDATERS = new Map<string, ValueUpdater>([
   ['-p', (options, value) => ({ ...options, port: Number(value) })],
   ['--port', (options, value) => ({ ...options, port: Number(value) })],
   ['--wait', (options, value) => ({ ...options, waitMs: Number(value) })],
-  ['--ref', (options, value) => ({ ...options, ref: value })],
   [
     '--rule',
     (options, value) => ({

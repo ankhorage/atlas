@@ -5,7 +5,7 @@ import type { PkgvizCliOptions } from '@/types/cli';
 
 /*** Resolve one local or GitHub source and keep it alive for the viewer lifecycle. */
 export async function startViewerSourceAsync(options: PkgvizCliOptions): Promise<void> {
-  const source = parseProjectSource(options.source ?? process.cwd(), options.ref);
+  const source = parseProjectSource(options.source ?? process.cwd());
   const resolved = await loadProjectSourceAsync(source);
 
   try {

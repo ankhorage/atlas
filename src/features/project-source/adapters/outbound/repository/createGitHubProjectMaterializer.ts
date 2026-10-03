@@ -6,10 +6,7 @@ import type { GitHubProjectMaterializer } from '@/types/projectSource';
 export function createGitHubProjectMaterializer(): GitHubProjectMaterializer {
   return {
     materializeAsync: async source => {
-      const result = await materializeGitHubRepositoryAsync({
-        url: source.url,
-        ...(source.ref === undefined ? {} : { ref: source.ref }),
-      });
+      const result = await materializeGitHubRepositoryAsync({ url: source.url });
       return {
         rootPath: result.rootPath,
         projectName: result.repository.name,

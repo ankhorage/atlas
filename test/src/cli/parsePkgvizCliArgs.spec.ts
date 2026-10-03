@@ -40,9 +40,7 @@ describe('[parsePkgvizCliArgs]', () => {
         'hexagonal',
         '--no-fail-on-rule-violation',
         '--verbose',
-        'https://github.com/ankhorage/zora',
-        '--ref',
-        'main',
+        'https://github.com/ankhorage/zora/tree/main',
       ]),
       {
         architectureTarget: { kind: 'model', id: 'hexagonal' },
@@ -57,8 +55,7 @@ describe('[parsePkgvizCliArgs]', () => {
         failOnRuleViolation: false,
         help: false,
         offline: false,
-        source: 'https://github.com/ankhorage/zora',
-        ref: 'main',
+        source: 'https://github.com/ankhorage/zora/tree/main',
         rules: [{ id: 'cyclic-dependencies', mode: 'audit' }],
       }
     );
@@ -87,10 +84,14 @@ describe('[parsePkgvizCliArgs]', () => {
     assert.equal(result.offline, true);
   });
 
-  it('rejects multiple sources and ref on local sources at source parsing time', () => {
+  it('rejects multiple sources and the removed ref option', () => {
     assert.throws(
       () => parsePkgvizCliArgs(['bun', 'pkgviz', './one', './two']),
       /Only one project source/
+    );
+    assert.throws(
+      () => parsePkgvizCliArgs(['bun', 'pkgviz', '--ref', 'main']),
+      /Unknown option "--ref"/
     );
   });
 

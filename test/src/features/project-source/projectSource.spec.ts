@@ -17,8 +17,8 @@ describe('[project source]', () => {
     await resolved.cleanupAsync();
   });
 
-  it('materializes GitHub sources and retains the immutable revision', async () => {
-    const source = parseProjectSource('https://github.com/ankhorage/zora', 'main');
+  it('materializes normal GitHub revision URLs and retains the immutable revision', async () => {
+    const source = parseProjectSource('https://github.com/ankhorage/zora/tree/main');
     let cleaned = false;
     const resolved = await resolveProjectSourceAsync(source, {
       materializeAsync: async () => ({
@@ -33,8 +33,7 @@ describe('[project source]', () => {
 
     expect(source).toEqual({
       kind: 'github',
-      url: 'https://github.com/ankhorage/zora',
-      ref: 'main',
+      url: 'https://github.com/ankhorage/zora/tree/main',
     });
     expect(resolved.projectName).toBe('zora');
     expect(resolved.revision).toBe('abc123');
@@ -42,12 +41,9 @@ describe('[project source]', () => {
     expect(cleaned).toBe(true);
   });
 
-  it('rejects unsupported remote providers and refs on local sources', () => {
+  it('rejects unsupported remote providers', () => {
     expect(() => parseProjectSource('https://gitlab.com/ankhorage/zora')).toThrow(
       'Only local project paths'
-    );
-    expect(() => parseProjectSource('./project', 'main')).toThrow(
-      '--ref is supported only for GitHub'
     );
   });
 });

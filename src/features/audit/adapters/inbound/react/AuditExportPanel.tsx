@@ -5,18 +5,18 @@ import { View } from '@zora/view';
 import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
 
 /*** Renders audit-export actions with generated ZORA buttons. */
-export function AuditExportPanel({ source, sourceRevision }: AuditExportPanelProps) {
+export function AuditExportPanel({ source }: AuditExportPanelProps) {
   return (
     <View gap="s" p="m">
       <ExportButton
         format="JSON"
         mimeType="application/json"
-        onExport={() => downloadAuditJsonAction(source, sourceRevision)}
+        onExport={() => downloadAuditJsonAction(source)}
       />
       <ExportButton
         format="XML"
         mimeType="application/xml"
-        onExport={() => downloadAuditXmlAction(source, sourceRevision)}
+        onExport={() => downloadAuditXmlAction(source)}
       />
     </View>
   );
@@ -53,6 +53,5 @@ interface ExportButtonProps {
 }
 
 interface AuditExportPanelProps {
-  readonly sourceRevision?: string;
   readonly source?: string;
 }

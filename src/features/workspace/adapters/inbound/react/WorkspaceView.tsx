@@ -3,8 +3,9 @@ import { AppBar } from '@zora/app-bar';
 import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { Card } from '@zora/card';
+import { TextInput } from '@zora/text-input';
 import { useZoraTheme } from '@zora/ZoraProvider';
-import { type FormEvent, useState } from 'react';
+import { useState } from 'react';
 
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
@@ -17,12 +18,7 @@ import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
 /*** Renders the active PKGViz workspace through its feature-owned React adapter. */
-export function WorkspaceView({
-  currentSource,
-  projectName,
-  sourceRevision,
-  workspace,
-}: WorkspaceViewProps) {
+export function WorkspaceView({ currentSource, projectName, workspace }: WorkspaceViewProps) {
   const navigation = useWorkspaceNavigation(workspace);
 
   return (
@@ -31,14 +27,12 @@ export function WorkspaceView({
         currentPackage={navigation.currentPackage}
         currentSource={currentSource}
         projectName={projectName}
-        sourceRevision={sourceRevision}
         onNavigate={navigation.navigateToPackage}
       />
       <SettingsProvider>
         <WorkspaceBody
           currentSource={currentSource}
           navigation={navigation}
-          sourceRevision={sourceRevision}
           workspace={workspace}
         />
       </SettingsProvider>
@@ -55,10 +49,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
     <AppBar
       actions={
         <div style={{ alignItems: 'center', display: 'flex', gap: 8 }}>
-          <ProjectSourceForm
-            currentSource={props.currentSource}
-            sourceRevision={props.sourceRevision}
-          />
+          <ProjectSourceForm currentSource={props.currentSource} />
           <Button
             leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
             size="s"
@@ -80,57 +71,37 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
   );
 }
 
-/*** Navigates the workspace to one public GitHub repository URL without client-side source reads. */
+/*** Navigates the workspace to one GitHub repository source selected through a ZORA text input. */
 function ProjectSourceForm(props: ProjectSourceFormProps) {
   const [source, setSource] = useState(props.currentSource ?? '');
-  const [revision, setRevision] = useState(props.sourceRevision ?? '');
 
   const openSource = () => {
     const normalizedSource = source.trim();
     const params = new URLSearchParams();
     if (normalizedSource !== '') params.set('source', normalizedSource);
-    if (normalizedSource !== '' && revision.trim() !== '') {
-      params.set('ref', revision.trim());
-    }
     window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
   };
 
-  const submit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    openSource();
-  };
-
   return (
-    <form onSubmit={submit} style={{ display: 'flex', gap: 6 }}>
-      <input
-        aria-label="GitHub repository URL"
-        placeholder="https://github.com/owner/repo"
-        type="url"
+    <div style={{ alignItems: 'center', display: 'flex', gap: 6 }}>
+      <TextInput
+        accessibilityLabel="GitHub repository URL"
+        placeholder="ankhorage/zora or GitHub URL"
+        size="s"
+        style={{ minWidth: 280 }}
         value={source}
-        onChange={event => setSource(event.currentTarget.value)}
-        style={{ minWidth: 280, padding: '6px 8px' }}
-      />
-      <input
-        aria-label="GitHub repository ref"
-        placeholder="ref"
-        value={revision}
-        onChange={event => setRevision(event.currentTarget.value)}
-        style={{ width: 96, padding: '6px 8px' }}
+        onChangeText={setSource}
+        onSubmitEditing={openSource}
       />
       <Button size="s" variant="outline" onPress={openSource}>
         Open
       </Button>
-    </form>
+    </div>
   );
 }
 
 /*** Renders workspace tools, graph content, cycle inspection, and persistent load errors. */
-function WorkspaceBody({
-  currentSource,
-  navigation,
-  sourceRevision,
-  workspace,
-}: WorkspaceBodyProps) {
+function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const projectError = workspace.ok ? null : workspace.error;
@@ -157,7 +128,6 @@ function WorkspaceBody({
         inspectedCycleId={cycleInspection?.id ?? null}
         projectTree={navigation.projectTree}
         selectedTreeId={navigation.selectedTreeId}
-        sourceRevision={sourceRevision}
         onCycleInspectionChange={setCycleInspection}
         onProjectTreeSelect={navigation.selectProjectTreeNode}
         onProjectTreeToggle={navigation.toggleProjectTreeNode}
@@ -238,7 +208,6 @@ const EMPTY_CYCLES: NonNullable<Audit['evaluation']>['cyclicPackages'] = [];
 interface WorkspaceViewProps {
   readonly currentSource?: string;
   readonly projectName: string;
-  readonly sourceRevision?: string;
   readonly workspace: WorkspaceLoadResult;
 }
 
@@ -246,19 +215,16 @@ interface WorkspaceHeaderProps {
   readonly currentPackage: string;
   readonly currentSource?: string;
   readonly projectName: string;
-  readonly sourceRevision?: string;
   readonly onNavigate: (path: string) => void;
 }
 
 interface ProjectSourceFormProps {
   readonly currentSource?: string;
-  readonly sourceRevision?: string;
 }
 
 interface WorkspaceBodyProps {
   readonly currentSource?: string;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
-  readonly sourceRevision?: string;
   readonly workspace: WorkspaceLoadResult;
 }
 
