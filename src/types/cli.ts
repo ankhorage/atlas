@@ -1,6 +1,7 @@
-import type { AuditRuleConfiguration } from '@/types/audit';
+import type { AuditArchitectureTarget, AuditRuleConfiguration } from '@/types/audit';
 
 export interface PkgvizCliOptions {
+  readonly architectureTarget?: AuditArchitectureTarget;
   readonly out: string;
   readonly open: boolean;
   readonly serve: boolean;
