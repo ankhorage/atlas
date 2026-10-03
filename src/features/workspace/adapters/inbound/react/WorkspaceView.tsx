@@ -125,7 +125,12 @@ function ProjectSourceForm(props: ProjectSourceFormProps) {
 }
 
 /*** Renders workspace tools, graph content, cycle inspection, and persistent load errors. */
-function WorkspaceBody({ currentSource, navigation, sourceRevision, workspace }: WorkspaceBodyProps) {
+function WorkspaceBody({
+  currentSource,
+  navigation,
+  sourceRevision,
+  workspace,
+}: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const projectError = workspace.ok ? null : workspace.error;
