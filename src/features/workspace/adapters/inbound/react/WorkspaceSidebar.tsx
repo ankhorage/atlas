@@ -71,9 +71,11 @@ function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
           <Tab
             label={t('settings.rules')}
             trailing={
-              <Badge color="danger" size="s">
-                {findingCount}
-              </Badge>
+              findingCount > 0 ? (
+                <Badge color="danger" size="s">
+                  {findingCount}
+                </Badge>
+              ) : undefined
             }
             value="rules"
           />
