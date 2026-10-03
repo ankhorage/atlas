@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1
+
+### Patch Changes
+
+- b306ab5: Keep architecture detection out of the Rules sidebar and refine workspace navigation using existing ZORA primitives.
+
 ## 0.9.0
 
 ### Minor Changes
