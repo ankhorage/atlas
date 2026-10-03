@@ -172,6 +172,18 @@ describe('[createOfflineHtmlReport]', () => {
     expect(payload.audit.meta).toEqual(poisonedAudit.meta);
   });
 
+  it('reconstructs captured views and evidence from the serialized Audit payload', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const embedded = readEmbeddedPayload(createOfflineHtmlReport(audit)).audit;
+    const reconstructed = JSON.parse(JSON.stringify(embedded)) as typeof embedded;
+
+    expect(reconstructed.packageGraph).toEqual(audit.packageGraph);
+    expect(reconstructed.evaluation).toEqual(audit.evaluation);
+    expect(deserializeSourceGraph(reconstructed.sourceGraph)).toEqual(
+      deserializeSourceGraph(audit.sourceGraph)
+    );
+  });
+
   it('produces deterministic output for the same normalized Audit', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
 
