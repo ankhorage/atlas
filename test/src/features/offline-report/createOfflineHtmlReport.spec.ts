@@ -93,6 +93,17 @@ describe('[createOfflineHtmlReport]', () => {
     expect(payload.audit.evaluation.cyclicPackages).toEqual(audit.evaluation.cyclicPackages);
   });
 
+  it('uses the canonical Graph to Cytoscape presentation conversion', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
+
+    expect(payload.graph).toEqual(
+      toCytoscapeElements(audit.packageGraph, {
+        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
+      })
+    );
+  });
+
   it('retains every derived view required by the offline workspace', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
