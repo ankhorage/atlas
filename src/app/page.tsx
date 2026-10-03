@@ -12,12 +12,10 @@ export default async function Home({ searchParams }: HomeProps) {
   await connection();
   const params = await searchParams;
   const source = readSearchParam(params.source);
-  const ref = readSearchParam(params.ref);
-  const result = await loadWorkspaceProjectSourceAsync(source, ref);
+  const result = await loadWorkspaceProjectSourceAsync(source);
 
   return (
     <WorkspaceView
-      sourceRevision={result.currentRef}
       currentSource={result.currentSource}
       projectName={result.projectName}
       workspace={result.workspace}
@@ -32,7 +30,6 @@ function readSearchParam(value: string | readonly string[] | undefined): string 
 
 interface HomeProps {
   readonly searchParams: Promise<{
-    readonly ref?: string | readonly string[];
     readonly source?: string | readonly string[];
   }>;
 }
