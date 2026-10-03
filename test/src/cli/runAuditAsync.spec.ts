@@ -78,6 +78,35 @@ describe('[runAuditAsync]', () => {
     expect(result.audit.evaluation.cyclicPackages.length).toBe(1);
   });
 
+  it('serializes explicit architecture-profile findings without making them blocking', async () => {
+    const projectPath = await copyFixtureAsync('examples/java/my-app');
+    const result = await runAuditAsync({
+      projectPath,
+      outputPath: 'audit.json',
+      pretty: false,
+      configuration: {
+        architectureTarget: { kind: 'profile', id: 'ankhorage' },
+        rules: [{ id: 'cyclic-dependencies', mode: 'off' }],
+      },
+    });
+    const persisted = JSON.parse(await readFile(result.artifactPath, 'utf8')) as Audit;
+
+    expect(result.exitCode).toBe(0);
+    expect(persisted.configuration.architectureTarget).toEqual({
+      kind: 'profile',
+      id: 'ankhorage',
+    });
+    expect(persisted.evaluation.architectureEvaluation?.target).toEqual({
+      kind: 'profile',
+      id: 'ankhorage',
+    });
+    expect(
+      persisted.evaluation.genericRules.findings.some(({ ruleId }) =>
+        ruleId.startsWith('package.architecture.'),
+      ),
+    ).toBe(true);
+  });
+
   it('returns zero for a clean project with the default policy', async () => {
     const projectPath = await copyFixtureAsync('examples/typescript/my-app');
     const result = await runAuditAsync({
