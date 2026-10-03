@@ -6,6 +6,21 @@ import { createAuditAsync } from '@/features/audit/composition/createAuditAsync'
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
 
 describe('[createOfflineHtmlReport]', () => {
+  it('escapes project-controlled payload strings without changing their imported value', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const projectName = '</script><script>globalThis.compromised=true</script>&<img src=x>\u2028\u2029';
+    const html = createOfflineHtmlReport({
+      ...audit,
+      meta: { ...audit.meta, projectName },
+    });
+    const payload = readEmbeddedPayload(html);
+
+    expect(html.includes(projectName)).toBe(false);
+    expect(html.includes('</script><script>globalThis.compromised=true</script>')).toBe(false);
+    expect(html.includes('<img src=x>')).toBe(false);
+    expect(payload.audit.meta.projectName).toBe(projectName);
+  });
+
   it('embeds the captured viewer data without rebuilding analysis in the browser', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const html = createOfflineHtmlReport(audit);
@@ -44,7 +59,9 @@ interface OfflinePayload {
       readonly genericRules: unknown;
       readonly rules: unknown;
     };
-    readonly meta: unknown;
+    readonly meta: {
+      readonly projectName: string;
+    };
     readonly packageGraph: unknown;
   };
   readonly graph: {
