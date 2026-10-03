@@ -7,44 +7,52 @@ import { applyGraphInteractionPresentation } from '@/features/graph-view/adapter
 import { reduceGraphInteraction } from '@/features/graph-view/domain/reduceGraphInteraction';
 import type { GraphInteractionState } from '@/types/graphInteraction';
 
-/*** Owns leaf interaction state and declarative presentation through public GraphView events. */
+/***
+ * Owns hover state while rendering the workspace-controlled logical selection declaratively.
+ * Compound hover remains ignored, while a selected dependency endpoint may itself be compound.
+ */
 export function useGraphInteractions(
   nodes: readonly GraphViewNode[],
-  edges: readonly GraphViewEdge[]
+  edges: readonly GraphViewEdge[],
+  selectedNodeId: string | null
 ) {
   const leafIds = useMemo(() => {
     const parents = new Set(nodes.map(node => node.parentId));
     return new Set(nodes.filter(node => !parents.has(node.id)).map(node => node.id));
   }, [nodes]);
-  const [snapshot, setSnapshot] = useState<{
-    readonly leafIds: ReadonlySet<string>;
-    readonly interaction: GraphInteractionState;
-  }>({
-    leafIds,
-    interaction: { hoveredNodeId: null, selectedNodeIds: [] },
-  });
-  if (snapshot.leafIds !== leafIds) {
-    setSnapshot({
-      leafIds,
-      interaction: {
-        hoveredNodeId: null,
-        selectedNodeIds: snapshot.interaction.selectedNodeIds.filter(id => leafIds.has(id)),
-      },
-    });
-  }
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const interaction = useMemo<GraphInteractionState>(
+    () => ({
+      hoveredNodeId: hoveredNodeId !== null && leafIds.has(hoveredNodeId) ? hoveredNodeId : null,
+      selectedNodeIds: selectedNodeId === null ? [] : [selectedNodeId],
+    }),
+    [hoveredNodeId, leafIds, selectedNodeId]
+  );
   const presentation = useMemo(
-    () => applyGraphInteractionPresentation(nodes, edges, snapshot.interaction),
-    [nodes, edges, snapshot.interaction]
+    () => applyGraphInteractionPresentation(nodes, edges, interaction),
+    [nodes, edges, interaction]
   );
 
-  /*** Ignores compound policy and routes only the approved hover/selection events to the reducer. */
+  /*** Route only approved leaf hover events to local interaction state; selection is workspace-owned. */
   const handleNodeEvent = (event: GraphViewElementEvent) => {
-    const { id, type } = event;
-    if (!leafIds.has(id) || type === 'press' || type === 'double-press') return;
-    setSnapshot(previous => {
-      const interaction = reduceGraphInteraction(previous.interaction, { id, type });
-      return interaction === previous.interaction ? previous : { leafIds, interaction };
+    if (
+      !leafIds.has(event.id) ||
+      (event.type !== 'pointer-enter' && event.type !== 'pointer-leave')
+    ) {
+      return;
+    }
+
+    setHoveredNodeId(previous => {
+      const state = reduceGraphInteraction(
+        {
+          hoveredNodeId: previous,
+          selectedNodeIds: interaction.selectedNodeIds,
+        },
+        event
+      );
+      return state.hoveredNodeId;
     });
   };
+
   return { ...presentation, handleNodeEvent };
 }
