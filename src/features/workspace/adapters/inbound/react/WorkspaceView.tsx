@@ -17,7 +17,7 @@ import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
-/*** Renders the active PKGViz workspace through its feature-owned React adapter. */
+/*** Renders the active Atlas workspace through its feature-owned React adapter. */
 export function WorkspaceView({ currentSource, projectName, workspace }: WorkspaceViewProps) {
   const navigation = useWorkspaceNavigation(workspace);
 

@@ -6,7 +6,7 @@ import { escapeRegExp } from '@ankhorage/utility/regex';
 
 import type { ProjectFileMetadata, ProjectImportMetadata } from '@/types/projectFiles';
 
-/*** Read Java file metadata retained by PKGViz Tree and audit exports. */
+/*** Read Java file metadata retained by Atlas Tree and audit exports. */
 export function readJavaProjectFileMetadata(
   fullPath: string,
   projectRoot: string,

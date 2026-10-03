@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "@ankhorage/pkgviz",
+      "name": "@ankhorage/atlas",
       "dependencies": {
         "@ankhorage/dependency-graph": "^1.1.1",
         "@ankhorage/graph": "^0.3.0",

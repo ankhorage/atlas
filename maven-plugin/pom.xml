@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.artiphishle</groupId>
-  <artifactId>pkgviz-maven-plugin</artifactId>
+  <groupId>io.github.ankhorage</groupId>
+  <artifactId>atlas-maven-plugin</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
 
-  <name>PKGViz Maven Plugin</name>
-  <description>Thin Maven build adapter for the shared PKGViz audit and rule contract.</description>
+  <name>Atlas Maven Plugin</name>
+  <description>Thin Maven build adapter for the shared Atlas audit and rule contract.</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -49,7 +49,7 @@
         <artifactId>maven-plugin-plugin</artifactId>
         <version>${maven.plugin.tools.version}</version>
         <configuration>
-          <goalPrefix>pkgviz</goalPrefix>
+          <goalPrefix>atlas</goalPrefix>
         </configuration>
       </plugin>
       <plugin>
@@ -58,7 +58,7 @@
         <version>${maven.surefire.version}</version>
         <configuration>
           <systemPropertyVariables>
-            <pkgviz.repoRoot>${project.basedir}/..</pkgviz.repoRoot>
+            <atlas.repoRoot>${project.basedir}/..</atlas.repoRoot>
           </systemPropertyVariables>
         </configuration>
       </plugin>

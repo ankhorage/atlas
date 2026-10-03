@@ -1,4 +1,4 @@
-package io.github.artiphishle.pkgviz.gradle;
+package io.github.ankhorage.atlas.gradle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,18 +14,18 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-final class PkgvizPluginTest {
+final class AtlasPluginTest {
   @TempDir Path temporaryDirectory;
 
   @Test
-  void checkRunsPkgvizAuditForCleanJavaProject() throws Exception {
+  void checkRunsAtlasAuditForCleanJavaProject() throws Exception {
     final Path project = copyFixture("java-clean");
     writeGroovyBuild(project, "cyclic-dependencies=block", true);
 
     final BuildResult result = runner(project, "check").build();
 
-    assertEquals(TaskOutcome.SUCCESS, result.task(":pkgvizAudit").getOutcome());
-    final String audit = Files.readString(project.resolve("build/pkgviz-audit.json"));
+    assertEquals(TaskOutcome.SUCCESS, result.task(":atlasAudit").getOutcome());
+    final String audit = Files.readString(project.resolve("build/atlas-audit.json"));
     assertTrue(audit.contains("\"id\": \"cyclic-dependencies\""));
     assertTrue(audit.contains("\"status\": \"passed\""));
   }
@@ -35,10 +35,10 @@ final class PkgvizPluginTest {
     final Path project = copyFixture("java-cyclic");
     writeGroovyBuild(project, "cyclic-dependencies=block", true);
 
-    final BuildResult result = runner(project, "pkgvizAudit").buildAndFail();
+    final BuildResult result = runner(project, "atlasAudit").buildAndFail();
 
-    assertTrue(result.getOutput().contains("PKGViz audit rules failed"));
-    final Path artifact = project.resolve("build/pkgviz-audit.json");
+    assertTrue(result.getOutput().contains("Atlas audit rules failed"));
+    final Path artifact = project.resolve("build/atlas-audit.json");
     assertTrue(Files.isRegularFile(artifact));
     final String audit = Files.readString(artifact);
     assertTrue(audit.contains("\"mode\": \"block\""));
@@ -51,10 +51,10 @@ final class PkgvizPluginTest {
     final Path project = copyFixture("java-cyclic");
     writeGroovyBuild(project, "cyclic-dependencies=audit", true);
 
-    final BuildResult result = runner(project, "pkgvizAudit").build();
+    final BuildResult result = runner(project, "atlasAudit").build();
 
-    assertEquals(TaskOutcome.SUCCESS, result.task(":pkgvizAudit").getOutcome());
-    final String audit = Files.readString(project.resolve("build/pkgviz-audit.json"));
+    assertEquals(TaskOutcome.SUCCESS, result.task(":atlasAudit").getOutcome());
+    final String audit = Files.readString(project.resolve("build/atlas-audit.json"));
     assertTrue(audit.contains("\"mode\": \"audit\""));
     assertTrue(audit.contains("\"status\": \"failed\""));
     assertTrue(audit.contains("\"policy\": \"advisory\""));
@@ -65,10 +65,10 @@ final class PkgvizPluginTest {
     final Path project = copyFixture("java-cyclic");
     writeGroovyBuild(project, "cyclic-dependencies=off", true);
 
-    final BuildResult result = runner(project, "pkgvizAudit").build();
+    final BuildResult result = runner(project, "atlasAudit").build();
 
-    assertEquals(TaskOutcome.SUCCESS, result.task(":pkgvizAudit").getOutcome());
-    final String audit = Files.readString(project.resolve("build/pkgviz-audit.json"));
+    assertEquals(TaskOutcome.SUCCESS, result.task(":atlasAudit").getOutcome());
+    final String audit = Files.readString(project.resolve("build/atlas-audit.json"));
     assertTrue(audit.contains("\"mode\": \"off\""));
   }
 
@@ -77,10 +77,10 @@ final class PkgvizPluginTest {
     final Path project = copyFixture("kotlin-clean");
     writeKotlinBuild(project);
 
-    final BuildResult result = runner(project, "pkgvizAudit").build();
+    final BuildResult result = runner(project, "atlasAudit").build();
 
-    assertEquals(TaskOutcome.SUCCESS, result.task(":pkgvizAudit").getOutcome());
-    final String audit = Files.readString(project.resolve("build/pkgviz-audit.json"));
+    assertEquals(TaskOutcome.SUCCESS, result.task(":atlasAudit").getOutcome());
+    final String audit = Files.readString(project.resolve("build/atlas-audit.json"));
     assertTrue(audit.contains("\"language\": \"kotlin\""));
     assertTrue(audit.contains("\"status\": \"passed\""));
   }
@@ -100,10 +100,10 @@ final class PkgvizPluginTest {
         """
         plugins {
             id 'java'
-            id 'io.github.artiphishle.pkgviz'
+            id 'io.github.ankhorage.atlas'
         }
 
-        pkgviz {
+        atlas {
             executable.set('bun')
             cliPath.set(file('%s'))
             rules.set(['%s'])
@@ -120,10 +120,10 @@ final class PkgvizPluginTest {
         project.resolve("build.gradle.kts"),
         """
         plugins {
-            id("io.github.artiphishle.pkgviz")
+            id("io.github.ankhorage.atlas")
         }
 
-        pkgviz {
+        atlas {
             executable.set("bun")
             cliPath.set(file("%s"))
             rules.set(listOf("cyclic-dependencies=block"))
@@ -135,13 +135,13 @@ final class PkgvizPluginTest {
   }
 
   private String escapedCliPath() {
-    final Path repoRoot = Path.of(System.getProperty("pkgviz.repoRoot")).toAbsolutePath().normalize();
-    return repoRoot.resolve("bin/pkgviz.ts").toString().replace("\\", "\\\\");
+    final Path repoRoot = Path.of(System.getProperty("atlas.repoRoot")).toAbsolutePath().normalize();
+    return repoRoot.resolve("bin/atlas.ts").toString().replace("\\", "\\\\");
   }
 
   private Path copyFixture(String name) throws IOException, URISyntaxException {
     final Path source =
-        Path.of(PkgvizPluginTest.class.getResource("/fixtures/" + name).toURI()).toAbsolutePath();
+        Path.of(AtlasPluginTest.class.getResource("/fixtures/" + name).toURI()).toAbsolutePath();
     final Path destination = temporaryDirectory.resolve(name);
 
     try (var files = Files.walk(source)) {

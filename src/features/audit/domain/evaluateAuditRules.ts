@@ -11,7 +11,7 @@ import type {
   PackageCycleDetail,
 } from '@/types/audit';
 
-/*** Evaluate enabled PKGViz audit rules through the canonical generic Rules provider. */
+/*** Evaluate enabled Atlas audit rules through the canonical generic Rules provider. */
 export function evaluateAuditRules(input: EvaluateAuditRulesInput): EvaluateAuditRulesResult {
   const mode = findRuleMode(input.configuration.rules, 'cyclic-dependencies');
   if (mode === 'off') return { genericRules: emptyRuleEvaluation(), rules: [] };
@@ -28,7 +28,7 @@ export function evaluateAuditRules(input: EvaluateAuditRulesInput): EvaluateAudi
   };
 }
 
-/*** Adapt canonical cycle findings into the existing PKGViz audit presentation contract. */
+/*** Adapt canonical cycle findings into the existing Atlas audit presentation contract. */
 function presentCyclicDependencies(
   cycles: readonly PackageCycleDetail[],
   mode: Exclude<AuditRuleConfiguration['mode'], 'off'>,
@@ -65,7 +65,7 @@ function emptyRuleEvaluation(): RuleEvaluationResult {
   return { diagnostics: [], findings: [] };
 }
 
-/*** Return the effective mode for one known PKGViz audit rule. */
+/*** Return the effective mode for one known Atlas audit rule. */
 function findRuleMode(
   rules: readonly AuditRuleConfiguration[],
   id: AuditRuleConfiguration['id']

@@ -8,7 +8,7 @@ import { useProjectTreeExpansion } from '@/features/project-tree/adapters/inboun
 import { findProjectTreeNode } from '@/features/project-tree/utils/findProjectTreeNode';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Adapts PKGViz's serializable project tree to the generated ZORA browser TreeView. */
+/*** Adapts Atlas's serializable project tree to the generated ZORA browser TreeView. */
 export function ProjectTreePanel({
   nodes,
   onSelect,

@@ -17,5 +17,5 @@ export function formatAuditRuleFailures(
     return [`✗ ${result.id}`, ...details, ''];
   });
 
-  return ['PKGViz audit failed', '', ...ruleLines, `Audit: ${artifactPath}`].join('\n');
+  return ['Atlas audit failed', '', ...ruleLines, `Audit: ${artifactPath}`].join('\n');
 }

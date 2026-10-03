@@ -3,7 +3,7 @@ import { detectProject } from '@ankhorage/project-detector';
 import { selectParserLanguage } from '@/features/project-analysis/application/use-cases/selectParserLanguage';
 import { Language } from '@/types/language';
 
-describe('pkgviz parser selection', () => {
+describe('atlas parser selection', () => {
   for (const [file, language] of [
     ['src/main.ts', Language.TypeScript],
     ['src/main/java/Main.java', Language.Java],

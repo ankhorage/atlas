@@ -1,5 +1,5 @@
 ---
-'@ankhorage/pkgviz': patch
+'@ankhorage/atlas': patch
 ---
 
 Use one ZORA repository input, accept owner/repository shorthand in the browser, and remove the

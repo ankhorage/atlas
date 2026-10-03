@@ -2,7 +2,7 @@ plugins {
     `java-gradle-plugin`
 }
 
-group = "io.github.artiphishle"
+group = "io.github.ankhorage"
 version = "0.1.0-SNAPSHOT"
 
 repositories {
@@ -16,11 +16,11 @@ java {
 
 gradlePlugin {
     plugins {
-        create("pkgviz") {
-            id = "io.github.artiphishle.pkgviz"
-            implementationClass = "io.github.artiphishle.pkgviz.gradle.PkgvizPlugin"
-            displayName = "PKGViz Gradle Plugin"
-            description = "Thin Gradle adapter for the shared PKGViz audit and rule contract."
+        create("atlas") {
+            id = "io.github.ankhorage.atlas"
+            implementationClass = "io.github.ankhorage.atlas.gradle.AtlasPlugin"
+            displayName = "Atlas Gradle Plugin"
+            description = "Thin Gradle adapter for the shared Atlas audit and rule contract."
         }
     }
 }
@@ -33,7 +33,7 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    systemProperty("pkgviz.repoRoot", rootProject.projectDir.parentFile.absolutePath)
+    systemProperty("atlas.repoRoot", rootProject.projectDir.parentFile.absolutePath)
     testLogging {
         events("failed")
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL

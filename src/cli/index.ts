@@ -1,6 +1,6 @@
-import { createPkgvizRuntimeProvider } from '@/cli/provider/createPkgvizRuntimeProvider';
+import { createAtlasRuntimeProvider } from '@/cli/provider/createAtlasRuntimeProvider';
 
-const provider = createPkgvizRuntimeProvider();
+const provider = createAtlasRuntimeProvider();
 
-export { createPkgvizRuntimeProvider };
+export { createAtlasRuntimeProvider };
 export default provider;

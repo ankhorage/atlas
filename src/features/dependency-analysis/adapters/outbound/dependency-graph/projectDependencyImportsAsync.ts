@@ -29,7 +29,7 @@ interface AppendEvidenceInput {
   readonly sourceTextByFile: Map<string, Promise<string>>;
 }
 
-/*** Project PKGViz import metadata from one canonical dependency graph without rescanning source. */
+/*** Project Atlas import metadata from one canonical dependency graph without rescanning source. */
 export async function projectDependencyImportsAsync(
   graph: DependencyGraph,
   projectRoot: string,
@@ -100,7 +100,7 @@ async function appendEvidenceAsync(input: AppendEvidenceInput): Promise<number> 
   return input.ordinal + 1;
 }
 
-/*** Convert collected import evidence into source-order PKGViz definitions. */
+/*** Convert collected import evidence into source-order Atlas definitions. */
 function materializeImports(
   imports: ReadonlyMap<string, readonly OrderedImport[]>
 ): ReadonlyMap<string, readonly ProjectImportMetadata[]> {
@@ -141,7 +141,7 @@ async function readOptionalSourceTextAsync(sourceFile: string): Promise<string> 
   }
 }
 
-/*** Preserve PKGViz presentation semantics independently from canonical graph classification. */
+/*** Preserve Atlas presentation semantics independently from canonical graph classification. */
 function isIntrinsicImport(evidence: DependencyImportEvidence, mode: ImportIntrinsicMode): boolean {
   if (mode === 'canonical') {
     return evidence.classification === 'intrinsic' || evidence.classification === 'focus';

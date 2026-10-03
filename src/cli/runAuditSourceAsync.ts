@@ -1,10 +1,13 @@
 import { runAuditAsync } from '@/cli/runAuditAsync';
 import { parseProjectSource } from '@/features/project-source/application/use-cases/parseProjectSource';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
-import type { PkgvizCliOptions } from '@/types/cli';
+import type { AtlasCliOptions } from '@/types/cli';
 
 /*** Resolve one local or GitHub source, run the canonical audit, and clean transient sources. */
-export async function runAuditSourceAsync(options: PkgvizCliOptions) {
+export async function runAuditSourceAsync(
+  options: AtlasCliOptions,
+  artifactFormat: 'json' | 'csv' = 'json'
+) {
   const source = parseProjectSource(options.source ?? process.cwd());
   const resolved = await loadProjectSourceAsync(source);
 
@@ -14,6 +17,7 @@ export async function runAuditSourceAsync(options: PkgvizCliOptions) {
       outputRootPath: process.cwd(),
       outputPath: options.out,
       pretty: options.pretty,
+      artifactFormat,
       meta: {
         projectName: resolved.projectName,
         ...(resolved.source.kind === 'github' && resolved.revision !== undefined

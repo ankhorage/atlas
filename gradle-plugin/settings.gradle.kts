@@ -1,1 +1,1 @@
-rootProject.name = "pkgviz-gradle-plugin"
+rootProject.name = "atlas-gradle-plugin"

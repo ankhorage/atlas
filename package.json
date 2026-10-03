@@ -1,7 +1,7 @@
 {
-  "name": "@ankhorage/pkgviz",
+  "name": "@ankhorage/atlas",
   "bin": {
-    "pkgviz": "bin/pkgviz.ts"
+    "atlas": "bin/atlas.ts"
   },
   "files": [
     "bin",
@@ -27,7 +27,7 @@
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ankhorage/pkgviz.git"
+    "url": "git+https://github.com/ankhorage/atlas.git"
   },
   "keywords": [
     "code-analysis",
@@ -93,12 +93,12 @@
   },
   "packageManager": "bun@1.4.2",
   "ankh": {
-    "category": "pkgviz",
+    "category": "atlas",
     "provider": "./src/cli/index.ts",
     "capabilities": [
-      "pkgviz.audit",
-      "pkgviz.view",
-      "pkgviz.export"
+      "atlas.audit",
+      "atlas.inspect",
+      "atlas.export"
     ]
   },
   "exports": {
@@ -106,9 +106,9 @@
     "./package.json": "./package.json"
   },
   "license": "MIT",
-  "homepage": "https://github.com/ankhorage/pkgviz#readme",
+  "homepage": "https://github.com/ankhorage/atlas#readme",
   "bugs": {
-    "url": "https://github.com/ankhorage/pkgviz/issues"
+    "url": "https://github.com/ankhorage/atlas/issues"
   },
   "sideEffects": false,
   "publishConfig": {

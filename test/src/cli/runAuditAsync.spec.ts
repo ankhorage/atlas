@@ -119,6 +119,23 @@ describe('[runAuditAsync]', () => {
     expect(result.audit.evaluation.rules[0].status).toBe('passed');
   });
 
+  it('exports the complete audit as deterministic CSV scalar rows', async () => {
+    const projectPath = await copyFixtureAsync('examples/typescript/my-app');
+    const result = await runAuditAsync({
+      projectPath,
+      outputPath: 'audit.csv',
+      pretty: false,
+      artifactFormat: 'csv',
+      configuration: { failOnRuleViolation: false },
+    });
+    const persisted = await readFile(result.artifactPath, 'utf8');
+
+    expect(persisted.startsWith('path,type,value\n')).toBe(true);
+    expect(persisted.includes('"/configuration/failOnRuleViolation","boolean","false"')).toBe(true);
+    expect(persisted.includes('"/meta/projectName","string"')).toBe(true);
+    expect(persisted.includes('"/sourceGraph","string"')).toBe(true);
+  });
+
   it('writes through a symlinked project root without rejecting its canonical path', async () => {
     const projectPath = await copyFixtureAsync('examples/typescript/my-app');
     const aliasPath = `${projectPath}-alias`;
@@ -154,7 +171,7 @@ describe('[runAuditAsync]', () => {
 
 /*** Copies a repository fixture into an isolated temporary project root. */
 async function copyFixtureAsync(relativePath: string): Promise<string> {
-  const destination = await mkdtemp(join(tmpdir(), 'pkgviz-audit-'));
+  const destination = await mkdtemp(join(tmpdir(), 'atlas-audit-'));
   temporaryDirectories.push(destination);
   await cp(resolve(process.cwd(), relativePath), destination, { recursive: true });
 

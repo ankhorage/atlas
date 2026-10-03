@@ -5,7 +5,7 @@ import { toPortablePath } from '@ankhorage/utility/node/path';
 
 import type { ProjectFileMetadata, ProjectImportMetadata } from '@/types/projectFiles';
 
-/*** Read Kotlin file metadata retained by PKGViz Tree and audit exports. */
+/*** Read Kotlin file metadata retained by Atlas Tree and audit exports. */
 export function readKotlinProjectFileMetadata(
   fullPath: string,
   projectRoot: string,

@@ -4,8 +4,8 @@ import { parseProjectSource } from '@/features/project-source/application/use-ca
 import { resolveProjectSourceAsync } from '@/features/project-source/application/use-cases/resolveProjectSourceAsync';
 
 describe('[project source]', () => {
-  it('keeps local paths on the filesystem pipeline', async () => {
-    const source = parseProjectSource('./project');
+  it('keeps explicit local paths on the filesystem pipeline', async () => {
+    const source = parseProjectSource('./ankhorage/zora');
     const resolved = await resolveProjectSourceAsync(source, {
       materializeAsync: async () => {
         throw new Error('GitHub must not be called for local sources.');
@@ -13,8 +13,15 @@ describe('[project source]', () => {
     });
 
     expect(source.kind).toBe('filesystem');
-    expect(resolved.rootPath.endsWith('/project')).toBe(true);
+    expect(resolved.rootPath.endsWith('/ankhorage/zora')).toBe(true);
     await resolved.cleanupAsync();
+  });
+
+  it('expands GitHub owner/repository shorthand', () => {
+    expect(parseProjectSource('ankhorage/zora')).toEqual({
+      kind: 'github',
+      url: 'https://github.com/ankhorage/zora',
+    });
   });
 
   it('materializes normal GitHub revision URLs and retains the immutable revision', async () => {

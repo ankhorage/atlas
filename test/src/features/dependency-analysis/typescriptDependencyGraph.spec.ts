@@ -9,7 +9,7 @@ import { projectDependencyImportsAsync } from '@/features/dependency-analysis/ad
 import { readProjectSnapshotAsync } from '@/features/project-analysis/composition/readProjectSnapshotAsync';
 
 describe('[TypeScript dependency graph migration]', () => {
-  it('preserves PKGViz import semantics from the canonical dependency analyzer', async () => {
+  it('preserves Atlas import semantics from the canonical dependency analyzer', async () => {
     const projectRoot = resolve(process.cwd(), 'examples/typescript/my-app');
     const dependencyGraph = await createDependencyGraphAsync({
       projects: [{ id: 'current', rootPath: projectRoot }],
@@ -33,7 +33,7 @@ describe('[TypeScript dependency graph migration]', () => {
     expect(componentImports).toEqual([{ name: 'next', pkg: 'next', isIntrinsic: false }]);
   });
 
-  it('keeps the existing PKGViz package graph output from the owner graph', async () => {
+  it('keeps the existing Atlas package graph output from the owner graph', async () => {
     const projectRoot = resolve(process.cwd(), 'examples/typescript/my-app');
     const { packageGraph } = await readProjectSnapshotAsync(projectRoot);
 
@@ -53,7 +53,7 @@ describe('[TypeScript dependency graph migration]', () => {
   });
 
   it('keeps declared vendor roots stable while resolving aliases from the canonical SourceGraph', async () => {
-    const projectRoot = await mkdtemp(join(tmpdir(), 'pkgviz-vendor-roots-'));
+    const projectRoot = await mkdtemp(join(tmpdir(), 'atlas-vendor-roots-'));
 
     try {
       await mkdir(join(projectRoot, 'src', 'internal'), { recursive: true });

@@ -25,7 +25,7 @@ describe('[project file tree]', () => {
   });
 
   it('preserves empty source directories from the canonical inspection inventory', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'pkgviz-empty-directory-'));
+    const root = await mkdtemp(join(tmpdir(), 'atlas-empty-directory-'));
 
     try {
       await mkdir(join(root, 'src', 'empty'), { recursive: true });
@@ -43,7 +43,7 @@ describe('[project file tree]', () => {
   });
 
   it('preserves __proto__ directories as own keys without prototype pollution', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'pkgviz-prototype-'));
+    const root = await mkdtemp(join(tmpdir(), 'atlas-prototype-'));
 
     try {
       await mkdir(join(root, 'src', '__proto__'), { recursive: true });

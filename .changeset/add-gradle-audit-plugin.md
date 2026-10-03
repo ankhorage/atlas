@@ -1,5 +1,5 @@
 ---
-'@ankhorage/pkgviz': minor
+'@ankhorage/atlas': minor
 ---
 
-Add a thin Gradle plugin adapter for Java and Kotlin projects that runs the canonical PKGViz audit contract from Gradle verification tasks.
+Add a thin Gradle plugin adapter for Java and Kotlin projects that runs the canonical Atlas audit contract from Gradle verification tasks.

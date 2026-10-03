@@ -1,4 +1,4 @@
-/** PKGViz-supported parser language selected from canonical project evidence. */
+/** Atlas-supported parser language selected from canonical project evidence. */
 export enum Language {
   Cpp = 'cpp',
   Delphi = 'delphi',

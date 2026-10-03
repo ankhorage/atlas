@@ -7,21 +7,21 @@ Repository automation may manage/sync it later.
 
 ## Repository
 
-Package: `pkgviz`
+Package: `atlas`
 
-PKGViz analyzes source projects, dependencies, architecture rules, and audit evidence and renders the
+Atlas analyzes source projects, dependencies, architecture rules, and audit evidence and renders the
 result as an interactive Cytoscape-based visualization.
 
-Preserve working PKGViz behavior after every change.
+Preserve working Atlas behavior after every change.
 
 ## Current architecture only
 
-Only the current PKGViz architecture is valid. Do not add or retain deprecated APIs,
+Only the current Atlas architecture is valid. Do not add or retain deprecated APIs,
 compatibility aliases, shims, dual old/new paths, historical-state fallbacks, or migrations whose
 sole purpose is supporting obsolete states.
 
 When canonical graph or project-analysis behavior is owned by a released Ankhorage package, consume
-that published public API instead of copying the implementation into PKGViz.
+that published public API instead of copying the implementation into Atlas.
 
 Relevant canonical boundaries include:
 
@@ -35,7 +35,7 @@ repository source files.
 
 ## Stability and recovery
 
-PKGViz must remain buildable, testable, and usable after every pull request.
+Atlas must remain buildable, testable, and usable after every pull request.
 
 The pre-modularization recovery point is:
 
@@ -51,14 +51,14 @@ For graph/dependency modularization, follow issue #142:
 - migrate one responsibility at a time
 - migrate language analyzers independently
 - do not mix UI redesigns into extraction work
-- do not remove an existing path until its replacement is proven equivalent in PKGViz
+- do not remove an existing path until its replacement is proven equivalent in Atlas
 
 ## Required repository instructions
 
 Before changing any file, read this `AGENTS.md` completely and inspect `.agents/skills/`.
 
-PKGViz explicitly adopts the repository-local Ankhorage engineering standards below. Their
-requirements are mandatory for PKGViz even where the skill text describes Ankhorage repositories.
+Atlas explicitly adopts the repository-local Ankhorage engineering standards below. Their
+requirements are mandatory for Atlas even where the skill text describes Ankhorage repositories.
 
 For every implementation, refactoring, testing, review, or pull-request delivery task, load:
 
@@ -68,7 +68,7 @@ For every implementation, refactoring, testing, review, or pull-request delivery
 3. `.agents/skills/hexagonal-architecture/SKILL.md` whenever the project-structure skill requires
    it or when feature/application boundaries are changed
 
-These are target-architecture obligations, not permission for a big-bang rewrite. Existing PKGViz
+These are target-architecture obligations, not permission for a big-bang rewrite. Existing Atlas
 areas migrate through focused, regression-protected changes, while new and materially changed
 architecture must follow the current rules.
 
@@ -97,7 +97,7 @@ Do not weaken or remove regression coverage merely to make a migration pass.
 Audit rules must be reusable outside the UI.
 
 Build-tool integrations such as Maven plugins or future TypeScript/Node CI commands should call the
-shared PKGViz audit/rule contract rather than duplicate analyzers or rule logic.
+shared Atlas audit/rule contract rather than duplicate analyzers or rule logic.
 
 Blocking audit rules must produce a non-zero process/build result. The first mandatory blocking
 rule is `cyclic-dependencies`.

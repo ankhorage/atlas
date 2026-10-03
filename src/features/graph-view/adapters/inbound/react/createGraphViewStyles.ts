@@ -9,7 +9,7 @@ import { getStyle as getElkStyle } from '@/features/graph-view/adapters/inbound/
 import { getStyle as getGridStyle } from '@/features/graph-view/adapters/inbound/cytoscape/grid/style';
 import { getStyle as getCommonStyle } from '@/features/graph-view/adapters/inbound/cytoscape/style';
 
-/*** Builds ZORA GraphView style rules from the existing PKGViz Cytoscape style policy. */
+/*** Builds ZORA GraphView style rules from the existing Atlas Cytoscape style policy. */
 export function createGraphViewStyles(
   elements: ElementsDefinition,
   theme: ZoraRuntimeTheme,

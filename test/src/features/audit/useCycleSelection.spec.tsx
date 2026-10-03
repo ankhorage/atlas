@@ -26,7 +26,7 @@ describe('[cycle selection lifetime]', () => {
     process.env.NEXT_PUBLIC_PROJECT_PATH = 'cycle-selection-unit-test';
     process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES = 'true';
     const host = render(<div />);
-    const key = 'pkgviz:cycles:v1:cycle-selection-unit-test';
+    const key = 'atlas:cycles:v1:cycle-selection-unit-test';
     // Testosterone's render helper creates an opaque-origin DOM. Supply an isolated storage port.
     const previousStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
     const values = new Map<string, string>();

@@ -37,7 +37,7 @@ const GRAPH_VIEWPORT_STYLE = {
   position: 'relative',
 } as const;
 
-/*** Renders PKGViz graph policy through the materialized ZORA GraphView runtime. */
+/*** Renders Atlas graph policy through the materialized ZORA GraphView runtime. */
 export function DependencyGraphView(props: DependencyGraphViewProps) {
   const settings = useSettings();
   const { theme } = useZoraTheme();
@@ -103,7 +103,7 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
 }
 
 /***
- * Memoizes GraphView model, style, and layout inputs from the active PKGViz projection.
+ * Memoizes GraphView model, style, and layout inputs from the active Atlas projection.
  * @performance
  * Stable inputs avoid repeated projection work and let the owner distinguish presentation from
  * topology/layout changes. Do not recreate these objects on unrelated renders or add compensating

@@ -8,7 +8,7 @@ import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspa
 
 describe('[loadWorkspaceAsync]', () => {
   it('returns a serializable failure for a missing project root', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'pkgviz-missing-'));
+    const root = await mkdtemp(join(tmpdir(), 'atlas-missing-'));
     await rm(root, { recursive: true, force: true });
 
     const result = await loadWorkspaceAsync(root);

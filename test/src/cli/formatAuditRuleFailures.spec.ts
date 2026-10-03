@@ -16,7 +16,7 @@ describe('[formatAuditRuleFailures]', () => {
 
     const output = formatAuditRuleFailures([result], '/tmp/audit.json');
 
-    expect(output.includes('PKGViz audit failed')).toBe(true);
+    expect(output.includes('Atlas audit failed')).toBe(true);
     expect(output.includes('✗ cyclic-dependencies')).toBe(true);
     expect(output.includes('  a → b → a')).toBe(true);
     expect(output.includes('Audit: /tmp/audit.json')).toBe(true);

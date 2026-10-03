@@ -1,13 +1,13 @@
-package io.github.artiphishle.pkgviz.gradle;
+package io.github.ankhorage.atlas.gradle;
 
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 
 /**
- * Configures the PKGViz audit task without duplicating analysis or rule logic in Gradle.
+ * Configures the Atlas audit task without duplicating analysis or rule logic in Gradle.
  */
-public abstract class PkgvizExtension {
+public abstract class AtlasExtension {
   public abstract Property<String> getExecutable();
 
   public abstract Property<String> getPackageSpec();
