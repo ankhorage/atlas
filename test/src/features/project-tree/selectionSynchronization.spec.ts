@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@artiphishle/testosterone';
 
 import { resolveGraphProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection';
-import { resolveProjectTreeSelection } from '@/features/project-tree/application/use-cases/resolveProjectTreeSelection';
+import { resolveProjectTreeGraphNodeId } from '@/features/project-tree/utils/resolveProjectTreeGraphNodeId';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
 describe('[graph/tree selection synchronization]', () => {
@@ -11,9 +11,7 @@ describe('[graph/tree selection synchronization]', () => {
     const io = coderadarTree()[0];
     if (!io) throw new Error('Missing io fixture');
 
-    const resolved = resolveProjectTreeSelection(io, graphNodeIds);
-
-    expect(resolved?.id).toBe('directory:io');
+    expect(resolveProjectTreeGraphNodeId(io, graphNodeIds)).toBe('io');
   });
 
   it('does not replace an unmapped structural row with a displayed child', () => {
@@ -28,7 +26,7 @@ describe('[graph/tree selection synchronization]', () => {
       ],
     };
 
-    expect(resolveProjectTreeSelection(structural, ['app.first', 'app.second'])).toBeNull();
+    expect(resolveProjectTreeGraphNodeId(structural, ['app.first', 'app.second'])).toBeNull();
   });
 
   it('selects an exact nested folder such as src/features/accordion/adapters', () => {
@@ -39,8 +37,8 @@ describe('[graph/tree selection synchronization]', () => {
       label: 'adapters',
     };
 
-    expect(resolveProjectTreeSelection(adapters, ['src.features.accordion.adapters'])?.id).toBe(
-      'directory:src/features/accordion/adapters'
+    expect(resolveProjectTreeGraphNodeId(adapters, ['src.features.accordion.adapters'])).toBe(
+      'src.features.accordion.adapters'
     );
   });
 
