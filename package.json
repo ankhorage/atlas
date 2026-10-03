@@ -42,7 +42,7 @@
     "build": "bun run zora:materialize && next build",
     "start": "next start",
     "lint": "bun run zora:materialize && ankhorage-eslint . --max-warnings=0",
-    "format:check": "ankhorage-prettier --write test/src/features/graph-view/useGraphInteractions.spec.tsx test/src/features/project-tree/selectionSynchronization.spec.ts test/src/features/workspace/useWorkspaceNavigation.spec.tsx && printf '\\n=== useGraphInteractions.spec.tsx ===\\n' && cat test/src/features/graph-view/useGraphInteractions.spec.tsx && printf '\\n=== selectionSynchronization.spec.ts ===\\n' && cat test/src/features/project-tree/selectionSynchronization.spec.ts && printf '\\n=== useWorkspaceNavigation.spec.tsx ===\\n' && cat test/src/features/workspace/useWorkspaceNavigation.spec.tsx && exit 1",
+    "format:check": "ankhorage-prettier --check .",
     "format:write": "ankhorage-prettier --write \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml,mjs,cjs,html,css,scss,mdx}\"",
     "test": "testosterone && bun run test:maven && bun run test:gradle",
     "test:cov": "c8 --reporter=text --reporter=text-summary tsx --test",
