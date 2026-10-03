@@ -54,7 +54,7 @@
     "changeset:status": "ankhorage-changeset status --since=origin/main",
     "version-packages": "ankhorage-changeset version",
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
-    "test:gradle": "gradle --no-daemon -p gradle-plugin test",
+    "test:gradle": "gradle --no-daemon -p gradle-plugin test || (find gradle-plugin/build/test-results/test -maxdepth 1 -name '*.xml' -print -exec cat {} \\; && exit 1)",
     "zora:materialize": "bunx @ankhorage/ankh@0.10.4 zora sync --web"
   },
   "dependencies": {
