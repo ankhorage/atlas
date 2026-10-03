@@ -51,9 +51,9 @@ describe('[createOfflineHtmlReport]', () => {
     expect(/url\s*\(/i.test(executableDocument)).toBe(false);
     expect(/sourceMappingURL/i.test(executableDocument)).toBe(false);
     expect(/\bfetch\s*\(/.test(executableDocument)).toBe(false);
-    expect(/XMLHttpRequest|WebSocket|EventSource|sendBeacon|importScripts/.test(executableDocument)).toBe(
-      false
-    );
+    expect(
+      /XMLHttpRequest|WebSocket|EventSource|sendBeacon|importScripts/.test(executableDocument)
+    ).toBe(false);
     expect(executableDocument.includes("connect-src 'none'")).toBe(true);
   });
 
@@ -72,7 +72,8 @@ describe('[createOfflineHtmlReport]', () => {
 
   it('escapes project-controlled payload strings without changing their imported value', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
-    const projectName = '</script><script>globalThis.compromised=true</script>&<img src=x>\u2028\u2029';
+    const projectName =
+      '</script><script>globalThis.compromised=true</script>&<img src=x>\u2028\u2029';
     const html = createOfflineHtmlReport({
       ...audit,
       meta: { ...audit.meta, projectName },
