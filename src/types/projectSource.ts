@@ -10,7 +10,7 @@ export interface ResolvedProjectSource {
   readonly cleanupAsync: () => Promise<void>;
 }
 
-export interface GitHubProjectMaterialization {
+interface GitHubProjectMaterialization {
   readonly rootPath: string;
   readonly projectName: string;
   readonly revision: string;
