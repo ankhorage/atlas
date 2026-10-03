@@ -9,6 +9,7 @@ import { resolveAuditConfiguration } from '@/features/audit/domain/resolveAuditC
 import type {
   Audit,
   AuditArchitectureEvaluation,
+  AuditMetaInput,
   ResolveAuditConfigurationInput,
 } from '@/types/audit';
 import type { ProjectSnapshot } from '@/types/projectAnalysis';
@@ -17,7 +18,8 @@ import { getProjectName } from '@/utils/getProjectName';
 /*** Evaluate provider-backed rules and architecture against the same retained canonical SourceGraph. */
 export function createAuditFromSnapshot(
   snapshot: ProjectSnapshot,
-  configurationInput: ResolveAuditConfigurationInput = {}
+  configurationInput: ResolveAuditConfigurationInput = {},
+  metaInput: AuditMetaInput = {}
 ): Audit {
   const configuration = resolveAuditConfiguration(configurationInput);
   const cyclicPackages = getPackageCyclesWithMembers(snapshot.files, snapshot.packageGraph).cycles;
@@ -46,7 +48,8 @@ export function createAuditFromSnapshot(
     sourceGraph: serializeSourceGraph(snapshot.sourceGraph),
     meta: {
       language: snapshot.language,
-      projectName: getProjectName(snapshot.projectPath),
+      projectName: metaInput.projectName ?? getProjectName(snapshot.projectPath),
+      ...(metaInput.source === undefined ? {} : { source: metaInput.source }),
       timeStart: snapshot.timeStart,
       timeEnd: Date.now(),
     },

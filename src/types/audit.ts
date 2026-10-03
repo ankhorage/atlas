@@ -86,11 +86,23 @@ interface AuditEvaluation {
   readonly rules: readonly AuditRuleResult[];
 }
 
+interface AuditSourceMetadata {
+  readonly kind: 'github';
+  readonly revision: string;
+  readonly url: string;
+}
+
+export interface AuditMetaInput {
+  readonly projectName?: string;
+  readonly source?: AuditSourceMetadata;
+}
+
 interface AuditMeta {
   readonly timeEnd: number;
   readonly timeStart: number;
   readonly language: ParserSelection;
   readonly projectName: string;
+  readonly source?: AuditSourceMetadata;
 }
 
 export interface Audit {

@@ -1,18 +1,20 @@
 'use server';
 import { js2xml } from 'xml-js';
 
-import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
+import { createProjectSourceAuditAsync } from '@/features/project-source/composition/createProjectSourceAuditAsync';
 import type { Audit } from '@/types/audit';
-import { parseProjectPath } from '@/utils/parseProjectPath';
 
 /*** Builds the audit payload for the configured project. */
-export async function getAuditAction(): Promise<Audit> {
-  return await createAuditAsync(parseProjectPath());
+export async function getAuditAction(source?: string, ref?: string): Promise<Audit> {
+  return await createProjectSourceAuditAsync(source, ref);
 }
 
 /*** Serializes the current project audit as JSON. */
-export async function downloadAuditJsonAction(): Promise<{ data: string; filename: string }> {
-  const audit = await getAuditAction();
+export async function downloadAuditJsonAction(
+  source?: string,
+  ref?: string
+): Promise<{ data: string; filename: string }> {
+  const audit = await getAuditAction(source, ref);
   const jsonString = JSON.stringify(audit, null, 2);
   const filename = 'audit.json';
 
@@ -20,8 +22,11 @@ export async function downloadAuditJsonAction(): Promise<{ data: string; filenam
 }
 
 /*** Serializes the current project audit as XML. */
-export async function downloadAuditXmlAction(): Promise<{ data: string; filename: string }> {
-  const audit = await getAuditAction();
+export async function downloadAuditXmlAction(
+  source?: string,
+  ref?: string
+): Promise<{ data: string; filename: string }> {
+  const audit = await getAuditAction(source, ref);
   const xmlString = js2xml({ audit }, { compact: true, spaces: 2 });
   const filename = `socomo-${audit.meta.timeEnd}-${audit.meta.projectName}-audit.xml`;
 

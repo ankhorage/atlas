@@ -1,16 +1,38 @@
 import { connection } from 'next/server';
 
 import { WorkspaceView } from '@/features/workspace/adapters/inbound/react/WorkspaceView';
-import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
-import { parseProjectPath } from '@/utils/parseProjectPath';
+import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 /***
  * Loads one workspace per page request rather than starting analysis from client mount effects.
  * @performance Keep this request-time read dynamic: build-time or persistent caching would hide
  * source edits. Client Strict Mode rendering must not trigger another filesystem analysis.
  */
-export default async function Home() {
+export default async function Home({ searchParams }: HomeProps) {
   await connection();
-  const workspace = await loadWorkspaceAsync(parseProjectPath());
-  return <WorkspaceView workspace={workspace} />;
+  const params = await searchParams;
+  const source = readSearchParam(params.source);
+  const ref = readSearchParam(params.ref);
+  const result = await loadWorkspaceProjectSourceAsync(source, ref);
+
+  return (
+    <WorkspaceView
+      sourceRevision={result.currentRef}
+      currentSource={result.currentSource}
+      projectName={result.projectName}
+      workspace={result.workspace}
+    />
+  );
+}
+
+/*** Read one scalar search parameter while ignoring repeated values. */
+function readSearchParam(value: string | readonly string[] | undefined): string | undefined {
+  return typeof value === 'string' ? value : undefined;
+}
+
+interface HomeProps {
+  readonly searchParams: Promise<{
+    readonly ref?: string | readonly string[];
+    readonly source?: string | readonly string[];
+  }>;
 }
