@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
+import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import {
   OFFLINE_REPORT_RUNTIME,
   OFFLINE_REPORT_STYLE,
@@ -86,6 +87,19 @@ describe('[createOfflineHtmlReport]', () => {
         nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
       })
     );
+    expect(payload.audit.evaluation.architecture).toEqual(audit.evaluation.architecture);
+    expect(payload.audit.evaluation.genericRules).toEqual(audit.evaluation.genericRules);
+    expect(payload.audit.evaluation.rules).toEqual(audit.evaluation.rules);
+    expect(payload.audit.evaluation.cyclicPackages).toEqual(audit.evaluation.cyclicPackages);
+  });
+
+  it('retains every derived view required by the offline workspace', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const payload = readEmbeddedPayload(createOfflineHtmlReport(audit));
+
+    expect(payload.audit.packageGraph).toEqual(audit.packageGraph);
+    expect(payload.tree).toEqual(buildProjectTree(audit.files));
+    expect(payload.audit.meta).toEqual(audit.meta);
     expect(payload.audit.evaluation.architecture).toEqual(audit.evaluation.architecture);
     expect(payload.audit.evaluation.genericRules).toEqual(audit.evaluation.genericRules);
     expect(payload.audit.evaluation.rules).toEqual(audit.evaluation.rules);
