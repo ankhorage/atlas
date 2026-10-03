@@ -11,5 +11,5 @@ export default createKnipConfig({
     'test/benchmarks/*.ts',
   ],
   ignoreFiles: ['examples/**'],
-  ignoreBinaries: ['mvn'],
+  ignoreBinaries: ['mvn', 'gradle'],
 });

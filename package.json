@@ -44,7 +44,7 @@
     "lint": "bun run zora:materialize && ankhorage-eslint . --max-warnings=0",
     "format:check": "ankhorage-prettier --check .",
     "format:write": "ankhorage-prettier --write \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml,mjs,cjs,html,css,scss,mdx}\"",
-    "test": "testosterone && bun run test:maven",
+    "test": "testosterone && bun run test:maven && bun run test:gradle",
     "test:cov": "c8 --reporter=text --reporter=text-summary tsx --test",
     "test:cov:html": "c8 --report-dir=./test/coverage --reporter=html tsx --test",
     "lint:fix": "bun run zora:materialize && ankhorage-eslint . --fix --max-warnings=0",
@@ -54,6 +54,7 @@
     "changeset:status": "ankhorage-changeset status --since=origin/main",
     "version-packages": "ankhorage-changeset version",
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
+    "test:gradle": "gradle --no-daemon -p gradle-plugin test",
     "zora:materialize": "bunx @ankhorage/ankh@0.10.4 zora sync --web"
   },
   "dependencies": {
