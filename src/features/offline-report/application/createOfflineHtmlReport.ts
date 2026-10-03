@@ -1,10 +1,8 @@
 import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
 import { isRecord } from '@ankhorage/utility/object';
 
-import {
-  OFFLINE_REPORT_RUNTIME,
-  OFFLINE_REPORT_STYLE,
-} from '@/features/offline-report/constants/offlineReportTemplate';
+import { OFFLINE_REPORT_RUNTIME } from '@/features/offline-report/constants/offlineReportRuntime';
+import { OFFLINE_REPORT_STYLE } from '@/features/offline-report/constants/offlineReportStyle';
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import type { Audit } from '@/types/audit';
 
@@ -22,15 +20,9 @@ export function createOfflineHtmlReport(audit: Audit): string {
     tree: buildProjectTree(audit.files),
     version: 1,
   };
-  const serializedPayload = JSON.stringify(payload, (_key, value) =>
-    isRecord(value)
-      ? Object.fromEntries(
-          Object.entries(value)
-            .sort(([left], [right]) => left.localeCompare(right))
-            .map(([key, entry]) => [key, entry])
-        )
-      : value
-  )
+  const json = JSON.stringify(sortSerializableValue(payload));
+  if (json === undefined) throw new Error('Unable to serialize Atlas offline report payload.');
+  const serializedPayload = json
     .replaceAll('&', '\\u0026')
     .replaceAll('<', '\\u003c')
     .replaceAll('>', '\\u003e')
@@ -44,7 +36,7 @@ export function createOfflineHtmlReport(audit: Audit): string {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width,initial-scale=1">',
     '<meta name="color-scheme" content="light dark">',
-    '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\'; style-src \'unsafe-inline\'; img-src \'none\'; font-src \'none\'; connect-src \'none\'; media-src \'none\'; object-src \'none\'; frame-src \'none\'; base-uri \'none\'; form-action \'none\'">',
+    "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'\">",
     '<meta name="generator" content="Ankhorage Atlas">',
     '<title>Atlas Offline Report</title>',
     '<style>',
@@ -63,4 +55,16 @@ export function createOfflineHtmlReport(audit: Audit): string {
     '</html>',
     '',
   ].join('\n');
+}
+
+
+/*** Recursively sort JSON object keys while preserving array order and scalar values. */
+function sortSerializableValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortSerializableValue);
+  if (!isRecord(value)) return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, entry]) => [key, sortSerializableValue(entry)])
+  );
 }
