@@ -104,7 +104,7 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
       {props.hasRuleContent ? <WorkspaceRulesPanel {...props} /> : null}
       <TabPanel flex={1} minHeight={0} value="export">
         <ScrollView flex={1} minHeight={0} testID="sidebar-export-scroll">
-          <AuditExportPanel source={props.currentSource} sourceRevision={props.sourceRevision} />
+          <AuditExportPanel source={props.currentSource} />
         </ScrollView>
       </TabPanel>
     </>
@@ -159,7 +159,6 @@ function countRuleFindings(evaluation: Audit['evaluation'] | null): number {
 }
 
 interface WorkspaceSidebarProps {
-  readonly sourceRevision?: string;
   readonly currentSource?: string;
   readonly inspectedCycleId: string | null;
   readonly evaluation: Audit['evaluation'] | null;
