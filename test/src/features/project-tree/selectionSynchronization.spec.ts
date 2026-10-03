@@ -7,30 +7,24 @@ import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
 describe('[graph/tree selection synchronization]', () => {
-  it(
-    'treats relationship-free containers as structural while preserving dependency endpoints and leaves',
-    () => {
-      const graph = createGraph(
-        ['io', 'io.reflectoring', 'io.reflectoring.coderadar', 'lonely'],
-        [['io.reflectoring.coderadar', 'lonely']],
-      );
+  it('treats relationship-free containers as structural while preserving dependency endpoints and leaves', () => {
+    const graph = createGraph(
+      ['io', 'io.reflectoring', 'io.reflectoring.coderadar', 'lonely'],
+      [['io.reflectoring.coderadar', 'lonely']]
+    );
 
-      expect(getSelectableGraphNodeIds(graph)).toEqual(['io.reflectoring.coderadar', 'lonely']);
-    },
-  );
+    expect(getSelectableGraphNodeIds(graph)).toEqual(['io.reflectoring.coderadar', 'lonely']);
+  });
 
-  it(
-    'resolves the io/reflectoring/coderadar filesystem chain to the deepest graph-backed directory',
-    () => {
-      const io = coderadarTree()[0];
-      if (!io) throw new Error('Missing io fixture');
+  it('resolves the io/reflectoring/coderadar filesystem chain to the deepest graph-backed directory', () => {
+    const io = coderadarTree()[0];
+    if (!io) throw new Error('Missing io fixture');
 
-      const resolved = resolveProjectTreeSelection(io, ['io.reflectoring.coderadar']);
+    const resolved = resolveProjectTreeSelection(io, ['io.reflectoring.coderadar']);
 
-      expect(resolved?.id).toBe('directory:io/reflectoring/coderadar');
-      expect(resolved?.graphPackage).toBe('io.reflectoring.coderadar');
-    },
-  );
+    expect(resolved?.id).toBe('directory:io/reflectoring/coderadar');
+    expect(resolved?.graphPackage).toBe('io.reflectoring.coderadar');
+  });
 
   it('uses displayed child order for structural rows without a direct graph package', () => {
     const structural: ProjectTreeNode = {
@@ -45,7 +39,7 @@ describe('[graph/tree selection synchronization]', () => {
     };
 
     expect(resolveProjectTreeSelection(structural, ['app.first', 'app.second'])?.id).toBe(
-      'directory:first',
+      'directory:first'
     );
   });
 
@@ -53,12 +47,12 @@ describe('[graph/tree selection synchronization]', () => {
     const tree = coderadarTree();
 
     expect(resolveGraphProjectTreeSelection(tree, 'io', ['io.reflectoring.coderadar'])?.id).toBe(
-      'directory:io/reflectoring/coderadar',
+      'directory:io/reflectoring/coderadar'
     );
     expect(
       resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', [
         'io.reflectoring.coderadar',
-      ])?.id,
+      ])?.id
     ).toBe('directory:io/reflectoring/coderadar');
   });
 });
@@ -102,10 +96,10 @@ function coderadarTree(): readonly ProjectTreeNode[] {
 /*** Create the minimal package graph shape required by endpoint-selection tests. */
 function createGraph(
   ids: readonly string[],
-  pairs: readonly (readonly [string, string])[],
+  pairs: readonly (readonly [string, string])[]
 ): PackageDependencyGraph {
   return {
-    nodes: ids.map((id) => ({
+    nodes: ids.map(id => ({
       id,
       data: {
         classification: 'intrinsic',
