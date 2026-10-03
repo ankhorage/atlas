@@ -1,42 +1,74 @@
+import type { SourceGraph } from '@ankhorage/dependency-graph';
+import { evaluateRules, type RuleEvaluationResult } from '@ankhorage/rules';
+import { createArchitectureGraphRuleSet } from '@ankhorage/rules-architecture';
+
 import type {
   AuditRuleConfiguration,
   AuditRuleResult,
   CyclicDependenciesEvidence,
   EvaluateAuditRulesInput,
+  EvaluateAuditRulesResult,
   PackageCycleDetail,
 } from '@/types/audit';
 
-/*** Evaluates every enabled PKGViz audit rule against one analysis result. */
-export function evaluateAuditRules(input: EvaluateAuditRulesInput): readonly AuditRuleResult[] {
+/*** Evaluate enabled PKGViz audit rules through the canonical generic Rules provider. */
+export function evaluateAuditRules(input: EvaluateAuditRulesInput): EvaluateAuditRulesResult {
   const mode = findRuleMode(input.configuration.rules, 'cyclic-dependencies');
-  if (mode === 'off') return [];
+  if (mode === 'off') return { genericRules: emptyRuleEvaluation(), rules: [] };
 
-  return [evaluateCyclicDependencies(input.cyclicPackages, mode)];
+  const ruleSet = createArchitectureGraphRuleSet();
+  const genericRules = evaluateRules({ graph: input.sourceGraph }, ruleSet.rules, {
+    capabilities: sourceRuleCapabilities(input.sourceGraph),
+    optionsByRuleId: new Map([['cyclic-dependencies', { aggregation: 'package' }]]),
+  });
+
+  return {
+    genericRules,
+    rules: [presentCyclicDependencies(input.cyclicPackages, mode, genericRules)],
+  };
 }
 
-/*** Evaluates cyclic dependencies while applying the configured enforcement mode. */
-function evaluateCyclicDependencies(
+/*** Adapt canonical cycle findings into the existing PKGViz audit presentation contract. */
+function presentCyclicDependencies(
   cycles: readonly PackageCycleDetail[],
-  mode: Exclude<AuditRuleConfiguration['mode'], 'off'>
+  mode: Exclude<AuditRuleConfiguration['mode'], 'off'>,
+  genericRules: RuleEvaluationResult,
 ): AuditRuleResult<CyclicDependenciesEvidence> {
-  const failed = cycles.length > 0;
-
+  const findings = genericRules.findings.filter(({ ruleId }) => ruleId === 'cyclic-dependencies');
+  const failed = findings.length > 0;
   return {
     id: 'cyclic-dependencies',
     status: failed ? 'failed' : 'passed',
     policy: mode === 'block' ? 'blocking' : 'advisory',
     message: failed
-      ? `Detected ${cycles.length} cyclic package dependenc${cycles.length === 1 ? 'y' : 'ies'}.`
+      ? `Detected ${findings.length} cyclic package dependenc${findings.length === 1 ? 'y' : 'ies'}.`
       : 'No cyclic package dependencies detected.',
-    details: cycles.map(cycle => cycle.packages.join(' → ')),
+    details: cycles.map((cycle) => cycle.packages.join(' → ')),
     evidence: { cycles },
   };
 }
 
-/*** Returns the effective mode for one known audit rule. */
+/*** Expose SourceGraph capabilities using the identifiers required by Architecture Rules. */
+function sourceRuleCapabilities(graph: SourceGraph): readonly string[] {
+  const projectIds = new Set(graph.capabilities.map(({ projectId }) => projectId));
+  if (projectIds.size === 0) return [];
+  const importsAvailable = [...projectIds].every((projectId) =>
+    graph.capabilities.some(
+      (report) => report.projectId === projectId && report.available.includes('imports'),
+    ),
+  );
+  return importsAvailable ? ['source-graph.imports'] : [];
+}
+
+/*** Create an empty canonical generic Rules result for explicitly disabled audit rules. */
+function emptyRuleEvaluation(): RuleEvaluationResult {
+  return { diagnostics: [], findings: [] };
+}
+
+/*** Return the effective mode for one known PKGViz audit rule. */
 function findRuleMode(
   rules: readonly AuditRuleConfiguration[],
-  id: AuditRuleConfiguration['id']
+  id: AuditRuleConfiguration['id'],
 ): AuditRuleConfiguration['mode'] {
-  return rules.find(rule => rule.id === id)?.mode ?? 'off';
+  return rules.find((rule) => rule.id === id)?.mode ?? 'off';
 }
