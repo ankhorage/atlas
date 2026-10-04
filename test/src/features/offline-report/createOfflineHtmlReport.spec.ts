@@ -37,7 +37,7 @@ describe('[createOfflineHtmlReport]', () => {
     expect(html.includes('<style>\n' + OFFLINE_REPORT_STYLE + '\n</style>')).toBe(true);
     expect(html.includes('<script>\n' + OFFLINE_REPORT_RUNTIME + '\n</script>')).toBe(true);
     expect((html.match(/<style>/g) ?? []).length).toBe(1);
-    expect((html.match(/<script(?:\s|>)/g) ?? []).length).toBe(2);
+    expect((html.match(/<script(?:\s|>)/gi) ?? []).length).toBe(2);
     expect(
       (html.match(/<script id="atlas-report-data" type="application\/json">/g) ?? []).length
     ).toBe(1);
