@@ -5,6 +5,7 @@
   },
   "files": [
     "bin",
+    "ankh.config.json",
     "src",
     "tsconfig.json",
     ".next/BUILD_ID",
@@ -64,7 +65,8 @@
     "typecheck": "bun x tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@ankhorage/dependency-graph": "^1.1.1",
+    "@ankhorage/api-nextjs": "^0.1.0",
+    "@ankhorage/dependency-graph": "^1.2.0",
     "@ankhorage/graph": "^0.3.0",
     "@ankhorage/graph-cytoscape": "^0.2.0",
     "@ankhorage/project-detector": "^0.3.3",
@@ -82,6 +84,7 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
+    "@ankhorage/contracts": "^22.8.103",
     "@ankhorage/devtools": "^2.1.7",
     "@ankhorage/paradox": "^0.2.28",
     "@types/bun": "^1.4.2",

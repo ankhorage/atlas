@@ -1,6 +1,7 @@
+import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import {
+  createDependencyGraphAsync,
   createSourceGraphFromInspectionsAsync,
-  projectDependencyGraphFromInspections,
 } from '@ankhorage/dependency-graph';
 
 import { projectDependencyGraph } from '@/features/dependency-analysis/application/use-cases/projectDependencyGraph';
@@ -10,20 +11,25 @@ import { createProjectFileTreeAsync } from '@/features/project-analysis/composit
 import type { ProjectSnapshot } from '@/types/projectAnalysis';
 
 /*** Read one project inspection and retain its canonical SourceGraph plus derived package view. */
-export async function readProjectSnapshotAsync(projectPath: string): Promise<ProjectSnapshot> {
+export async function readProjectSnapshotAsync(
+  projectPath: string,
+  dependencyGraph?: DependencyGraph
+): Promise<ProjectSnapshot> {
   const timeStart = Date.now();
   const inspection = await inspectProjectForAnalysisAsync(projectPath);
   const projects = [{ id: 'current', inspection }];
   const sourceGraph = await createSourceGraphFromInspectionsAsync({ projects });
-  const dependencyGraph = projectDependencyGraphFromInspections(sourceGraph, projects);
+  const resolvedDependencyGraph =
+    dependencyGraph ??
+    (await createDependencyGraphAsync({ projects: [{ id: 'current', rootPath: projectPath }] }));
   const language = selectParserLanguage(inspection.detection);
   const files = await createProjectFileTreeAsync(
     inspection,
-    dependencyGraph,
+    resolvedDependencyGraph,
     language.language,
     projectPath
   );
-  const packageGraph = projectDependencyGraph(dependencyGraph);
+  const packageGraph = projectDependencyGraph(resolvedDependencyGraph);
 
   return { files, packageGraph, sourceGraph, language, projectPath, timeStart };
 }

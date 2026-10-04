@@ -1,9 +1,10 @@
 'use client';
-import { AppBar } from '@zora/app-bar';
+import { AppHeader } from '@zora/app-header';
 import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { Card } from '@zora/card';
 import { TextInput } from '@zora/text-input';
+import { AppShell } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
 import { useState } from 'react';
 
@@ -22,13 +23,16 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
   const navigation = useWorkspaceNavigation(workspace);
 
   return (
-    <>
-      <WorkspaceHeader
-        currentPackage={navigation.currentPackage}
-        currentSource={currentSource}
-        projectName={projectName}
-        onNavigate={navigation.navigateToPackage}
-      />
+    <AppShell
+      header={
+        <WorkspaceHeader
+          currentPackage={navigation.currentPackage}
+          currentSource={currentSource}
+          projectName={projectName}
+          onNavigate={navigation.navigateToPackage}
+        />
+      }
+    >
       <SettingsProvider>
         <WorkspaceBody
           currentSource={currentSource}
@@ -36,7 +40,7 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
           workspace={workspace}
         />
       </SettingsProvider>
-    </>
+    </AppShell>
   );
 }
 
@@ -46,7 +50,8 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
   const isDark = mode === 'dark';
 
   return (
-    <AppBar
+    <AppHeader
+      color="inverted"
       actions={
         <div style={{ alignItems: 'center', display: 'flex', gap: 8 }}>
           <ProjectSourceForm currentSource={props.currentSource} />
@@ -68,7 +73,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
         separator="›"
         onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
       />
-    </AppBar>
+    </AppHeader>
   );
 }
 

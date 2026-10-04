@@ -1,3 +1,4 @@
+import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import { toErrorMessage } from '@ankhorage/utility/error';
 import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 
@@ -17,7 +18,8 @@ export interface WorkspaceProjectSourceResult {
 
 /*** Load the configured local project or one GitHub URL supplied by the browser query. */
 export async function loadWorkspaceProjectSourceAsync(
-  sourceValue?: string
+  sourceValue: string | undefined,
+  loadDependencyGraphAsync: (projectPath: string) => Promise<DependencyGraph>
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(
     sourceValue,
@@ -28,7 +30,7 @@ export async function loadWorkspaceProjectSourceAsync(
     const projectPath = parseProjectPath();
     return {
       projectName: getProjectName(projectPath),
-      workspace: await loadWorkspaceAsync(projectPath),
+      workspace: await loadWorkspaceAsync(projectPath, await loadDependencyGraphAsync(projectPath)),
     };
   }
 
@@ -42,7 +44,10 @@ export async function loadWorkspaceProjectSourceAsync(
       return {
         currentSource: source.url,
         projectName: resolved.projectName,
-        workspace: await loadWorkspaceAsync(resolved.rootPath),
+        workspace: await loadWorkspaceAsync(
+          resolved.rootPath,
+          await loadDependencyGraphAsync(resolved.rootPath)
+        ),
       };
     } finally {
       await resolved.cleanupAsync();
