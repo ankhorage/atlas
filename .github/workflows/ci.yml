@@ -133,8 +133,28 @@ jobs:
       - name: Check changesets
         if: github.event_name == 'pull_request'
         run: |
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          head_sha='${{ github.event.pull_request.head.sha }}'
+          export ANKH_PR_CHANGESET_FILES
+          ANKH_PR_CHANGESET_FILES="$(git diff --name-only --diff-filter=AMCR "$base_sha" "$head_sha" -- .changeset)"
+          if [ -z "$ANKH_PR_CHANGESET_FILES" ]; then
+            echo "No pull-request-owned Changeset files; no release requested."
+            exit 0
+          fi
+          node -e '
+            const { readFileSync } = require("node:fs");
+            const files = process.env.ANKH_PR_CHANGESET_FILES.split("\n").filter(Boolean);
+            const empty = files.filter((file) => {
+              if (!/^\.changeset\/[^/]+\.md$/u.test(file) || file === ".changeset/README.md") return false;
+              const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/u.exec(readFileSync(file, "utf8"));
+              return match?.[1].trim() === "";
+            });
+            if (empty.length > 0) {
+              throw new Error("Empty Changesets are not supported. Remove " + empty.join(", ") + " for a no-release PR, or add release intent.");
+            }
+          '
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.['changeset:status'] ? 0 : 1)"; then
             bun run changeset:status
           else
-            echo "No changeset:status script found; skipping."
+            echo "No changeset:status script found; skipping validation."
           fi
