@@ -6,6 +6,7 @@ import { parseProjectSource } from '@/features/project-source/application/use-ca
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
+import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 import { getProjectName } from '@/utils/getProjectName';
 import { parseProjectPath } from '@/utils/parseProjectPath';
@@ -19,7 +20,10 @@ export interface WorkspaceProjectSourceResult {
 /*** Load the configured local project or one GitHub URL supplied by the browser query. */
 export async function loadWorkspaceProjectSourceAsync(
   sourceValue: string | undefined,
-  loadDependencyGraphAsync: (projectPath: string) => Promise<DependencyGraph>
+  loadDependencyGraphAsync: (projectPath: string) => Promise<DependencyGraph>,
+  materializeAsync: (
+    source: ProjectSource
+  ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(
     sourceValue,
@@ -30,7 +34,7 @@ export async function loadWorkspaceProjectSourceAsync(
     const projectPath = parseProjectPath();
     return {
       projectName: getProjectName(projectPath),
-      workspace: await loadWorkspaceAsync(projectPath, await loadDependencyGraphAsync(projectPath)),
+      workspace: await loadWorkspaceAsync(projectPath, loadDependencyGraphAsync),
     };
   }
 
@@ -39,15 +43,12 @@ export async function loadWorkspaceProjectSourceAsync(
     if (source.kind !== 'github') {
       throw new Error('The browser source field accepts GitHub repository URLs only.');
     }
-    const resolved = await loadProjectSourceAsync(source);
+    const resolved = await materializeAsync(source);
     try {
       return {
         currentSource: source.url,
         projectName: resolved.projectName,
-        workspace: await loadWorkspaceAsync(
-          resolved.rootPath,
-          await loadDependencyGraphAsync(resolved.rootPath)
-        ),
+        workspace: await loadWorkspaceAsync(resolved.rootPath, loadDependencyGraphAsync),
       };
     } finally {
       await resolved.cleanupAsync();

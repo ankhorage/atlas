@@ -4,7 +4,7 @@ import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { Card } from '@zora/card';
 import { TextInput } from '@zora/text-input';
-import { AppShell } from '@zora/view';
+import { AppShell, View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
 import { useState } from 'react';
 
@@ -53,7 +53,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
     <AppHeader
       color="inverted"
       actions={
-        <div style={{ alignItems: 'center', display: 'flex', gap: 8 }}>
+        <View align="center" direction="row" gap="s">
           <ProjectSourceForm currentSource={props.currentSource} />
           <Button
             leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
@@ -63,7 +63,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
           >
             {isDark ? 'Light' : 'Dark'}
           </Button>
-        </div>
+        </View>
       }
       safeAreaTop={false}
     >
@@ -89,12 +89,11 @@ function ProjectSourceForm(props: ProjectSourceFormProps) {
   };
 
   return (
-    <div style={{ alignItems: 'center', display: 'flex', gap: 6 }}>
+    <View align="center" direction="row" gap="xs">
       <TextInput
         accessibilityLabel="GitHub repository URL"
         placeholder="ankhorage/zora or GitHub URL"
         size="s"
-        style={{ minWidth: 280 }}
         value={source}
         onChangeText={setSource}
         onSubmitEditing={openSource}
@@ -102,7 +101,7 @@ function ProjectSourceForm(props: ProjectSourceFormProps) {
       <Button size="s" variant="outline" onPress={openSource}>
         Open
       </Button>
-    </div>
+    </View>
   );
 }
 

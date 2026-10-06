@@ -1,4 +1,3 @@
-import { headers } from 'next/headers';
 import { connection } from 'next/server';
 
 import { requestDependencyGraphAsync } from '@/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync';
@@ -14,9 +13,8 @@ export default async function Home({ searchParams }: HomeProps) {
   await connection();
   const params = await searchParams;
   const source = readSearchParam(params.source);
-  const endpoint = await dependencyGraphEndpointAsync();
   const result = await loadWorkspaceProjectSourceAsync(source, projectPath =>
-    requestDependencyGraphAsync(endpoint, projectPath)
+    requestDependencyGraphAsync(projectPath)
   );
 
   return (
@@ -26,15 +24,6 @@ export default async function Home({ searchParams }: HomeProps) {
       workspace={result.workspace}
     />
   );
-}
-
-/*** Resolve the request-local origin so Atlas calls its published API action through Next.js. */
-async function dependencyGraphEndpointAsync(): Promise<string> {
-  const requestHeaders = await headers();
-  const host = requestHeaders.get('host');
-  if (host === null) throw new Error('Unable to resolve the Atlas API host.');
-  const protocol = requestHeaders.get('x-forwarded-proto') ?? 'http';
-  return new URL('/api/dependency-graph', `${protocol}://${host}`).toString();
 }
 
 /*** Read one scalar search parameter while ignoring repeated values. */

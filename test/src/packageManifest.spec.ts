@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
 import { isAppManifest } from '@ankhorage/contracts';
+import { dependencyGraphApi } from '@ankhorage/dependency-graph/api';
 import { assert, describe, it } from '@artiphishle/testosterone';
 
 describe('[package manifest]', () => {
@@ -41,6 +42,8 @@ describe('[package manifest]', () => {
         ?.intent,
       'action'
     );
+    assert.deepEqual(manifest.infra.apis?.['dependency-graph'], dependencyGraphApi.definition);
+    assert.equal(manifest.themes[manifest.activeThemeId]?.id, manifest.metadata.themeId);
   });
 });
 

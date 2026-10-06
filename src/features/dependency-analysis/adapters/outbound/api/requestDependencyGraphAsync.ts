@@ -1,22 +1,25 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
+import { dependencyGraphApi, type DependencyGraphApiInput } from '@ankhorage/dependency-graph/api';
 import { isRecord } from '@ankhorage/utility/object';
 
-/*** Request one dependency graph through the canonical Atlas API action. */
-export async function requestDependencyGraphAsync(
-  endpoint: string,
-  projectPath: string
-): Promise<DependencyGraph> {
-  const response = await fetch(endpoint, {
-    body: JSON.stringify({ projects: [{ id: 'current', rootPath: projectPath }] }),
-    headers: { 'content-type': 'application/json' },
-    method: 'POST',
+/*** Dispatch one dependency graph action through the trusted local API runtime. */
+export async function requestDependencyGraphAsync(projectPath: string): Promise<DependencyGraph> {
+  const input: DependencyGraphApiInput = { projects: [{ id: 'current', rootPath: projectPath }] };
+  const binding = dependencyGraphApi.getBinding('dependency-graph');
+  if (binding === undefined) throw new Error('The dependency-graph action is unavailable.');
+  const response = await dependencyGraphApi.dispatchAsync({
+    operationId: binding.operationId,
+    method: binding.method,
+    params: {},
+    query: {},
+    headers: {},
+    body: input,
   });
-  const body: unknown = await response.json();
 
-  if (!response.ok) throw new Error(readApiError(body));
-  if (!isDependencyGraph(body))
+  if (response.status >= 400) throw new Error(readApiError(response.body));
+  if (!isDependencyGraph(response.body))
     throw new Error('The dependency-graph action returned an invalid graph.');
-  return body;
+  return response.body;
 }
 
 /*** Read the explicit API error while retaining a stable fallback for malformed responses. */
