@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Preserve manual folder expansion while revealing ancestors required by every selected row. */
+/*** Start collapsed, preserve manual expansion, and reveal ancestors required by selected rows. */
 export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
   selectedIds: readonly string[]
@@ -12,11 +12,7 @@ export function useProjectTreeExpansion(
   const [state, setState] = useState<ProjectTreeExpansionState>(() => ({
     nodes,
     selectedIds,
-    ids: revealSelections(
-      nodes,
-      selectedIds,
-      nodes.filter(node => node.kind === 'directory').map(node => node.id)
-    ),
+    ids: revealSelections(nodes, selectedIds, []),
   }));
   if (state.nodes !== nodes || !arraysEqual(state.selectedIds, selectedIds)) {
     setState({
