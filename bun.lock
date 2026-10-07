@@ -5,7 +5,7 @@
     "": {
       "name": "@ankhorage/atlas",
       "dependencies": {
-        "@ankhorage/ankh": "^0.12.0",
+        "@ankhorage/ankh": "^0.12.2",
         "@ankhorage/api-nextjs": "^0.2.0",
         "@ankhorage/contracts": "^24.1.0",
         "@ankhorage/dependency-graph": "^1.3.0",
@@ -38,7 +38,7 @@
     },
   },
   "packages": {
-    "@ankhorage/ankh": ["@ankhorage/ankh@0.12.0", "", { "dependencies": { "@ankhorage/contracts": "^24.1.0", "yaml": "^2.9.1" }, "bin": { "ankh": "dist/bin.js" } }, "sha512-Cb/OLGO3mZhoFiwVBrCzdmWnTy3N3cBK1b71FTrEtMMXvYata+/r93j+8QEgg8DfIfpw5iF7tEBD+bjWG+ClQw=="],
+    "@ankhorage/ankh": ["@ankhorage/ankh@0.12.2", "", { "dependencies": { "@ankhorage/contracts": "^24.1.0", "yaml": "^2.9.1" }, "bin": { "ankh": "dist/bin.js" } }, "sha512-+lV8CEKrdkzCoxv3if2AwZjKij8+WW7e+b1YY8Q6d6JauDZbXdpy/zKd8GkuQcII+qOQ/wuN+BXeulLxQ+s7yw=="],
 
     "@ankhorage/api": ["@ankhorage/api@0.2.0", "", { "dependencies": { "@ankhorage/contracts": "^22.8.102" } }, "sha512-JicY8iiKy9iF89ie8eZcvzqkslzBRRQ76ZKBeoFQoxHPEZ2TQQ3tBKJFICT0N5SUS3kreHKPxiBUk/b+e+vfXQ=="],
 
