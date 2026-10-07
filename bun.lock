@@ -6,7 +6,7 @@
       "name": "@ankhorage/atlas",
       "dependencies": {
         "@ankhorage/ankh": "^0.12.0",
-        "@ankhorage/api-nextjs": "^0.1.0",
+        "@ankhorage/api-nextjs": "^0.2.0",
         "@ankhorage/contracts": "^24.1.0",
         "@ankhorage/dependency-graph": "^1.3.0",
         "@ankhorage/graph": "^0.3.0",
@@ -42,7 +42,7 @@
 
     "@ankhorage/api": ["@ankhorage/api@0.2.0", "", { "dependencies": { "@ankhorage/contracts": "^22.8.102" } }, "sha512-JicY8iiKy9iF89ie8eZcvzqkslzBRRQ76ZKBeoFQoxHPEZ2TQQ3tBKJFICT0N5SUS3kreHKPxiBUk/b+e+vfXQ=="],
 
-    "@ankhorage/api-nextjs": ["@ankhorage/api-nextjs@0.1.0", "", { "dependencies": { "@ankhorage/api": "^0.2.0" } }, "sha512-/ATDDOU36mi8eBvHBSq/h9XQPxTbGbFEuIOZ2IouobJK4QSaFeiGBUZvFK91WCqeUkfDCaazTOIaaLe38OjmZA=="],
+    "@ankhorage/api-nextjs": ["@ankhorage/api-nextjs@0.2.0", "", { "dependencies": { "@ankhorage/ankh": "^0.12.0", "@ankhorage/api": "^0.2.0", "@ankhorage/contracts": "^24.1.0" } }, "sha512-NZ5rB8Z8TY515W+8zImT6vmIgMj9EznUoHWQqAaFJH2QpmdFFk2btYHVJMHrkICsxL6eLQxv96Ch6HFsNukrZg=="],
 
     "@ankhorage/apm": ["@ankhorage/apm@0.8.13", "", { "dependencies": { "@ankhorage/project-detector": "^0.1.0", "@ankhorage/utility": "^1.4.0", "jsonc-parser": "^3.3.1", "semver": "^7.8.5", "yaml": "^2.9.1" }, "peerDependencies": { "@ankhorage/ankh": "^0.10.4" }, "optionalPeers": ["@ankhorage/ankh"], "bin": { "apm": "dist/cli/runAsync.js" } }, "sha512-5ZzR2/ZYaoWaNux7ZY3gkDMI/NuxGHlnqt6lHY6cmy2ePvtv5g5YCwVsqXwYK3Dw8f+vJe6lLWJMt88oSrQX8Q=="],
 

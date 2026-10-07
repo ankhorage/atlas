@@ -60,13 +60,13 @@
     "version-packages": "ankhorage-changeset version",
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
-    "zora:materialize": "bunx @ankhorage/ankh@0.11.1 zora sync --web",
+    "zora:materialize": "bunx @ankhorage/ankh@0.12.0 zora sync --web",
     "docs": "paradox",
     "typecheck": "bun x tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@ankhorage/ankh": "^0.12.0",
-    "@ankhorage/api-nextjs": "^0.1.0",
+    "@ankhorage/api-nextjs": "^0.2.0",
     "@ankhorage/contracts": "^24.1.0",
     "@ankhorage/dependency-graph": "^1.3.0",
     "@ankhorage/graph": "^0.3.0",
