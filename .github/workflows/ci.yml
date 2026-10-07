@@ -64,7 +64,7 @@ jobs:
           fi
 
       - name: Validate Ankhorage repository
-        run: BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.12.6 validate .
+        run: BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.13.1 validate .
 
       - name: Validate generated documentation
         run: bun run docs
