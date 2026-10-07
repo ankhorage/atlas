@@ -1,4 +1,5 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
+import type { ProjectInspection } from '@ankhorage/project-detector/types';
 import { toErrorMessage } from '@ankhorage/utility/error';
 import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 
@@ -20,7 +21,7 @@ export interface WorkspaceProjectSourceResult {
 /*** Load the configured local project or one GitHub URL supplied by the browser query. */
 export async function loadWorkspaceProjectSourceAsync(
   sourceValue: string | undefined,
-  loadDependencyGraphAsync: (projectPath: string) => Promise<DependencyGraph>,
+  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
   materializeAsync: (
     source: ProjectSource
   ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync

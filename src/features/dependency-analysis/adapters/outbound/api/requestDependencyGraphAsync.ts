@@ -1,10 +1,13 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import { dependencyGraphApi, type DependencyGraphApiInput } from '@ankhorage/dependency-graph/api';
+import type { ProjectInspection } from '@ankhorage/project-detector/types';
 import { isRecord } from '@ankhorage/utility/object';
 
 /*** Dispatch one dependency graph action through the trusted local API runtime. */
-export async function requestDependencyGraphAsync(projectPath: string): Promise<DependencyGraph> {
-  const input: DependencyGraphApiInput = { projects: [{ id: 'current', rootPath: projectPath }] };
+export async function requestDependencyGraphAsync(
+  inspection: ProjectInspection
+): Promise<DependencyGraph> {
+  const input: DependencyGraphApiInput = { projects: [{ id: 'current', inspection }] };
   const binding = dependencyGraphApi.getBinding('dependency-graph');
   if (binding === undefined) throw new Error('The dependency-graph action is unavailable.');
   const response = await dependencyGraphApi.dispatchAsync({

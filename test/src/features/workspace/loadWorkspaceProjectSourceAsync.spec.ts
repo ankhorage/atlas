@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 import { assert, describe, it } from '@artiphishle/testosterone';
 
 import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
@@ -11,7 +13,7 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
       },
       async source => ({
         source,
-        rootPath: '/materialized/atlas',
+        rootPath: resolve('examples/java/my-app'),
         projectName: 'atlas',
         cleanupAsync: async () => {},
       })

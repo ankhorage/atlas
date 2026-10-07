@@ -13,8 +13,8 @@ export default async function Home({ searchParams }: HomeProps) {
   await connection();
   const params = await searchParams;
   const source = readSearchParam(params.source);
-  const result = await loadWorkspaceProjectSourceAsync(source, projectPath =>
-    requestDependencyGraphAsync(projectPath)
+  const result = await loadWorkspaceProjectSourceAsync(source, inspection =>
+    requestDependencyGraphAsync(inspection)
   );
 
   return (

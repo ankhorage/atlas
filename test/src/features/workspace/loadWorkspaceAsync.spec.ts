@@ -29,7 +29,7 @@ describe('[loadWorkspaceAsync]', () => {
   });
 
   it('turns a rejected dependency-graph action into persistent workspace state', async () => {
-    const result = await loadWorkspaceAsync('/project', async () => {
+    const result = await loadWorkspaceAsync('examples/java/my-app', async () => {
       throw new Error('Dependency analysis failed.');
     });
 

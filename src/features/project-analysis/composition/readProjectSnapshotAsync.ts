@@ -3,6 +3,7 @@ import {
   createSourceGraphFromInspectionsAsync,
   projectDependencyGraphFromInspections,
 } from '@ankhorage/dependency-graph';
+import type { ProjectInspection } from '@ankhorage/project-detector/types';
 
 import { projectDependencyGraph } from '@/features/dependency-analysis/application/use-cases/projectDependencyGraph';
 import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
@@ -13,10 +14,11 @@ import type { ProjectSnapshot } from '@/types/projectAnalysis';
 /*** Read one project inspection and retain its canonical SourceGraph plus derived package view. */
 export async function readProjectSnapshotAsync(
   projectPath: string,
-  dependencyGraph?: DependencyGraph
+  dependencyGraph?: DependencyGraph,
+  suppliedInspection?: ProjectInspection
 ): Promise<ProjectSnapshot> {
   const timeStart = Date.now();
-  const inspection = await inspectProjectForAnalysisAsync(projectPath);
+  const inspection = suppliedInspection ?? (await inspectProjectForAnalysisAsync(projectPath));
   const projects = [{ id: 'current', inspection }];
   const sourceGraph = await createSourceGraphFromInspectionsAsync({ projects });
   const resolvedDependencyGraph =
