@@ -1,3 +1,7 @@
+import type { AnkhRuntimeCommandProvider } from '@ankhorage/ankh';
+import type { Capability } from '@ankhorage/contracts/capabilities';
+
+import { CAPABILITIES } from '@/capabilities';
 import { audit } from '@/cli/commands/audit';
 import { runExportCommand } from '@/cli/commands/export/runExportCommand';
 import { inspect } from '@/cli/commands/inspect';
@@ -10,21 +14,21 @@ export function createAtlasRuntimeProvider() {
     id: 'atlas',
     category: 'atlas',
     version: packageJson.version,
-    capabilities: ['atlas.audit', 'atlas.inspect', 'atlas.export'],
+    capabilities: CAPABILITIES,
     commands: [
       {
         path: ['audit'],
-        capability: 'atlas.audit',
+        capability: 'atlas.audit' satisfies Capability['id'],
         summary: 'Create an Atlas audit from a local path or GitHub repository.',
       },
       {
         path: ['inspect'],
-        capability: 'atlas.inspect',
+        capability: 'atlas.inspect' satisfies Capability['id'],
         summary: 'Open the Atlas graph inspector for a local path or GitHub repository.',
       },
       {
         path: ['export'],
-        capability: 'atlas.export',
+        capability: 'atlas.export' satisfies Capability['id'],
         summary: 'Export a portable Atlas report artifact.',
       },
     ],
@@ -33,5 +37,5 @@ export function createAtlasRuntimeProvider() {
       { path: ['inspect'], handler: inspect },
       { path: ['export'], handler: runExportCommand },
     ],
-  } as const;
+  } satisfies AnkhRuntimeCommandProvider;
 }

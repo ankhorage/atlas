@@ -1,8 +1,15 @@
 import { readFile } from 'node:fs/promises';
 
-import { isAppManifest } from '@ankhorage/contracts';
+import {
+  areCapabilitiesEqual,
+  isAppManifest,
+  isCapability,
+  type Capability,
+} from '@ankhorage/contracts';
 import { dependencyGraphApi } from '@ankhorage/dependency-graph/api';
 import { assert, describe, it } from '@artiphishle/testosterone';
+
+import { CAPABILITIES } from '@/capabilities';
 
 describe('[package manifest]', () => {
   it('publishes production Next.js output without build caches', async () => {
@@ -27,6 +34,21 @@ describe('[package manifest]', () => {
     assert.equal(manifest.name, '@ankhorage/atlas');
     assert.equal(manifest.bin.atlas, 'bin/atlas.ts');
     assert.equal(manifest.exports['./cli'], './src/cli/index.ts');
+    assert.equal(manifest.exports['./capabilities'], './src/capabilities/index.ts');
+    const manifestCapabilities = manifest.ankh.capabilities as readonly Capability[];
+
+    assert.equal(manifestCapabilities.every(isCapability), true);
+    assert.equal(
+      new Set(manifestCapabilities.map(({ id }) => id)).size,
+      manifestCapabilities.length
+    );
+    assert.equal(
+      manifestCapabilities.length === CAPABILITIES.length &&
+        manifestCapabilities.every(capability =>
+          CAPABILITIES.some(sourceCapability => areCapabilitiesEqual(sourceCapability, capability))
+        ),
+      true
+    );
   });
 
   it('declares Atlas as a canonical app with the dependency-graph action binding', async () => {
@@ -48,6 +70,9 @@ describe('[package manifest]', () => {
 });
 
 interface PackageManifest {
+  readonly ankh: {
+    readonly capabilities: readonly Capability[];
+  };
   readonly bin: Readonly<Record<string, string>>;
   readonly exports: Readonly<Record<string, string>>;
   readonly files: readonly string[];
