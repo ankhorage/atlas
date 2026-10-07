@@ -51,7 +51,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
 
   return (
     <AppHeader
-      color="inverted"
+      inverted
       actions={
         <View align="center" direction="row" gap="s">
           <ProjectSourceForm currentSource={props.currentSource} />
