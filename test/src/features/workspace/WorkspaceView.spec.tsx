@@ -7,7 +7,7 @@ import { WorkspaceView } from '@/features/workspace/adapters/inbound/react/Works
 import appManifest from '../../../../ankh.config.json';
 
 describe('[WorkspaceView]', () => {
-  it('renders project breadcrumbs and the persistent error inside the ZORA app shell', () => {
+  it('renders the project title, Home breadcrumb, and persistent error inside the ZORA app shell', () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
     if (!parsed.ok) return;
@@ -24,7 +24,8 @@ describe('[WorkspaceView]', () => {
     );
 
     assert.equal(container.textContent?.includes('Atlas'), true);
-    assert.equal(container.textContent?.includes('Packages'), true);
+    assert.equal(container.textContent?.includes('Home'), true);
+    assert.equal(container.textContent?.includes('Packages'), false);
     assert.equal(
       container
         .querySelector('[role="alert"]')

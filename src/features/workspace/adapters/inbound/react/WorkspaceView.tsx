@@ -13,7 +13,6 @@ import { SettingsProvider } from '@/features/settings/adapters/inbound/react/Set
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
-import { t } from '@/i18n/i18n';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
@@ -66,14 +65,16 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
         </View>
       }
       safeAreaTop={false}
-    >
-      <Breadcrumbs
-        compact
-        items={createBreadcrumbItems(props.projectName, props.currentPackage)}
-        separator="›"
-        onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
-      />
-    </AppHeader>
+      subtitle={
+        <Breadcrumbs
+          compact
+          items={createBreadcrumbItems(props.currentPackage)}
+          separator="›"
+          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
+        />
+      }
+      title={props.projectName}
+    />
   );
 }
 
@@ -183,22 +184,15 @@ function WorkspaceError({ message }: { readonly message: string }) {
   );
 }
 
-/*** Creates interactive package breadcrumbs with a stable project and Packages root. */
-function createBreadcrumbItems(
-  projectName: string,
-  currentPackage: string
-): readonly BreadcrumbItem[] {
+/*** Creates package breadcrumbs from a stable Home root to the active package path. */
+function createBreadcrumbItems(currentPackage: string): readonly BreadcrumbItem[] {
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
     id: packageSegments.slice(0, index + 1).join('.'),
     label,
   }));
 
-  return [
-    { id: '__project__', label: projectName, disabled: true },
-    { id: '', label: t('nav.packages') },
-    ...packageItems,
-  ];
+  return [{ id: '', label: 'Home', icon: { name: 'home-outline' } }, ...packageItems];
 }
 
 /*** Normalizes navigation paths to the package identity representation used by the graph view. */
@@ -242,5 +236,5 @@ interface WorkspaceContentProps {
 interface BreadcrumbItem {
   readonly id: string;
   readonly label: string;
-  readonly disabled?: boolean;
+  readonly icon?: { readonly name: string };
 }
