@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.0
+
+### Minor Changes
+
+- c73d7a3: Publish the Atlas CLI capability catalog through the `@ankhorage/atlas/capabilities` subpath.
+
 ## 0.11.0
 
 ### Minor Changes

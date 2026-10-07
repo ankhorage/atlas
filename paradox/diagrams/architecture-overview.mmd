@@ -35,6 +35,8 @@ graph TD
   module_src_app_page_tsx --> module_src_features_dependency_analysis_adapters_outbound_api_requestDependencyGraphAsync_ts
   module_src_app_page_tsx --> module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx
   module_src_app_page_tsx --> module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
+  module_src_capabilities_index_ts["src/capabilities/index.ts"]
+  package__ankhorage_atlas -.-> module_src_capabilities_index_ts
   module_src_cli_commands_audit_ts["src/cli/commands/audit.ts"]
   package__ankhorage_atlas -.-> module_src_cli_commands_audit_ts
   module_src_cli_commands_audit_ts --> module_src_cli_formatAuditRuleFailures_ts
@@ -68,6 +70,7 @@ graph TD
   module_src_cli_provider_createAtlasRuntimeProvider_ts["src/cli/provider/createAtlasRuntimeProvider.ts"]
   package__ankhorage_atlas -.-> module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --> module_package_json
+  module_src_cli_provider_createAtlasRuntimeProvider_ts --> module_src_capabilities_index_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --> module_src_cli_commands_audit_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --> module_src_cli_commands_export_runExportCommand_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --> module_src_cli_commands_inspect_ts
@@ -640,8 +643,13 @@ graph TD
   module_test_src_app_api_dependency_graph_route_spec_ts["test/src/app/api/dependency-graph/route.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_app_api_dependency_graph_route_spec_ts
   module_test_src_app_api_dependency_graph_route_spec_ts --> module_src_app_api_dependency_graph_route_ts
+  module_test_src_capabilities_spec_ts["test/src/capabilities.spec.ts"]
+  package__ankhorage_atlas -.-> module_test_src_capabilities_spec_ts
+  module_test_src_capabilities_spec_ts --> module_src_capabilities_index_ts
+  module_test_src_capabilities_spec_ts --> module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts["test/src/cli/createAtlasRuntimeProvider.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_cli_createAtlasRuntimeProvider_spec_ts
+  module_test_src_cli_createAtlasRuntimeProvider_spec_ts --> module_src_capabilities_index_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --> module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts["test/src/cli/formatAuditRuleFailures.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_cli_formatAuditRuleFailures_spec_ts
@@ -869,6 +877,7 @@ graph TD
   module_test_src_layouts_style_spec_ts --> module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_src_packageManifest_spec_ts["test/src/packageManifest.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_packageManifest_spec_ts
+  module_test_src_packageManifest_spec_ts --> module_src_capabilities_index_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts["test/src/utils/filter/filterByPackagePrefix.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_utils_filter_filterByPackagePrefix_spec_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts --> module_src_features_graph_view_utils_filterByPackagePrefix_ts

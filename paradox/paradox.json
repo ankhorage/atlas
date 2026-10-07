@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.11.0",
+      "value": "v0.12.0",
       "color": "cb3837"
     },
     {
@@ -185,6 +185,14 @@
       ]
     },
     {
+      "path": "src/capabilities/index.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "CAPABILITIES"
+      ]
+    },
+    {
       "path": "src/cli/commands/audit.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -276,6 +284,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "package.json",
+        "src/capabilities/index.ts",
         "src/cli/commands/audit.ts",
         "src/cli/commands/export/runExportCommand.ts",
         "src/cli/commands/inspect.ts"
@@ -1765,9 +1774,19 @@
       "exports": []
     },
     {
+      "path": "test/src/capabilities.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/capabilities/index.ts",
+        "src/cli/provider/createAtlasRuntimeProvider.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/cli/createAtlasRuntimeProvider.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/capabilities/index.ts",
         "src/cli/provider/createAtlasRuntimeProvider.ts"
       ],
       "exports": []
@@ -2264,7 +2283,9 @@
     {
       "path": "test/src/packageManifest.spec.ts",
       "isEntrypoint": false,
-      "dependencies": [],
+      "dependencies": [
+        "src/capabilities/index.ts"
+      ],
       "exports": []
     },
     {
@@ -2329,7 +2350,7 @@
       "modulePath": "src/cli/provider/createAtlasRuntimeProvider.ts",
       "sourceLocation": {
         "filePath": "src/cli/provider/createAtlasRuntimeProvider.ts",
-        "line": 8,
+        "line": 12,
         "column": 1
       },
       "exportPaths": [
@@ -2338,9 +2359,9 @@
       "relatedSymbols": [],
       "signatures": [
         {
-          "label": "() => { readonly id: \"atlas\"; readonly category: \"atlas\"; readonly version: string; readonly capabilities: readonly [\"atlas.audit\", \"atlas.inspect\", \"atlas.export\"]; readonly commands: readonly [{ readonly path: readonly [\"audit\"]; readonly capability: \"atlas.audit\"; readonly summary: \"Create an Atlas audit from a local path or GitHub repository.\"; }, { readonly path: readonly [\"inspect\"]; readonly capability: \"atlas.inspect\"; readonly summary: \"Open the Atlas graph inspector for a local path or GitHub repository.\"; }, { readonly path: readonly [\"export\"]; readonly capability: \"atlas.export\"; readonly summary: \"Export a portable Atlas report artifact.\"; }]; readonly handlers: readonly [{ readonly path: readonly [\"audit\"]; readonly handler: typeof audit; }, { readonly path: readonly [\"inspect\"]; readonly handler: typeof inspect; }, { readonly path: readonly [\"export\"]; readonly handler: typeof runExportCommand; }]; }",
+          "label": "() => { id: string; category: string; version: string; capabilities: readonly [{ readonly id: \"atlas.audit\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Audit project architecture\"; readonly description: \"Create an Atlas audit from a local path or GitHub repository.\"; }, { readonly id: \"atlas.inspect\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Inspect project dependencies\"; readonly description: \"Open the Atlas graph inspector for a local path or GitHub repository.\"; }, { readonly id: \"atlas.export\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Export Atlas report\"; readonly description: \"Export a portable Atlas report artifact.\"; }]; commands: ({ path: string[]; capability: \"atlas.audit\"; summary: string; } | { path: string[]; capability: \"atlas.inspect\"; summary: string; } | { path: string[]; capability: \"atlas.export\"; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }",
           "parameters": [],
-          "returnType": "{ readonly id: \"atlas\"; readonly category: \"atlas\"; readonly version: string; readonly capabilities: readonly [\"atlas.audit\", \"atlas.inspect\", \"atlas.export\"]; readonly commands: readonly [{ readonly path: readonly [\"audit\"]; readonly capability: \"atlas.audit\"; readonly summary: \"Create an Atlas audit from a local path or GitHub repository.\"; }, { readonly path: readonly [\"inspect\"]; readonly capability: \"atlas.inspect\"; readonly summary: \"Open the Atlas graph inspector for a local path or GitHub repository.\"; }, { readonly path: readonly [\"export\"]; readonly capability: \"atlas.export\"; readonly summary: \"Export a portable Atlas report artifact.\"; }]; readonly handlers: readonly [{ readonly path: readonly [\"audit\"]; readonly handler: typeof audit; }, { readonly path: readonly [\"inspect\"]; readonly handler: typeof inspect; }, { readonly path: readonly [\"export\"]; readonly handler: typeof runExportCommand; }]; }",
+          "returnType": "{ id: string; category: string; version: string; capabilities: readonly [{ readonly id: \"atlas.audit\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Audit project architecture\"; readonly description: \"Create an Atlas audit from a local path or GitHub repository.\"; }, { readonly id: \"atlas.inspect\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Inspect project dependencies\"; readonly description: \"Open the Atlas graph inspector for a local path or GitHub repository.\"; }, { readonly id: \"atlas.export\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Export Atlas report\"; readonly description: \"Export a portable Atlas report artifact.\"; }]; commands: ({ path: string[]; capability: \"atlas.audit\"; summary: string; } | { path: string[]; capability: \"atlas.inspect\"; summary: string; } | { path: string[]; capability: \"atlas.export\"; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }",
           "returnDescription": null
         }
       ],
@@ -2621,7 +2642,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/provider/createAtlasRuntimeProvider.ts",
-        "line": 8,
+        "line": 12,
         "column": 1
       }
     },
@@ -6112,6 +6133,21 @@
         "sourcePath": "test/benchmarks/graphPresentation.ts"
       },
       {
+        "fromPath": "test/src/capabilities.spec.ts",
+        "toPath": "src/capabilities/index.ts",
+        "sourcePath": "test/src/capabilities.spec.ts"
+      },
+      {
+        "fromPath": "test/src/capabilities.spec.ts",
+        "toPath": "src/cli/provider/createAtlasRuntimeProvider.ts",
+        "sourcePath": "test/src/capabilities.spec.ts"
+      },
+      {
+        "fromPath": "test/src/packageManifest.spec.ts",
+        "toPath": "src/capabilities/index.ts",
+        "sourcePath": "test/src/packageManifest.spec.ts"
+      },
+      {
         "fromPath": "src/app/actions/audit.actions.ts",
         "toPath": "src/features/project-source/composition/createProjectSourceAuditAsync.ts",
         "sourcePath": "src/app/actions/audit.actions.ts"
@@ -6158,6 +6194,11 @@
       },
       {
         "fromPath": "src/cli/provider/createAtlasRuntimeProvider.ts",
+        "toPath": "src/capabilities/index.ts",
+        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
+      },
+      {
+        "fromPath": "src/cli/provider/createAtlasRuntimeProvider.ts",
         "toPath": "src/cli/commands/audit.ts",
         "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
       },
@@ -6175,6 +6216,11 @@
         "fromPath": "src/cli/provider/createAtlasRuntimeProvider.ts",
         "toPath": "package.json",
         "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
+      },
+      {
+        "fromPath": "test/src/cli/createAtlasRuntimeProvider.spec.ts",
+        "toPath": "src/capabilities/index.ts",
+        "sourcePath": "test/src/cli/createAtlasRuntimeProvider.spec.ts"
       },
       {
         "fromPath": "test/src/cli/createAtlasRuntimeProvider.spec.ts",
@@ -8625,6 +8671,24 @@
         "sourcePath": "test/benchmarks/graphPresentation.ts"
       },
       {
+        "fromSymbol": "test/src/capabilities.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/capabilities.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/capabilities.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/capabilities.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/capabilities.spec.ts",
+        "toSymbol": "createAtlasRuntimeProvider",
+        "callExpression": "createAtlasRuntimeProvider",
+        "sourcePath": "test/src/capabilities.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/packageManifest.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -8640,6 +8704,12 @@
         "fromSymbol": "test/src/packageManifest.spec.ts",
         "toSymbol": "readFile",
         "callExpression": "readFile",
+        "sourcePath": "test/src/packageManifest.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/packageManifest.spec.ts",
+        "toSymbol": "areCapabilitiesEqual",
+        "callExpression": "areCapabilitiesEqual",
         "sourcePath": "test/src/packageManifest.spec.ts"
       },
       {
@@ -13829,6 +13899,11 @@
       },
       {
         "fromSymbol": "createAtlasRuntimeProvider",
+        "toType": "Audit",
+        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
+      },
+      {
+        "fromSymbol": "createAtlasRuntimeProvider",
         "toType": "Create",
         "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
       },
@@ -13840,6 +13915,11 @@
       {
         "fromSymbol": "createAtlasRuntimeProvider",
         "toType": "GitHub",
+        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
+      },
+      {
+        "fromSymbol": "createAtlasRuntimeProvider",
+        "toType": "Inspect",
         "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
       },
       {

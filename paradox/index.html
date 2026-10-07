@@ -713,7 +713,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>213</strong><span class="muted">modules</span></div>
+        <div><strong>215</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -805,6 +805,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts</code>, <code>src/features/workspace/adapters/inbound/react/WorkspaceView.tsx</code>, <code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts</code></p>
     <p><strong>Exports:</strong> <code>default</code></p>
+  </article><article class="item" data-search="src/capabilities/index.ts CAPABILITIES">
+    <h3>src/capabilities/index.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>CAPABILITIES</code></p>
   </article><article class="item" data-search="src/cli/commands/audit.ts src/cli/formatAuditRuleFailures.ts src/cli/getAtlasHelp.ts src/cli/parseAtlasCommandArgs.ts src/cli/runAuditSourceAsync.ts audit">
     <h3>src/cli/commands/audit.ts</h3>
     <p class="muted">Referenced module</p>
@@ -845,10 +850,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/cli/parseAtlasCliArgs.ts</code>, <code>src/types/cli.ts</code></p>
     <p><strong>Exports:</strong> <code>parseAtlasCommandArgs</code></p>
-  </article><article class="item" data-search="src/cli/provider/createAtlasRuntimeProvider.ts package.json src/cli/commands/audit.ts src/cli/commands/export/runExportCommand.ts src/cli/commands/inspect.ts createAtlasRuntimeProvider">
+  </article><article class="item" data-search="src/cli/provider/createAtlasRuntimeProvider.ts package.json src/capabilities/index.ts src/cli/commands/audit.ts src/cli/commands/export/runExportCommand.ts src/cli/commands/inspect.ts createAtlasRuntimeProvider">
     <h3>src/cli/provider/createAtlasRuntimeProvider.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>package.json</code>, <code>src/cli/commands/audit.ts</code>, <code>src/cli/commands/export/runExportCommand.ts</code>, <code>src/cli/commands/inspect.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>package.json</code>, <code>src/capabilities/index.ts</code>, <code>src/cli/commands/audit.ts</code>, <code>src/cli/commands/export/runExportCommand.ts</code>, <code>src/cli/commands/inspect.ts</code></p>
     <p><strong>Exports:</strong> <code>createAtlasRuntimeProvider</code></p>
   </article><article class="item" data-search="src/cli/runAtlasCliAsync.ts src/cli/formatAuditRuleFailures.ts src/cli/getAtlasHelp.ts src/cli/parseAtlasCliArgs.ts src/cli/runAuditSourceAsync.ts src/cli/startViewerSourceAsync.ts runAtlasCliAsync">
     <h3>src/cli/runAtlasCliAsync.ts</h3>
@@ -1510,10 +1515,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/app/api/dependency-graph/route.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/src/cli/createAtlasRuntimeProvider.spec.ts src/cli/provider/createAtlasRuntimeProvider.ts">
+  </article><article class="item" data-search="test/src/capabilities.spec.ts src/capabilities/index.ts src/cli/provider/createAtlasRuntimeProvider.ts">
+    <h3>test/src/capabilities.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/capabilities/index.ts</code>, <code>src/cli/provider/createAtlasRuntimeProvider.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/cli/createAtlasRuntimeProvider.spec.ts src/capabilities/index.ts src/cli/provider/createAtlasRuntimeProvider.ts">
     <h3>test/src/cli/createAtlasRuntimeProvider.spec.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/cli/provider/createAtlasRuntimeProvider.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/capabilities/index.ts</code>, <code>src/cli/provider/createAtlasRuntimeProvider.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/cli/formatAuditRuleFailures.spec.ts src/cli/formatAuditRuleFailures.ts src/types/audit.ts">
     <h3>test/src/cli/formatAuditRuleFailures.spec.ts</h3>
@@ -1780,10 +1790,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>.ankh/zora/web/runtime/ZoraProvider.d.ts</code>, <code>src/features/graph-view/adapters/inbound/cytoscape/style.ts</code>, <code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/src/packageManifest.spec.ts">
+  </article><article class="item" data-search="test/src/packageManifest.spec.ts src/capabilities/index.ts">
     <h3>test/src/packageManifest.spec.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Dependencies:</strong> <code>src/capabilities/index.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/utils/filter/filterByPackagePrefix.spec.ts src/features/graph-view/utils/filterByPackagePrefix.ts">
     <h3>test/src/utils/filter/filterByPackagePrefix.spec.ts</h3>
@@ -1836,19 +1846,19 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
             </section>
             <section>
               <h3>src/cli/provider/createAtlasRuntimeProvider.ts</h3>
-              <article class="item" id="symbol-createatlasruntimeprovider" data-search="createAtlasRuntimeProvider  function src/cli/provider/createAtlasRuntimeProvider.ts Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands. () =&gt; { readonly id: &quot;atlas&quot;; readonly category: &quot;atlas&quot;; readonly version: string; readonly capabilities: readonly [&quot;atlas.audit&quot;, &quot;atlas.inspect&quot;, &quot;atlas.export&quot;]; readonly commands: readonly [{ readonly path: readonly [&quot;audit&quot;]; readonly capability: &quot;atlas.audit&quot;; readonly summary: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly path: readonly [&quot;inspect&quot;]; readonly capability: &quot;atlas.inspect&quot;; readonly summary: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly path: readonly [&quot;export&quot;]; readonly capability: &quot;atlas.export&quot;; readonly summary: &quot;Export a portable Atlas report artifact.&quot;; }]; readonly handlers: readonly [{ readonly path: readonly [&quot;audit&quot;]; readonly handler: typeof audit; }, { readonly path: readonly [&quot;inspect&quot;]; readonly handler: typeof inspect; }, { readonly path: readonly [&quot;export&quot;]; readonly handler: typeof runExportCommand; }]; }">
+              <article class="item" id="symbol-createatlasruntimeprovider" data-search="createAtlasRuntimeProvider  function src/cli/provider/createAtlasRuntimeProvider.ts Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands. () =&gt; { id: string; category: string; version: string; capabilities: readonly [{ readonly id: &quot;atlas.audit&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Audit project architecture&quot;; readonly description: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.inspect&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Inspect project dependencies&quot;; readonly description: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.export&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Export Atlas report&quot;; readonly description: &quot;Export a portable Atlas report artifact.&quot;; }]; commands: ({ path: string[]; capability: &quot;atlas.audit&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.inspect&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.export&quot;; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }">
     <h4>createAtlasRuntimeProvider</h4>
     
-    <p class="muted">function • <code>src/cli/provider/createAtlasRuntimeProvider.ts:8:1</code></p>
+    <p class="muted">function • <code>src/cli/provider/createAtlasRuntimeProvider.ts:12:1</code></p>
     <p>Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands.</p>
     
     <p><strong>Export paths:</strong> <code>src/cli/index.ts</code></p>
     <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
     <div>
         <h5>Signature</h5>
-        <pre>() =&gt; { readonly id: &quot;atlas&quot;; readonly category: &quot;atlas&quot;; readonly version: string; readonly capabilities: readonly [&quot;atlas.audit&quot;, &quot;atlas.inspect&quot;, &quot;atlas.export&quot;]; readonly commands: readonly [{ readonly path: readonly [&quot;audit&quot;]; readonly capability: &quot;atlas.audit&quot;; readonly summary: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly path: readonly [&quot;inspect&quot;]; readonly capability: &quot;atlas.inspect&quot;; readonly summary: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly path: readonly [&quot;export&quot;]; readonly capability: &quot;atlas.export&quot;; readonly summary: &quot;Export a portable Atlas report artifact.&quot;; }]; readonly handlers: readonly [{ readonly path: readonly [&quot;audit&quot;]; readonly handler: typeof audit; }, { readonly path: readonly [&quot;inspect&quot;]; readonly handler: typeof inspect; }, { readonly path: readonly [&quot;export&quot;]; readonly handler: typeof runExportCommand; }]; }</pre>
+        <pre>() =&gt; { id: string; category: string; version: string; capabilities: readonly [{ readonly id: &quot;atlas.audit&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Audit project architecture&quot;; readonly description: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.inspect&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Inspect project dependencies&quot;; readonly description: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.export&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Export Atlas report&quot;; readonly description: &quot;Export a portable Atlas report artifact.&quot;; }]; commands: ({ path: string[]; capability: &quot;atlas.audit&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.inspect&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.export&quot;; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }</pre>
         
-        <p><strong>Returns:</strong> <code>{ readonly id: &quot;atlas&quot;; readonly category: &quot;atlas&quot;; readonly version: string; readonly capabilities: readonly [&quot;atlas.audit&quot;, &quot;atlas.inspect&quot;, &quot;atlas.export&quot;]; readonly commands: readonly [{ readonly path: readonly [&quot;audit&quot;]; readonly capability: &quot;atlas.audit&quot;; readonly summary: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly path: readonly [&quot;inspect&quot;]; readonly capability: &quot;atlas.inspect&quot;; readonly summary: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly path: readonly [&quot;export&quot;]; readonly capability: &quot;atlas.export&quot;; readonly summary: &quot;Export a portable Atlas report artifact.&quot;; }]; readonly handlers: readonly [{ readonly path: readonly [&quot;audit&quot;]; readonly handler: typeof audit; }, { readonly path: readonly [&quot;inspect&quot;]; readonly handler: typeof inspect; }, { readonly path: readonly [&quot;export&quot;]; readonly handler: typeof runExportCommand; }]; }</code></p>
+        <p><strong>Returns:</strong> <code>{ id: string; category: string; version: string; capabilities: readonly [{ readonly id: &quot;atlas.audit&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Audit project architecture&quot;; readonly description: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.inspect&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Inspect project dependencies&quot;; readonly description: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.export&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Export Atlas report&quot;; readonly description: &quot;Export a portable Atlas report artifact.&quot;; }]; commands: ({ path: string[]; capability: &quot;atlas.audit&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.inspect&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.export&quot;; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }</code></p>
       </div>
     
   </article>
@@ -1900,6 +1910,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_app_page_tsx --&gt; module_src_features_dependency_analysis_adapters_outbound_api_requestDependencyGraphAsync_ts
   module_src_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx
   module_src_app_page_tsx --&gt; module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
+  module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_capabilities_index_ts
   module_src_cli_commands_audit_ts[&quot;src/cli/commands/audit.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_commands_audit_ts
   module_src_cli_commands_audit_ts --&gt; module_src_cli_formatAuditRuleFailures_ts
@@ -1933,6 +1945,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_provider_createAtlasRuntimeProvider_ts[&quot;src/cli/provider/createAtlasRuntimeProvider.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_package_json
+  module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_capabilities_index_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_audit_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_export_runExportCommand_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_inspect_ts
@@ -2505,8 +2518,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_app_api_dependency_graph_route_spec_ts
   module_test_src_app_api_dependency_graph_route_spec_ts --&gt; module_src_app_api_dependency_graph_route_ts
+  module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_capabilities_spec_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_capabilities_index_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_cli_createAtlasRuntimeProvider_spec_ts
+  module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_cli_formatAuditRuleFailures_spec_ts
@@ -2734,6 +2752,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_layouts_style_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_src_packageManifest_spec_ts[&quot;test/src/packageManifest.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_packageManifest_spec_ts
+  module_test_src_packageManifest_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts[&quot;test/src/utils/filter/filterByPackagePrefix.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_utils_filter_filterByPackagePrefix_spec_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts --&gt; module_src_features_graph_view_utils_filterByPackagePrefix_ts
@@ -2793,6 +2812,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_app_page_tsx --&gt; module_src_features_dependency_analysis_adapters_outbound_api_requestDependencyGraphAsync_ts
   module_src_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx
   module_src_app_page_tsx --&gt; module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
+  module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_capabilities_index_ts
   module_src_cli_commands_audit_ts[&quot;src/cli/commands/audit.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_commands_audit_ts
   module_src_cli_commands_audit_ts --&gt; module_src_cli_formatAuditRuleFailures_ts
@@ -2826,6 +2847,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_provider_createAtlasRuntimeProvider_ts[&quot;src/cli/provider/createAtlasRuntimeProvider.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_package_json
+  module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_capabilities_index_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_audit_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_export_runExportCommand_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_inspect_ts
@@ -3398,8 +3420,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_app_api_dependency_graph_route_spec_ts
   module_test_src_app_api_dependency_graph_route_spec_ts --&gt; module_src_app_api_dependency_graph_route_ts
+  module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_capabilities_spec_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_capabilities_index_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_cli_createAtlasRuntimeProvider_spec_ts
+  module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_cli_formatAuditRuleFailures_spec_ts
@@ -3627,6 +3654,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_layouts_style_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_src_packageManifest_spec_ts[&quot;test/src/packageManifest.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_packageManifest_spec_ts
+  module_test_src_packageManifest_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts[&quot;test/src/utils/filter/filterByPackagePrefix.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_utils_filter_filterByPackagePrefix_spec_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts --&gt; module_src_features_graph_view_utils_filterByPackagePrefix_ts
@@ -3663,6 +3691,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_app_layout_tsx[&quot;src/app/layout.tsx&quot;]
   module_src_app_loading_tsx[&quot;src/app/loading.tsx&quot;]
   module_src_app_page_tsx[&quot;src/app/page.tsx&quot;]
+  module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
   module_src_cli_commands_audit_ts[&quot;src/cli/commands/audit.ts&quot;]
   module_src_cli_commands_export_runExportCommand_ts[&quot;src/cli/commands/export/runExportCommand.ts&quot;]
   module_src_cli_commands_inspect_ts[&quot;src/cli/commands/inspect.ts&quot;]
@@ -3804,6 +3833,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
+  module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -3892,6 +3922,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_parseAtlasCommandArgs_ts --&gt; module_src_cli_parseAtlasCliArgs_ts
   module_src_cli_parseAtlasCommandArgs_ts --&gt; module_src_types_cli_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_package_json
+  module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_capabilities_index_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_audit_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_export_runExportCommand_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_inspect_ts
@@ -4200,6 +4231,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_language_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_app_api_dependency_graph_route_spec_ts --&gt; module_src_app_api_dependency_graph_route_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_capabilities_index_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
+  module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts --&gt; module_src_cli_formatAuditRuleFailures_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts --&gt; module_src_types_audit_ts
@@ -4319,6 +4353,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_layouts_style_spec_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_test_src_layouts_style_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_style_ts
   module_test_src_layouts_style_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
+  module_test_src_packageManifest_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts --&gt; module_src_features_graph_view_utils_filterByPackagePrefix_ts
   module_test_src_utils_filter_filterEmptyPackage_spec_ts --&gt; module_src_features_graph_view_utils_filterEmptyPackages_ts
   module_test_src_utils_filter_filterSubPackagesFromDepth_spec_ts --&gt; module_src_features_graph_view_utils_filterSubPackagesByDepth_ts
@@ -4341,6 +4376,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_app_layout_tsx[&quot;src/app/layout.tsx&quot;]
   module_src_app_loading_tsx[&quot;src/app/loading.tsx&quot;]
   module_src_app_page_tsx[&quot;src/app/page.tsx&quot;]
+  module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
   module_src_cli_commands_audit_ts[&quot;src/cli/commands/audit.ts&quot;]
   module_src_cli_commands_export_runExportCommand_ts[&quot;src/cli/commands/export/runExportCommand.ts&quot;]
   module_src_cli_commands_inspect_ts[&quot;src/cli/commands/inspect.ts&quot;]
@@ -4482,6 +4518,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
+  module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -4570,6 +4607,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_parseAtlasCommandArgs_ts --&gt; module_src_cli_parseAtlasCliArgs_ts
   module_src_cli_parseAtlasCommandArgs_ts --&gt; module_src_types_cli_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_package_json
+  module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_capabilities_index_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_audit_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_export_runExportCommand_ts
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; module_src_cli_commands_inspect_ts
@@ -4878,6 +4916,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_language_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_app_api_dependency_graph_route_spec_ts --&gt; module_src_app_api_dependency_graph_route_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_capabilities_index_ts
+  module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
+  module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts --&gt; module_src_cli_formatAuditRuleFailures_ts
   module_test_src_cli_formatAuditRuleFailures_spec_ts --&gt; module_src_types_audit_ts
@@ -4997,6 +5038,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_layouts_style_spec_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_test_src_layouts_style_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_style_ts
   module_test_src_layouts_style_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
+  module_test_src_packageManifest_spec_ts --&gt; module_src_capabilities_index_ts
   module_test_src_utils_filter_filterByPackagePrefix_spec_ts --&gt; module_src_features_graph_view_utils_filterByPackagePrefix_ts
   module_test_src_utils_filter_filterEmptyPackage_spec_ts --&gt; module_src_features_graph_view_utils_filterEmptyPackages_ts
   module_test_src_utils_filter_filterSubPackagesFromDepth_spec_ts --&gt; module_src_features_graph_view_utils_filterSubPackagesByDepth_ts
@@ -5021,6 +5063,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_app_layout_tsx[&quot;src/app/layout.tsx&quot;]
   module_src_app_loading_tsx[&quot;src/app/loading.tsx&quot;]
   module_src_app_page_tsx[&quot;src/app/page.tsx&quot;]
+  module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
   module_src_cli_commands_audit_ts[&quot;src/cli/commands/audit.ts&quot;]
   module_src_cli_commands_export_runExportCommand_ts[&quot;src/cli/commands/export/runExportCommand.ts&quot;]
   module_src_cli_commands_inspect_ts[&quot;src/cli/commands/inspect.ts&quot;]
@@ -5162,6 +5205,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
+  module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -5242,6 +5286,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_app_layout_tsx[&quot;src/app/layout.tsx&quot;]
   module_src_app_loading_tsx[&quot;src/app/loading.tsx&quot;]
   module_src_app_page_tsx[&quot;src/app/page.tsx&quot;]
+  module_src_capabilities_index_ts[&quot;src/capabilities/index.ts&quot;]
   module_src_cli_commands_audit_ts[&quot;src/cli/commands/audit.ts&quot;]
   module_src_cli_commands_export_runExportCommand_ts[&quot;src/cli/commands/export/runExportCommand.ts&quot;]
   module_src_cli_commands_inspect_ts[&quot;src/cli/commands/inspect.ts&quot;]
@@ -5383,6 +5428,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
+  module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -5624,7 +5670,7 @@ source edits. Client Strict Mode rendering must not trigger another filesystem a
       <h2>src/cli/provider/createAtlasRuntimeProvider.ts</h2>
       <article class="item" data-search="createAtlasRuntimeProvider src/cli/provider/createAtlasRuntimeProvider.ts Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands.">
     <h3>createAtlasRuntimeProvider</h3>
-    <p class="muted"><code>src/cli/provider/createAtlasRuntimeProvider.ts:8:1</code></p>
+    <p class="muted"><code>src/cli/provider/createAtlasRuntimeProvider.ts:12:1</code></p>
     <p>Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands.</p>
     
   </article>
