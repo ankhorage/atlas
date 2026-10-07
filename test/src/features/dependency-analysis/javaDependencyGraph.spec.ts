@@ -56,6 +56,7 @@ describe('[Java dependency graph migration]', () => {
     expect(weights.get('com.example.myapp.a->com.example.myapp.c')).toBe(1);
     expect(weights.get('com.example.myapp.a->com.example.myapp.d')).toBe(1);
     expect(weights.get('com.example.myapp.b->com.example.myapp.a')).toBe(1);
+    expect(weights.has('com.example.myapp->junit.framework')).toBe(false);
     expect(packageGraph.edges.length).toBe(5);
 
     for (const packageName of [

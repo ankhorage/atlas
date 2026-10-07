@@ -1,9 +1,10 @@
 'use client';
-import { AppBar } from '@zora/app-bar';
+import { AppHeader } from '@zora/app-header';
 import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { Card } from '@zora/card';
 import { TextInput } from '@zora/text-input';
+import { AppShell, View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
 import { useState } from 'react';
 
@@ -12,7 +13,6 @@ import { SettingsProvider } from '@/features/settings/adapters/inbound/react/Set
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
-import { t } from '@/i18n/i18n';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
@@ -22,13 +22,16 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
   const navigation = useWorkspaceNavigation(workspace);
 
   return (
-    <>
-      <WorkspaceHeader
-        currentPackage={navigation.currentPackage}
-        currentSource={currentSource}
-        projectName={projectName}
-        onNavigate={navigation.navigateToPackage}
-      />
+    <AppShell
+      header={
+        <WorkspaceHeader
+          currentPackage={navigation.currentPackage}
+          currentSource={currentSource}
+          projectName={projectName}
+          onNavigate={navigation.navigateToPackage}
+        />
+      }
+    >
       <SettingsProvider>
         <WorkspaceBody
           currentSource={currentSource}
@@ -36,7 +39,7 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
           workspace={workspace}
         />
       </SettingsProvider>
-    </>
+    </AppShell>
   );
 }
 
@@ -46,9 +49,10 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
   const isDark = mode === 'dark';
 
   return (
-    <AppBar
+    <AppHeader
+      inverted
       actions={
-        <div style={{ alignItems: 'center', display: 'flex', gap: 8 }}>
+        <View align="center" direction="row" gap="s">
           <ProjectSourceForm currentSource={props.currentSource} />
           <Button
             leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
@@ -58,17 +62,19 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
           >
             {isDark ? 'Light' : 'Dark'}
           </Button>
-        </div>
+        </View>
       }
       safeAreaTop={false}
-    >
-      <Breadcrumbs
-        compact
-        items={createBreadcrumbItems(props.projectName, props.currentPackage)}
-        separator="›"
-        onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
-      />
-    </AppBar>
+      subtitle={
+        <Breadcrumbs
+          compact
+          items={createBreadcrumbItems(props.currentPackage)}
+          separator="›"
+          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
+        />
+      }
+      title={props.projectName}
+    />
   );
 }
 
@@ -84,12 +90,11 @@ function ProjectSourceForm(props: ProjectSourceFormProps) {
   };
 
   return (
-    <div style={{ alignItems: 'center', display: 'flex', gap: 6 }}>
+    <View align="center" direction="row" gap="xs">
       <TextInput
         accessibilityLabel="GitHub repository URL"
         placeholder="ankhorage/zora or GitHub URL"
         size="s"
-        style={{ minWidth: 280 }}
         value={source}
         onChangeText={setSource}
         onSubmitEditing={openSource}
@@ -97,7 +102,7 @@ function ProjectSourceForm(props: ProjectSourceFormProps) {
       <Button size="s" variant="outline" onPress={openSource}>
         Open
       </Button>
-    </div>
+    </View>
   );
 }
 
@@ -179,22 +184,15 @@ function WorkspaceError({ message }: { readonly message: string }) {
   );
 }
 
-/*** Creates interactive package breadcrumbs with a stable project and Packages root. */
-function createBreadcrumbItems(
-  projectName: string,
-  currentPackage: string
-): readonly BreadcrumbItem[] {
+/*** Creates package breadcrumbs from a stable Home root to the active package path. */
+function createBreadcrumbItems(currentPackage: string): readonly BreadcrumbItem[] {
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
     id: packageSegments.slice(0, index + 1).join('.'),
     label,
   }));
 
-  return [
-    { id: '__project__', label: projectName, disabled: true },
-    { id: '', label: t('nav.packages') },
-    ...packageItems,
-  ];
+  return [{ id: '', label: 'Home', icon: { name: 'home-outline' } }, ...packageItems];
 }
 
 /*** Normalizes navigation paths to the package identity representation used by the graph view. */
@@ -238,5 +236,5 @@ interface WorkspaceContentProps {
 interface BreadcrumbItem {
   readonly id: string;
   readonly label: string;
-  readonly disabled?: boolean;
+  readonly icon?: { readonly name: string };
 }

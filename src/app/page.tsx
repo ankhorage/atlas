@@ -1,5 +1,6 @@
 import { connection } from 'next/server';
 
+import { requestDependencyGraphAsync } from '@/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync';
 import { WorkspaceView } from '@/features/workspace/adapters/inbound/react/WorkspaceView';
 import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
@@ -12,7 +13,9 @@ export default async function Home({ searchParams }: HomeProps) {
   await connection();
   const params = await searchParams;
   const source = readSearchParam(params.source);
-  const result = await loadWorkspaceProjectSourceAsync(source);
+  const result = await loadWorkspaceProjectSourceAsync(source, inspection =>
+    requestDependencyGraphAsync(inspection)
+  );
 
   return (
     <WorkspaceView

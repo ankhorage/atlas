@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises';
 
+import { isAppManifest } from '@ankhorage/contracts';
+import { dependencyGraphApi } from '@ankhorage/dependency-graph/api';
 import { assert, describe, it } from '@artiphishle/testosterone';
 
 describe('[package manifest]', () => {
@@ -8,6 +10,7 @@ describe('[package manifest]', () => {
 
     assert.deepEqual(manifest.files, [
       'bin',
+      'ankh.config.json',
       'src',
       'tsconfig.json',
       '.next/BUILD_ID',
@@ -24,6 +27,23 @@ describe('[package manifest]', () => {
     assert.equal(manifest.name, '@ankhorage/atlas');
     assert.equal(manifest.bin.atlas, 'bin/atlas.ts');
     assert.equal(manifest.exports['./cli'], './src/cli/index.ts');
+  });
+
+  it('declares Atlas as a canonical app with the dependency-graph action binding', async () => {
+    const manifest: unknown = JSON.parse(await readFile('ankh.config.json', 'utf8'));
+
+    assert.equal(isAppManifest(manifest), true);
+    if (!isAppManifest(manifest)) return;
+    assert.equal(manifest.metadata.category, 'developer_tools');
+    assert.equal(manifest.activeThemeMode, 'light');
+    assert.equal(manifest.navigator.routes[0]?.screenId, 'workspace');
+    assert.equal(
+      manifest.infra.apis?.['dependency-graph']?.endpoints.actions.operations['dependency-graph']
+        ?.intent,
+      'action'
+    );
+    assert.deepEqual(manifest.infra.apis?.['dependency-graph'], dependencyGraphApi.definition);
+    assert.equal(manifest.themes[manifest.activeThemeId]?.id, manifest.metadata.themeId);
   });
 });
 

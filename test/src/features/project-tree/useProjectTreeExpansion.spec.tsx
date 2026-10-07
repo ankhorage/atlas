@@ -55,12 +55,24 @@ function Harness({ selectedIds }: { selectedIds: readonly string[] }) {
 }
 
 describe('[project tree selection reveal]', () => {
+  it('starts collapsed when no row is selected', async () => {
+    const host = render(<div />);
+    const root = createRoot(host.container);
+    try {
+      await act(async () => root.render(<Harness selectedIds={[]} />));
+      expect(host.container.textContent).toBe('');
+    } finally {
+      await act(async () => root.unmount());
+      host.unmount();
+    }
+  });
+
   it('reveals ancestors for every selected row while preserving manual expansion ownership', async () => {
     const host = render(<div />);
     const root = createRoot(host.container);
     try {
       await act(async () => root.render(<Harness selectedIds={['file', 'other-file']} />));
-      expect(host.container.textContent).toBe('root|other|nested|other-nested');
+      expect(host.container.textContent).toBe('root|nested|other|other-nested');
 
       await act(async () => host.container.querySelector('button')?.click());
       expect(host.container.textContent).toBe('');

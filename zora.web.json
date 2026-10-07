@@ -3,7 +3,7 @@
   "components": [
     "accordion",
     "activity-indicator",
-    "app-bar",
+    "app-header",
     "badge",
     "breadcrumbs",
     "button",

@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "name": "Atlas",
+    "slug": "atlas",
+    "version": "0.10.0",
+    "category": "developer_tools",
+    "themeId": "atlas"
+  },
+  "themes": {
+    "atlas": {
+      "id": "atlas",
+      "name": "Atlas",
+      "light": { "primaryColor": "#043c8c", "harmony": "analogous" },
+      "dark": { "primaryColor": "#5b9cff", "harmony": "analogous" }
+    }
+  },
+  "activeThemeId": "atlas",
+  "activeThemeMode": "light",
+  "infra": {
+    "environments": {
+      "local": {
+        "deployment": {
+          "compute": { "provider": "local" },
+          "runtime": { "provider": "minikube" }
+        },
+        "networking": { "domain": "atlas.local" }
+      }
+    },
+    "apis": {
+      "dependency-graph": {
+        "id": "dependency-graph",
+        "origin": "internal",
+        "protocol": "rest",
+        "basePath": "/api",
+        "endpoints": {
+          "actions": {
+            "id": "actions",
+            "kind": "http",
+            "operations": {
+              "dependency-graph": {
+                "id": "dependency-graph",
+                "endpointId": "actions",
+                "protocol": "http",
+                "intent": "action",
+                "method": "POST",
+                "path": "/dependency-graph"
+              }
+            }
+          }
+        }
+      }
+    },
+    "modules": {}
+  },
+  "navigator": {
+    "type": "stack",
+    "initialRouteName": "workspace",
+    "routes": [
+      {
+        "name": "workspace",
+        "path": "/",
+        "screenId": "workspace",
+        "showInPrimaryNavigation": true
+      }
+    ]
+  },
+  "screens": {
+    "workspace": {
+      "id": "workspace",
+      "name": "Workspace",
+      "title": "Atlas",
+      "root": { "id": "workspace-root", "type": "AppShell" },
+      "dataLoaders": [
+        {
+          "kind": "operation",
+          "id": "dependency-graph",
+          "operation": {
+            "apiId": "dependency-graph",
+            "endpointId": "actions",
+            "operationId": "dependency-graph"
+          }
+        }
+      ]
+    }
+  },
+  "settings": {
+    "localization": { "defaultLocale": "en", "locales": ["en"] }
+  }
+}
