@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.10.0",
+      "value": "v0.11.0",
       "color": "cb3837"
     },
     {
@@ -93,6 +93,12 @@
       "exports": []
     },
     {
+      "path": "ankh.config.json",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    },
+    {
       "path": "bin/atlas.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -136,9 +142,18 @@
       ]
     },
     {
+      "path": "src/app/api/dependency-graph/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "POST"
+      ]
+    },
+    {
       "path": "src/app/layout.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "ankh.config.json",
         "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx"
       ],
       "exports": [
@@ -161,6 +176,7 @@
       "path": "src/app/page.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
@@ -556,6 +572,14 @@
       "dependencies": [],
       "exports": [
         "getAdaptiveCycleLayoutSpacing"
+      ]
+    },
+    {
+      "path": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "requestDependencyGraphAsync"
       ]
     },
     {
@@ -1457,18 +1481,18 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/app-bar/index.d.ts",
+        ".ankh/zora/web/components/app-header/index.d.ts",
         ".ankh/zora/web/components/breadcrumbs/index.d.ts",
         ".ankh/zora/web/components/button/index.d.ts",
         ".ankh/zora/web/components/card/index.d.ts",
         ".ankh/zora/web/components/text-input/index.d.ts",
+        ".ankh/zora/web/components/view/index.d.ts",
         ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
         "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "src/i18n/i18n.ts",
         "src/types/audit.ts",
         "src/types/auditVisualization.ts",
         "src/types/workspace.ts"
@@ -1494,6 +1518,7 @@
       "path": "src/features/workspace/composition/loadWorkspaceAsync.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
         "src/features/workspace/composition/loadProjectOverviewAsync.ts",
         "src/types/workspace.ts"
       ],
@@ -1509,6 +1534,7 @@
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
+        "src/types/projectSource.ts",
         "src/types/workspace.ts",
         "src/utils/getProjectName.ts",
         "src/utils/parseProjectPath.ts"
@@ -1731,6 +1757,14 @@
       "exports": []
     },
     {
+      "path": "test/src/app/api/dependency-graph/route.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/app/api/dependency-graph/route.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/cli/createAtlasRuntimeProvider.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -1934,6 +1968,17 @@
       "dependencies": [
         "src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts",
         "src/features/project-analysis/adapters/outbound/source-metadata/readPythonProjectFileMetadata.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
+        "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
+        "src/features/project-analysis/composition/readProjectSnapshotAsync.ts"
       ],
       "exports": []
     },
@@ -2159,6 +2204,14 @@
       "exports": []
     },
     {
+      "path": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -2185,6 +2238,16 @@
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
         "src/types/audit.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/workspace/WorkspaceView.spec.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "ankh.config.json",
+        "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx",
+        "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       ],
       "exports": []
     },
@@ -2349,7 +2412,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/layout.tsx",
-        "line": 13,
+        "line": 16,
         "column": 1
       }
     },
@@ -2371,7 +2434,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/page.tsx",
-        "line": 11,
+        "line": 12,
         "column": 1
       }
     },
@@ -2382,7 +2445,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/page.tsx",
-        "line": 27,
+        "line": 30,
         "column": 1
       }
     },
@@ -3241,6 +3304,39 @@
       "sourceLocation": {
         "filePath": "src/features/audit/utils/getAdaptiveCycleLayoutSpacing.ts",
         "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "name": "requestDependencyGraphAsync",
+      "description": "Dispatch one dependency graph action through the trusted local API runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "name": "readApiError",
+      "description": "Read the explicit API error while retaining a stable fallback for malformed responses.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "name": "isDependencyGraph",
+      "description": "Narrow the transport response to the graph shape consumed by Atlas projections.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "line": 37,
         "column": 1
       }
     },
@@ -4890,7 +4986,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts",
-        "line": 8,
+        "line": 11,
         "column": 1
       }
     },
@@ -4901,7 +4997,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
-        "line": 13,
+        "line": 15,
         "column": 1
       }
     },
@@ -4984,7 +5080,7 @@
     },
     {
       "name": "useProjectTreeExpansion",
-      "description": "Preserve manual folder expansion while revealing ancestors required by every selected row.",
+      "description": "Start collapsed, preserve manual expansion, and reveal ancestors required by selected rows.",
       "see": [],
       "security": [],
       "sourceLocation": {
@@ -5000,7 +5096,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
-        "line": 36,
+        "line": 32,
         "column": 1
       }
     },
@@ -5363,7 +5459,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx",
-        "line": 14,
+        "line": 7,
         "column": 1
       }
     },
@@ -5594,7 +5690,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 44,
+        "line": 47,
         "column": 1
       }
     },
@@ -5605,7 +5701,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 76,
+        "line": 82,
         "column": 1
       }
     },
@@ -5616,7 +5712,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 79,
+        "line": 85,
         "column": 9
       }
     },
@@ -5627,7 +5723,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 105,
+        "line": 110,
         "column": 1
       }
     },
@@ -5638,7 +5734,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 147,
+        "line": 152,
         "column": 1
       }
     },
@@ -5649,18 +5745,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 165,
+        "line": 170,
         "column": 1
       }
     },
     {
       "name": "createBreadcrumbItems",
-      "description": "Creates interactive package breadcrumbs with a stable project and Packages root.",
+      "description": "Creates package breadcrumbs from a stable Home root to the active package path.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 183,
+        "line": 188,
         "column": 1
       }
     },
@@ -5671,7 +5767,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 201,
+        "line": 199,
         "column": 1
       }
     },
@@ -5682,7 +5778,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
-        "line": 7,
+        "line": 10,
         "column": 1
       }
     },
@@ -5693,7 +5789,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
-        "line": 7,
+        "line": 10,
         "column": 1
       }
     },
@@ -5704,7 +5800,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 19,
+        "line": 22,
         "column": 1
       }
     },
@@ -5781,6 +5877,11 @@
         "sourcePath": "src/app/layout.tsx"
       },
       {
+        "fromPath": "src/app/layout.tsx",
+        "toPath": "ankh.config.json",
+        "sourcePath": "src/app/layout.tsx"
+      },
+      {
         "fromPath": "src/app/loading.tsx",
         "toPath": ".ankh/zora/web/components/activity-indicator/index.d.ts",
         "sourcePath": "src/app/loading.tsx"
@@ -5789,6 +5890,11 @@
         "fromPath": "src/app/loading.tsx",
         "toPath": ".ankh/zora/web/components/view/index.d.ts",
         "sourcePath": "src/app/loading.tsx"
+      },
+      {
+        "fromPath": "src/app/page.tsx",
+        "toPath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "sourcePath": "src/app/page.tsx"
       },
       {
         "fromPath": "src/app/page.tsx",
@@ -6477,6 +6583,11 @@
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
+        "toPath": "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "toPath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
       },
@@ -6503,6 +6614,11 @@
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "toPath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "toPath": "src/types/projectSource.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
@@ -6719,6 +6835,26 @@
         "fromPath": "test/src/features/dependency-analysis/pythonDependencyGraph.spec.ts",
         "toPath": "src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts",
         "sourcePath": "test/src/features/dependency-analysis/pythonDependencyGraph.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toPath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toPath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toPath": "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toPath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
       },
       {
         "fromPath": "test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts",
@@ -6961,6 +7097,11 @@
         "sourcePath": "test/src/features/workspace/loadWorkspaceAsync.spec.ts"
       },
       {
+        "fromPath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
         "toPath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
         "sourcePath": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts"
@@ -7004,6 +7145,21 @@
         "fromPath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toPath": "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toPath": "ankh.config.json",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
       },
       {
         "fromPath": "test/src/utils/filter/filterByPackagePrefix.spec.ts",
@@ -7169,6 +7325,11 @@
         "fromPath": "test/src/app/api/audit/getAudit.spec.ts",
         "toPath": "src/app/actions/audit.actions.ts",
         "sourcePath": "test/src/app/api/audit/getAudit.spec.ts"
+      },
+      {
+        "fromPath": "test/src/app/api/dependency-graph/route.spec.ts",
+        "toPath": "src/app/api/dependency-graph/route.ts",
+        "sourcePath": "test/src/app/api/dependency-graph/route.spec.ts"
       },
       {
         "fromPath": "test/src/features/project-analysis/source-metadata/readJavaProjectFileMetadataAsync.spec.ts",
@@ -7932,7 +8093,7 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": ".ankh/zora/web/components/app-bar/index.d.ts",
+        "toPath": ".ankh/zora/web/components/app-header/index.d.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -7953,6 +8114,11 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": ".ankh/zora/web/components/text-input/index.d.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toPath": ".ankh/zora/web/components/view/index.d.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -7987,11 +8153,6 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/i18n/i18n.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
@@ -8020,6 +8181,12 @@
         "sourcePath": "bin/atlas.ts"
       },
       {
+        "fromSymbol": "RootLayout",
+        "toSymbol": "parseAppManifest",
+        "callExpression": "parseAppManifest",
+        "sourcePath": "src/app/layout.tsx"
+      },
+      {
         "fromSymbol": "Home",
         "toSymbol": "connection",
         "callExpression": "connection",
@@ -8035,6 +8202,12 @@
         "fromSymbol": "Home",
         "toSymbol": "loadWorkspaceProjectSourceAsync",
         "callExpression": "loadWorkspaceProjectSourceAsync",
+        "sourcePath": "src/app/page.tsx"
+      },
+      {
+        "fromSymbol": "src/app/page.tsx",
+        "toSymbol": "requestDependencyGraphAsync",
+        "callExpression": "requestDependencyGraphAsync",
         "sourcePath": "src/app/page.tsx"
       },
       {
@@ -8470,6 +8643,12 @@
         "sourcePath": "test/src/packageManifest.spec.ts"
       },
       {
+        "fromSymbol": "test/src/packageManifest.spec.ts",
+        "toSymbol": "isAppManifest",
+        "callExpression": "isAppManifest",
+        "sourcePath": "test/src/packageManifest.spec.ts"
+      },
+      {
         "fromSymbol": "getAuditAction",
         "toSymbol": "createProjectSourceAuditAsync",
         "callExpression": "createProjectSourceAuditAsync",
@@ -8810,6 +8989,12 @@
         "toSymbol": "parseProjectPath",
         "callExpression": "parseProjectPath",
         "sourcePath": "test/src/utils/parseProjectPath.spec.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/dependency-graph/route.ts",
+        "toSymbol": "createNextJsApiRoute",
+        "callExpression": "createNextJsApiRoute",
+        "sourcePath": "src/app/api/dependency-graph/route.ts"
       },
       {
         "fromSymbol": "runExportCommand",
@@ -9347,14 +9532,20 @@
       },
       {
         "fromSymbol": "loadProjectSnapshotAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts"
+      },
+      {
+        "fromSymbol": "loadProjectSnapshotAsync",
         "toSymbol": "readAsync",
         "callExpression": "reader.readAsync",
         "sourcePath": "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts"
       },
       {
         "fromSymbol": "loadProjectSnapshotAsync",
-        "toSymbol": "resolve",
-        "callExpression": "resolve",
+        "toSymbol": "readProjectSnapshotAsync",
+        "callExpression": "readProjectSnapshotAsync",
         "sourcePath": "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts"
       },
       {
@@ -9557,6 +9748,18 @@
       },
       {
         "fromSymbol": "loadWorkspaceAsync",
+        "toSymbol": "inspectProjectForAnalysisAsync",
+        "callExpression": "inspectProjectForAnalysisAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceAsync",
+        "toSymbol": "loadDependencyGraphAsync",
+        "callExpression": "loadDependencyGraphAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceAsync",
         "toSymbol": "loadProjectOverviewAsync",
         "callExpression": "loadProjectOverviewAsync",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
@@ -9605,8 +9808,8 @@
       },
       {
         "fromSymbol": "loadWorkspaceProjectSourceAsync",
-        "toSymbol": "loadProjectSourceAsync",
-        "callExpression": "loadProjectSourceAsync",
+        "toSymbol": "materializeAsync",
+        "callExpression": "materializeAsync",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
@@ -10364,6 +10567,48 @@
         "toSymbol": "expect",
         "callExpression": "expect",
         "sourcePath": "test/src/features/dependency-analysis/pythonDependencyGraph.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "inspectProjectForAnalysisAsync",
+        "callExpression": "inspectProjectForAnalysisAsync",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "requestDependencyGraphAsync",
+        "callExpression": "requestDependencyGraphAsync",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "projectDependencyGraph",
+        "callExpression": "projectDependencyGraph",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts",
+        "toSymbol": "readProjectSnapshotAsync",
+        "callExpression": "readProjectSnapshotAsync",
+        "sourcePath": "test/src/features/dependency-analysis/requestDependencyGraphAsync.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts",
@@ -11332,6 +11577,30 @@
         "sourcePath": "test/src/features/workspace/loadWorkspaceAsync.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+        "toSymbol": "loadWorkspaceProjectSourceAsync",
+        "callExpression": "loadWorkspaceProjectSourceAsync",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -11486,6 +11755,36 @@
         "toSymbol": "getScroll",
         "callExpression": "getScroll",
         "sourcePath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toSymbol": "parseAppManifest",
+        "callExpression": "parseAppManifest",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toSymbol": "render",
+        "callExpression": "render",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toSymbol": "unmount",
+        "callExpression": "unmount",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
       },
       {
         "fromSymbol": "test/src/utils/filter/filterByPackagePrefix.spec.ts",
@@ -11860,6 +12159,36 @@
         "sourcePath": "test/src/app/api/audit/getAudit.spec.ts"
       },
       {
+        "fromSymbol": "test/src/app/api/dependency-graph/route.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/app/api/dependency-graph/route.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/app/api/dependency-graph/route.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/app/api/dependency-graph/route.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/app/api/dependency-graph/route.spec.ts",
+        "toSymbol": "POST",
+        "callExpression": "POST",
+        "sourcePath": "test/src/app/api/dependency-graph/route.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/app/api/dependency-graph/route.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/app/api/dependency-graph/route.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/app/api/dependency-graph/route.spec.ts",
+        "toSymbol": "isDependencyGraph",
+        "callExpression": "isDependencyGraph",
+        "sourcePath": "test/src/app/api/dependency-graph/route.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/project-analysis/source-metadata/readJavaProjectFileMetadataAsync.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -12134,6 +12463,30 @@
         "toSymbol": "isRecord",
         "callExpression": "isRecord",
         "sourcePath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts"
+      },
+      {
+        "fromSymbol": "requestDependencyGraphAsync",
+        "toSymbol": "readApiError",
+        "callExpression": "readApiError",
+        "sourcePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts"
+      },
+      {
+        "fromSymbol": "requestDependencyGraphAsync",
+        "toSymbol": "isDependencyGraph",
+        "callExpression": "isDependencyGraph",
+        "sourcePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts"
+      },
+      {
+        "fromSymbol": "readApiError",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts"
+      },
+      {
+        "fromSymbol": "isDependencyGraph",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts"
       },
       {
         "fromSymbol": "projectDependencyImportsAsync",
@@ -13465,12 +13818,6 @@
         "fromSymbol": "createBreadcrumbItems",
         "toSymbol": "normalizeGraphPackage",
         "callExpression": "normalizeGraphPackage",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "createBreadcrumbItems",
-        "toSymbol": "t",
-        "callExpression": "t",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       }
     ],

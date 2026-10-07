@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0
+
+### Minor Changes
+
+- da31483: Migrate the Atlas web application to the canonical Ankhorage manifest, ZORA app shell, and dependency graph API action.
+
 ## 0.10.0
 
 ### Minor Changes
