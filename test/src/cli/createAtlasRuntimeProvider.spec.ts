@@ -1,5 +1,6 @@
 import { assert, describe, it } from '@artiphishle/testosterone';
 
+import { CAPABILITIES } from '@/capabilities';
 import { createAtlasRuntimeProvider } from '@/cli/provider/createAtlasRuntimeProvider';
 
 describe('[createAtlasRuntimeProvider]', () => {
@@ -8,7 +9,7 @@ describe('[createAtlasRuntimeProvider]', () => {
 
     assert.equal(provider.id, 'atlas');
     assert.equal(provider.category, 'atlas');
-    assert.deepEqual(provider.capabilities, ['atlas.audit', 'atlas.inspect', 'atlas.export']);
+    assert.deepEqual(provider.capabilities, CAPABILITIES);
     assert.deepEqual(
       provider.commands.map(({ path, capability }) => ({ path, capability })),
       [
