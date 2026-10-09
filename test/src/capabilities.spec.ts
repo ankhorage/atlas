@@ -1,4 +1,5 @@
 import { assert, describe, it } from '@artiphishle/testosterone';
+import { isCapabilityCatalog } from '@ankhorage/capability';
 
 import { CAPABILITIES } from '@/capabilities';
 import { createAtlasRuntimeProvider } from '@/cli/provider/createAtlasRuntimeProvider';
@@ -9,6 +10,8 @@ describe('[Atlas capability catalog]', () => {
     const catalogIds = new Set<string>(CAPABILITIES.map(({ id }) => id));
     const commandIds = new Set<string>(provider.commands.map(({ capability }) => capability));
 
+    assert.equal(isCapabilityCatalog(CAPABILITIES), true);
+    assert.equal(isCapabilityCatalog(provider.capabilities), true);
     assert.equal(commandIds.size, provider.commands.length);
     assert.equal(catalogIds.size, CAPABILITIES.length);
     assert.equal(

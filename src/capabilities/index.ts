@@ -1,4 +1,4 @@
-import type { Capability } from '@ankhorage/contracts/capabilities';
+import type { Capability } from '@ankhorage/contracts/capability';
 
 /*** Publish the canonical catalog for Atlas CLI capabilities. */
 export const CAPABILITIES = [
