@@ -1,5 +1,5 @@
 import type { AnkhRuntimeCommandProvider } from '@ankhorage/ankh';
-import type { Capability } from '@ankhorage/contracts/capabilities';
+import type { Capability } from '@ankhorage/contracts/capability';
 
 import { CAPABILITIES } from '@/capabilities';
 import { audit } from '@/cli/commands/audit';

@@ -67,7 +67,8 @@
   "dependencies": {
     "@ankhorage/ankh": "^0.12.2",
     "@ankhorage/api-nextjs": "^0.2.0",
-    "@ankhorage/contracts": "^24.1.0",
+    "@ankhorage/capability": "^0.2.1",
+    "@ankhorage/contracts": "^25.0.0",
     "@ankhorage/dependency-graph": "^1.3.0",
     "@ankhorage/graph": "^0.3.0",
     "@ankhorage/graph-cytoscape": "^0.2.0",

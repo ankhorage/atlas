@@ -1,11 +1,8 @@
 import { readFile } from 'node:fs/promises';
 
-import {
-  areCapabilitiesEqual,
-  isAppManifest,
-  isCapability,
-  type Capability,
-} from '@ankhorage/contracts';
+import { isAppManifest } from '@ankhorage/contracts';
+import type { Capability } from '@ankhorage/contracts/capability';
+import { areCapabilityCatalogsEqual, isCapabilityCatalog } from '@ankhorage/capability';
 import { dependencyGraphApi } from '@ankhorage/dependency-graph/api';
 import { assert, describe, it } from '@artiphishle/testosterone';
 
@@ -37,18 +34,8 @@ describe('[package manifest]', () => {
     assert.equal(manifest.exports['./capabilities'], './src/capabilities/index.ts');
     const manifestCapabilities = manifest.ankh.capabilities as readonly Capability[];
 
-    assert.equal(manifestCapabilities.every(isCapability), true);
-    assert.equal(
-      new Set(manifestCapabilities.map(({ id }) => id)).size,
-      manifestCapabilities.length
-    );
-    assert.equal(
-      manifestCapabilities.length === CAPABILITIES.length &&
-        manifestCapabilities.every(capability =>
-          CAPABILITIES.some(sourceCapability => areCapabilitiesEqual(sourceCapability, capability))
-        ),
-      true
-    );
+    assert.equal(isCapabilityCatalog(manifestCapabilities), true);
+    assert.equal(areCapabilityCatalogsEqual(CAPABILITIES, manifestCapabilities), true);
   });
 
   it('declares Atlas as a canonical app with the dependency-graph action binding', async () => {
