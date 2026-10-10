@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.12.0",
+      "value": "v0.12.1",
       "color": "cb3837"
     },
     {
@@ -8689,6 +8689,12 @@
         "sourcePath": "test/src/capabilities.spec.ts"
       },
       {
+        "fromSymbol": "test/src/capabilities.spec.ts",
+        "toSymbol": "isCapabilityCatalog",
+        "callExpression": "isCapabilityCatalog",
+        "sourcePath": "test/src/capabilities.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/packageManifest.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -8708,8 +8714,14 @@
       },
       {
         "fromSymbol": "test/src/packageManifest.spec.ts",
-        "toSymbol": "areCapabilitiesEqual",
-        "callExpression": "areCapabilitiesEqual",
+        "toSymbol": "isCapabilityCatalog",
+        "callExpression": "isCapabilityCatalog",
+        "sourcePath": "test/src/packageManifest.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/packageManifest.spec.ts",
+        "toSymbol": "areCapabilityCatalogsEqual",
+        "callExpression": "areCapabilityCatalogsEqual",
         "sourcePath": "test/src/packageManifest.spec.ts"
       },
       {

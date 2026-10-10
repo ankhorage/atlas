@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.1
+
+### Patch Changes
+
+- 0b00743: Migrate the Atlas capability catalog to the current capability APIs.
+
 ## 0.12.0
 
 ### Minor Changes
