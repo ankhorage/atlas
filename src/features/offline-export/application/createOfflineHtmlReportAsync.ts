@@ -2,7 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { dirname, isAbsolute, resolve, win32 } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { deserializeSourceGraph } from '@ankhorage/dependency-graph';
+
 import type { Audit } from '@/types/audit';
+import type { ProjectFileMetadata, ProjectFileTree } from '@/types/projectFiles';
 import type { WorkspaceSnapshot } from '@/types/workspace';
 
 /*** Creates one CSP-protected HTML file containing the real Atlas workspace and one validated snapshot. */
@@ -63,12 +66,75 @@ interface OfflineWorkspaceBundle {
 /*** Rejects host-bound or credential-bearing values before the portable snapshot crosses the export boundary. */
 function assertPortableSnapshot(snapshot: WorkspaceSnapshot): void {
   assertPortableValue(snapshot, 'workspace snapshot');
+  assertPortableAuditPaths(snapshot.audit);
   const sourceUrl = snapshot.audit.meta.source?.url;
   if (sourceUrl !== undefined && !isSafeRepositoryUrl(sourceUrl)) {
     throw new Error(
       'Atlas offline workspace snapshots require a public HTTPS GitHub repository URL.'
     );
   }
+}
+
+/*** Validates each serialized audit field whose contract carries a filesystem location. */
+function assertPortableAuditPaths(audit: Audit): void {
+  assertPortablePath(audit.meta.projectName, 'audit.meta.projectName');
+  assertPortableProjectFilePaths(audit.files, 'audit.files');
+  audit.packageGraph.nodes.forEach((node, index) =>
+    assertPortablePath(node.data.path, `audit.packageGraph.nodes[${index}].data.path`)
+  );
+  audit.packageGraph.edges.forEach((edge, edgeIndex) =>
+    edge.data.evidence.forEach((evidence, evidenceIndex) =>
+      assertPortablePath(
+        evidence.sourceFile,
+        `audit.packageGraph.edges[${edgeIndex}].data.evidence[${evidenceIndex}].sourceFile`
+      )
+    )
+  );
+  assertPortableSourceGraphPaths(audit.sourceGraph);
+}
+
+/*** Traverses only ProjectFileMetadata leaves, whose path property denotes a source file. */
+function assertPortableProjectFilePaths(tree: ProjectFileTree, location: string): void {
+  Object.entries(tree).forEach(([name, entry]) => {
+    const entryLocation = `${location}.${name}`;
+    if (isProjectFileMetadata(entry)) {
+      assertPortablePath(entry.path, `${entryLocation}.path`);
+      return;
+    }
+    assertPortableProjectFilePaths(entry, entryLocation);
+  });
+}
+
+/*** Identifies the typed tree leaf without applying a generic key-name path policy. */
+function isProjectFileMetadata(
+  value: ProjectFileTree | ProjectFileMetadata
+): value is ProjectFileMetadata {
+  return 'path' in value && typeof value.path === 'string' && 'imports' in value;
+}
+
+/*** Validates path-bearing SourceGraph facts through the published graph serialization contract. */
+function assertPortableSourceGraphPaths(serializedSourceGraph: string): void {
+  const sourceGraph = deserializeSourceGraph(serializedSourceGraph);
+  sourceGraph.graph.nodes.forEach((node, index) => {
+    const location = `audit.sourceGraph.graph.nodes[${index}].data`;
+    if (node.data.path !== undefined) assertPortablePath(node.data.path, `${location}.path`);
+    if (node.data.filePath !== undefined)
+      assertPortablePath(node.data.filePath, `${location}.filePath`);
+  });
+  sourceGraph.graph.edges.forEach((edge, edgeIndex) =>
+    edge.data.evidence.forEach((evidence, evidenceIndex) =>
+      assertPortablePath(
+        evidence.sourcePath,
+        `audit.sourceGraph.graph.edges[${edgeIndex}].data.evidence[${evidenceIndex}].sourcePath`
+      )
+    )
+  );
+}
+
+/*** Rejects only absolute host locations while retaining project-relative source evidence. */
+function assertPortablePath(value: string, location: string): void {
+  if (isForbiddenHostPath(value))
+    throw new Error(`Atlas offline workspace snapshot contains a host path at ${location}.`);
 }
 
 /*** Walks serializable audit evidence without treating project-relative source identities as host paths. */
@@ -95,7 +161,7 @@ function assertPortableValue(value: unknown, location: string): void {
 
 /*** Limits host-path checks to provenance and source-file fields so logical SourceGraph paths remain portable. */
 function isPortablePathLocation(location: string): boolean {
-  return location.endsWith('.meta.projectName') || location.endsWith('.filePath');
+  return location.endsWith('.filePath');
 }
 
 /*** Identifies absolute local filesystem references across the supported host path syntaxes. */

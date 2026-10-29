@@ -1,10 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
+import { deserializeSourceGraph, serializeSourceGraph } from '@ankhorage/dependency-graph';
 import { assert, describe, expect, it } from '@artiphishle/testosterone';
 
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { createOfflineHtmlReportAsync } from '@/features/offline-export/application/createOfflineHtmlReportAsync';
+import type { ProjectFileMetadata, ProjectFileTree } from '@/types/projectFiles';
 import { deserializeWorkspaceSnapshot } from '@/features/workspace/application/use-cases/deserializeWorkspaceSnapshot';
 
 describe('[createOfflineHtmlReportAsync]', () => {
@@ -121,7 +123,150 @@ describe('[createOfflineHtmlReportAsync]', () => {
     );
     expect(snapshot.audit.sourceGraph).toBe(audit.sourceGraph);
   });
+
+  it('rejects absolute host paths from every typed Audit source-path field', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const pathVariants = [
+      '/root/.ssh/id_rsa',
+      'C:\\workspace\\secret',
+      '\\\\server\\share\\secret',
+      'file:///private/tmp/secret',
+      'file:/private/tmp/secret',
+    ];
+
+    await Promise.all(
+      pathVariants.flatMap(path => [
+        assert.rejects(
+          createOfflineHtmlReportAsync({
+            ...audit,
+            files: replaceProjectFilePaths(audit.files, path),
+          }),
+          /host path/i
+        ),
+        assert.rejects(
+          createOfflineHtmlReportAsync({
+            ...audit,
+            packageGraph: {
+              ...audit.packageGraph,
+              nodes: audit.packageGraph.nodes.map((node, index) =>
+                index === 0 ? { ...node, data: { ...node.data, path } } : node
+              ),
+            },
+          }),
+          /host path/i
+        ),
+        assert.rejects(
+          createOfflineHtmlReportAsync({
+            ...audit,
+            packageGraph: {
+              ...audit.packageGraph,
+              edges: audit.packageGraph.edges.map((edge, edgeIndex) =>
+                edgeIndex === 0
+                  ? {
+                      ...edge,
+                      data: {
+                        ...edge.data,
+                        evidence: edge.data.evidence.map((evidence, evidenceIndex) =>
+                          evidenceIndex === 0 ? { ...evidence, sourceFile: path } : evidence
+                        ),
+                      },
+                    }
+                  : edge
+              ),
+            },
+          }),
+          /host path/i
+        ),
+      ])
+    );
+  });
+
+  it('rejects SourceGraph path facts while preserving its logical identities', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const sourceGraph = deserializeSourceGraph(audit.sourceGraph);
+    const serializedSourceGraph = serializeSourceGraph({
+      ...sourceGraph,
+      graph: {
+        ...sourceGraph.graph,
+        nodes: sourceGraph.graph.nodes.map((node, index) =>
+          index === 0 ? { ...node, data: { ...node.data, path: '/etc/atlas/private' } } : node
+        ),
+        edges: sourceGraph.graph.edges.map((edge, edgeIndex) =>
+          edgeIndex === 0
+            ? {
+                ...edge,
+                data: {
+                  ...edge.data,
+                  evidence: edge.data.evidence.map((evidence, evidenceIndex) =>
+                    evidenceIndex === 0
+                      ? { ...evidence, sourcePath: 'file:///private/tmp/secret' }
+                      : evidence
+                  ),
+                },
+              }
+            : edge
+        ),
+      },
+    });
+
+    await assert.rejects(
+      createOfflineHtmlReportAsync({ ...audit, sourceGraph: serializedSourceGraph }),
+      /host path/i
+    );
+  });
+
+  it('retains relative Audit paths and SourceGraph package identities', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = await createOfflineHtmlReportAsync({
+      ...audit,
+      files: replaceProjectFilePaths(audit.files, 'src/main/java/Example.java'),
+      packageGraph: {
+        ...audit.packageGraph,
+        nodes: audit.packageGraph.nodes.map((node, index) =>
+          index === 0 ? { ...node, data: { ...node.data, path: 'com.example' } } : node
+        ),
+        edges: audit.packageGraph.edges.map((edge, edgeIndex) =>
+          edgeIndex === 0
+            ? {
+                ...edge,
+                data: {
+                  ...edge.data,
+                  evidence: edge.data.evidence.map((evidence, evidenceIndex) =>
+                    evidenceIndex === 0
+                      ? { ...evidence, sourceFile: 'src/main/java/Example.java' }
+                      : evidence
+                  ),
+                },
+              }
+            : edge
+        ),
+      },
+    });
+
+    const snapshot = deserializeWorkspaceSnapshot(readSnapshot(html));
+    expect(snapshot.audit.packageGraph.nodes[0]?.data.path).toBe('com.example');
+    expect(snapshot.audit.packageGraph.edges[0]?.data.evidence[0]?.sourceFile).toBe(
+      'src/main/java/Example.java'
+    );
+  });
 });
+
+/*** Replaces source-file leaf paths while preserving the tree's typed directory hierarchy. */
+function replaceProjectFilePaths(tree: ProjectFileTree, path: string): ProjectFileTree {
+  return Object.fromEntries(
+    Object.entries(tree).map(([name, entry]) => [
+      name,
+      isProjectFileMetadata(entry) ? { ...entry, path } : replaceProjectFilePaths(entry, path),
+    ])
+  );
+}
+
+/*** Distinguishes a ProjectFileMetadata leaf from a nested source directory. */
+function isProjectFileMetadata(
+  value: ProjectFileTree | ProjectFileMetadata
+): value is ProjectFileMetadata {
+  return 'path' in value && typeof value.path === 'string' && 'imports' in value;
+}
 
 /*** Reads the exact JSON boundary that the browser bootstrap validates before rendering. */
 function readSnapshot(html: string): string {
