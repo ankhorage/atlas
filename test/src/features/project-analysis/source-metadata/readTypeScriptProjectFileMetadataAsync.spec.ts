@@ -5,7 +5,7 @@ import { parseProjectPath } from '@/utils/parseProjectPath';
 
 describe('[TypeScript: readTypeScriptProjectFileMetadata]', () => {
   it('parses file metadata while preserving canonical dependency imports', async () => {
-    process.env.NEXT_PUBLIC_PROJECT_PATH = resolve(process.cwd());
+    process.env.ATLAS_PROJECT_PATH = resolve(process.cwd());
     const projectPath = parseProjectPath();
     const file = resolve(projectPath, 'src/app/page.tsx');
     const imports = [{ name: 'src.screens.home', pkg: 'src.screens.home', isIntrinsic: true }];

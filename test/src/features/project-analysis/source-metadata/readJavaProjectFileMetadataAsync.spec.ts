@@ -4,7 +4,7 @@ import { parseProjectPath } from '@/utils/parseProjectPath';
 
 describe('[readJavaProjectFileMetadata]', () => {
   it('parses a .java file correctly', () => {
-    process.env.NEXT_PUBLIC_PROJECT_PATH = resolve(process.cwd(), 'examples/java/my-app');
+    process.env.ATLAS_PROJECT_PATH = resolve(process.cwd(), 'examples/java/my-app');
     const projectPath = parseProjectPath();
     const javaFile = resolve(projectPath, 'src/main/java/com/example/myapp/App.java');
     const parsedJavaFile = readJavaProjectFileMetadata(javaFile, projectPath, [

@@ -47,8 +47,6 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run build
-        env:
-          NEXT_PUBLIC_PROJECT_PATH: ${{ github.workspace }}
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build ? 0 : 1)"; then
             bun run build
@@ -101,26 +99,22 @@ jobs:
             echo "No test script found; skipping."
           fi
 
-      - name: Verify offline report in browser
+      - name: Verify offline workspace in an isolated browser
+        env:
+          ATLAS_PROJECT_PATH: ${{ github.workspace }}/examples/java/my-app
         run: |
           bun bin/atlas.ts examples/java/my-app --offline --out offline-smoke.html
-          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          test -n "$CHROME"
-          timeout 30s "$CHROME" \
-            --headless=new \
-            --no-sandbox \
-            --disable-gpu \
-            --disable-background-networking \
-            --disable-component-update \
-            --disable-default-apps \
-            --disable-sync \
-            --host-resolver-rules="MAP * 0.0.0.0" \
-            --dump-dom \
-            "file://${GITHUB_WORKSPACE}/offline-smoke.html" > offline-smoke-dom.html
-          grep -F "Atlas · my-app" offline-smoke-dom.html
-          grep -F "Project tree" offline-smoke-dom.html
-          grep -E "[0-9]+ nodes · [0-9]+ edges" offline-smoke-dom.html
-          rm offline-smoke.html offline-smoke-dom.html
+          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$ATLAS_CHROME"
+          bun run start > next.log 2>&1 &
+          next_pid=$!
+          trap 'kill "$next_pid"; rm -f offline-smoke.html next.log' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:3000/ > /dev/null
+          ATLAS_ONLINE_URL=http://127.0.0.1:3000/ bun run test:offline-browser
 
       - name: Run typecheck
         run: |

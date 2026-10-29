@@ -8,6 +8,7 @@ import { AppShell, View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
 import { useState } from 'react';
 
+import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
@@ -18,7 +19,13 @@ import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
 /*** Renders the active Atlas workspace through its feature-owned React adapter. */
-export function WorkspaceView({ currentSource, projectName, workspace }: WorkspaceViewProps) {
+export function WorkspaceView({
+  auditExportActions,
+  currentSource,
+  offline,
+  projectName,
+  workspace,
+}: WorkspaceViewProps) {
   const navigation = useWorkspaceNavigation(workspace);
 
   return (
@@ -27,6 +34,7 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
         <WorkspaceHeader
           currentPackage={navigation.currentPackage}
           currentSource={currentSource}
+          offline={offline}
           projectName={projectName}
           onNavigate={navigation.navigateToPackage}
         />
@@ -35,7 +43,10 @@ export function WorkspaceView({ currentSource, projectName, workspace }: Workspa
       <SettingsProvider>
         <WorkspaceBody
           currentSource={currentSource}
+          auditExportActions={auditExportActions}
           navigation={navigation}
+          offline={offline}
+          projectName={projectName}
           workspace={workspace}
         />
       </SettingsProvider>
@@ -53,7 +64,11 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
       inverted
       actions={
         <View align="center" direction="row" gap="s">
-          <ProjectSourceForm currentSource={props.currentSource} />
+          {props.offline ? (
+            <span aria-label="Offline snapshot">Offline snapshot</span>
+          ) : (
+            <ProjectSourceForm currentSource={props.currentSource} />
+          )}
           <Button
             leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
             size="s"
@@ -107,11 +122,18 @@ function ProjectSourceForm(props: ProjectSourceFormProps) {
 }
 
 /*** Renders workspace tools, graph content, cycle inspection, and persistent load errors. */
-function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyProps) {
+function WorkspaceBody({
+  auditExportActions,
+  currentSource,
+  navigation,
+  offline,
+  projectName,
+  workspace,
+}: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const projectError = workspace.ok ? null : workspace.error;
-  const cycleSelection = useCycleSelection(auditEvaluation?.cyclicPackages ?? EMPTY_CYCLES);
+  const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
   const [cycleInspection, setCycleInspection] = useState<CycleInspection | null>(null);
 
   return (
@@ -128,6 +150,7 @@ function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyPr
       }}
     >
       <WorkspaceSidebar
+        auditExportActions={auditExportActions}
         currentSource={currentSource}
         cycleSelection={cycleSelection}
         evaluation={auditEvaluation}
@@ -136,6 +159,7 @@ function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyPr
         selectedTreeIds={navigation.selectedTreeIds}
         onCycleInspectionChange={setCycleInspection}
         onProjectTreeSelect={navigation.selectProjectTreeNode}
+        offline={offline}
       />
       <WorkspaceContent
         cycleInspection={cycleInspection}
@@ -146,6 +170,26 @@ function WorkspaceBody({ currentSource, navigation, workspace }: WorkspaceBodyPr
       />
     </main>
   );
+}
+
+/*** Connects visible cycle evidence to the portable project scope that owns its preferences. */
+function useWorkspaceCycleSelection(
+  evaluation: Audit['evaluation'] | null,
+  workspace: WorkspaceLoadResult,
+  projectName: string
+) {
+  return useCycleSelection(
+    evaluation?.cyclicPackages ?? EMPTY_CYCLES,
+    resolveWorkspaceProjectIdentity(workspace, projectName)
+  );
+}
+
+/*** Chooses a portable workspace scope even while a failed load renders its persistent error state. */
+function resolveWorkspaceProjectIdentity(
+  workspace: WorkspaceLoadResult,
+  projectName: string
+): string {
+  return workspace.ok ? workspace.value.projectIdentity : projectName;
 }
 
 /*** Renders the graph or the current project-source load error. */
@@ -203,7 +247,9 @@ function normalizeGraphPackage(path: string): string {
 const EMPTY_CYCLES: NonNullable<Audit['evaluation']>['cyclicPackages'] = [];
 
 interface WorkspaceViewProps {
+  readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
+  readonly offline?: boolean;
   readonly projectName: string;
   readonly workspace: WorkspaceLoadResult;
 }
@@ -211,6 +257,7 @@ interface WorkspaceViewProps {
 interface WorkspaceHeaderProps {
   readonly currentPackage: string;
   readonly currentSource?: string;
+  readonly offline?: boolean;
   readonly projectName: string;
   readonly onNavigate: (path: string) => void;
 }
@@ -220,8 +267,11 @@ interface ProjectSourceFormProps {
 }
 
 interface WorkspaceBodyProps {
+  readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
+  readonly offline?: boolean;
+  readonly projectName: string;
   readonly workspace: WorkspaceLoadResult;
 }
 

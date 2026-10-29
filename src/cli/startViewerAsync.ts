@@ -21,7 +21,7 @@ export async function startViewerAsync(
   const mode = options.prod || hasBuild ? 'start' : 'dev';
   const env: NodeJS.ProcessEnv = {
     ...process.env,
-    NEXT_PUBLIC_PROJECT_PATH: callerRoot,
+    ATLAS_PROJECT_PATH: callerRoot,
     PORT: String(port),
     NEXT_TELEMETRY_DISABLED: '1',
     NODE_ENV: mode === 'start' ? 'production' : 'development',
@@ -43,7 +43,7 @@ export async function startViewerAsync(
     child.once('exit', () => {
       void cleanupAsync();
     });
-    console.log(`Serving UI at ${baseUrl} (NEXT_PUBLIC_PROJECT_PATH=${callerRoot})`);
+    console.log(`Serving UI at ${baseUrl} (ATLAS_PROJECT_PATH=${callerRoot})`);
     return;
   }
 

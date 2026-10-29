@@ -1,5 +1,6 @@
 import { connection } from 'next/server';
 
+import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
 import { requestDependencyGraphAsync } from '@/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync';
 import { WorkspaceView } from '@/features/workspace/adapters/inbound/react/WorkspaceView';
 import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
@@ -19,6 +20,10 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <WorkspaceView
+      auditExportActions={{
+        downloadJson: downloadAuditJsonAction,
+        downloadXml: downloadAuditXmlAction,
+      }}
       currentSource={result.currentSource}
       projectName={result.projectName}
       workspace={result.workspace}

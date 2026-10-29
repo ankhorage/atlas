@@ -10,7 +10,7 @@ import { getAuditAction } from '@/app/actions/audit.actions';
 describe('[getAuditAction]', () => {
   beforeEach(() => {
     // keep tests deterministic; set path fresh for each test
-    process.env.NEXT_PUBLIC_PROJECT_PATH = resolve(process.cwd(), 'examples/java/my-app');
+    process.env.ATLAS_PROJECT_PATH = resolve(process.cwd(), 'examples/java/my-app');
   });
 
   // Test: Audit output contains 'App.java' which is matched correctly, also audit.meta is correct

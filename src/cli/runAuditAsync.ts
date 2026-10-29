@@ -2,7 +2,7 @@ import { resolveFileSystemPathWithinRoot, writeFileWithinRoot } from '@ankhorage
 
 import { createAuditAsync } from '@/features/audit/composition/createAuditAsync';
 import { hasBlockingAuditRuleFailure } from '@/features/audit/domain/hasBlockingAuditRuleFailure';
-import { createOfflineHtmlReport } from '@/features/offline-report/application/createOfflineHtmlReport';
+import { createOfflineHtmlReportAsync } from '@/features/offline-export/application/createOfflineHtmlReportAsync';
 import type { Audit, AuditMetaInput, ResolveAuditConfigurationInput } from '@/types/audit';
 
 /*** Creates, writes, and evaluates an audit while retaining the artifact on rule failure. */
@@ -12,7 +12,7 @@ export async function runAuditAsync(input: RunAuditInput): Promise<RunAuditResul
     input.artifactFormat === 'csv'
       ? serializeAuditCsv(audit)
       : input.artifactFormat === 'offline'
-        ? createOfflineHtmlReport(audit)
+        ? await createOfflineHtmlReportAsync(audit)
         : input.pretty
           ? JSON.stringify(audit, null, 2)
           : JSON.stringify(audit);

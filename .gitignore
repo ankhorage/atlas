@@ -23,6 +23,7 @@ yarn.lock
 # next.js
 /.next/
 /out/
+/offline/
 
 # production
 /build

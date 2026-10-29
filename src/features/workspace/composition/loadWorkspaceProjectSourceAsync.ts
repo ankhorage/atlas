@@ -26,13 +26,10 @@ export async function loadWorkspaceProjectSourceAsync(
     source: ProjectSource
   ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync
 ): Promise<WorkspaceProjectSourceResult> {
-  const startupSource = resolveWorkspaceStartupSource(
-    sourceValue,
-    process.env.NEXT_PUBLIC_PROJECT_PATH
-  );
+  const startupSource = resolveWorkspaceStartupSource(sourceValue, process.env.ATLAS_PROJECT_PATH);
 
   if (startupSource.kind === 'filesystem') {
-    const projectPath = parseProjectPath();
+    const projectPath = parseProjectPath(startupSource.path);
     return {
       projectName: getProjectName(projectPath),
       workspace: await loadWorkspaceAsync(projectPath, loadDependencyGraphAsync),

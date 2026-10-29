@@ -5,6 +5,24 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 describe('[loadWorkspaceProjectSourceAsync]', () => {
+  it('loads the local project configured at server runtime', async () => {
+    const previousProjectPath = process.env.ATLAS_PROJECT_PATH;
+    process.env.ATLAS_PROJECT_PATH = resolve('examples/java/my-app');
+
+    try {
+      const result = await loadWorkspaceProjectSourceAsync(undefined, async () => ({
+        edges: [],
+        nodes: [],
+      }));
+
+      assert.equal(result.projectName, 'my-app');
+      assert.equal(result.workspace.ok, true);
+    } finally {
+      if (previousProjectPath === undefined) delete process.env.ATLAS_PROJECT_PATH;
+      else process.env.ATLAS_PROJECT_PATH = previousProjectPath;
+    }
+  });
+
   it('keeps a rejected action as workspace state after GitHub materialization', async () => {
     const result = await loadWorkspaceProjectSourceAsync(
       'ankhorage/atlas',
