@@ -5,6 +5,7 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 
 import { readProjectSnapshotAsync } from '@/features/project-analysis/composition/readProjectSnapshotAsync';
 import { createWorkspaceSnapshot } from '@/features/workspace/application/use-cases/createWorkspaceSnapshot';
+import { deserializeWorkspaceSnapshot } from '@/features/workspace/application/use-cases/deserializeWorkspaceSnapshot';
 import { serializeWorkspaceSnapshot } from '@/features/workspace/application/use-cases/serializeWorkspaceSnapshot';
 import { loadEmbeddedWorkspaceSnapshot } from '@/features/workspace/composition/loadEmbeddedWorkspaceSnapshot';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
@@ -27,6 +28,14 @@ describe('[workspace snapshots]', () => {
     assert.deepEqual(embedded.value, live.value);
   });
 
+  it('round-trips a valid snapshot through the portable serialization boundary', async () => {
+    const snapshot = createWorkspaceSnapshot(
+      await readProjectSnapshotAsync(resolve('examples/java/my-app'))
+    );
+
+    assert.deepEqual(deserializeWorkspaceSnapshot(serializeWorkspaceSnapshot(snapshot)), snapshot);
+  });
+
   it('keeps snapshot version and schema errors explicit in persistent workspace state', () => {
     assert.deepEqual(loadEmbeddedWorkspaceSnapshot('{"version":2}'), {
       ok: false,
@@ -36,5 +45,55 @@ describe('[workspace snapshots]', () => {
       ok: false,
       error: 'Invalid Atlas workspace snapshot schema.',
     });
+    assert.deepEqual(loadEmbeddedWorkspaceSnapshot('{'), {
+      ok: false,
+      error: 'Invalid Atlas workspace snapshot JSON.',
+    });
+  });
+
+  it('keeps invalid nested workspace payloads in persistent error state', async () => {
+    const snapshot = createWorkspaceSnapshot(
+      await readProjectSnapshotAsync(resolve('examples/java/my-app'))
+    );
+    const serialized = serializeWorkspaceSnapshot(snapshot);
+    const cases = [
+      corrupt(
+        serialized,
+        '"rules":[{"id":"cyclic-dependencies","status"',
+        '"rules":[null,{"id":"cyclic-dependencies","status"'
+      ),
+      corrupt(serialized, '"findings":[', '"findings":[null,'),
+      corrupt(serialized, '"cyclicPackages":[', '"cyclicPackages":[null,'),
+      corrupt(serialized, '"nodes":[', '"nodes":[null,'),
+      corrupt(serialized, '"edges":[', '"edges":[null,'),
+      corrupt(serialized, '"imports":[', '"imports":[null,'),
+    ];
+
+    for (const serialized of cases) {
+      assert.deepEqual(loadEmbeddedWorkspaceSnapshot(serialized), {
+        ok: false,
+        error: 'Invalid Atlas workspace snapshot schema.',
+      });
+    }
+  });
+
+  it('keeps corrupted SourceGraphs in persistent error state', async () => {
+    const snapshot = createWorkspaceSnapshot(
+      await readProjectSnapshotAsync(resolve('examples/java/my-app'))
+    );
+    const serialized = serializeWorkspaceSnapshot(snapshot).replace(
+      /"sourceGraph":"(?:[^"\\]|\\.)*"/u,
+      '"sourceGraph":"{\\"version\\":1,\\"strings\\":[],\\"data\\":{}}"'
+    );
+
+    assert.deepEqual(loadEmbeddedWorkspaceSnapshot(serialized), {
+      ok: false,
+      error: 'Invalid Atlas workspace snapshot SourceGraph.',
+    });
   });
 });
+
+/*** Replaces one known JSON segment so each regression corrupts one serializable boundary value. */
+function corrupt(serialized: string, search: string, replacement: string): string {
+  return serialized.replace(search, replacement);
+}
