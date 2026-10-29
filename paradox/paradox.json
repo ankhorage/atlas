@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.14.0",
+      "value": "v0.14.1",
       "color": "cb3837"
     },
     {
@@ -68,7 +68,7 @@
     {
       "area": "examples",
       "title": "Analyze a project",
-      "description": "Analyze either a local project or a public GitHub repository through the same Atlas pipeline.\n\nThe canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluation,\n`inspect` for the interactive graph, and `export` for JSON, CSV, or the future offline report.",
+      "description": "Analyze either a local project or a public GitHub repository through the same Atlas pipeline.\n\nThe canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluation,\n`inspect` for the interactive graph, and `export` for JSON, CSV, or a portable offline report.",
       "language": "ts",
       "code": "export const commands = [\n  'ankh atlas audit .',\n  'ankh atlas audit ankhorage/zora',\n  'ankh atlas audit https://github.com/ankhorage/zora',\n  'ankh atlas inspect .',\n  'ankh atlas inspect ankhorage/zora',\n  'ankh atlas export .',\n  'ankh atlas export . --csv',\n  'ankh atlas export . --offline',\n] as const;",
       "sourcePath": "examples/atlas-cli/main.ts",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.1
+
+### Patch Changes
+
+- e7f9d59: Publish the corrected Atlas CLI documentation for the available `--offline` export.
+
 ## 0.14.0
 
 ### Minor Changes

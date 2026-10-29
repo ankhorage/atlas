@@ -3,7 +3,7 @@
 
 # Atlas
 
-![license: MIT](./paradox/badges/license.svg) ![npm: v0.14.0](./paradox/badges/npm.svg) ![runtime: bun](./paradox/badges/runtime.svg) ![typescript: strict](./paradox/badges/typescript.svg) ![eslint: checked](./paradox/badges/eslint.svg) ![prettier: checked](./paradox/badges/prettier.svg) ![build: checked](./paradox/badges/build.svg) ![tests: checked](./paradox/badges/tests.svg) ![paradox: canonical](./paradox/badges/docs.svg)
+![license: MIT](./paradox/badges/license.svg) ![npm: v0.14.1](./paradox/badges/npm.svg) ![runtime: bun](./paradox/badges/runtime.svg) ![typescript: strict](./paradox/badges/typescript.svg) ![eslint: checked](./paradox/badges/eslint.svg) ![prettier: checked](./paradox/badges/prettier.svg) ![build: checked](./paradox/badges/build.svg) ![tests: checked](./paradox/badges/tests.svg) ![paradox: canonical](./paradox/badges/docs.svg)
 
 Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.
 
@@ -26,7 +26,7 @@ ankh atlas --help
 Analyze either a local project or a public GitHub repository through the same Atlas pipeline.
 
 The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluation,
-`inspect` for the interactive graph, and `export` for JSON, CSV, or the future offline report.
+`inspect` for the interactive graph, and `export` for JSON, CSV, or a portable offline report.
 
 ```ts
 export const commands = [
