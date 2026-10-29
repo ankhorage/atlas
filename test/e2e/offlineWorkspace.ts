@@ -174,9 +174,65 @@ async function assertInvalidSnapshot(
 }
 
 async function assertParity(offline: Page, online: Page): Promise<void> {
-  if (
-    (await offline.getByRole('treeitem').count()) !== (await online.getByRole('treeitem').count())
-  ) {
-    throw new Error('Online/offline project-tree parity mismatch.');
+  await assertEqual('tree identities and labels', await readTree(offline), await readTree(online));
+  await assertEqual(
+    'tree selections after real graph interactions',
+    await readSelectedTreeItems(offline),
+    await readSelectedTreeItems(online)
+  );
+  await assertEqual(
+    'breadcrumbs after graph selection',
+    await readBreadcrumbs(offline),
+    await readBreadcrumbs(online)
+  );
+  await assertEqual('graph controls', await readGraph(offline), await readGraph(online));
+  await assertEqual('Rules and cycle findings', await readRules(offline), await readRules(online));
+}
+
+/*** Read the accessible project-tree identity rather than comparing only its item count. */
+async function readTree(page: Page): Promise<readonly string[]> {
+  return page
+    .getByRole('treeitem')
+    .evaluateAll(items =>
+      items.map(
+        item =>
+          `${item.getAttribute('id') ?? ''}:${item.getAttribute('aria-label') ?? item.textContent ?? ''}`
+      )
+    );
+}
+
+/*** Read selected tree labels produced by the real graph-node click interactions above. */
+async function readSelectedTreeItems(page: Page): Promise<readonly string[]> {
+  return page.getByRole('treeitem', { selected: true }).allTextContents();
+}
+
+/*** Read the visible navigation trail after synchronized graph and tree selection. */
+async function readBreadcrumbs(page: Page): Promise<readonly string[]> {
+  return page
+    .locator('nav [role="button"], nav a, [aria-label*="breadcrumb" i] [role="button"]')
+    .allTextContents();
+}
+
+/*** Compare live graph controls while graph-node selection is observed through the synchronized tree. */
+async function readGraph(page: Page): Promise<readonly [number, string]> {
+  return [
+    await page.getByRole('application', { name: 'Graph' }).locator('canvas').count(),
+    await page.getByLabel('Zoom').inputValue(),
+  ];
+}
+
+/*** Read the rules panel's user-visible audit and cycle evidence. */
+async function readRules(page: Page): Promise<string> {
+  const ruleTab = page.getByRole('tab', { name: /Rules/ });
+  await ruleTab.click();
+  return page.getByRole('tabpanel').innerText();
+}
+
+/*** Fail parity checks with the semantic values that diverged. */
+async function assertEqual(label: string, offline: unknown, online: unknown): Promise<void> {
+  if (JSON.stringify(offline) !== JSON.stringify(online)) {
+    throw new Error(
+      `Online/offline ${label} parity mismatch: ${JSON.stringify({ offline, online })}`
+    );
   }
 }

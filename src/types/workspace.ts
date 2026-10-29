@@ -4,6 +4,7 @@ import type { ProjectTreeNode } from '@/types/projectTree';
 
 export interface ProjectOverview {
   readonly packageGraph: PackageDependencyGraph;
+  readonly projectIdentity: string;
   readonly tree: readonly ProjectTreeNode[];
   readonly evaluation: Audit['evaluation'];
 }

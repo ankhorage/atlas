@@ -12,9 +12,15 @@ import type { PackageCycleDetail } from '@/types/audit';
 import type { CycleSelection } from '@/types/auditVisualization';
 
 /*** Owns persisted cycle choices independently of sidebar mounting and navigation. */
-export function useCycleSelection(cycles: readonly PackageCycleDetail[]): CycleSelection {
+export function useCycleSelection(
+  cycles: readonly PackageCycleDetail[],
+  projectIdentity: string
+): CycleSelection {
   const { theme } = useZoraTheme();
-  const [stored, setStored] = useLocalStorage<string>('atlas:cycles:v1:workspace', '{}');
+  const [stored, setStored] = useLocalStorage<string>(
+    `atlas:cycles:v1:${encodeURIComponent(projectIdentity)}`,
+    '{}'
+  );
   const choices = useMemo(() => readChoices(stored), [stored]);
   const enabledByDefault = readSettingsEnvironment().showCycles;
   const selectedIds = useMemo(

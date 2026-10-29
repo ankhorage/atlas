@@ -46,6 +46,7 @@ export function WorkspaceView({
           auditExportActions={auditExportActions}
           navigation={navigation}
           offline={offline}
+          projectName={projectName}
           workspace={workspace}
         />
       </SettingsProvider>
@@ -126,12 +127,13 @@ function WorkspaceBody({
   currentSource,
   navigation,
   offline,
+  projectName,
   workspace,
 }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const projectError = workspace.ok ? null : workspace.error;
-  const cycleSelection = useCycleSelection(auditEvaluation?.cyclicPackages ?? EMPTY_CYCLES);
+  const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
   const [cycleInspection, setCycleInspection] = useState<CycleInspection | null>(null);
 
   return (
@@ -168,6 +170,26 @@ function WorkspaceBody({
       />
     </main>
   );
+}
+
+/*** Connects visible cycle evidence to the portable project scope that owns its preferences. */
+function useWorkspaceCycleSelection(
+  evaluation: Audit['evaluation'] | null,
+  workspace: WorkspaceLoadResult,
+  projectName: string
+) {
+  return useCycleSelection(
+    evaluation?.cyclicPackages ?? EMPTY_CYCLES,
+    resolveWorkspaceProjectIdentity(workspace, projectName)
+  );
+}
+
+/*** Chooses a portable workspace scope even while a failed load renders its persistent error state. */
+function resolveWorkspaceProjectIdentity(
+  workspace: WorkspaceLoadResult,
+  projectName: string
+): string {
+  return workspace.ok ? workspace.value.projectIdentity : projectName;
 }
 
 /*** Renders the graph or the current project-source load error. */
@@ -249,6 +271,7 @@ interface WorkspaceBodyProps {
   readonly currentSource?: string;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
+  readonly projectName: string;
   readonly workspace: WorkspaceLoadResult;
 }
 

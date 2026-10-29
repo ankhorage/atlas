@@ -58,13 +58,20 @@ describe('[createOfflineHtmlReportAsync]', () => {
     expect(Object.keys(snapshot.audit.files)).toContain('com');
   });
 
-  it('rejects host paths, credential-bearing repository URLs, and assignment-shaped secrets', async () => {
+  it('rejects absolute POSIX, Windows, UNC, and file host paths plus credential-bearing values', async () => {
     const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
     const cases = [
       { projectName: '/private/tmp/atlas-project' },
+      { projectName: '/opt/ankhorage/private/project' },
+      { projectName: '/etc/atlas/credentials' },
+      { projectName: '/root/.ssh/id_rsa' },
+      { projectName: '/mnt/data/private' },
       { projectName: 'C:\\Users\\atlas\\project' },
+      { projectName: 'D:\\Projects\\secret' },
+      { projectName: 'C:/workspace/atlas' },
       { projectName: '\\\\server\\share\\project' },
       { projectName: 'file:///private/tmp/atlas-project' },
+      { projectName: 'file:/tmp/secret' },
       { projectName: 'token=not-for-export' },
       {
         source: {
@@ -83,6 +90,36 @@ describe('[createOfflineHtmlReportAsync]', () => {
         )
       )
     );
+  });
+
+  it('retains relative source evidence and SourceGraph identities', async () => {
+    const audit = await createAuditAsync(resolve(process.cwd(), 'examples/java/my-app'));
+    const html = await createOfflineHtmlReportAsync({
+      ...audit,
+      evaluation: {
+        ...audit.evaluation,
+        cyclicPackages: [
+          {
+            packages: ['com.example.alpha', 'com.example.beta', 'com.example.alpha'],
+            edges: [
+              {
+                from: 'com.example.alpha',
+                to: 'com.example.beta',
+                via: [
+                  { fileClass: 'source', filePath: 'src/main/java/Alpha.java', importName: 'Beta' },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    const snapshot = deserializeWorkspaceSnapshot(readSnapshot(html));
+    expect(snapshot.audit.evaluation.cyclicPackages[0]?.edges[0]?.via[0]?.filePath).toBe(
+      'src/main/java/Alpha.java'
+    );
+    expect(snapshot.audit.sourceGraph).toBe(audit.sourceGraph);
   });
 });
 

@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, resolve, win32 } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import type { Audit } from '@/types/audit';
@@ -74,7 +74,7 @@ function assertPortableSnapshot(snapshot: WorkspaceSnapshot): void {
 /*** Walks serializable audit evidence without treating project-relative source identities as host paths. */
 function assertPortableValue(value: unknown, location: string): void {
   if (typeof value === 'string') {
-    if (isForbiddenHostPath(value)) {
+    if (isPortablePathLocation(location) && isForbiddenHostPath(value)) {
       throw new Error(`Atlas offline workspace snapshot contains a host path at ${location}.`);
     }
     if (containsSensitiveAssignment(value)) {
@@ -93,14 +93,24 @@ function assertPortableValue(value: unknown, location: string): void {
   }
 }
 
+/*** Limits host-path checks to provenance and source-file fields so logical SourceGraph paths remain portable. */
+function isPortablePathLocation(location: string): boolean {
+  return location.endsWith('.meta.projectName') || location.endsWith('.filePath');
+}
+
 /*** Identifies absolute local filesystem references across the supported host path syntaxes. */
 function isForbiddenHostPath(value: string): boolean {
-  return (
-    /(?:^|["'\s])\/(?:Users|home|private|tmp|var)\//iu.test(value) ||
-    /(?:^|["'\s])[a-z]:[\\/](?:Users|Windows|Temp)[\\/]/iu.test(value) ||
-    /(?:^|["'\s])(?:\\\\|\/\/)(?:[a-z0-9._-]+)[\\/]/iu.test(value) ||
-    /(?:^|["'\s])file:\/\//iu.test(value)
-  );
+  const candidate = value.trim();
+  return isAbsolute(candidate) || win32.isAbsolute(candidate) || isFileUrl(candidate);
+}
+
+/*** Recognizes file URLs independently of whether a host uses the two- or three-slash spelling. */
+function isFileUrl(value: string): boolean {
+  try {
+    return new URL(value).protocol === 'file:';
+  } catch {
+    return false;
+  }
 }
 
 /*** Rejects assignment-shaped secrets without misclassifying ordinary source identifiers or provenance. */

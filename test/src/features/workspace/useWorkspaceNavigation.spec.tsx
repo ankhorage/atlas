@@ -129,6 +129,7 @@ function createWorkspace(tree: readonly ProjectTreeNode[]): WorkspaceLoadResult 
     ok: true,
     value: {
       packageGraph: createGraph(),
+      projectIdentity: 'test-project',
       tree,
       evaluation: {
         architecture: { candidates: [] },

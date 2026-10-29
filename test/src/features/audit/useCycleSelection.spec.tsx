@@ -7,8 +7,8 @@ import { getCycleId } from '@/features/audit/utils/cycleVisualization';
 
 const cycles = [{ packages: ['a', 'b', 'a'], edges: [] }];
 
-function Harness({ controls }: { controls: boolean }) {
-  const selection = useCycleSelection(cycles);
+function Harness({ controls, projectIdentity }: { controls: boolean; projectIdentity: string }) {
+  const selection = useCycleSelection(cycles, projectIdentity);
   return (
     <>
       <output>{selection.highlights.length}</output>
@@ -24,7 +24,7 @@ describe('[cycle selection lifetime]', () => {
     const previousDefault = process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES;
     process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES = 'true';
     const host = render(<div />);
-    const key = 'atlas:cycles:v1:workspace';
+    const projectAKey = 'atlas:cycles:v1:github%3Aatlas%2Fa';
     // Testosterone's render helper creates an opaque-origin DOM. Supply an isolated storage port.
     const previousStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
     const values = new Map<string, string>();
@@ -45,17 +45,58 @@ describe('[cycle selection lifetime]', () => {
     Object.defineProperty(window, 'localStorage', { configurable: true, value: storage });
     const root = createRoot(host.container);
     try {
-      await act(async () => root.render(<Harness controls />));
+      await act(async () => root.render(<Harness controls projectIdentity="github:atlas/a" />));
       expect(host.container.querySelector('output')?.textContent).toBe('1');
       await act(async () => host.container.querySelector('button')?.click());
       expect(host.container.querySelector('output')?.textContent).toBe('0');
-      await act(async () => root.render(<Harness controls={false} />));
-      await act(async () => root.render(<Harness controls />));
+      await act(async () =>
+        root.render(<Harness controls={false} projectIdentity="github:atlas/a" />)
+      );
+      await act(async () => root.render(<Harness controls projectIdentity="github:atlas/a" />));
       expect(host.container.querySelector('output')?.textContent).toBe('0');
-      expect(storage.getItem(key) !== null).toBe(true);
+      expect(storage.getItem(projectAKey) !== null).toBe(true);
       await act(async () => root.render(null));
-      await act(async () => root.render(<Harness controls />));
+      await act(async () => root.render(<Harness controls projectIdentity="github:atlas/a" />));
       expect(host.container.querySelector('output')?.textContent).toBe('0');
+    } finally {
+      await act(async () => root.unmount());
+      if (previousStorage) Object.defineProperty(window, 'localStorage', previousStorage);
+      else Reflect.deleteProperty(window, 'localStorage');
+      if (previousDefault === undefined) delete process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES;
+      else process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES = previousDefault;
+      host.unmount();
+    }
+  });
+
+  it('does not apply one repository cycle choice to another repository with the same cycle ID', async () => {
+    const previousDefault = process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES;
+    process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES = 'true';
+    const host = render(<div />);
+    const previousStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
+    const values = new Map<string, string>();
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        get length() {
+          return values.size;
+        },
+        clear: () => values.clear(),
+        getItem: (name: string) => values.get(name) ?? null,
+        key: (index: number) => [...values.keys()][index] ?? null,
+        removeItem: (name: string) => {
+          values.delete(name);
+        },
+        setItem: (name: string, value: string) => values.set(name, value),
+      } satisfies Storage,
+    });
+    const root = createRoot(host.container);
+    try {
+      await act(async () => root.render(<Harness controls projectIdentity="github:atlas/a" />));
+      await act(async () => host.container.querySelector('button')?.click());
+      expect(host.container.querySelector('output')?.textContent).toBe('0');
+      await act(async () => root.render(null));
+      await act(async () => root.render(<Harness controls projectIdentity="github:atlas/b" />));
+      expect(host.container.querySelector('output')?.textContent).toBe('1');
     } finally {
       await act(async () => root.unmount());
       if (previousStorage) Object.defineProperty(window, 'localStorage', previousStorage);
