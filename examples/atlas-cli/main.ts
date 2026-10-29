@@ -2,7 +2,7 @@
  * Analyze either a local project or a public GitHub repository through the same Atlas pipeline.
  *
  * The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluation,
- * `inspect` for the interactive graph, and `export` for JSON, CSV, or the future offline report.
+ * `inspect` for the interactive graph, and `export` for JSON, CSV, or a portable offline report.
  *
  * @title Analyze a project
  * @usage
