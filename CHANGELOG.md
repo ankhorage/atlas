@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.0
+
+### Minor Changes
+
+- e1d3029: Manage the manifest-declared local online environment through the released Infra lifecycle.
+
 ## 0.13.1
 
 ### Patch Changes

@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.13.1",
+      "value": "v0.14.0",
       "color": "cb3837"
     },
     {
@@ -306,6 +306,14 @@
       ],
       "exports": [
         "runAtlasCliAsync"
+      ]
+    },
+    {
+      "path": "src/cli/runAtlasInfraLifecycleAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "runAtlasInfraLifecycleAsync"
       ]
     },
     {
@@ -2742,6 +2750,61 @@
       "sourceLocation": {
         "filePath": "src/cli/runAtlasCliAsync.ts",
         "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "name": "runAtlasInfraLifecycleAsync",
+      "description": "Delegate a named Atlas environment operation to the released Infra project lifecycle.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/runAtlasInfraLifecycleAsync.ts",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "runAtlasInfraLifecycleCommandAsync",
+      "description": "Execute a selected Atlas Infra lifecycle operation from the package root.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/runAtlasInfraLifecycleAsync.ts",
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "name": "readAtlasManifestAsync",
+      "description": "Read and validate the one Atlas manifest that owns environment intent.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/runAtlasInfraLifecycleAsync.ts",
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "name": "parseAtlasInfraOperation",
+      "description": "Parse the lifecycle operation without accepting implicit or destructive variants.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/runAtlasInfraLifecycleAsync.ts",
+        "line": 58,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAtlasInfraOperation",
+      "description": "Check whether a CLI token names an explicitly supported Atlas Infra lifecycle operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/cli/runAtlasInfraLifecycleAsync.ts",
+        "line": 67,
         "column": 1
       }
     },
@@ -9373,6 +9436,60 @@
         "toSymbol": "toErrorMessage",
         "callExpression": "toErrorMessage",
         "sourcePath": "src/cli/runAtlasCliAsync.ts"
+      },
+      {
+        "fromSymbol": "runAtlasInfraLifecycleAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "runAtlasInfraLifecycleAsync",
+        "toSymbol": "readAtlasManifestAsync",
+        "callExpression": "readAtlasManifestAsync",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "runAtlasInfraLifecycleAsync",
+        "toSymbol": "createProjectInfraLifecycle",
+        "callExpression": "createProjectInfraLifecycle",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "runAtlasInfraLifecycleCommandAsync",
+        "toSymbol": "parseAtlasInfraOperation",
+        "callExpression": "parseAtlasInfraOperation",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "runAtlasInfraLifecycleCommandAsync",
+        "toSymbol": "runAtlasInfraLifecycleAsync",
+        "callExpression": "runAtlasInfraLifecycleAsync",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "readAtlasManifestAsync",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "readAtlasManifestAsync",
+        "toSymbol": "isAppManifest",
+        "callExpression": "isAppManifest",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "parseAtlasInfraOperation",
+        "toSymbol": "isAtlasInfraOperation",
+        "callExpression": "isAtlasInfraOperation",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
+      },
+      {
+        "fromSymbol": "src/cli/runAtlasInfraLifecycleAsync.ts",
+        "toSymbol": "runAtlasInfraLifecycleCommandAsync",
+        "callExpression": "runAtlasInfraLifecycleCommandAsync",
+        "sourcePath": "src/cli/runAtlasInfraLifecycleAsync.ts"
       },
       {
         "fromSymbol": "runAuditAsync",

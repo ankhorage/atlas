@@ -192,6 +192,11 @@
       <small>1 function</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/cli/runAtlasInfraLifecycleAsync.ts">
+      src/cli/runAtlasInfraLifecycleAsync.ts
+      <small>5 functions</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/cli/runAuditAsync.ts">
       src/cli/runAuditAsync.ts
       <small>6 functions</small>
@@ -763,7 +768,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>222</strong><span class="muted">modules</span></div>
+        <div><strong>223</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -910,6 +915,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/cli/formatAuditRuleFailures.ts</code>, <code>src/cli/getAtlasHelp.ts</code>, <code>src/cli/parseAtlasCliArgs.ts</code>, <code>src/cli/runAuditSourceAsync.ts</code>, <code>src/cli/startViewerSourceAsync.ts</code></p>
     <p><strong>Exports:</strong> <code>runAtlasCliAsync</code></p>
+  </article><article class="item" data-search="src/cli/runAtlasInfraLifecycleAsync.ts runAtlasInfraLifecycleAsync">
+    <h3>src/cli/runAtlasInfraLifecycleAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>runAtlasInfraLifecycleAsync</code></p>
   </article><article class="item" data-search="src/cli/runAuditAsync.ts src/features/audit/composition/createAuditAsync.ts src/features/audit/domain/hasBlockingAuditRuleFailure.ts src/features/offline-export/application/createOfflineHtmlReportAsync.ts src/types/audit.ts runAuditAsync">
     <h3>src/cli/runAuditAsync.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2042,6 +2052,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_parseAtlasCliArgs_ts
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_runAuditSourceAsync_ts
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_startViewerSourceAsync_ts
+  module_src_cli_runAtlasInfraLifecycleAsync_ts[&quot;src/cli/runAtlasInfraLifecycleAsync.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_cli_runAtlasInfraLifecycleAsync_ts
   module_src_cli_runAuditAsync_ts[&quot;src/cli/runAuditAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
@@ -2986,6 +2998,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_parseAtlasCliArgs_ts
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_runAuditSourceAsync_ts
   module_src_cli_runAtlasCliAsync_ts --&gt; module_src_cli_startViewerSourceAsync_ts
+  module_src_cli_runAtlasInfraLifecycleAsync_ts[&quot;src/cli/runAtlasInfraLifecycleAsync.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_cli_runAtlasInfraLifecycleAsync_ts
   module_src_cli_runAuditAsync_ts[&quot;src/cli/runAuditAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditAsync_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
@@ -3871,6 +3885,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_parseAtlasCommandArgs_ts[&quot;src/cli/parseAtlasCommandArgs.ts&quot;]
   module_src_cli_provider_createAtlasRuntimeProvider_ts[&quot;src/cli/provider/createAtlasRuntimeProvider.ts&quot;]
   module_src_cli_runAtlasCliAsync_ts[&quot;src/cli/runAtlasCliAsync.ts&quot;]
+  module_src_cli_runAtlasInfraLifecycleAsync_ts[&quot;src/cli/runAtlasInfraLifecycleAsync.ts&quot;]
   module_src_cli_runAuditAsync_ts[&quot;src/cli/runAuditAsync.ts&quot;]
   module_src_cli_runAuditSourceAsync_ts[&quot;src/cli/runAuditSourceAsync.ts&quot;]
   module_src_cli_startViewerAsync_ts[&quot;src/cli/startViewerAsync.ts&quot;]
@@ -4591,6 +4606,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_parseAtlasCommandArgs_ts[&quot;src/cli/parseAtlasCommandArgs.ts&quot;]
   module_src_cli_provider_createAtlasRuntimeProvider_ts[&quot;src/cli/provider/createAtlasRuntimeProvider.ts&quot;]
   module_src_cli_runAtlasCliAsync_ts[&quot;src/cli/runAtlasCliAsync.ts&quot;]
+  module_src_cli_runAtlasInfraLifecycleAsync_ts[&quot;src/cli/runAtlasInfraLifecycleAsync.ts&quot;]
   module_src_cli_runAuditAsync_ts[&quot;src/cli/runAuditAsync.ts&quot;]
   module_src_cli_runAuditSourceAsync_ts[&quot;src/cli/runAuditSourceAsync.ts&quot;]
   module_src_cli_startViewerAsync_ts[&quot;src/cli/startViewerAsync.ts&quot;]
@@ -5313,6 +5329,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_parseAtlasCommandArgs_ts[&quot;src/cli/parseAtlasCommandArgs.ts&quot;]
   module_src_cli_provider_createAtlasRuntimeProvider_ts[&quot;src/cli/provider/createAtlasRuntimeProvider.ts&quot;]
   module_src_cli_runAtlasCliAsync_ts[&quot;src/cli/runAtlasCliAsync.ts&quot;]
+  module_src_cli_runAtlasInfraLifecycleAsync_ts[&quot;src/cli/runAtlasInfraLifecycleAsync.ts&quot;]
   module_src_cli_runAuditAsync_ts[&quot;src/cli/runAuditAsync.ts&quot;]
   module_src_cli_runAuditSourceAsync_ts[&quot;src/cli/runAuditSourceAsync.ts&quot;]
   module_src_cli_startViewerAsync_ts[&quot;src/cli/startViewerAsync.ts&quot;]
@@ -5543,6 +5560,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_parseAtlasCommandArgs_ts[&quot;src/cli/parseAtlasCommandArgs.ts&quot;]
   module_src_cli_provider_createAtlasRuntimeProvider_ts[&quot;src/cli/provider/createAtlasRuntimeProvider.ts&quot;]
   module_src_cli_runAtlasCliAsync_ts[&quot;src/cli/runAtlasCliAsync.ts&quot;]
+  module_src_cli_runAtlasInfraLifecycleAsync_ts[&quot;src/cli/runAtlasInfraLifecycleAsync.ts&quot;]
   module_src_cli_runAuditAsync_ts[&quot;src/cli/runAuditAsync.ts&quot;]
   module_src_cli_runAuditSourceAsync_ts[&quot;src/cli/runAuditSourceAsync.ts&quot;]
   module_src_cli_startViewerAsync_ts[&quot;src/cli/startViewerAsync.ts&quot;]
@@ -5935,6 +5953,36 @@ source edits. Client Strict Mode rendering must not trigger another filesystem a
     <h3>runAtlasCliAsync</h3>
     <p class="muted"><code>src/cli/runAtlasCliAsync.ts:10:1</code></p>
     <p>Runs the Atlas binary through the same source and command boundaries as Ankh.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-cli-runatlasinfralifecycleasync-ts" class="view" data-view="src/cli/runAtlasInfraLifecycleAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/cli/runAtlasInfraLifecycleAsync.ts</h2>
+      <article class="item" data-search="runAtlasInfraLifecycleAsync src/cli/runAtlasInfraLifecycleAsync.ts Delegate a named Atlas environment operation to the released Infra project lifecycle.">
+    <h3>runAtlasInfraLifecycleAsync</h3>
+    <p class="muted"><code>src/cli/runAtlasInfraLifecycleAsync.ts:8:1</code></p>
+    <p>Delegate a named Atlas environment operation to the released Infra project lifecycle.</p>
+    
+  </article><article class="item" data-search="runAtlasInfraLifecycleCommandAsync src/cli/runAtlasInfraLifecycleAsync.ts Execute a selected Atlas Infra lifecycle operation from the package root.">
+    <h3>runAtlasInfraLifecycleCommandAsync</h3>
+    <p class="muted"><code>src/cli/runAtlasInfraLifecycleAsync.ts:38:1</code></p>
+    <p>Execute a selected Atlas Infra lifecycle operation from the package root.</p>
+    
+  </article><article class="item" data-search="readAtlasManifestAsync src/cli/runAtlasInfraLifecycleAsync.ts Read and validate the one Atlas manifest that owns environment intent.">
+    <h3>readAtlasManifestAsync</h3>
+    <p class="muted"><code>src/cli/runAtlasInfraLifecycleAsync.ts:46:1</code></p>
+    <p>Read and validate the one Atlas manifest that owns environment intent.</p>
+    
+  </article><article class="item" data-search="parseAtlasInfraOperation src/cli/runAtlasInfraLifecycleAsync.ts Parse the lifecycle operation without accepting implicit or destructive variants.">
+    <h3>parseAtlasInfraOperation</h3>
+    <p class="muted"><code>src/cli/runAtlasInfraLifecycleAsync.ts:58:1</code></p>
+    <p>Parse the lifecycle operation without accepting implicit or destructive variants.</p>
+    
+  </article><article class="item" data-search="isAtlasInfraOperation src/cli/runAtlasInfraLifecycleAsync.ts Check whether a CLI token names an explicitly supported Atlas Infra lifecycle operation.">
+    <h3>isAtlasInfraOperation</h3>
+    <p class="muted"><code>src/cli/runAtlasInfraLifecycleAsync.ts:67:1</code></p>
+    <p>Check whether a CLI token names an explicitly supported Atlas Infra lifecycle operation.</p>
     
   </article>
     </section>

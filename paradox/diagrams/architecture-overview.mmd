@@ -82,6 +82,8 @@ graph TD
   module_src_cli_runAtlasCliAsync_ts --> module_src_cli_parseAtlasCliArgs_ts
   module_src_cli_runAtlasCliAsync_ts --> module_src_cli_runAuditSourceAsync_ts
   module_src_cli_runAtlasCliAsync_ts --> module_src_cli_startViewerSourceAsync_ts
+  module_src_cli_runAtlasInfraLifecycleAsync_ts["src/cli/runAtlasInfraLifecycleAsync.ts"]
+  package__ankhorage_atlas -.-> module_src_cli_runAtlasInfraLifecycleAsync_ts
   module_src_cli_runAuditAsync_ts["src/cli/runAuditAsync.ts"]
   package__ankhorage_atlas -.-> module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditAsync_ts --> module_src_features_audit_composition_createAuditAsync_ts
