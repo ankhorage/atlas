@@ -77,6 +77,43 @@ describe('[workspace snapshots]', () => {
     }
   });
 
+  it('keeps Graph and Cytoscape identity failures in persistent error state', async () => {
+    const snapshot = createWorkspaceSnapshot(
+      await readProjectSnapshotAsync(resolve('examples/java/my-app'))
+    );
+    const nodes = snapshot.audit.packageGraph.nodes;
+    const edges = snapshot.audit.packageGraph.edges;
+    const firstNode = requiredItem(nodes[0], 'first graph node');
+    const secondNode = requiredItem(nodes[1], 'second graph node');
+    const firstEdge = requiredItem(edges[0], 'first graph edge');
+    const secondEdge = requiredItem(edges[1], 'second graph edge');
+    const cases = [
+      serializeSnapshotWithGraph(snapshot, {
+        ...snapshot.audit.packageGraph,
+        nodes: [{ ...firstNode }, { ...secondNode, id: firstNode.id }, ...nodes.slice(2)],
+      }),
+      serializeSnapshotWithGraph(snapshot, {
+        ...snapshot.audit.packageGraph,
+        edges: [{ ...firstEdge }, { ...secondEdge, id: firstEdge.id }, ...edges.slice(2)],
+      }),
+      serializeSnapshotWithGraph(snapshot, {
+        ...snapshot.audit.packageGraph,
+        edges: [{ ...firstEdge, id: firstNode.id }, ...edges.slice(1)],
+      }),
+      serializeSnapshotWithGraph(snapshot, {
+        ...snapshot.audit.packageGraph,
+        edges: [{ ...firstEdge, source: 'missing.package' }, ...edges.slice(1)],
+      }),
+    ];
+
+    for (const serialized of cases) {
+      assert.deepEqual(loadEmbeddedWorkspaceSnapshot(serialized), {
+        ok: false,
+        error: 'Invalid Atlas workspace snapshot schema.',
+      });
+    }
+  });
+
   it('keeps corrupted SourceGraphs in persistent error state', async () => {
     const snapshot = createWorkspaceSnapshot(
       await readProjectSnapshotAsync(resolve('examples/java/my-app'))
@@ -109,4 +146,21 @@ describe('[workspace snapshots]', () => {
 /*** Replaces one known JSON segment so each regression corrupts one serializable boundary value. */
 function corrupt(serialized: string, search: string, replacement: string): string {
   return serialized.replace(search, replacement);
+}
+
+/*** Serializes one otherwise-valid snapshot with a deliberately malformed dependency graph. */
+function serializeSnapshotWithGraph(
+  snapshot: ReturnType<typeof createWorkspaceSnapshot>,
+  packageGraph: ReturnType<typeof createWorkspaceSnapshot>['audit']['packageGraph']
+): string {
+  return serializeWorkspaceSnapshot({
+    ...snapshot,
+    audit: { ...snapshot.audit, packageGraph },
+  });
+}
+
+/*** Requires a fixture member so each identity regression identifies its setup failure. */
+function requiredItem<Value>(value: Value | undefined, description: string): Value {
+  if (value === undefined) throw new Error(`Missing ${description}.`);
+  return value;
 }

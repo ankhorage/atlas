@@ -1,14 +1,40 @@
+import { resolve } from 'node:path';
+
+import { createDependencyGraphAsync } from '@ankhorage/dependency-graph';
 import { describe, expect, it, render } from '@artiphishle/testosterone';
 import React from 'react';
 import { flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
 
+import { readProjectSnapshotAsync } from '@/features/project-analysis/composition/readProjectSnapshotAsync';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
+import { createWorkspaceSnapshot } from '@/features/workspace/application/use-cases/createWorkspaceSnapshot';
+import { serializeWorkspaceSnapshot } from '@/features/workspace/application/use-cases/serializeWorkspaceSnapshot';
+import { loadEmbeddedWorkspaceSnapshot } from '@/features/workspace/composition/loadEmbeddedWorkspaceSnapshot';
+import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
 import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
 describe('[useWorkspaceNavigation]', () => {
+  it('keeps real graph and tree selections plus navigation transitions identical for online and embedded hydration', async () => {
+    const projectPath = resolve('examples/java/my-app');
+    const online = await loadWorkspaceAsync(projectPath, inspection =>
+      createDependencyGraphAsync({ projects: [{ id: 'current', inspection }] })
+    );
+    const embedded = loadEmbeddedWorkspaceSnapshot(
+      serializeWorkspaceSnapshot(
+        createWorkspaceSnapshot(await readProjectSnapshotAsync(projectPath))
+      )
+    );
+
+    expect(online.ok).toBe(true);
+    expect(embedded.ok).toBe(true);
+    if (!online.ok || !embedded.ok) return;
+
+    expect(observeWorkspaceTransitions(embedded)).toEqual(observeWorkspaceTransitions(online));
+  });
+
   it('synchronizes replace and toggle selection across tree and graph without changing navigation', () => {
     const tree = coderadarTree();
     const workspace = createWorkspace(tree);
@@ -166,4 +192,85 @@ function coderadarTree(): readonly ProjectTreeNode[] {
       ],
     },
   ];
+}
+
+/*** Records selection and navigation transitions through the real hydrated workspace projections. */
+function observeWorkspaceTransitions(workspace: WorkspaceLoadResult): readonly string[] {
+  if (!workspace.ok) throw new Error('Expected hydrated workspace.');
+  const graphTreeSelection = findGraphTreeSelection(
+    workspace.value.packageGraph,
+    workspace.value.tree
+  );
+  const secondGraphNode = workspace.value.packageGraph.nodes.find(
+    candidate => candidate.id !== graphTreeSelection?.graphNode.id
+  );
+  if (graphTreeSelection === undefined || secondGraphNode === undefined) {
+    throw new Error('Expected graph fixture nodes.');
+  }
+  const { graphNode, treeNode } = graphTreeSelection;
+  const selectedGraphNode = secondGraphNode;
+
+  const host = render(<div />);
+  const root = createRoot(host.container);
+  const transitions: string[] = [];
+
+  function Harness() {
+    const navigation = useWorkspaceNavigation(workspace);
+    return (
+      <>
+        <output>
+          {`${navigation.selectedGraphNodeIds.join(',')}|${navigation.selectedTreeIds.join(',')}|${navigation.currentPackage}`}
+        </output>
+        <button onClick={() => navigation.selectProjectTreeNode(treeNode, 'replace')}>tree</button>
+        <button onClick={() => navigation.selectGraphNode(selectedGraphNode.id, 'toggle')}>
+          graph
+        </button>
+        <button onClick={() => navigation.navigateToPackage(graphNode.id.replaceAll('.', '/'))}>
+          navigate
+        </button>
+      </>
+    );
+  }
+
+  const click = (label: string) => {
+    flushSync(() => {
+      const button = Array.from(host.container.querySelectorAll('button')).find(
+        node => node.textContent === label
+      );
+      if (button === undefined) throw new Error(`Missing ${label} button`);
+      button.click();
+    });
+    transitions.push(host.container.querySelector('output')?.textContent ?? '');
+  };
+
+  try {
+    flushSync(() => root.render(<Harness />));
+    click('tree');
+    click('graph');
+    click('navigate');
+    return transitions;
+  } finally {
+    flushSync(() => root.unmount());
+    host.unmount();
+  }
+}
+
+/*** Finds one tree row with the graph node it represents in a hydrated workspace projection. */
+function findGraphTreeSelection(
+  graph: PackageDependencyGraph,
+  nodes: readonly ProjectTreeNode[]
+):
+  | {
+      readonly graphNode: PackageDependencyGraph['nodes'][number];
+      readonly treeNode: ProjectTreeNode;
+    }
+  | undefined {
+  for (const node of nodes) {
+    const graphNode = graph.nodes.find(candidate => candidate.id === node.graphPackage);
+    if (graphNode !== undefined) return { graphNode, treeNode: node };
+    const nested =
+      node.children === undefined ? undefined : findGraphTreeSelection(graph, node.children);
+    if (nested !== undefined) return nested;
+  }
+  return undefined;
 }

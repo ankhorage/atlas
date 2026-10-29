@@ -1,6 +1,13 @@
+import { createGraph } from '@ankhorage/graph';
+import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
 import { listArchitectureModels } from '@ankhorage/rules-architecture';
 
 import { workspaceSnapshotValidation as validation } from '@/features/workspace/application/use-cases/workspaceSnapshotValidation';
+import type {
+  PackageDependencyEdgeData,
+  PackageDependencyGraph,
+  PackageDependencyNodeData,
+} from '@/types/dependencyAnalysis';
 
 /*** Validates the external contract subsets Atlas consumes without copying their closed vocabularies. */
 export const externalSnapshotContracts = {
@@ -35,23 +42,25 @@ function isArchitectureEvaluation(value: unknown): boolean {
         typeof value.result.profileId === 'string';
 }
 
-/*** Validates external package graph data without freezing owner-controlled classifications. */
-function isDependencyGraph(value: unknown): boolean {
+/*** Validates dependency graphs through the published Graph and Cytoscape identity contracts. */
+function isDependencyGraph(value: unknown): value is PackageDependencyGraph {
   if (
     !validation.isRecord(value) ||
     !validation.isArrayOf(value.nodes, isPackageGraphNode) ||
     !validation.isArrayOf(value.edges, isPackageGraphEdge)
   )
     return false;
-  const nodeIds = new Set(
-    value.nodes.map(node => (validation.isRecord(node) ? node.id : undefined))
-  );
-  return (
-    nodeIds.size === value.nodes.length &&
-    value.edges.every(
-      edge => validation.isRecord(edge) && nodeIds.has(edge.source) && nodeIds.has(edge.target)
-    )
-  );
+  return isCytoscapeCompatibleGraph({ nodes: value.nodes, edges: value.edges });
+}
+
+/*** Rejects Graph and Cytoscape identity failures before React attempts element conversion. */
+function isCytoscapeCompatibleGraph(graph: PackageDependencyGraph): boolean {
+  try {
+    toCytoscapeElements(createGraph(graph));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /*** Validates Project Detector language evidence while leaving its identifiers owner-extensible. */
@@ -147,7 +156,12 @@ function isDependencyImportEvidence(value: unknown): boolean {
 }
 
 /*** Validates one package graph edge. */
-function isPackageGraphEdge(value: unknown): boolean {
+function isPackageGraphEdge(value: unknown): value is {
+  readonly id: string;
+  readonly source: string;
+  readonly target: string;
+  readonly data: PackageDependencyEdgeData;
+} {
   return (
     validation.isRecord(value) &&
     typeof value.id === 'string' &&
@@ -160,7 +174,9 @@ function isPackageGraphEdge(value: unknown): boolean {
 }
 
 /*** Validates one package graph node. */
-function isPackageGraphNode(value: unknown): boolean {
+function isPackageGraphNode(
+  value: unknown
+): value is { readonly id: string; readonly data: PackageDependencyNodeData } {
   return (
     validation.isRecord(value) &&
     typeof value.id === 'string' &&

@@ -12,7 +12,15 @@ export const workspaceSnapshotValidation = {
   isString,
 };
 
-/*** Validates every member of an untrusted list. */
+/*** Validates every member of an untrusted list while preserving predicate narrowing. */
+function isArrayOf<Value>(
+  value: unknown,
+  predicate: (candidate: unknown) => candidate is Value
+): value is readonly Value[];
+function isArrayOf(
+  value: unknown,
+  predicate: (candidate: unknown) => boolean
+): value is readonly unknown[];
 function isArrayOf(
   value: unknown,
   predicate: (candidate: unknown) => boolean
