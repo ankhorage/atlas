@@ -91,6 +91,19 @@ describe('[workspace snapshots]', () => {
       error: 'Invalid Atlas workspace snapshot SourceGraph.',
     });
   });
+
+  it('accepts structurally valid future vocabulary from external owners', async () => {
+    const snapshot = createWorkspaceSnapshot(
+      await readProjectSnapshotAsync(resolve('examples/java/my-app'))
+    );
+    const canonical = serializeWorkspaceSnapshot(snapshot);
+    const serialized = canonical
+      .replace('"severity":"warning"', '"severity":"notice"')
+      .replace('"classification":"intrinsic"', '"classification":"workspace"');
+
+    assert.notEqual(serialized, canonical);
+    assert.equal(loadEmbeddedWorkspaceSnapshot(serialized).ok, true);
+  });
 });
 
 /*** Replaces one known JSON segment so each regression corrupts one serializable boundary value. */
