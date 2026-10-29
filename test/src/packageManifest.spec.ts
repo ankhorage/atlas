@@ -55,6 +55,8 @@ describe('[package manifest]', () => {
     );
     assert.deepEqual(manifest.infra.apis?.['dependency-graph'], dependencyGraphApi.definition);
     assert.equal(manifest.themes[manifest.activeThemeId]?.id, manifest.metadata.themeId);
+    assert.equal(manifest.infra.environments.local.deployment.compute.provider, 'local');
+    assert.equal(manifest.infra.environments.local.deployment.runtime.provider, 'minikube');
   });
 });
 
