@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.1
+
+### Patch Changes
+
+- 00b0fa7: Bundle the real Atlas React and ZORA workspace into offline HTML exports.
+
 ## 0.13.0
 
 ### Minor Changes
