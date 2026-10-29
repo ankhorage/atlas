@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.0
+
+### Minor Changes
+
+- 46e0b5b: Unify online and embedded workspace rendering through validated, versioned Atlas snapshots.
+
 ## 0.12.1
 
 ### Patch Changes

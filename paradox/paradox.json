@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.12.1",
+      "value": "v0.13.0",
       "color": "cb3837"
     },
     {
@@ -1511,16 +1511,101 @@
       ]
     },
     {
-      "path": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
+      "path": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/audit/application/use-cases/createAuditFromSnapshot.ts",
-        "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts",
+        "src/types/projectAnalysis.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "deserializeWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "src/types/dependencyAnalysis.ts"
+      ],
+      "exports": [
+        "externalSnapshotContracts"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+      "isEntrypoint": false,
+      "dependencies": [
         "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
-        "loadProjectOverviewAsync"
+        "hydrateWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "serializeWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "src/types/language.ts"
+      ],
+      "exports": [
+        "validateAuditSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "validateWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "workspaceSnapshotValidation"
+      ]
+    },
+    {
+      "path": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "loadEmbeddedWorkspaceSnapshot"
       ]
     },
     {
@@ -1528,7 +1613,9 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
-        "src/features/workspace/composition/loadProjectOverviewAsync.ts",
+        "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts",
+        "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
@@ -1725,7 +1812,8 @@
       ],
       "exports": [
         "ProjectOverview",
-        "WorkspaceLoadResult"
+        "WorkspaceLoadResult",
+        "WorkspaceSnapshot"
       ]
     },
     {
@@ -2242,7 +2330,12 @@
       "path": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+        "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "src/types/dependencyAnalysis.ts",
         "src/types/projectTree.ts",
         "src/types/workspace.ts"
@@ -2257,6 +2350,19 @@
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
         "src/types/audit.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
+        "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+        "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "src/features/workspace/composition/loadWorkspaceAsync.ts"
       ],
       "exports": []
     },
@@ -5793,13 +5899,563 @@
       }
     },
     {
-      "name": "loadProjectOverviewAsync",
-      "description": "Composes the project analysis, tree, and audit views used by the active Atlas workspace.",
+      "name": "createWorkspaceSnapshot",
+      "description": "Captures the complete canonical Audit required to render one portable Atlas workspace.",
       "see": [],
       "security": [],
       "sourceLocation": {
-        "filePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
-        "line": 10,
+        "filePath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "name": "deserializeWorkspaceSnapshot",
+      "description": "Parses and validates a portable Atlas workspace snapshot before it reaches workspace rendering.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "parseSnapshotJson",
+      "description": "Parses JSON without allowing host-boundary syntax errors to escape as runtime failures.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureDetection",
+      "description": "Validates architecture data supplied by the published Rules Architecture contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureEvaluation",
+      "description": "Validates an explicit architecture evaluation supplied by Rules Architecture.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "name": "isDependencyGraph",
+      "description": "Validates dependency graphs through the published Graph and Cytoscape identity contracts.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "name": "isCytoscapeCompatibleGraph",
+      "description": "Rejects Graph and Cytoscape identity failures before React attempts element conversion.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
+      "name": "isDetectedLanguage",
+      "description": "Validates Project Detector language evidence while leaving its identifiers owner-extensible.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 67,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureCandidate",
+      "description": "Validates one architecture candidate rendered by Atlas.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 78,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureContradiction",
+      "description": "Validates one architecture contradiction displayed to users.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 92,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureEvidence",
+      "description": "Validates evidence without closing its owner-controlled kind.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 105,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureRoleAssignment",
+      "description": "Validates one inferred role and its external evidence.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 116,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureTarget",
+      "description": "Validates a model or profile target without duplicating the profile owner's vocabulary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 127,
+        "column": 1
+      }
+    },
+    {
+      "name": "isPublishedArchitectureModelId",
+      "description": "Reads model identifiers from the published owner API instead of a local copy.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 136,
+        "column": 1
+      }
+    },
+    {
+      "name": "isDependencyDeclaration",
+      "description": "Validates one dependency declaration while leaving its owner-controlled kind extensible.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 141,
+        "column": 1
+      }
+    },
+    {
+      "name": "isDependencyImportEvidence",
+      "description": "Validates dependency import evidence while leaving external classifications extensible.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 148,
+        "column": 1
+      }
+    },
+    {
+      "name": "isPackageGraphEdge",
+      "description": "Validates one package graph edge.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 159,
+        "column": 1
+      }
+    },
+    {
+      "name": "isPackageGraphNode",
+      "description": "Validates one package graph node.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 177,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleDiagnostic",
+      "description": "Validates one generic Rules diagnostic without closing its owner-controlled code.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 194,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleFinding",
+      "description": "Validates one generic Rules finding without closing its owner-controlled severity.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 204,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleEvaluation",
+      "description": "Validates generic Rules results rendered by the workspace.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 217,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleSourceLocation",
+      "description": "Validates optional source coordinates attached to a Rules finding.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 226,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleSubject",
+      "description": "Validates one Rules finding subject.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 238,
+        "column": 1
+      }
+    },
+    {
+      "name": "hydrateWorkspaceSnapshot",
+      "description": "Rebuilds the workspace view model from the portable Audit without host-specific analysis.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
+      "name": "serializeWorkspaceSnapshot",
+      "description": "Serializes an Atlas workspace snapshot for a host-neutral embedded data boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "name": "validateAuditSnapshot",
+      "description": "Validates Atlas-owned audit state and delegates imported domain contracts at their boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuditConfiguration",
+      "description": "Validates persisted Atlas audit configuration.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArchitectureTarget",
+      "description": "Validates the Atlas target wrapper around an external architecture target.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuditEvaluation",
+      "description": "Validates all collections displayed by the workspace audit panels.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuditRuleConfiguration",
+      "description": "Validates one configured Atlas audit-rule mode.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuditRuleResult",
+      "description": "Validates one Atlas-specific audit-rule result.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 62,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuditMeta",
+      "description": "Validates persisted audit metadata.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 75,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuditSource",
+      "description": "Validates optional GitHub source provenance.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 87,
+        "column": 1
+      }
+    },
+    {
+      "name": "isPackageCycle",
+      "description": "Validates one complete cycle and its edge evidence.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 97,
+        "column": 1
+      }
+    },
+    {
+      "name": "isCycleEdge",
+      "description": "Validates one directed cycle edge.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 106,
+        "column": 1
+      }
+    },
+    {
+      "name": "isImportEvidence",
+      "description": "Validates import evidence rendered by cycle details.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 116,
+        "column": 1
+      }
+    },
+    {
+      "name": "isProjectFileTree",
+      "description": "Validates the recursive project tree and its file leaves.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 127,
+        "column": 1
+      }
+    },
+    {
+      "name": "isProjectFileMetadata",
+      "description": "Validates one project-file metadata leaf including import metadata.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 135,
+        "column": 1
+      }
+    },
+    {
+      "name": "isProjectImportMetadata",
+      "description": "Validates one file import retained for tree projection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 146,
+        "column": 1
+      }
+    },
+    {
+      "name": "isParserSelection",
+      "description": "Validates the Atlas parser choice while accepting future Project Detector candidates.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "line": 156,
+        "column": 1
+      }
+    },
+    {
+      "name": "validateWorkspaceSnapshot",
+      "description": "Validates the Atlas-owned workspace envelope and delegates its audit payload by responsibility.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArrayOf",
+      "description": "Validates every member of an untrusted list while preserving predicate narrowing.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 16,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArrayOf",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "name": "isArrayOf",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 24,
+        "column": 1
+      }
+    },
+    {
+      "name": "isBoolean",
+      "description": "Narrows Boolean values for optional flags.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "name": "isFiniteNumber",
+      "description": "Narrows finite numbers accepted at the JSON boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 37,
+        "column": 1
+      }
+    },
+    {
+      "name": "isJsonValue",
+      "description": "Checks recursively serializable evidence without accepting non-finite JSON numbers.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "name": "isOneOf",
+      "description": "Narrows one string literal from an Atlas-owned fixed vocabulary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "name": "isOptional",
+      "description": "Applies a predicate only when an optional value is present.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 61,
+        "column": 1
+      }
+    },
+    {
+      "name": "isString",
+      "description": "Narrows string values for nested records.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "line": 66,
+        "column": 1
+      }
+    },
+    {
+      "name": "loadEmbeddedWorkspaceSnapshot",
+      "description": "Loads one embedded snapshot through the same workspace hydration used by the online host.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "line": 6,
         "column": 1
       }
     },
@@ -5810,7 +6466,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
-        "line": 10,
+        "line": 12,
         "column": 1
       }
     },
@@ -6608,24 +7264,19 @@
         "sourcePath": "src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts"
       },
       {
-        "fromPath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
-        "toPath": "src/features/audit/application/use-cases/createAuditFromSnapshot.ts",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
+        "fromPath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "toPath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "sourcePath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts"
       },
       {
-        "fromPath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
-        "toPath": "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
+        "fromPath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "toPath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "sourcePath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts"
       },
       {
-        "fromPath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
-        "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
+        "fromPath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
         "toPath": "src/types/workspace.ts",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
+        "sourcePath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts"
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
@@ -6634,7 +7285,17 @@
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
-        "toPath": "src/features/workspace/composition/loadProjectOverviewAsync.ts",
+        "toPath": "src/features/project-analysis/composition/loadProjectSnapshotAsync.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
+        "toPath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
+        "toPath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
       },
       {
@@ -7154,7 +7815,32 @@
       },
       {
         "fromPath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toPath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toPath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toPath": "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toPath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
       },
       {
@@ -7191,6 +7877,36 @@
         "fromPath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
       },
       {
         "fromPath": "test/src/features/workspace/WorkspaceView.spec.tsx",
@@ -7356,6 +8072,81 @@
         "fromPath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts",
         "toPath": "src/types/projectTree.ts",
         "sourcePath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "toPath": "src/features/audit/application/use-cases/createAuditFromSnapshot.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "toPath": "src/types/projectAnalysis.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "toPath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "toPath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "toPath": "src/types/dependencyAnalysis.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "toPath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "toPath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "toPath": "src/types/language.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
+        "toPath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
       },
       {
         "fromPath": "test/src/app/api/audit/getAudit.spec.ts",
@@ -9811,22 +10602,16 @@
         "sourcePath": "src/features/settings/utils/readSettingsEnvironment.ts"
       },
       {
-        "fromSymbol": "loadProjectOverviewAsync",
-        "toSymbol": "loadProjectSnapshotAsync",
-        "callExpression": "loadProjectSnapshotAsync",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
+        "fromSymbol": "loadEmbeddedWorkspaceSnapshot",
+        "toSymbol": "hydrateWorkspaceSnapshot",
+        "callExpression": "hydrateWorkspaceSnapshot",
+        "sourcePath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts"
       },
       {
-        "fromSymbol": "loadProjectOverviewAsync",
-        "toSymbol": "buildProjectTree",
-        "callExpression": "buildProjectTree",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
-      },
-      {
-        "fromSymbol": "loadProjectOverviewAsync",
-        "toSymbol": "createAuditFromSnapshot",
-        "callExpression": "createAuditFromSnapshot",
-        "sourcePath": "src/features/workspace/composition/loadProjectOverviewAsync.ts"
+        "fromSymbol": "loadEmbeddedWorkspaceSnapshot",
+        "toSymbol": "deserializeWorkspaceSnapshot",
+        "callExpression": "deserializeWorkspaceSnapshot",
+        "sourcePath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts"
       },
       {
         "fromSymbol": "loadWorkspaceAsync",
@@ -9842,8 +10627,20 @@
       },
       {
         "fromSymbol": "loadWorkspaceAsync",
-        "toSymbol": "loadProjectOverviewAsync",
-        "callExpression": "loadProjectOverviewAsync",
+        "toSymbol": "hydrateWorkspaceSnapshot",
+        "callExpression": "hydrateWorkspaceSnapshot",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceAsync",
+        "toSymbol": "createWorkspaceSnapshot",
+        "callExpression": "createWorkspaceSnapshot",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceAsync",
+        "toSymbol": "loadProjectSnapshotAsync",
+        "callExpression": "loadProjectSnapshotAsync",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
       },
       {
@@ -11714,6 +12511,60 @@
       },
       {
         "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "loadWorkspaceAsync",
+        "callExpression": "loadWorkspaceAsync",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "createDependencyGraphAsync",
+        "callExpression": "createDependencyGraphAsync",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "loadEmbeddedWorkspaceSnapshot",
+        "callExpression": "loadEmbeddedWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "serializeWorkspaceSnapshot",
+        "callExpression": "serializeWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "createWorkspaceSnapshot",
+        "callExpression": "createWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "readProjectSnapshotAsync",
+        "callExpression": "readProjectSnapshotAsync",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
+        "toSymbol": "observeWorkspaceTransitions",
+        "callExpression": "observeWorkspaceTransitions",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
         "toSymbol": "coderadarTree",
         "callExpression": "coderadarTree",
         "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
@@ -11786,12 +12637,6 @@
       },
       {
         "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
-        "toSymbol": "expect",
-        "callExpression": "expect",
-        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
-      },
-      {
-        "fromSymbol": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx",
         "toSymbol": "output",
         "callExpression": "output",
         "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
@@ -11800,6 +12645,42 @@
         "fromSymbol": "createWorkspace",
         "toSymbol": "createGraph",
         "callExpression": "createGraph",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "observeWorkspaceTransitions",
+        "toSymbol": "findGraphTreeSelection",
+        "callExpression": "findGraphTreeSelection",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "observeWorkspaceTransitions",
+        "toSymbol": "render",
+        "callExpression": "render",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "observeWorkspaceTransitions",
+        "toSymbol": "createRoot",
+        "callExpression": "createRoot",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "observeWorkspaceTransitions",
+        "toSymbol": "flushSync",
+        "callExpression": "flushSync",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "observeWorkspaceTransitions",
+        "toSymbol": "click",
+        "callExpression": "click",
+        "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
+      },
+      {
+        "fromSymbol": "findGraphTreeSelection",
+        "toSymbol": "findGraphTreeSelection",
+        "callExpression": "findGraphTreeSelection",
         "sourcePath": "test/src/features/workspace/useWorkspaceNavigation.spec.tsx"
       },
       {
@@ -11837,6 +12718,90 @@
         "toSymbol": "getScroll",
         "callExpression": "getScroll",
         "sourcePath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "loadWorkspaceAsync",
+        "callExpression": "loadWorkspaceAsync",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "createDependencyGraphAsync",
+        "callExpression": "createDependencyGraphAsync",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "loadEmbeddedWorkspaceSnapshot",
+        "callExpression": "loadEmbeddedWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "serializeWorkspaceSnapshot",
+        "callExpression": "serializeWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "createWorkspaceSnapshot",
+        "callExpression": "createWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "readProjectSnapshotAsync",
+        "callExpression": "readProjectSnapshotAsync",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "deserializeWorkspaceSnapshot",
+        "callExpression": "deserializeWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "corrupt",
+        "callExpression": "corrupt",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "requiredItem",
+        "callExpression": "requiredItem",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "serializeSnapshotWithGraph",
+        "callExpression": "serializeSnapshotWithGraph",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "serializeSnapshotWithGraph",
+        "toSymbol": "serializeWorkspaceSnapshot",
+        "callExpression": "serializeWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
@@ -12197,6 +13162,624 @@
         "toSymbol": "resolveProjectTreeGraphNodeId",
         "callExpression": "resolveProjectTreeGraphNodeId",
         "sourcePath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSnapshot",
+        "toSymbol": "createAuditFromSnapshot",
+        "callExpression": "createAuditFromSnapshot",
+        "sourcePath": "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "deserializeWorkspaceSnapshot",
+        "toSymbol": "parseSnapshotJson",
+        "callExpression": "parseSnapshotJson",
+        "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "deserializeWorkspaceSnapshot",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "deserializeWorkspaceSnapshot",
+        "toSymbol": "validateWorkspaceSnapshot",
+        "callExpression": "validateWorkspaceSnapshot",
+        "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "deserializeWorkspaceSnapshot",
+        "toSymbol": "deserializeSourceGraph",
+        "callExpression": "deserializeSourceGraph",
+        "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureDetection",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureDetection",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvaluation",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvaluation",
+        "toSymbol": "isArchitectureTarget",
+        "callExpression": "isArchitectureTarget",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvaluation",
+        "toSymbol": "isRuleEvaluation",
+        "callExpression": "isRuleEvaluation",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvaluation",
+        "toSymbol": "isPublishedArchitectureModelId",
+        "callExpression": "isPublishedArchitectureModelId",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvaluation",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDependencyGraph",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDependencyGraph",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDependencyGraph",
+        "toSymbol": "isCytoscapeCompatibleGraph",
+        "callExpression": "isCytoscapeCompatibleGraph",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isCytoscapeCompatibleGraph",
+        "toSymbol": "toCytoscapeElements",
+        "callExpression": "toCytoscapeElements",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isCytoscapeCompatibleGraph",
+        "toSymbol": "createGraph",
+        "callExpression": "createGraph",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDetectedLanguage",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDetectedLanguage",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDetectedLanguage",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureCandidate",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureCandidate",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureCandidate",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureCandidate",
+        "toSymbol": "isPublishedArchitectureModelId",
+        "callExpression": "isPublishedArchitectureModelId",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureContradiction",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvidence",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvidence",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureEvidence",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureRoleAssignment",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureRoleAssignment",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureRoleAssignment",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureTarget",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureTarget",
+        "toSymbol": "isPublishedArchitectureModelId",
+        "callExpression": "isPublishedArchitectureModelId",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isPublishedArchitectureModelId",
+        "toSymbol": "listArchitectureModels",
+        "callExpression": "listArchitectureModels",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDependencyDeclaration",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDependencyImportEvidence",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isDependencyImportEvidence",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isPackageGraphEdge",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isPackageGraphEdge",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isPackageGraphEdge",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isPackageGraphNode",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isPackageGraphNode",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleDiagnostic",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleFinding",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleFinding",
+        "toSymbol": "isJsonValue",
+        "callExpression": "validation.isJsonValue",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleFinding",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleFinding",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleEvaluation",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleEvaluation",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleSourceLocation",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleSourceLocation",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleSourceLocation",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleSubject",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleSubject",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "hydrateWorkspaceSnapshot",
+        "toSymbol": "buildProjectTree",
+        "callExpression": "buildProjectTree",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateAuditSnapshot",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateAuditSnapshot",
+        "toSymbol": "isAuditConfiguration",
+        "callExpression": "isAuditConfiguration",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateAuditSnapshot",
+        "toSymbol": "isAuditEvaluation",
+        "callExpression": "isAuditEvaluation",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateAuditSnapshot",
+        "toSymbol": "isAuditMeta",
+        "callExpression": "isAuditMeta",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateAuditSnapshot",
+        "toSymbol": "isProjectFileTree",
+        "callExpression": "isProjectFileTree",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateAuditSnapshot",
+        "toSymbol": "isDependencyGraph",
+        "callExpression": "externalSnapshotContracts.isDependencyGraph",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditConfiguration",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditConfiguration",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditConfiguration",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isArchitectureTarget",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditEvaluation",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditEvaluation",
+        "toSymbol": "isArchitectureDetection",
+        "callExpression": "externalSnapshotContracts.isArchitectureDetection",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditEvaluation",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditEvaluation",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditEvaluation",
+        "toSymbol": "isRuleEvaluation",
+        "callExpression": "externalSnapshotContracts.isRuleEvaluation",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditRuleConfiguration",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditRuleConfiguration",
+        "toSymbol": "isOneOf",
+        "callExpression": "validation.isOneOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditRuleResult",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditRuleResult",
+        "toSymbol": "isOneOf",
+        "callExpression": "validation.isOneOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditRuleResult",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditRuleResult",
+        "toSymbol": "isJsonValue",
+        "callExpression": "validation.isJsonValue",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditMeta",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditMeta",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditMeta",
+        "toSymbol": "isParserSelection",
+        "callExpression": "isParserSelection",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditMeta",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isAuditSource",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isPackageCycle",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isPackageCycle",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isCycleEdge",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isCycleEdge",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isImportEvidence",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isImportEvidence",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isProjectFileTree",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "toSymbol": "isProjectFileTree",
+        "callExpression": "isProjectFileTree",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
+        "toSymbol": "isProjectFileMetadata",
+        "callExpression": "isProjectFileMetadata",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isProjectFileMetadata",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isProjectFileMetadata",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isProjectImportMetadata",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isProjectImportMetadata",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isParserSelection",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isParserSelection",
+        "toSymbol": "isOneOf",
+        "callExpression": "validation.isOneOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isParserSelection",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "validation.isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isParserSelection",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateWorkspaceSnapshot",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "validateWorkspaceSnapshot",
+        "toSymbol": "validateAuditSnapshot",
+        "callExpression": "validateAuditSnapshot",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "isJsonValue",
+        "toSymbol": "isFiniteNumber",
+        "callExpression": "isFiniteNumber",
+        "sourcePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts"
+      },
+      {
+        "fromSymbol": "isJsonValue",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts"
+      },
+      {
+        "fromSymbol": "isOptional",
+        "toSymbol": "predicate",
+        "callExpression": "predicate",
+        "sourcePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts"
       },
       {
         "fromSymbol": "test/src/app/api/audit/getAudit.spec.ts",

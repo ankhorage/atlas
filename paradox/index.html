@@ -667,8 +667,48 @@
       <small>9 functions</small>
     </button>
   </li><li>
-    <button class="nav-button" type="button" data-target="src/features/workspace/composition/loadProjectOverviewAsync.ts">
-      src/features/workspace/composition/loadProjectOverviewAsync.ts
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts">
+      src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts">
+      src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts
+      <small>2 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/externalSnapshotContracts.ts">
+      src/features/workspace/application/use-cases/externalSnapshotContracts.ts
+      <small>20 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts">
+      src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts">
+      src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/validateAuditSnapshot.ts">
+      src/features/workspace/application/use-cases/validateAuditSnapshot.ts
+      <small>15 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts">
+      src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts
+      <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts">
+      src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts
+      <small>9 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts">
+      src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts
       <small>1 function</small>
     </button>
   </li><li>
@@ -713,7 +753,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>215</strong><span class="muted">modules</span></div>
+        <div><strong>224</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1395,15 +1435,55 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>.ankh/zora/web/components/app-header/index.d.ts</code>, <code>.ankh/zora/web/components/breadcrumbs/index.d.ts</code>, <code>.ankh/zora/web/components/button/index.d.ts</code>, <code>.ankh/zora/web/components/card/index.d.ts</code>, <code>.ankh/zora/web/components/text-input/index.d.ts</code>, <code>.ankh/zora/web/components/view/index.d.ts</code>, <code>.ankh/zora/web/runtime/ZoraProvider.d.ts</code>, <code>src/features/audit/adapters/inbound/react/useCycleSelection.ts</code>, <code>src/features/settings/adapters/inbound/react/SettingsProvider.tsx</code>, <code>src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts</code>, <code>src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx</code>, <code>src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx</code>, <code>src/types/audit.ts</code>, <code>src/types/auditVisualization.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <code>WorkspaceView</code></p>
-  </article><article class="item" data-search="src/features/workspace/composition/loadProjectOverviewAsync.ts src/features/audit/application/use-cases/createAuditFromSnapshot.ts src/features/project-analysis/composition/loadProjectSnapshotAsync.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/workspace.ts loadProjectOverviewAsync">
-    <h3>src/features/workspace/composition/loadProjectOverviewAsync.ts</h3>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts src/features/audit/application/use-cases/createAuditFromSnapshot.ts src/types/projectAnalysis.ts src/types/workspace.ts createWorkspaceSnapshot">
+    <h3>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/audit/application/use-cases/createAuditFromSnapshot.ts</code>, <code>src/features/project-analysis/composition/loadProjectSnapshotAsync.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/types/workspace.ts</code></p>
-    <p><strong>Exports:</strong> <code>loadProjectOverviewAsync</code></p>
-  </article><article class="item" data-search="src/features/workspace/composition/loadWorkspaceAsync.ts src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts src/features/workspace/composition/loadProjectOverviewAsync.ts src/types/workspace.ts loadWorkspaceAsync">
+    <p><strong>Dependencies:</strong> <code>src/features/audit/application/use-cases/createAuditFromSnapshot.ts</code>, <code>src/types/projectAnalysis.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>createWorkspaceSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts src/types/workspace.ts deserializeWorkspaceSnapshot">
+    <h3>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>deserializeWorkspaceSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/externalSnapshotContracts.ts src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts src/types/dependencyAnalysis.ts externalSnapshotContracts">
+    <h3>src/features/workspace/application/use-cases/externalSnapshotContracts.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts</code>, <code>src/types/dependencyAnalysis.ts</code></p>
+    <p><strong>Exports:</strong> <code>externalSnapshotContracts</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/workspace.ts hydrateWorkspaceSnapshot">
+    <h3>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>hydrateWorkspaceSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts src/types/workspace.ts serializeWorkspaceSnapshot">
+    <h3>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>serializeWorkspaceSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/validateAuditSnapshot.ts src/features/workspace/application/use-cases/externalSnapshotContracts.ts src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts src/types/language.ts validateAuditSnapshot">
+    <h3>src/features/workspace/application/use-cases/validateAuditSnapshot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts</code>, <code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts</code>, <code>src/types/language.ts</code></p>
+    <p><strong>Exports:</strong> <code>validateAuditSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts src/features/workspace/application/use-cases/validateAuditSnapshot.ts src/types/workspace.ts validateWorkspaceSnapshot">
+    <h3>src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>validateWorkspaceSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts workspaceSnapshotValidation">
+    <h3>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>workspaceSnapshotValidation</code></p>
+  </article><article class="item" data-search="src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/types/workspace.ts loadEmbeddedWorkspaceSnapshot">
+    <h3>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>loadEmbeddedWorkspaceSnapshot</code></p>
+  </article><article class="item" data-search="src/features/workspace/composition/loadWorkspaceAsync.ts src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts src/features/project-analysis/composition/loadProjectSnapshotAsync.ts src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/types/workspace.ts loadWorkspaceAsync">
     <h3>src/features/workspace/composition/loadWorkspaceAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</code>, <code>src/features/workspace/composition/loadProjectOverviewAsync.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</code>, <code>src/features/project-analysis/composition/loadProjectSnapshotAsync.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <code>loadWorkspaceAsync</code></p>
   </article><article class="item" data-search="src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts src/features/project-source/application/use-cases/parseProjectSource.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/features/workspace/composition/loadWorkspaceAsync.ts src/features/workspace/composition/resolveWorkspaceStartupSource.ts src/types/projectSource.ts src/types/workspace.ts src/utils/getProjectName.ts src/utils/parseProjectPath.ts loadWorkspaceProjectSourceAsync WorkspaceProjectSourceResult">
     <h3>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts</h3>
@@ -1485,11 +1565,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>SettingsContextValue</code></p>
-  </article><article class="item" data-search="src/types/workspace.ts src/types/audit.ts src/types/dependencyAnalysis.ts src/types/projectTree.ts ProjectOverview WorkspaceLoadResult">
+  </article><article class="item" data-search="src/types/workspace.ts src/types/audit.ts src/types/dependencyAnalysis.ts src/types/projectTree.ts ProjectOverview WorkspaceLoadResult WorkspaceSnapshot">
     <h3>src/types/workspace.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/types/audit.ts</code>, <code>src/types/dependencyAnalysis.ts</code>, <code>src/types/projectTree.ts</code></p>
-    <p><strong>Exports:</strong> <code>ProjectOverview</code>, <code>WorkspaceLoadResult</code></p>
+    <p><strong>Exports:</strong> <code>ProjectOverview</code>, <code>WorkspaceLoadResult</code>, <code>WorkspaceSnapshot</code></p>
   </article><article class="item" data-search="src/utils/getProjectName.ts src/utils/parseProjectPath.ts getProjectName">
     <h3>src/utils/getProjectName.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1770,15 +1850,20 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/src/features/workspace/useWorkspaceNavigation.spec.tsx src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts src/types/dependencyAnalysis.ts src/types/projectTree.ts src/types/workspace.ts">
+  </article><article class="item" data-search="test/src/features/workspace/useWorkspaceNavigation.spec.tsx src/features/project-analysis/composition/readProjectSnapshotAsync.ts src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts src/features/workspace/composition/loadWorkspaceAsync.ts src/types/dependencyAnalysis.ts src/types/projectTree.ts src/types/workspace.ts">
     <h3>test/src/features/workspace/useWorkspaceNavigation.spec.tsx</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts</code>, <code>src/types/dependencyAnalysis.ts</code>, <code>src/types/projectTree.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-analysis/composition/readProjectSnapshotAsync.ts</code>, <code>src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadWorkspaceAsync.ts</code>, <code>src/types/dependencyAnalysis.ts</code>, <code>src/types/projectTree.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/workspace/WorkspaceSidebar.spec.tsx .ankh/zora/web/runtime/ZoraProvider.d.ts src/features/settings/adapters/inbound/react/SettingsProvider.tsx src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx src/types/audit.ts">
     <h3>test/src/features/workspace/WorkspaceSidebar.spec.tsx</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>.ankh/zora/web/runtime/ZoraProvider.d.ts</code>, <code>src/features/settings/adapters/inbound/react/SettingsProvider.tsx</code>, <code>src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx</code>, <code>src/types/audit.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/features/workspace/workspaceSnapshot.spec.ts src/features/project-analysis/composition/readProjectSnapshotAsync.ts src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts src/features/workspace/composition/loadWorkspaceAsync.ts">
+    <h3>test/src/features/workspace/workspaceSnapshot.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-analysis/composition/readProjectSnapshotAsync.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadWorkspaceAsync.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/workspace/WorkspaceView.spec.tsx ankh.config.json src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx src/features/workspace/adapters/inbound/react/WorkspaceView.tsx">
     <h3>test/src/features/workspace/WorkspaceView.spec.tsx</h3>
@@ -2434,16 +2519,48 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_audit_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_auditVisualization_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_workspace_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts[&quot;src/features/workspace/composition/loadProjectOverviewAsync.ts&quot;]
-  package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadProjectOverviewAsync_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts[&quot;src/features/workspace/application/use-cases/externalSnapshotContracts.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateAuditSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_types_language_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts[&quot;src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts[&quot;src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
-  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_composition_loadProjectOverviewAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
@@ -2730,7 +2847,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts --&gt; module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx[&quot;test/src/features/workspace/useWorkspaceNavigation.spec.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_useWorkspaceNavigation_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_dependencyAnalysis_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_projectTree_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_workspace_ts
@@ -2740,6 +2862,14 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_settings_adapters_inbound_react_SettingsProvider_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_workspaceSnapshot_spec_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_WorkspaceView_spec_tsx[&quot;test/src/features/workspace/WorkspaceView.spec.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_WorkspaceView_spec_tsx
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_ankh_config_json
@@ -3336,16 +3466,48 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_audit_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_auditVisualization_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_workspace_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts[&quot;src/features/workspace/composition/loadProjectOverviewAsync.ts&quot;]
-  package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadProjectOverviewAsync_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts[&quot;src/features/workspace/application/use-cases/externalSnapshotContracts.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateAuditSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_types_language_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts[&quot;src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts[&quot;src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
-  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_composition_loadProjectOverviewAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
@@ -3632,7 +3794,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts --&gt; module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx[&quot;test/src/features/workspace/useWorkspaceNavigation.spec.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_useWorkspaceNavigation_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_dependencyAnalysis_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_projectTree_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_workspace_ts
@@ -3642,6 +3809,14 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_settings_adapters_inbound_react_SettingsProvider_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_workspaceSnapshot_spec_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_WorkspaceView_spec_tsx[&quot;test/src/features/workspace/WorkspaceView.spec.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_WorkspaceView_spec_tsx
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_ankh_config_json
@@ -3809,7 +3984,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceView.tsx&quot;]
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts[&quot;src/features/workspace/composition/loadProjectOverviewAsync.ts&quot;]
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts[&quot;src/features/workspace/application/use-cases/externalSnapshotContracts.ts&quot;]
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateAuditSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts[&quot;src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts&quot;]
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts[&quot;src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceAsync.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts&quot;]
   module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts[&quot;src/features/workspace/composition/resolveWorkspaceStartupSource.ts&quot;]
@@ -3886,6 +4069,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts[&quot;test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts&quot;]
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx[&quot;test/src/features/workspace/useWorkspaceNavigation.spec.tsx&quot;]
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx[&quot;test/src/features/workspace/WorkspaceSidebar.spec.tsx&quot;]
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
   module_test_src_features_workspace_WorkspaceView_spec_tsx[&quot;test/src/features/workspace/WorkspaceView.spec.tsx&quot;]
   module_test_src_layouts_style_spec_ts[&quot;test/src/layouts/style.spec.ts&quot;]
   module_test_src_packageManifest_spec_ts[&quot;test/src/packageManifest.spec.ts&quot;]
@@ -4195,12 +4379,28 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_audit_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_auditVisualization_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_workspace_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_types_language_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
-  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_composition_loadProjectOverviewAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
@@ -4339,7 +4539,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_loadWorkspaceAsync_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_loadWorkspaceProjectSourceAsync_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts --&gt; module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_useWorkspaceNavigation_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_dependencyAnalysis_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_projectTree_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_workspace_ts
@@ -4347,6 +4552,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_settings_adapters_inbound_react_SettingsProvider_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_ankh_config_json
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_src_features_theme_adapters_inbound_react_ZoraRuntimeProvider_tsx
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx
@@ -4494,7 +4705,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceView.tsx&quot;]
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts[&quot;src/features/workspace/composition/loadProjectOverviewAsync.ts&quot;]
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts[&quot;src/features/workspace/application/use-cases/externalSnapshotContracts.ts&quot;]
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateAuditSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts[&quot;src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts&quot;]
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts[&quot;src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceAsync.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts&quot;]
   module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts[&quot;src/features/workspace/composition/resolveWorkspaceStartupSource.ts&quot;]
@@ -4571,6 +4790,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts[&quot;test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts&quot;]
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx[&quot;test/src/features/workspace/useWorkspaceNavigation.spec.tsx&quot;]
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx[&quot;test/src/features/workspace/WorkspaceSidebar.spec.tsx&quot;]
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
   module_test_src_features_workspace_WorkspaceView_spec_tsx[&quot;test/src/features/workspace/WorkspaceView.spec.tsx&quot;]
   module_test_src_layouts_style_spec_ts[&quot;test/src/layouts/style.spec.ts&quot;]
   module_test_src_packageManifest_spec_ts[&quot;test/src/packageManifest.spec.ts&quot;]
@@ -4880,12 +5100,28 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_audit_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_auditVisualization_ts
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx --&gt; module_src_types_workspace_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts --&gt; module_src_types_language_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
-  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_composition_loadProjectOverviewAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_loadWorkspaceAsync_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
@@ -5024,7 +5260,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_loadWorkspaceAsync_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_loadWorkspaceProjectSourceAsync_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts --&gt; module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_useWorkspaceNavigation_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_dependencyAnalysis_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_projectTree_ts
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx --&gt; module_src_types_workspace_ts
@@ -5032,6 +5273,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_settings_adapters_inbound_react_SettingsProvider_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_ankh_config_json
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_src_features_theme_adapters_inbound_react_ZoraRuntimeProvider_tsx
   module_test_src_features_workspace_WorkspaceView_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx
@@ -5181,7 +5428,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceView.tsx&quot;]
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts[&quot;src/features/workspace/composition/loadProjectOverviewAsync.ts&quot;]
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts[&quot;src/features/workspace/application/use-cases/externalSnapshotContracts.ts&quot;]
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateAuditSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts[&quot;src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts&quot;]
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts[&quot;src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceAsync.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts&quot;]
   module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts[&quot;src/features/workspace/composition/resolveWorkspaceStartupSource.ts&quot;]
@@ -5258,6 +5513,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts[&quot;test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts&quot;]
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx[&quot;test/src/features/workspace/useWorkspaceNavigation.spec.tsx&quot;]
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx[&quot;test/src/features/workspace/WorkspaceSidebar.spec.tsx&quot;]
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
   module_test_src_features_workspace_WorkspaceView_spec_tsx[&quot;test/src/features/workspace/WorkspaceView.spec.tsx&quot;]
   module_test_src_layouts_style_spec_ts[&quot;test/src/layouts/style.spec.ts&quot;]
   module_test_src_packageManifest_spec_ts[&quot;test/src/packageManifest.spec.ts&quot;]
@@ -5404,7 +5660,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx&quot;]
   module_src_features_workspace_adapters_inbound_react_WorkspaceView_tsx[&quot;src/features/workspace/adapters/inbound/react/WorkspaceView.tsx&quot;]
-  module_src_features_workspace_composition_loadProjectOverviewAsync_ts[&quot;src/features/workspace/composition/loadProjectOverviewAsync.ts&quot;]
+  module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts[&quot;src/features/workspace/application/use-cases/externalSnapshotContracts.ts&quot;]
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_serializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateAuditSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateAuditSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_validateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts&quot;]
+  module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts[&quot;src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts&quot;]
+  module_src_features_workspace_composition_loadEmbeddedWorkspaceSnapshot_ts[&quot;src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceAsync.ts&quot;]
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts[&quot;src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts&quot;]
   module_src_features_workspace_composition_resolveWorkspaceStartupSource_ts[&quot;src/features/workspace/composition/resolveWorkspaceStartupSource.ts&quot;]
@@ -5481,6 +5745,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_resolveWorkspaceStartupSource_spec_ts[&quot;test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts&quot;]
   module_test_src_features_workspace_useWorkspaceNavigation_spec_tsx[&quot;test/src/features/workspace/useWorkspaceNavigation.spec.tsx&quot;]
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx[&quot;test/src/features/workspace/WorkspaceSidebar.spec.tsx&quot;]
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
   module_test_src_features_workspace_WorkspaceView_spec_tsx[&quot;test/src/features/workspace/WorkspaceView.spec.tsx&quot;]
   module_test_src_layouts_style_spec_ts[&quot;test/src/layouts/style.spec.ts&quot;]
   module_test_src_packageManifest_spec_ts[&quot;test/src/packageManifest.spec.ts&quot;]
@@ -7627,13 +7892,303 @@ Entries are removed after success or failure so later loads observe source chang
     
   </article>
     </section>
-  </section><section id="view-src-features-workspace-composition-loadprojectoverviewasync-ts" class="view" data-view="src/features/workspace/composition/loadProjectOverviewAsync.ts" hidden>
+  </section><section id="view-src-features-workspace-application-use-cases-createworkspacesnapshot-ts" class="view" data-view="src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts" hidden>
     <section class="panel">
-      <h2>src/features/workspace/composition/loadProjectOverviewAsync.ts</h2>
-      <article class="item" data-search="loadProjectOverviewAsync src/features/workspace/composition/loadProjectOverviewAsync.ts Composes the project analysis, tree, and audit views used by the active Atlas workspace.">
-    <h3>loadProjectOverviewAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadProjectOverviewAsync.ts:10:1</code></p>
-    <p>Composes the project analysis, tree, and audit views used by the active Atlas workspace.</p>
+      <h2>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</h2>
+      <article class="item" data-search="createWorkspaceSnapshot src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts Captures the complete canonical Audit required to render one portable Atlas workspace.">
+    <h3>createWorkspaceSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts:6:1</code></p>
+    <p>Captures the complete canonical Audit required to render one portable Atlas workspace.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-deserializeworkspacesnapshot-ts" class="view" data-view="src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts</h2>
+      <article class="item" data-search="deserializeWorkspaceSnapshot src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts Parses and validates a portable Atlas workspace snapshot before it reaches workspace rendering.">
+    <h3>deserializeWorkspaceSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts:8:1</code></p>
+    <p>Parses and validates a portable Atlas workspace snapshot before it reaches workspace rendering.</p>
+    
+  </article><article class="item" data-search="parseSnapshotJson src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts Parses JSON without allowing host-boundary syntax errors to escape as runtime failures.">
+    <h3>parseSnapshotJson</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts:25:1</code></p>
+    <p>Parses JSON without allowing host-boundary syntax errors to escape as runtime failures.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-externalsnapshotcontracts-ts" class="view" data-view="src/features/workspace/application/use-cases/externalSnapshotContracts.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/externalSnapshotContracts.ts</h2>
+      <article class="item" data-search="isArchitectureDetection src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates architecture data supplied by the published Rules Architecture contract.">
+    <h3>isArchitectureDetection</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:22:1</code></p>
+    <p>Validates architecture data supplied by the published Rules Architecture contract.</p>
+    
+  </article><article class="item" data-search="isArchitectureEvaluation src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates an explicit architecture evaluation supplied by Rules Architecture.">
+    <h3>isArchitectureEvaluation</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:29:1</code></p>
+    <p>Validates an explicit architecture evaluation supplied by Rules Architecture.</p>
+    
+  </article><article class="item" data-search="isDependencyGraph src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates dependency graphs through the published Graph and Cytoscape identity contracts.">
+    <h3>isDependencyGraph</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:46:1</code></p>
+    <p>Validates dependency graphs through the published Graph and Cytoscape identity contracts.</p>
+    
+  </article><article class="item" data-search="isCytoscapeCompatibleGraph src/features/workspace/application/use-cases/externalSnapshotContracts.ts Rejects Graph and Cytoscape identity failures before React attempts element conversion.">
+    <h3>isCytoscapeCompatibleGraph</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:57:1</code></p>
+    <p>Rejects Graph and Cytoscape identity failures before React attempts element conversion.</p>
+    
+  </article><article class="item" data-search="isDetectedLanguage src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates Project Detector language evidence while leaving its identifiers owner-extensible.">
+    <h3>isDetectedLanguage</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:67:1</code></p>
+    <p>Validates Project Detector language evidence while leaving its identifiers owner-extensible.</p>
+    
+  </article><article class="item" data-search="isArchitectureCandidate src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one architecture candidate rendered by Atlas.">
+    <h3>isArchitectureCandidate</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:78:1</code></p>
+    <p>Validates one architecture candidate rendered by Atlas.</p>
+    
+  </article><article class="item" data-search="isArchitectureContradiction src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one architecture contradiction displayed to users.">
+    <h3>isArchitectureContradiction</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:92:1</code></p>
+    <p>Validates one architecture contradiction displayed to users.</p>
+    
+  </article><article class="item" data-search="isArchitectureEvidence src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates evidence without closing its owner-controlled kind.">
+    <h3>isArchitectureEvidence</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:105:1</code></p>
+    <p>Validates evidence without closing its owner-controlled kind.</p>
+    
+  </article><article class="item" data-search="isArchitectureRoleAssignment src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one inferred role and its external evidence.">
+    <h3>isArchitectureRoleAssignment</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:116:1</code></p>
+    <p>Validates one inferred role and its external evidence.</p>
+    
+  </article><article class="item" data-search="isArchitectureTarget src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates a model or profile target without duplicating the profile owner&#39;s vocabulary.">
+    <h3>isArchitectureTarget</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:127:1</code></p>
+    <p>Validates a model or profile target without duplicating the profile owner&#39;s vocabulary.</p>
+    
+  </article><article class="item" data-search="isPublishedArchitectureModelId src/features/workspace/application/use-cases/externalSnapshotContracts.ts Reads model identifiers from the published owner API instead of a local copy.">
+    <h3>isPublishedArchitectureModelId</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:136:1</code></p>
+    <p>Reads model identifiers from the published owner API instead of a local copy.</p>
+    
+  </article><article class="item" data-search="isDependencyDeclaration src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one dependency declaration while leaving its owner-controlled kind extensible.">
+    <h3>isDependencyDeclaration</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:141:1</code></p>
+    <p>Validates one dependency declaration while leaving its owner-controlled kind extensible.</p>
+    
+  </article><article class="item" data-search="isDependencyImportEvidence src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates dependency import evidence while leaving external classifications extensible.">
+    <h3>isDependencyImportEvidence</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:148:1</code></p>
+    <p>Validates dependency import evidence while leaving external classifications extensible.</p>
+    
+  </article><article class="item" data-search="isPackageGraphEdge src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one package graph edge.">
+    <h3>isPackageGraphEdge</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:159:1</code></p>
+    <p>Validates one package graph edge.</p>
+    
+  </article><article class="item" data-search="isPackageGraphNode src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one package graph node.">
+    <h3>isPackageGraphNode</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:177:1</code></p>
+    <p>Validates one package graph node.</p>
+    
+  </article><article class="item" data-search="isRuleDiagnostic src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one generic Rules diagnostic without closing its owner-controlled code.">
+    <h3>isRuleDiagnostic</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:194:1</code></p>
+    <p>Validates one generic Rules diagnostic without closing its owner-controlled code.</p>
+    
+  </article><article class="item" data-search="isRuleFinding src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one generic Rules finding without closing its owner-controlled severity.">
+    <h3>isRuleFinding</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:204:1</code></p>
+    <p>Validates one generic Rules finding without closing its owner-controlled severity.</p>
+    
+  </article><article class="item" data-search="isRuleEvaluation src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates generic Rules results rendered by the workspace.">
+    <h3>isRuleEvaluation</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:217:1</code></p>
+    <p>Validates generic Rules results rendered by the workspace.</p>
+    
+  </article><article class="item" data-search="isRuleSourceLocation src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates optional source coordinates attached to a Rules finding.">
+    <h3>isRuleSourceLocation</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:226:1</code></p>
+    <p>Validates optional source coordinates attached to a Rules finding.</p>
+    
+  </article><article class="item" data-search="isRuleSubject src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one Rules finding subject.">
+    <h3>isRuleSubject</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:238:1</code></p>
+    <p>Validates one Rules finding subject.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-hydrateworkspacesnapshot-ts" class="view" data-view="src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</h2>
+      <article class="item" data-search="hydrateWorkspaceSnapshot src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts Rebuilds the workspace view model from the portable Audit without host-specific analysis.">
+    <h3>hydrateWorkspaceSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts:5:1</code></p>
+    <p>Rebuilds the workspace view model from the portable Audit without host-specific analysis.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-serializeworkspacesnapshot-ts" class="view" data-view="src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts</h2>
+      <article class="item" data-search="serializeWorkspaceSnapshot src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts Serializes an Atlas workspace snapshot for a host-neutral embedded data boundary.">
+    <h3>serializeWorkspaceSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts:4:1</code></p>
+    <p>Serializes an Atlas workspace snapshot for a host-neutral embedded data boundary.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-validateauditsnapshot-ts" class="view" data-view="src/features/workspace/application/use-cases/validateAuditSnapshot.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/validateAuditSnapshot.ts</h2>
+      <article class="item" data-search="validateAuditSnapshot src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates Atlas-owned audit state and delegates imported domain contracts at their boundary.">
+    <h3>validateAuditSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:6:1</code></p>
+    <p>Validates Atlas-owned audit state and delegates imported domain contracts at their boundary.</p>
+    
+  </article><article class="item" data-search="isAuditConfiguration src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates persisted Atlas audit configuration.">
+    <h3>isAuditConfiguration</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:19:1</code></p>
+    <p>Validates persisted Atlas audit configuration.</p>
+    
+  </article><article class="item" data-search="isArchitectureTarget src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates the Atlas target wrapper around an external architecture target.">
+    <h3>isArchitectureTarget</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:29:1</code></p>
+    <p>Validates the Atlas target wrapper around an external architecture target.</p>
+    
+  </article><article class="item" data-search="isAuditEvaluation src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates all collections displayed by the workspace audit panels.">
+    <h3>isAuditEvaluation</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:38:1</code></p>
+    <p>Validates all collections displayed by the workspace audit panels.</p>
+    
+  </article><article class="item" data-search="isAuditRuleConfiguration src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates one configured Atlas audit-rule mode.">
+    <h3>isAuditRuleConfiguration</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:53:1</code></p>
+    <p>Validates one configured Atlas audit-rule mode.</p>
+    
+  </article><article class="item" data-search="isAuditRuleResult src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates one Atlas-specific audit-rule result.">
+    <h3>isAuditRuleResult</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:62:1</code></p>
+    <p>Validates one Atlas-specific audit-rule result.</p>
+    
+  </article><article class="item" data-search="isAuditMeta src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates persisted audit metadata.">
+    <h3>isAuditMeta</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:75:1</code></p>
+    <p>Validates persisted audit metadata.</p>
+    
+  </article><article class="item" data-search="isAuditSource src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates optional GitHub source provenance.">
+    <h3>isAuditSource</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:87:1</code></p>
+    <p>Validates optional GitHub source provenance.</p>
+    
+  </article><article class="item" data-search="isPackageCycle src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates one complete cycle and its edge evidence.">
+    <h3>isPackageCycle</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:97:1</code></p>
+    <p>Validates one complete cycle and its edge evidence.</p>
+    
+  </article><article class="item" data-search="isCycleEdge src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates one directed cycle edge.">
+    <h3>isCycleEdge</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:106:1</code></p>
+    <p>Validates one directed cycle edge.</p>
+    
+  </article><article class="item" data-search="isImportEvidence src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates import evidence rendered by cycle details.">
+    <h3>isImportEvidence</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:116:1</code></p>
+    <p>Validates import evidence rendered by cycle details.</p>
+    
+  </article><article class="item" data-search="isProjectFileTree src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates the recursive project tree and its file leaves.">
+    <h3>isProjectFileTree</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:127:1</code></p>
+    <p>Validates the recursive project tree and its file leaves.</p>
+    
+  </article><article class="item" data-search="isProjectFileMetadata src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates one project-file metadata leaf including import metadata.">
+    <h3>isProjectFileMetadata</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:135:1</code></p>
+    <p>Validates one project-file metadata leaf including import metadata.</p>
+    
+  </article><article class="item" data-search="isProjectImportMetadata src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates one file import retained for tree projection.">
+    <h3>isProjectImportMetadata</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:146:1</code></p>
+    <p>Validates one file import retained for tree projection.</p>
+    
+  </article><article class="item" data-search="isParserSelection src/features/workspace/application/use-cases/validateAuditSnapshot.ts Validates the Atlas parser choice while accepting future Project Detector candidates.">
+    <h3>isParserSelection</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateAuditSnapshot.ts:156:1</code></p>
+    <p>Validates the Atlas parser choice while accepting future Project Detector candidates.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-validateworkspacesnapshot-ts" class="view" data-view="src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts</h2>
+      <article class="item" data-search="validateWorkspaceSnapshot src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts Validates the Atlas-owned workspace envelope and delegates its audit payload by responsibility.">
+    <h3>validateWorkspaceSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts:7:1</code></p>
+    <p>Validates the Atlas-owned workspace envelope and delegates its audit payload by responsibility.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-application-use-cases-workspacesnapshotvalidation-ts" class="view" data-view="src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts</h2>
+      <article class="item" data-search="isArrayOf src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Validates every member of an untrusted list while preserving predicate narrowing.">
+    <h3>isArrayOf</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:16:1</code></p>
+    <p>Validates every member of an untrusted list while preserving predicate narrowing.</p>
+    
+  </article><article class="item" data-search="isArrayOf src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts ">
+    <h3>isArrayOf</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:20:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isArrayOf src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts ">
+    <h3>isArrayOf</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:24:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isBoolean src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Narrows Boolean values for optional flags.">
+    <h3>isBoolean</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:32:1</code></p>
+    <p>Narrows Boolean values for optional flags.</p>
+    
+  </article><article class="item" data-search="isFiniteNumber src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Narrows finite numbers accepted at the JSON boundary.">
+    <h3>isFiniteNumber</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:37:1</code></p>
+    <p>Narrows finite numbers accepted at the JSON boundary.</p>
+    
+  </article><article class="item" data-search="isJsonValue src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Checks recursively serializable evidence without accepting non-finite JSON numbers.">
+    <h3>isJsonValue</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:42:1</code></p>
+    <p>Checks recursively serializable evidence without accepting non-finite JSON numbers.</p>
+    
+  </article><article class="item" data-search="isOneOf src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Narrows one string literal from an Atlas-owned fixed vocabulary.">
+    <h3>isOneOf</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:56:1</code></p>
+    <p>Narrows one string literal from an Atlas-owned fixed vocabulary.</p>
+    
+  </article><article class="item" data-search="isOptional src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Applies a predicate only when an optional value is present.">
+    <h3>isOptional</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:61:1</code></p>
+    <p>Applies a predicate only when an optional value is present.</p>
+    
+  </article><article class="item" data-search="isString src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts Narrows string values for nested records.">
+    <h3>isString</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts:66:1</code></p>
+    <p>Narrows string values for nested records.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-workspace-composition-loadembeddedworkspacesnapshot-ts" class="view" data-view="src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts</h2>
+      <article class="item" data-search="loadEmbeddedWorkspaceSnapshot src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts Loads one embedded snapshot through the same workspace hydration used by the online host.">
+    <h3>loadEmbeddedWorkspaceSnapshot</h3>
+    <p class="muted"><code>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts:6:1</code></p>
+    <p>Loads one embedded snapshot through the same workspace hydration used by the online host.</p>
     
   </article>
     </section>
@@ -7642,7 +8197,7 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/composition/loadWorkspaceAsync.ts</h2>
       <article class="item" data-search="loadWorkspaceAsync src/features/workspace/composition/loadWorkspaceAsync.ts Loads the active workspace while serializing project failures for the persistent error UI.">
     <h3>loadWorkspaceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceAsync.ts:10:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceAsync.ts:12:1</code></p>
     <p>Loads the active workspace while serializing project failures for the persistent error UI.</p>
     
   </article>
