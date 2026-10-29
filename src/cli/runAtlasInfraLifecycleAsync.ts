@@ -27,12 +27,14 @@ export async function runAtlasInfraLifecycleAsync(
       return lifecycle.planAsync(request);
     case 'generate':
       return lifecycle.generateAsync(request);
+    case 'up':
+      return lifecycle.upAsync(request);
     case 'status':
       return lifecycle.statusAsync(request);
   }
 }
 
-/*** Execute a selected non-mutating or deterministic Infra lifecycle operation from the Atlas package root. */
+/*** Execute a selected Atlas Infra lifecycle operation from the package root. */
 async function runAtlasInfraLifecycleCommandAsync(): Promise<void> {
   const operation = parseAtlasInfraOperation(process.argv.slice(2));
   const result = await runAtlasInfraLifecycleAsync(operation);
@@ -58,12 +60,18 @@ function parseAtlasInfraOperation(argv: readonly string[]): AtlasInfraOperation 
 
   if (argv.length === 1 && isAtlasInfraOperation(operation)) return operation;
 
-  throw new Error('Usage: atlas infra <validate|plan|generate|status>');
+  throw new Error('Usage: atlas infra <validate|plan|generate|up|status>');
 }
 
 /*** Check whether a CLI token names an explicitly supported Atlas Infra lifecycle operation. */
 function isAtlasInfraOperation(value: string | undefined): value is AtlasInfraOperation {
-  return value === 'validate' || value === 'plan' || value === 'generate' || value === 'status';
+  return (
+    value === 'validate' ||
+    value === 'plan' ||
+    value === 'generate' ||
+    value === 'up' ||
+    value === 'status'
+  );
 }
 
 interface AtlasInfraLifecycleOptions {
@@ -76,6 +84,6 @@ type AtlasInfraLifecycleResult =
   | Awaited<ReturnType<ProjectInfraLifecycle['generateAsync']>>
   | Awaited<ReturnType<ProjectInfraLifecycle['statusAsync']>>;
 
-type AtlasInfraOperation = 'validate' | 'plan' | 'generate' | 'status';
+type AtlasInfraOperation = 'validate' | 'plan' | 'generate' | 'up' | 'status';
 
 if (import.meta.main) void runAtlasInfraLifecycleCommandAsync();

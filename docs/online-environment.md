@@ -8,32 +8,34 @@ The local environment selects the published `local` compute adapter and `minikub
 Its API declaration is the canonical `dependency-graph` action served by the existing Next.js route.
 No second deployment manifest or Atlas-specific infrastructure implementation exists.
 
-This is not yet a reproducible online Atlas environment. The declared local profile has no workload
-specification or service adapter that can turn the Next.js build into a container image, Kubernetes
-Deployment, Service, or reachable endpoint. Consequently, the released lifecycle can validate the
-provider selection and plan a Minikube cluster and namespace, but it cannot start Atlas. `generate`
-only records the inspected local host in `.ankh/infra/local/state.json`; it deliberately emits no
-deployment artifacts. Do not run `up` for this manifest as an Atlas acceptance check: it could create
-an otherwise unused Minikube profile without producing a Next.js workload.
+The manifest owns one public `atlas-web` workload through the published `InfraWorkloadSpec`. It
+uses the local `atlas-web:local` production image, exposes its HTTP listener on port 3000, and
+waits for `GET /` readiness. Infra loads that existing image into Minikube, reconciles its
+Kubernetes Deployment and Service, and reports the reachable endpoint. The image includes a small
+Atlas fixture at `/workspace`; the manifest supplies that path through `ATLAS_PROJECT_PATH`, so no
+host path, credential, or browser-provided filesystem path is part of deployment intent.
 
-The owner fix is a released Infra service/workload capability that maps the built Atlas Next.js
-application to an explicit workload and public endpoint. Atlas must then declare that published
-capability in this single manifest and re-run the local provider acceptance. No local provider,
-second orchestrator, or unpublished artifact may substitute for it.
+Build the image before any mutating lifecycle operation:
+
+`bun run image:build`
+
+Image construction is deliberately separate from the Infra lifecycle. The multi-stage Dockerfile
+creates a standalone production Next.js server with its static assets and the trusted fixture;
+Infra consumes the already available image and never builds application source.
 
 From the repository root, use the released `@ankhorage/infra` project lifecycle through Atlas's thin
 path adapter:
 
 - `bun run infra:validate` validates the manifest and selected adapters without mutation.
 - `bun run infra:plan` calculates the local environment plan without mutation.
-- `bun run infra:generate` writes the deterministic local-host ledger under `.ankh/`; for the current
-  manifest it writes no deployment artifact.
+- `bun run infra:generate` writes the deterministic local-host ledger under `.ankh/`.
+- `bun run infra:up` creates or reconciles only the local Minikube resources declared by the
+  manifest. It requires a locally available `atlas-web:local` image and may start Minikube.
 - `bun run infra:status` reads the current local lifecycle state.
 
-`up`, `down`, and `destroy` are intentionally not exposed as Atlas package scripts. They can change
-the local Minikube runtime or remove resources and require an explicit operator workflow. No CI or
-pull request should run them, and no production provider or remote infrastructure is configured by
-the Atlas manifest.
+`down` and `destroy` are intentionally not exposed as Atlas package scripts because they remove
+local resources and require an explicit operator workflow. No CI or pull request should run them,
+and no production provider or remote infrastructure is configured by the Atlas manifest.
 
 For online development, set `ATLAS_PROJECT_PATH` to the trusted server-side project directory and
 start Next.js with `bun run dev` or `bun run start` after a production build. The browser talks only
