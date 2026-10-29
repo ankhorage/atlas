@@ -2,21 +2,19 @@
 import { Button } from '@zora/button';
 import { View } from '@zora/view';
 
-import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
-
 /*** Renders audit-export actions with generated ZORA buttons. */
-export function AuditExportPanel({ source }: AuditExportPanelProps) {
+export function AuditExportPanel({ actions, source }: AuditExportPanelProps) {
   return (
     <View gap="s" p="m">
       <ExportButton
         format="JSON"
         mimeType="application/json"
-        onExport={() => downloadAuditJsonAction(source)}
+        onExport={actions === undefined ? undefined : () => actions.downloadJson(source)}
       />
       <ExportButton
         format="XML"
         mimeType="application/xml"
-        onExport={() => downloadAuditXmlAction(source)}
+        onExport={actions === undefined ? undefined : () => actions.downloadXml(source)}
       />
     </View>
   );
@@ -31,6 +29,7 @@ function ExportButton({ format, mimeType, onExport }: ExportButtonProps) {
       size="s"
       variant="ghost"
       onPress={async () => {
+        if (onExport === undefined) return;
         const { data, filename } = await onExport();
         const blob = new Blob([data], { type: mimeType });
         const url = URL.createObjectURL(blob);
@@ -49,9 +48,19 @@ function ExportButton({ format, mimeType, onExport }: ExportButtonProps) {
 interface ExportButtonProps {
   readonly format: string;
   readonly mimeType: string;
-  readonly onExport: () => Promise<{ data: string; filename: string }>;
+  readonly onExport?: () => Promise<{ data: string; filename: string }>;
 }
 
 interface AuditExportPanelProps {
+  readonly actions?: AuditExportActions;
   readonly source?: string;
+}
+
+export interface AuditExportActions {
+  readonly downloadJson: (
+    source?: string
+  ) => Promise<{ readonly data: string; readonly filename: string }>;
+  readonly downloadXml: (
+    source?: string
+  ) => Promise<{ readonly data: string; readonly filename: string }>;
 }

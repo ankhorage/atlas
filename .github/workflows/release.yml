@@ -71,7 +71,7 @@ jobs:
       - name: Build package
         env:
           GITHUB_TOKEN: ${{ steps.release-token.outputs.token }}
-          NEXT_PUBLIC_PROJECT_PATH: ${{ github.workspace }}
+          ATLAS_PROJECT_PATH: ${{ github.workspace }}
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build ? 0 : 1)"; then
             bun run build
@@ -170,7 +170,7 @@ jobs:
         if: steps.release.outputs.versioned == 'true'
         env:
           GITHUB_TOKEN: ${{ steps.release-token.outputs.token }}
-          NEXT_PUBLIC_PROJECT_PATH: ${{ github.workspace }}
+          ATLAS_PROJECT_PATH: ${{ github.workspace }}
         run: |
           set -euo pipefail
           bun install --ignore-scripts

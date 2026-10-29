@@ -8,6 +8,7 @@ export default createKnipConfig({
     'prettier.local.config.js',
     'paradox.config.mjs',
     'test/**/*.spec.{ts,tsx}',
+    'src/features/offline-export/adapters/inbound/browser/bootstrapOfflineWorkspace.tsx',
     'test/benchmarks/*.ts',
   ],
   ignoreFiles: ['examples/**'],

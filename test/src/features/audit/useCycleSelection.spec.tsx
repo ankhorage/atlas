@@ -21,12 +21,10 @@ function Harness({ controls }: { controls: boolean }) {
 
 describe('[cycle selection lifetime]', () => {
   it('keeps an explicit disabled choice across tab content changes and remounts despite an enabled ENV default', async () => {
-    const previousProject = process.env.NEXT_PUBLIC_PROJECT_PATH;
     const previousDefault = process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES;
-    process.env.NEXT_PUBLIC_PROJECT_PATH = 'cycle-selection-unit-test';
     process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES = 'true';
     const host = render(<div />);
-    const key = 'atlas:cycles:v1:cycle-selection-unit-test';
+    const key = 'atlas:cycles:v1:workspace';
     // Testosterone's render helper creates an opaque-origin DOM. Supply an isolated storage port.
     const previousStorage = Object.getOwnPropertyDescriptor(window, 'localStorage');
     const values = new Map<string, string>();
@@ -62,8 +60,6 @@ describe('[cycle selection lifetime]', () => {
       await act(async () => root.unmount());
       if (previousStorage) Object.defineProperty(window, 'localStorage', previousStorage);
       else Reflect.deleteProperty(window, 'localStorage');
-      if (previousProject === undefined) delete process.env.NEXT_PUBLIC_PROJECT_PATH;
-      else process.env.NEXT_PUBLIC_PROJECT_PATH = previousProject;
       if (previousDefault === undefined) delete process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES;
       else process.env.NEXT_PUBLIC_SETTINGS_SHOW_CYCLES = previousDefault;
       host.unmount();

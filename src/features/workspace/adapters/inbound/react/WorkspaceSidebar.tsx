@@ -8,6 +8,7 @@ import { View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
 import React from 'react';
 
+import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { AuditExportPanel } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { AuditRulePanel } from '@/features/audit/adapters/inbound/react/AuditRulePanel';
 import { ProjectTreePanel } from '@/features/project-tree/adapters/inbound/react/ProjectTreePanel';
@@ -81,7 +82,7 @@ function WorkspaceToolTabs(props: WorkspaceToolTabsProps) {
             value="rules"
           />
         ) : null}
-        <Tab label={t('settings.export')} value="export" />
+        {props.offline ? null : <Tab label={t('settings.export')} value="export" />}
       </TabList>
       <WorkspaceTabPanels {...props} hasRuleContent={hasRuleContent} />
     </Tabs>
@@ -102,11 +103,13 @@ function WorkspaceTabPanels(props: WorkspaceTabPanelsProps) {
         </ScrollView>
       </TabPanel>
       {props.hasRuleContent ? <WorkspaceRulesPanel {...props} /> : null}
-      <TabPanel flex={1} minHeight={0} value="export">
-        <ScrollView flex={1} minHeight={0} testID="sidebar-export-scroll">
-          <AuditExportPanel source={props.currentSource} />
-        </ScrollView>
-      </TabPanel>
+      {props.offline ? null : (
+        <TabPanel flex={1} minHeight={0} value="export">
+          <ScrollView flex={1} minHeight={0} testID="sidebar-export-scroll">
+            <AuditExportPanel actions={props.auditExportActions} source={props.currentSource} />
+          </ScrollView>
+        </TabPanel>
+      )}
     </>
   );
 }
@@ -154,12 +157,14 @@ function countRuleFindings(evaluation: Audit['evaluation'] | null): number {
 }
 
 interface WorkspaceSidebarProps {
+  readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
   readonly inspectedCycleId: string | null;
   readonly evaluation: Audit['evaluation'] | null;
   readonly projectTree: readonly ProjectTreeNode[];
   readonly selectedTreeIds: readonly string[];
   readonly onProjectTreeSelect: (node: ProjectTreeNode, intent: SelectionIntent) => void;
+  readonly offline?: boolean;
   readonly cycleSelection: CycleSelection;
   readonly onCycleInspectionChange: (inspection: CycleInspection | null) => void;
 }

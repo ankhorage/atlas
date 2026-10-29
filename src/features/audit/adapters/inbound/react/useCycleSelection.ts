@@ -14,8 +14,7 @@ import type { CycleSelection } from '@/types/auditVisualization';
 /*** Owns persisted cycle choices independently of sidebar mounting and navigation. */
 export function useCycleSelection(cycles: readonly PackageCycleDetail[]): CycleSelection {
   const { theme } = useZoraTheme();
-  const project = process.env.NEXT_PUBLIC_PROJECT_PATH ?? 'default';
-  const [stored, setStored] = useLocalStorage<string>('atlas:cycles:v1:' + project, '{}');
+  const [stored, setStored] = useLocalStorage<string>('atlas:cycles:v1:workspace', '{}');
   const choices = useMemo(() => readChoices(stored), [stored]);
   const enabledByDefault = readSettingsEnvironment().showCycles;
   const selectedIds = useMemo(

@@ -22,6 +22,8 @@ describe('[package manifest]', () => {
       '.next/*.json',
       '.next/server',
       '.next/static',
+      'offline/atlas-workspace.css',
+      'offline/atlas-workspace.js',
       'README.md',
       'CHANGELOG.md',
       'LICENSE',
