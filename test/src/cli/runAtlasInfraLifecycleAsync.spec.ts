@@ -7,7 +7,7 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 import { runAtlasInfraLifecycleAsync } from '@/cli/runAtlasInfraLifecycleAsync';
 
 describe('[Atlas Infra lifecycle]', () => {
-  it('validates, plans, and deterministically generates the local manifest environment', async () => {
+  it('validates, plans, and records the declared local environment without inventing deployment artifacts', async () => {
     const projectPath = await mkdtemp(join(tmpdir(), 'atlas-infra-'));
 
     try {
@@ -26,7 +26,9 @@ describe('[Atlas Infra lifecycle]', () => {
       if (!plan.ok || !generate.ok) return;
       assert.equal(plan.value.environment, 'local');
       assert.equal(generate.value.environment, 'local');
-      assert.equal(generate.value.ledger.projectId, 'atlas');
+      assert.equal('ledger' in generate.value, true);
+      if (!('artifacts' in generate.value)) return;
+      assert.deepEqual(generate.value.artifacts, []);
     } finally {
       await rm(projectPath, { recursive: true, force: true });
     }
