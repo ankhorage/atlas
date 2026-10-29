@@ -22,6 +22,22 @@ describe('[dependency-graph API route]', () => {
     if (!isDependencyGraph(graph)) return;
     assert.equal(graph.nodes.length > 0, true);
   });
+
+  it('does not derive the dependency-graph action target from an untrusted Host header', async () => {
+    const response = await POST(
+      new Request('http://atlas.test/api/dependency-graph', {
+        body: JSON.stringify({
+          projects: [{ id: 'current', rootPath: resolve(process.cwd(), 'examples/java/my-app') }],
+        }),
+        headers: { 'content-type': 'application/json', host: 'attacker.invalid' },
+        method: 'POST',
+      })
+    );
+    const graph: unknown = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(isDependencyGraph(graph), true);
+  });
 });
 
 /*** Identify the canonical serializable dependency graph response without importing implementation APIs. */

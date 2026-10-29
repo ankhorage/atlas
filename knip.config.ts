@@ -13,4 +13,6 @@ export default createKnipConfig({
   ],
   ignoreFiles: ['examples/**'],
   ignoreBinaries: ['mvn', 'gradle'],
+  // Infra resolves the manifest-selected provider packages through its published dynamic resolver.
+  ignoreDependencies: ['@ankhorage/infra-local', '@ankhorage/infra-minikube'],
 });

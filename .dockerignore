@@ -1,0 +1,9 @@
+.git
+.next
+.ankh
+node_modules
+test
+coverage
+examples/kotlin/my-app/bin
+examples/kotlin/my-app/build
+gradle-plugin/bin

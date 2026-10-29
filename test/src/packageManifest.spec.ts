@@ -55,6 +55,26 @@ describe('[package manifest]', () => {
     );
     assert.deepEqual(manifest.infra.apis?.['dependency-graph'], dependencyGraphApi.definition);
     assert.equal(manifest.themes[manifest.activeThemeId]?.id, manifest.metadata.themeId);
+    assert.equal(manifest.infra.environments.local.deployment.compute.provider, 'local');
+    assert.equal(manifest.infra.environments.local.deployment.runtime.provider, 'minikube');
+    assert.deepEqual(manifest.infra.environments.local.workloads?.['atlas-web'], {
+      id: 'atlas-web',
+      artifact: { kind: 'image', image: 'atlas-web:local' },
+      ports: { http: { port: 3000, publishedPort: 3000 } },
+      environment: {
+        ATLAS_PROJECT_PATH: { kind: 'literal', value: '/workspace' },
+      },
+      health: {
+        kind: 'http',
+        port: 3000,
+        path: '/',
+        intervalSeconds: 5,
+        timeoutSeconds: 3,
+        failureThreshold: 12,
+      },
+      exposure: 'public',
+      replicas: 1,
+    });
   });
 });
 
