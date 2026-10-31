@@ -4,14 +4,20 @@ import type {
   GitHubProjectMaterializer,
   ProjectSource,
   ResolvedProjectSource,
+  SourceJarMaterializer,
 } from '@/types/projectSource';
 
 /*** Resolve one project source into the filesystem root consumed by the existing analysis pipeline. */
 export async function resolveProjectSourceAsync(
   source: ProjectSource,
-  github: GitHubProjectMaterializer
+  github: GitHubProjectMaterializer,
+  sourceJar?: SourceJarMaterializer
 ): Promise<ResolvedProjectSource> {
   if (source.kind === 'filesystem') {
+    const materializedSourceJar = await sourceJar?.materializeAsync(source);
+    if (materializedSourceJar !== undefined && materializedSourceJar !== null) {
+      return { source, ...materializedSourceJar };
+    }
     return {
       rootPath: resolve(source.path),
       projectName: basename(resolve(source.path)) || '{unknown}',
