@@ -1,0 +1,7 @@
+{
+  "name": "nested-workspace-fixture",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

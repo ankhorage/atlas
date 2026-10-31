@@ -11,6 +11,7 @@ export interface PackageDependencyNodeData extends Readonly<Record<string, unkno
   readonly label: string;
   readonly name: string;
   readonly isIntrinsic?: boolean;
+  readonly isWorkspaceRoot?: boolean;
 }
 
 export interface PackageDependencyEdgeData extends Readonly<Record<string, unknown>> {

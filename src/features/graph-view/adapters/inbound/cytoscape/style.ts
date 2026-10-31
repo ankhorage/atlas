@@ -82,6 +82,7 @@ function getNodeBaseStyles(colors: GraphPalette): StylesheetJson {
         color: colors.nodeTextVendor,
       },
     },
+    getWorkspaceRootStyle('node.isWorkspaceRoot', colors),
   ];
 }
 
@@ -157,6 +158,10 @@ function getCompoundStyles(colors: GraphPalette): StylesheetJson {
         color: colors.nodeTextVendor,
       },
     },
+    getWorkspaceRootStyle(
+      'node:parent.isWorkspaceRoot, node:parent.isWorkspaceRoot:selected',
+      colors
+    ),
     {
       selector: 'node:parent.auditCycle, node:parent.auditCycle:selected',
       style: {
@@ -169,6 +174,18 @@ function getCompoundStyles(colors: GraphPalette): StylesheetJson {
       },
     },
   ];
+}
+
+/*** Paints owner-declared workspace roots with the active accent semantic. */
+function getWorkspaceRootStyle(selector: string, colors: GraphPalette): StylesheetJson[number] {
+  return {
+    selector,
+    style: {
+      'background-color': colors.nodeBgWorkspaceRoot,
+      'border-color': colors.nodeBorderWorkspaceRoot,
+      color: colors.nodeTextWorkspaceRoot,
+    },
+  };
 }
 
 /***
