@@ -109,8 +109,9 @@ describe('[WorkspaceSidebar]', () => {
     const shell = panel?.parentElement;
 
     expect(getScroll('tree')?.textContent).toContain('app');
-    expect(panel?.getAttribute('style')).toContain('min-height:0px;flex:1');
-    expect(shell?.getAttribute('style')).toContain('overflow-y:hidden');
+    expect(panel?.style.minHeight).toBe('0px');
+    expect(panel?.style.flexGrow).toBe('1');
+    expect(shell?.style.overflowY).toBe('hidden');
     expect(settingsLabel?.textContent).toBe('Layout');
     expect(settingsLabel ? getScroll('tree')?.contains(settingsLabel) : undefined).toBe(false);
     expect(settingsLabel ? shell?.contains(settingsLabel) : undefined).toBe(false);
