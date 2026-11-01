@@ -11,10 +11,11 @@ import type {
 export async function resolveProjectSourceAsync(
   source: ProjectSource,
   github: GitHubProjectMaterializer,
-  sourceJar?: SourceJarMaterializer
+  sourceJar?: SourceJarMaterializer,
+  signal?: AbortSignal
 ): Promise<ResolvedProjectSource> {
   if (source.kind === 'filesystem') {
-    const materializedSourceJar = await sourceJar?.materializeAsync(source);
+    const materializedSourceJar = await sourceJar?.materializeAsync(source, signal);
     if (materializedSourceJar !== undefined && materializedSourceJar !== null) {
       return { source, ...materializedSourceJar };
     }

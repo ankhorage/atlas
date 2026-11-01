@@ -9,45 +9,44 @@ import { type Entry, openPromise, type ZipFile } from 'yauzl';
 
 import type { LocalProjectMaterialization } from '@/types/projectSource';
 
-const MAX_ENTRY_COUNT = 10_000;
-const MAX_UNCOMPRESSED_SIZE = 256 * 1024 * 1024;
 const SOURCE_FILE_EXTENSION = /\.(?:c|cc|cpp|cxx|dpr|h|hpp|java|js|jsx|kt|kts|pas|py|ts|tsx)$/iu;
 const UNIX_FILE_TYPE_MASK = 0o170000;
 const UNIX_DIRECTORY_TYPE = 0o040000;
 const UNIX_REGULAR_FILE_TYPE = 0o100000;
 const ZIP_LOCAL_FILE_HEADER = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
 
+interface SourceJarLimits {
+  readonly maxEntryCount: number;
+  readonly maxUncompressedSize: number;
+}
+
+interface SourceJarMaterializationOptions {
+  readonly signal?: AbortSignal;
+  readonly limits?: Partial<SourceJarLimits>;
+}
+
+const SOURCE_JAR_LIMITS: SourceJarLimits = {
+  maxEntryCount: 10_000,
+  maxUncompressedSize: 256 * 1024 * 1024,
+};
+
 /*** Materializes a bounded local source JAR into an isolated temporary project root. */
 export async function materializeSourceJarAsync(
-  sourcePath: string
+  sourcePath: string,
+  options: SourceJarMaterializationOptions = {}
 ): Promise<LocalProjectMaterialization | null> {
+  const limits = getSourceJarLimits(options.limits);
+  throwIfAborted(options.signal);
   const sourceStats = await getSourceStatsAsync(sourcePath);
   if (sourceStats === null) return null;
   if (!sourceStats.isFile()) return null;
   if (!isJarPath(sourcePath)) return null;
   await assertZipSignatureAsync(sourcePath);
+  throwIfAborted(options.signal);
 
   const temporaryRoot = await mkdtemp(join(tmpdir(), 'atlas-source-jar-'));
   try {
-    const zip = await openPromise(sourcePath, {
-      autoClose: false,
-      lazyEntries: true,
-      strictFileNames: true,
-      validateEntrySizes: true,
-    });
-    try {
-      if (zip.entryCount > MAX_ENTRY_COUNT) {
-        throw new Error('Source JAR contains too many entries.');
-      }
-      const result = await extractSourceEntriesAsync(zip, temporaryRoot);
-      if (!result.hasSourceFile) {
-        throw new Error(
-          'Unsupported binary JAR input: the archive does not contain analyzable source files.'
-        );
-      }
-    } finally {
-      zip.close();
-    }
+    await extractSourceJarAsync(sourcePath, temporaryRoot, limits, options.signal);
     return {
       rootPath: temporaryRoot,
       projectName: getProjectName(sourcePath),
@@ -55,28 +54,64 @@ export async function materializeSourceJarAsync(
     };
   } catch (error) {
     await rm(temporaryRoot, { force: true, recursive: true });
+    if (options.signal?.aborted) throw getAbortError(options.signal);
     throw createSourceJarError(error);
+  }
+}
+
+/*** Owns ZIP reader lifetime and cancellation while extraction stays bounded by the adapter policy. */
+async function extractSourceJarAsync(
+  sourcePath: string,
+  temporaryRoot: string,
+  limits: SourceJarLimits,
+  signal: AbortSignal | undefined
+): Promise<void> {
+  const zip = await openPromise(sourcePath, {
+    autoClose: false,
+    lazyEntries: true,
+    strictFileNames: true,
+    validateEntrySizes: false,
+  });
+  const closeOnAbort = () => closeZip(zip);
+  signal?.addEventListener('abort', closeOnAbort, { once: true });
+  try {
+    if (zip.entryCount > limits.maxEntryCount) {
+      throw new Error('Source JAR contains too many entries.');
+    }
+    throwIfAborted(signal);
+    const result = await extractSourceEntriesAsync(zip, temporaryRoot, limits, signal);
+    if (!result.hasSourceFile) {
+      throw new Error(
+        'Unsupported binary JAR input: the archive does not contain analyzable source files.'
+      );
+    }
+  } finally {
+    signal?.removeEventListener('abort', closeOnAbort);
+    closeZip(zip);
   }
 }
 
 /*** Validates and extracts only ordinary archive entries beneath the isolated temporary root. */
 async function extractSourceEntriesAsync(
   zip: ZipFile,
-  temporaryRoot: string
+  temporaryRoot: string,
+  limits: SourceJarLimits,
+  signal?: AbortSignal
 ): Promise<{ readonly hasSourceFile: boolean }> {
   let entryCount = 0;
   let declaredUncompressedSize = 0;
   let hasSourceFile = false;
   const archiveEntries = new Map<string, 'directory' | 'file'>();
-  const createEntrySizeLimit = createExtractedSizeLimit();
+  const createEntrySizeLimit = createExtractedSizeLimit(limits.maxUncompressedSize);
 
   for await (const entry of zip.eachEntry()) {
+    throwIfAborted(signal);
     entryCount += 1;
-    if (entryCount > MAX_ENTRY_COUNT) throw new Error('Source JAR contains too many entries.');
+    if (entryCount > limits.maxEntryCount) throw new Error('Source JAR contains too many entries.');
     const entryKind = assertSafeArchiveEntry(entry, temporaryRoot);
     assertDistinctArchiveEntry(archiveEntries, entry.fileName, entryKind);
     declaredUncompressedSize += entry.uncompressedSize;
-    if (declaredUncompressedSize > MAX_UNCOMPRESSED_SIZE) {
+    if (declaredUncompressedSize > limits.maxUncompressedSize) {
       throw new Error('Source JAR expands beyond the supported size limit.');
     }
     if (entryKind === 'directory') {
@@ -88,7 +123,8 @@ async function extractSourceEntriesAsync(
     await pipeline(
       await zip.openReadStreamPromise(entry),
       createEntrySizeLimit(),
-      createWriteStream(targetPath, { flags: 'wx' })
+      createWriteStream(targetPath, { flags: 'wx' }),
+      { signal }
     );
     hasSourceFile ||= SOURCE_FILE_EXTENSION.test(entry.fileName);
   }
@@ -176,19 +212,56 @@ function assertDistinctArchiveEntry(
 }
 
 /*** Counts actual decompressed bytes because ZIP metadata cannot be trusted as a size bound. */
-function createExtractedSizeLimit(): () => Transform {
+function createExtractedSizeLimit(maxUncompressedSize: number): () => Transform {
   let extractedSize = 0;
   return () =>
     new Transform({
       transform(chunk: Buffer, _encoding, callback) {
         extractedSize += chunk.length;
-        if (extractedSize > MAX_UNCOMPRESSED_SIZE) {
+        if (extractedSize > maxUncompressedSize) {
           callback(new Error('Source JAR expands beyond the supported size limit.'));
           return;
         }
         callback(null, chunk);
       },
     });
+}
+
+/*** Limits test-controlled archive budgets to stricter values than the production security ceiling. */
+function getSourceJarLimits(overrides: Partial<SourceJarLimits> | undefined): SourceJarLimits {
+  return {
+    maxEntryCount: getRestrictedLimit(overrides?.maxEntryCount, SOURCE_JAR_LIMITS.maxEntryCount),
+    maxUncompressedSize: getRestrictedLimit(
+      overrides?.maxUncompressedSize,
+      SOURCE_JAR_LIMITS.maxUncompressedSize
+    ),
+  };
+}
+
+/*** Rejects invalid limits and prevents callers from weakening production archive protection. */
+function getRestrictedLimit(override: number | undefined, maximum: number): number {
+  if (override === undefined) return maximum;
+  if (!Number.isSafeInteger(override) || override <= 0 || override > maximum) {
+    throw new Error('Source JAR limit must be a positive integer within the supported maximum.');
+  }
+  return override;
+}
+
+/*** Closes an open ZIP reader so cancellation releases its file descriptor without double-closing. */
+function closeZip(zip: ZipFile): void {
+  if (zip.isOpen) zip.close();
+}
+
+/*** Stops archive work at the adapter boundary while preserving an explicit abort reason. */
+function throwIfAborted(signal: AbortSignal | undefined): void {
+  if (signal?.aborted) throw getAbortError(signal);
+}
+
+/*** Creates the standard cancellation error when callers did not supply an Error reason. */
+function getAbortError(signal: AbortSignal): Error {
+  return signal.reason instanceof Error
+    ? signal.reason
+    : new DOMException('The source JAR operation was aborted.', 'AbortError');
 }
 
 /*** Leaves existing directory and missing-path handling to the canonical project-analysis boundary. */

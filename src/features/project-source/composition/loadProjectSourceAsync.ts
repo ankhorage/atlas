@@ -4,8 +4,17 @@ import { resolveProjectSourceAsync } from '@/features/project-source/application
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 
 /*** Wire the canonical GitHub repository adapter into project-source resolution. */
-export function loadProjectSourceAsync(source: ProjectSource): Promise<ResolvedProjectSource> {
-  return resolveProjectSourceAsync(source, createGitHubProjectMaterializer(), {
-    materializeAsync: filesystemSource => materializeSourceJarAsync(filesystemSource.path),
-  });
+export function loadProjectSourceAsync(
+  source: ProjectSource,
+  signal?: AbortSignal
+): Promise<ResolvedProjectSource> {
+  return resolveProjectSourceAsync(
+    source,
+    createGitHubProjectMaterializer(),
+    {
+      materializeAsync: (filesystemSource, materializationSignal) =>
+        materializeSourceJarAsync(filesystemSource.path, { signal: materializationSignal }),
+    },
+    signal
+  );
 }
