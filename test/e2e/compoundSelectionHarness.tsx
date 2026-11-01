@@ -97,6 +97,7 @@ function CompoundSelectionHarness() {
         edges={presentation.edges}
         layout="breadthfirst"
         nodes={presentation.nodes}
+        renderNode={({ node }) => <span data-testid={`graph-node-${node.id}`}>{node.label}</span>}
         selectedNodeIds={selectedNodeIds}
         style={{ height: 640, width: 960 }}
         styleRules={[
