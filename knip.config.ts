@@ -10,6 +10,7 @@ export default createKnipConfig({
     'test/**/*.spec.{ts,tsx}',
     'src/features/offline-export/adapters/inbound/browser/bootstrapOfflineWorkspace.tsx',
     'test/benchmarks/*.ts',
+    'test/e2e/compoundSelectionHarness.tsx',
   ],
   // The project-detector spec reads this nested workspace from disk at runtime; Knip cannot
   // statically resolve that fixture-data path as an import.

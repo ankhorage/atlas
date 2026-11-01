@@ -121,18 +121,9 @@ jobs:
           ATLAS_PROJECT_PATH: ${{ github.workspace }}/test/fixtures/typescript/compound-selection
           ATLAS_PROJECT_NAME: compound-selection
         run: |
-          bun bin/atlas.ts test/fixtures/typescript/compound-selection --offline --out offline-compound-selection.html
           export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           test -n "$ATLAS_CHROME"
-          bun run start > next.log 2>&1 &
-          next_pid=$!
-          trap 'kill "$next_pid"; rm -f offline-compound-selection.html next.log' EXIT
-          for attempt in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then break; fi
-            sleep 1
-          done
-          curl --fail --silent http://127.0.0.1:3000/ > /dev/null
-          ATLAS_BREADCRUMB_TARGET=src.features ATLAS_OFFLINE_REPORT=offline-compound-selection.html ATLAS_ONLINE_URL=http://127.0.0.1:3000/ bun run test:offline-browser
+          bun run test:compound-selection-browser
 
       - name: Run typecheck
         run: |
