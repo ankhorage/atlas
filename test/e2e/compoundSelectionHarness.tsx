@@ -149,5 +149,5 @@ createRoot(document.getElementById('root') as HTMLElement).render(<CompoundSelec
 
 /*** Serializes only public GraphView geometry so the browser can target rendered canvas positions. */
 function readMeasurement(controller: GraphViewController): string {
-  return JSON.stringify(controller.measureNodes?.(['src', 'src.features']) ?? null);
+  return JSON.stringify(controller.measureNodes?.(NODES.map(node => node.id)) ?? null);
 }

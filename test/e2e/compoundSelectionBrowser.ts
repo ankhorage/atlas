@@ -101,14 +101,51 @@ async function pressMeasuredNode(page: Page, nodeId: string): Promise<void> {
 /*** Reads one canvas-relative node position published by the test-owned public controller harness. */
 async function readMeasuredNodePosition(page: Page, nodeId: string) {
   const measurement = JSON.parse(await page.getByLabel('Graph geometry').innerText()) as {
-    readonly nodes: readonly {
-      readonly id: string;
-      readonly position: { readonly x: number; readonly y: number };
-    }[];
+    readonly nodes: readonly MeasuredNode[];
   } | null;
   const node = measurement?.nodes.find(candidate => candidate.id === nodeId);
-  if (node === undefined) throw new Error(`GraphView did not measure ${nodeId}.`);
-  return { x: node.position.x, y: node.position.y };
+  if (node === undefined || measurement === null)
+    throw new Error(`GraphView did not measure ${nodeId}.`);
+  return findUncoveredNodePosition(node, measurement.nodes);
+}
+
+/*** Finds an exact measured frame position that is not covered by a rendered child node. */
+function findUncoveredNodePosition(target: MeasuredNode, nodes: readonly MeasuredNode[]) {
+  const inset = Math.min(target.size.width, target.size.height) / 4;
+  const x1 = target.position.x - target.size.width / 2;
+  const x2 = target.position.x + target.size.width / 2;
+  const y1 = target.position.y - target.size.height / 2;
+  const y2 = target.position.y + target.size.height / 2;
+  const candidates = [
+    { x: x1 + inset, y: y1 + inset },
+    { x: x2 - inset, y: y1 + inset },
+    { x: x1 + inset, y: y2 - inset },
+    { x: x2 - inset, y: y2 - inset },
+  ];
+  const position = candidates.find(candidate =>
+    nodes.filter(node => node.id !== target.id).every(node => !containsPosition(node, candidate))
+  );
+  if (position === undefined) throw new Error(`No exposed rendered position for ${target.id}.`);
+  return position;
+}
+
+/*** Determines whether a measured rendered bound covers one canvas-relative point. */
+function containsPosition(
+  node: MeasuredNode,
+  position: { readonly x: number; readonly y: number }
+): boolean {
+  return (
+    position.x >= node.position.x - node.size.width / 2 &&
+    position.x <= node.position.x + node.size.width / 2 &&
+    position.y >= node.position.y - node.size.height / 2 &&
+    position.y <= node.position.y + node.size.height / 2
+  );
+}
+
+interface MeasuredNode {
+  readonly id: string;
+  readonly position: { readonly x: number; readonly y: number };
+  readonly size: { readonly width: number; readonly height: number };
 }
 
 /*** Verifies the selected compound's readable subtree and directional external dependencies. */
