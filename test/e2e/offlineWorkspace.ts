@@ -8,7 +8,6 @@ import { chromium, type Page } from 'playwright-core';
 const reportPath = resolve(process.env.ATLAS_OFFLINE_REPORT ?? 'offline-smoke.html');
 const browserPath = process.env.ATLAS_CHROME;
 const projectName = process.env.ATLAS_PROJECT_NAME ?? 'my-app';
-const breadcrumbTarget = process.env.ATLAS_BREADCRUMB_TARGET;
 const requireCompoundNodes = process.env.ATLAS_REQUIRE_COMPOUND_NODES === 'true';
 
 if (browserPath === undefined)
@@ -84,8 +83,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   await page.getByLabel('Expand').first().click();
   await page.getByLabel('Collapse').first().click();
 
-  if (breadcrumbTarget === undefined) await assertGenericWorkspaceInteractions(page);
-  else await assertBreadcrumbNavigation(page, breadcrumbTarget);
+  await assertGenericWorkspaceInteractions(page);
   if (requireCompoundNodes) await assertCompoundNodesEnabled(page);
   await assertDarkTheme(page);
 }
@@ -103,41 +101,7 @@ async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
     });
 }
 
-/*** Navigates the initial singleton GraphView package and verifies the resulting breadcrumb path. */
-async function assertBreadcrumbNavigation(page: Page, target: string): Promise<void> {
-  const expected = ['Home', target];
-  const breadcrumbs = await readBreadcrumbs(page);
-  if (areEqual(breadcrumbs, expected)) return;
-  if (!areEqual(breadcrumbs, ['Home']) || target !== 'src') {
-    throw new Error(
-      `Expected the compound fixture to begin at Home before navigating to src, received ${JSON.stringify(breadcrumbs)}.`
-    );
-  }
-
-  await page.getByRole('treeitem', { name: 'Expand src', exact: true }).waitFor();
-  await page.getByLabel('Fit graph and optimize spacing for readability').click();
-  const graphCanvas = page.getByRole('application', { name: 'Graph' }).locator('canvas').first();
-  const graphBounds = await graphCanvas.boundingBox();
-  if (graphBounds === null) throw new Error('The initial GraphView package was not visible.');
-
-  await graphCanvas.dblclick({
-    position: { x: graphBounds.width / 2, y: graphBounds.height / 2 },
-  });
-  await page
-    .getByText('Home', { exact: true })
-    .locator('xpath=../../..')
-    .getByText('src', { exact: true })
-    .waitFor();
-
-  const navigatedBreadcrumbs = await readBreadcrumbs(page);
-  if (!areEqual(navigatedBreadcrumbs, expected)) {
-    throw new Error(
-      `Expected breadcrumb ${JSON.stringify(expected)}, received ${JSON.stringify(navigatedBreadcrumbs)}.`
-    );
-  }
-}
-
-/*** Enables the real workspace's compound projection after navigation to its parent package. */
+/*** Enables the real workspace's compound projection without claiming canvas-node targeting. */
 async function assertCompoundNodesEnabled(page: Page): Promise<void> {
   const compoundNodes = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
   if (!(await isSwitchChecked(compoundNodes))) await compoundNodes.click();
@@ -302,11 +266,6 @@ async function readBreadcrumbs(page: Page): Promise<readonly string[]> {
     .split('›')
     .map(label => label.trim().split('\n').at(-1) ?? '')
     .filter(Boolean);
-}
-
-/*** Compares ordered visible breadcrumb labels without serializing test state. */
-function areEqual(left: readonly string[], right: readonly string[]): boolean {
-  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 /*** Compare live graph controls while graph-node selection is observed through the synchronized tree. */

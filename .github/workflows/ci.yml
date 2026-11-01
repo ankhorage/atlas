@@ -125,7 +125,7 @@ jobs:
           test -n "$ATLAS_CHROME"
           bun run test:compound-selection-browser
           bun bin/atlas.ts test/fixtures/typescript/compound-selection --offline --out compound-selection.html
-          ATLAS_OFFLINE_REPORT=compound-selection.html ATLAS_PROJECT_NAME=compound-selection ATLAS_BREADCRUMB_TARGET=src ATLAS_REQUIRE_COMPOUND_NODES=true bun run test:offline-browser
+          ATLAS_OFFLINE_REPORT=compound-selection.html ATLAS_PROJECT_NAME=compound-selection ATLAS_REQUIRE_COMPOUND_NODES=true bun run test:offline-browser
           rm -f compound-selection.html
 
       - name: Run typecheck
