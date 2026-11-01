@@ -22,3 +22,16 @@ export interface GitHubProjectMaterializer {
     source: Extract<ProjectSource, { readonly kind: 'github' }>
   ) => Promise<GitHubProjectMaterialization>;
 }
+
+export interface SourceJarMaterializer {
+  readonly materializeAsync: (
+    source: Extract<ProjectSource, { readonly kind: 'filesystem' }>,
+    signal?: AbortSignal
+  ) => Promise<LocalProjectMaterialization | null>;
+}
+
+export interface LocalProjectMaterialization {
+  readonly rootPath: string;
+  readonly projectName: string;
+  readonly cleanupAsync: () => Promise<void>;
+}
