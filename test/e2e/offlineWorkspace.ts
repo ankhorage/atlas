@@ -83,14 +83,23 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   await page.getByLabel('Expand').first().click();
   await page.getByLabel('Collapse').first().click();
 
-  await assertGenericWorkspaceInteractions(page);
-  if (requireCompoundNodes) await assertCompoundNodesEnabled(page);
+  if (requireCompoundNodes) {
+    await assertRuleEvidence(page);
+    await assertCompoundNodesEnabled(page);
+  } else {
+    await assertGenericWorkspaceInteractions(page);
+  }
   await assertDarkTheme(page);
 }
 
 /*** Covers graph selection and rule evidence in the representative Java workspace smoke fixture. */
 async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
   await selectGraphNodes(page);
+  await assertRuleEvidence(page);
+}
+
+/*** Verifies user-visible audit evidence without guessing a canvas node position. */
+async function assertRuleEvidence(page: Page): Promise<void> {
   const ruleTab = page.getByRole('tab', { name: /Rules/ });
   await ruleTab.click();
   await page
