@@ -123,10 +123,26 @@ function findUncoveredNodePosition(target: MeasuredNode, nodes: readonly Measure
     { x: x2 - inset, y: y2 - inset },
   ];
   const position = candidates.find(candidate =>
-    nodes.filter(node => node.id !== target.id).every(node => !containsPosition(node, candidate))
+    nodes
+      .filter(node => node.id !== target.id && isContainedWithin(node, target))
+      .every(node => !containsPosition(node, candidate))
   );
   if (position === undefined) throw new Error(`No exposed rendered position for ${target.id}.`);
   return position;
+}
+
+/*** Limits occlusion checks to child-sized bounds inside the measured compound frame. */
+function isContainedWithin(candidate: MeasuredNode, container: MeasuredNode): boolean {
+  return (
+    candidate.position.x - candidate.size.width / 2 >=
+      container.position.x - container.size.width / 2 &&
+    candidate.position.x + candidate.size.width / 2 <=
+      container.position.x + container.size.width / 2 &&
+    candidate.position.y - candidate.size.height / 2 >=
+      container.position.y - container.size.height / 2 &&
+    candidate.position.y + candidate.size.height / 2 <=
+      container.position.y + container.size.height / 2
+  );
 }
 
 /*** Determines whether a measured rendered bound covers one canvas-relative point. */
