@@ -67,6 +67,7 @@ function projectNode(
       label,
       name: label,
       ...(intrinsic ? { isIntrinsic: true } : {}),
+      ...(data.kind === 'package' && data.focus ? { isWorkspaceRoot: true } : {}),
     },
   };
 }

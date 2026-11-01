@@ -6,10 +6,13 @@ export interface GraphPalette {
   readonly edge: string;
   readonly nodeBg: string;
   readonly nodeBgVendor: string;
+  readonly nodeBgWorkspaceRoot: string;
   readonly nodeBorder: string;
   readonly nodeBorderVendor: string;
+  readonly nodeBorderWorkspaceRoot: string;
   readonly nodeText: string;
   readonly nodeTextVendor: string;
+  readonly nodeTextWorkspaceRoot: string;
   readonly selectedFill: string;
   readonly selectedRing: string;
   readonly selectedText: string;
@@ -26,10 +29,13 @@ export function getGraphPalette(theme: ZoraRuntimeTheme): GraphPalette {
     edge: theme.semantics.content.muted,
     nodeBg: theme.semantics.brand.softBg,
     nodeBgVendor: theme.semantics.secondary.softBg,
+    nodeBgWorkspaceRoot: theme.semantics.accent.softBg,
     nodeBorder: theme.semantics.brand.outline,
     nodeBorderVendor: theme.semantics.secondary.outline,
+    nodeBorderWorkspaceRoot: theme.semantics.accent.outline,
     nodeText: theme.semantics.brand.onSoftText,
     nodeTextVendor: theme.semantics.secondary.onSoftText,
+    nodeTextWorkspaceRoot: theme.semantics.accent.onSoftText,
     selectedFill: theme.semantics.selection.background,
     selectedRing: theme.semantics.selection.border,
     selectedText: theme.semantics.selection.content,

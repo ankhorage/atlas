@@ -35,7 +35,7 @@ describe('[useWorkspaceNavigation]', () => {
     expect(observeWorkspaceTransitions(embedded)).toEqual(observeWorkspaceTransitions(online));
   });
 
-  it('synchronizes replace and toggle selection across tree and graph without changing navigation', () => {
+  it('clears a sole replace selection from either view without changing navigation', () => {
     const tree = coderadarTree();
     const workspace = createWorkspace(tree);
     const host = render(<div />);
@@ -67,6 +67,7 @@ describe('[useWorkspaceNavigation]', () => {
           <button onClick={() => navigation.selectGraphNode('io', 'replace')}>
             graph-io-replace
           </button>
+          <button onClick={() => navigation.navigateToPackage('io')}>navigate-io</button>
           <button onClick={() => navigation.navigateToPackage('')}>home</button>
         </>
       );
@@ -85,22 +86,37 @@ describe('[useWorkspaceNavigation]', () => {
     try {
       flushSync(() => root.render(<Harness />));
 
+      click('navigate-io');
+      expect(output()).toBe('||io');
+
       click('tree-io-replace');
-      expect(output()).toBe('io|directory:io|');
+      expect(output()).toBe('io|directory:io|io');
+
+      click('tree-io-replace');
+      expect(output()).toBe('||io');
+
+      click('tree-io-replace');
+      expect(output()).toBe('io|directory:io|io');
+
+      click('graph-io-replace');
+      expect(output()).toBe('||io');
+
+      click('tree-io-replace');
+      expect(output()).toBe('io|directory:io|io');
 
       click('tree-coderadar-toggle');
       expect(output()).toBe(
-        'io,io.reflectoring.coderadar|directory:io,directory:io/reflectoring/coderadar|'
+        'io,io.reflectoring.coderadar|directory:io,directory:io/reflectoring/coderadar|io'
       );
 
       click('graph-external-toggle');
       expect(output()).toBe(
-        'io,io.reflectoring.coderadar,external|directory:io,directory:io/reflectoring/coderadar|'
+        'io,io.reflectoring.coderadar,external|directory:io,directory:io/reflectoring/coderadar|io'
       );
 
       click('graph-io-toggle');
       expect(output()).toBe(
-        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|'
+        'io.reflectoring.coderadar,external|directory:io/reflectoring/coderadar|io'
       );
 
       click('home');
