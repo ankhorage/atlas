@@ -15,6 +15,7 @@ export default createKnipConfig({
   // statically resolve that fixture-data path as an import.
   ignoreFiles: [
     'examples/**',
+    'test/fixtures/typescript/compound-selection/src/**/*.ts',
     'test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts',
   ],
   ignoreBinaries: ['mvn', 'gradle'],

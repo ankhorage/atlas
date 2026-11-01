@@ -11,19 +11,23 @@ export function getDependencyHighlightClasses(
   activeNodeIds: ReadonlySet<string>,
   parentById: ReadonlyMap<string, string>
 ) {
-  const visibleActiveNodeIds = getVisibleActiveNodeIds(activeNodeIds, parentById);
-  const compoundDescendantNodeIds = new Set(
-    [...visibleActiveNodeIds].filter(id => !activeNodeIds.has(id))
+  const childrenByParent = getChildrenByParent(parentById);
+  const visibleActiveNodeIds = getVisibleActiveNodeIds(activeNodeIds, childrenByParent);
+  const selectedCompoundScopes = getSelectedCompoundScopes(
+    activeNodeIds,
+    childrenByParent,
+    visibleActiveNodeIds
   );
   const outgoing = new Set<string>();
   const incoming = new Set<string>();
   const edgeClasses = edges.map(edge => {
     const fromActive = visibleActiveNodeIds.has(edge.source);
     const toActive = visibleActiveNodeIds.has(edge.target);
-    const internalCompoundEdge =
-      fromActive &&
-      toActive &&
-      (compoundDescendantNodeIds.has(edge.source) || compoundDescendantNodeIds.has(edge.target));
+    const internalCompoundEdge = hasSharedSelectedCompoundScope(
+      edge.source,
+      edge.target,
+      selectedCompoundScopes
+    );
     if (fromActive && !internalCompoundEdge) outgoing.add(edge.target);
     if (toActive && !internalCompoundEdge) incoming.add(edge.source);
     return internalCompoundEdge
@@ -41,18 +45,24 @@ export function getDependencyHighlightClasses(
   return { nodeClasses, edgeClasses };
 }
 
-/*** Expands selected visible compounds through their logical child relation without changing selection. */
-function getVisibleActiveNodeIds(
-  activeNodeIds: ReadonlySet<string>,
+/*** Indexes direct visible children so selection expansion and scope classification share one ancestry relation. */
+function getChildrenByParent(
   parentById: ReadonlyMap<string, string>
-): ReadonlySet<string> {
+): ReadonlyMap<string, string[]> {
   const childrenByParent = new Map<string, string[]>();
   for (const [childId, parentId] of parentById) {
     const children = childrenByParent.get(parentId) ?? [];
     children.push(childId);
     childrenByParent.set(parentId, children);
   }
+  return childrenByParent;
+}
 
+/*** Expands selected visible compounds through their logical child relation without changing selection. */
+function getVisibleActiveNodeIds(
+  activeNodeIds: ReadonlySet<string>,
+  childrenByParent: ReadonlyMap<string, readonly string[]>
+): ReadonlySet<string> {
   const visibleActiveNodeIds = new Set(activeNodeIds);
   const pendingParentIds = [...activeNodeIds];
   for (const parentId of pendingParentIds) {
@@ -63,6 +73,54 @@ function getVisibleActiveNodeIds(
     }
   }
   return visibleActiveNodeIds;
+}
+
+/*** Assigns each expanded node to selected compounds that actually contain descendants. */
+function getSelectedCompoundScopes(
+  activeNodeIds: ReadonlySet<string>,
+  childrenByParent: ReadonlyMap<string, readonly string[]>,
+  visibleActiveNodeIds: ReadonlySet<string>
+): ReadonlyMap<string, ReadonlySet<string>> {
+  const scopesByNodeId = new Map<string, Set<string>>();
+  for (const compoundId of activeNodeIds) {
+    if (!childrenByParent.has(compoundId)) continue;
+    for (const nodeId of getVisibleCompoundNodeIds(compoundId, childrenByParent)) {
+      if (!visibleActiveNodeIds.has(nodeId)) continue;
+      const scopes = scopesByNodeId.get(nodeId) ?? new Set<string>();
+      scopes.add(compoundId);
+      scopesByNodeId.set(nodeId, scopes);
+    }
+  }
+  return scopesByNodeId;
+}
+
+/*** Expands one compound scope inclusively through its visible child relation. */
+function getVisibleCompoundNodeIds(
+  compoundId: string,
+  childrenByParent: ReadonlyMap<string, readonly string[]>
+): ReadonlySet<string> {
+  const nodeIds = new Set([compoundId]);
+  const pendingNodeIds = [compoundId];
+  for (const nodeId of pendingNodeIds) {
+    for (const childId of childrenByParent.get(nodeId) ?? []) {
+      if (nodeIds.has(childId)) continue;
+      nodeIds.add(childId);
+      pendingNodeIds.push(childId);
+    }
+  }
+  return nodeIds;
+}
+
+/*** Returns whether both dependency endpoints belong to one selected compound scope. */
+function hasSharedSelectedCompoundScope(
+  sourceId: string,
+  targetId: string,
+  scopesByNodeId: ReadonlyMap<string, ReadonlySet<string>>
+): boolean {
+  const sourceScopes = scopesByNodeId.get(sourceId);
+  const targetScopes = scopesByNodeId.get(targetId);
+  if (sourceScopes === undefined || targetScopes === undefined) return false;
+  return [...sourceScopes].some(scopeId => targetScopes.has(scopeId));
 }
 
 /*** Keeps dependency direction and active-node emphasis while dimming unrelated elements. */

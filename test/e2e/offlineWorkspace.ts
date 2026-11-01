@@ -7,6 +7,8 @@ import { chromium, type Page } from 'playwright-core';
 
 const reportPath = resolve(process.env.ATLAS_OFFLINE_REPORT ?? 'offline-smoke.html');
 const browserPath = process.env.ATLAS_CHROME;
+const projectName = process.env.ATLAS_PROJECT_NAME ?? 'my-app';
+const breadcrumbTarget = process.env.ATLAS_BREADCRUMB_TARGET;
 
 if (browserPath === undefined)
   throw new Error('ATLAS_CHROME must point to an installed Chrome or Chromium binary.');
@@ -61,7 +63,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   if ((await error.count()) > 0)
     throw new Error(`Workspace failed to start: ${await error.innerText()}`);
   await page
-    .getByText('my-app', { exact: true })
+    .getByText(projectName, { exact: true })
     .waitFor({ timeout: 5000 })
     .catch(async () => {
       throw new Error(
@@ -81,8 +83,14 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   await page.getByLabel('Expand').first().click();
   await page.getByLabel('Collapse').first().click();
 
-  await selectGraphNodes(page);
+  if (breadcrumbTarget === undefined) await assertGenericWorkspaceInteractions(page);
+  else await assertBreadcrumbNavigation(page, breadcrumbTarget);
+  await assertDarkTheme(page);
+}
 
+/*** Covers graph selection and rule evidence in the representative Java workspace smoke fixture. */
+async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
+  await selectGraphNodes(page);
   const ruleTab = page.getByRole('tab', { name: /Rules/ });
   await ruleTab.click();
   await page
@@ -91,7 +99,47 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
     .catch(async () => {
       throw new Error(`Audit rule panel did not render: ${await page.locator('body').innerText()}`);
     });
-  await page.getByRole('button', { name: /Dark|Light/ }).click();
+}
+
+/*** Navigates the real project tree and verifies the resulting stable breadcrumb path. */
+async function assertBreadcrumbNavigation(page: Page, target: string): Promise<void> {
+  const labels = target.split('.').filter(Boolean);
+  for (const [index, label] of labels.entries()) {
+    const item = page.getByRole('treeitem', { name: label, exact: true });
+    if (index < labels.length - 1 && (await item.getAttribute('aria-expanded')) === 'false') {
+      await item.getByLabel('Expand', { exact: true }).click();
+    }
+    await item.click();
+  }
+
+  const breadcrumbs = await readBreadcrumbs(page);
+  const expected = ['Home', ...labels];
+  if (JSON.stringify(breadcrumbs) !== JSON.stringify(expected)) {
+    throw new Error(
+      `Expected breadcrumb ${JSON.stringify(expected)}, received ${JSON.stringify(breadcrumbs)}.`
+    );
+  }
+}
+
+/*** Enters dark mode and proves the workspace surface follows the selected theme. */
+async function assertDarkTheme(page: Page): Promise<void> {
+  const darkAction = page.getByRole('button', { name: 'Dark', exact: true });
+  if ((await darkAction.count()) === 0) {
+    await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+    return;
+  }
+
+  const workspace = page.getByTestId('main');
+  const lightSurface = await workspace.evaluate(
+    element => getComputedStyle(element).backgroundColor
+  );
+  await darkAction.click();
+  await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+  const darkSurface = await workspace.evaluate(
+    element => getComputedStyle(element).backgroundColor
+  );
+  if (darkSurface === lightSurface)
+    throw new Error('Dark mode did not change the workspace surface.');
 }
 
 async function selectGraphNodes(page: Page): Promise<void> {

@@ -129,4 +129,72 @@ describe('[graph interactions]', () => {
     ]);
     expect(state.selectedNodeIds).toEqual(['group']);
   });
+
+  it('keeps dependencies between separately selected compound scopes directional', () => {
+    const compoundNodes = ['groupA', 'a', 'groupB', 'b'].map(id => ({ id }));
+    const state = reduceGraphInteraction(
+      reduceGraphInteraction(initial, { id: 'groupA', type: 'select' }),
+      { id: 'groupB', type: 'select' }
+    );
+
+    const result = applyGraphInteractionPresentation(
+      compoundNodes,
+      [{ source: 'a', target: 'b' }],
+      state,
+      new Map([
+        ['a', 'groupA'],
+        ['b', 'groupB'],
+      ])
+    );
+
+    expect(result.nodes.map(node => node.classes)).toEqual([
+      'highlight',
+      'highlight highlight-incomer',
+      'highlight',
+      'highlight highlight-outgoer',
+    ]);
+    expect(result.edges.map(edge => edge.classes)).toEqual(['highlight-outgoer highlight-incomer']);
+  });
+
+  it('keeps a selected compound dependency to an external selected leaf directional', () => {
+    const compoundNodes = ['group', 'child', 'external'].map(id => ({ id }));
+    const state = reduceGraphInteraction(
+      reduceGraphInteraction(initial, { id: 'group', type: 'select' }),
+      { id: 'external', type: 'select' }
+    );
+
+    const result = applyGraphInteractionPresentation(
+      compoundNodes,
+      [{ source: 'child', target: 'external' }],
+      state,
+      new Map([['child', 'group']])
+    );
+
+    expect(result.nodes.map(node => node.classes)).toEqual([
+      'highlight',
+      'highlight highlight-incomer',
+      'highlight highlight-outgoer',
+    ]);
+    expect(result.edges.map(edge => edge.classes)).toEqual(['highlight-outgoer highlight-incomer']);
+  });
+
+  it('keeps an internal edge stable when its selected compound child is explicitly selected', () => {
+    const compoundNodes = ['group', 'child', 'nested'].map(id => ({ id }));
+    const state = reduceGraphInteraction(
+      reduceGraphInteraction(initial, { id: 'group', type: 'select' }),
+      { id: 'child', type: 'select' }
+    );
+
+    const result = applyGraphInteractionPresentation(
+      compoundNodes,
+      [{ source: 'child', target: 'nested' }],
+      state,
+      new Map([
+        ['child', 'group'],
+        ['nested', 'child'],
+      ])
+    );
+
+    expect(result.edges.map(edge => edge.classes)).toEqual(['highlight']);
+  });
 });
