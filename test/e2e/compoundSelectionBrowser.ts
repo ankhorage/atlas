@@ -77,10 +77,12 @@ try {
       'true'
     );
     assertPresentation(await page.getByLabel('Graph presentation').innerText());
+    await assertRenderedTheme(page, '#ffffff', '#111827');
 
     await page.getByRole('button', { name: 'Dark', exact: true }).click();
     await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
     assertPresentation(await page.getByLabel('Graph presentation').innerText());
+    await assertRenderedTheme(page, '#111827', '#f9fafb');
     await page.screenshot({
       path: resolve(directory, 'compound-selection-dark.png'),
       fullPage: true,
@@ -101,15 +103,37 @@ function assertPresentation(serialized: string): void {
   const nodeClasses = new Map(presentation.nodes);
   const edgeClasses = new Map(presentation.edges);
   for (const nodeId of ['src.features', 'src.features.nested', 'src.features.nested.feature']) {
-    if (nodeClasses.get(nodeId)?.includes('hushed'))
-      throw new Error(`Selected compound descendant ${nodeId} is hushed.`);
+    assertIncludes(`selected compound node ${nodeId}`, nodeClasses.get(nodeId), 'highlight');
   }
   for (const edgeId of ['inner-compound', 'inner-descendant']) {
-    if (edgeClasses.get(edgeId)?.includes('hushed'))
-      throw new Error(`Internal compound edge ${edgeId} is hushed.`);
+    assertIncludes(`internal compound edge ${edgeId}`, edgeClasses.get(edgeId), 'highlight');
   }
   assertEqual('incoming edge class', edgeClasses.get('incoming'), 'highlight-incomer');
   assertEqual('outgoing edge class', edgeClasses.get('outgoing'), 'highlight-outgoer');
+}
+
+/*** Reads browser-computed graph and text colors in each rendered theme. */
+async function assertRenderedTheme(page: Page, expectedBackground: string, expectedText: string) {
+  const graph = page.getByRole('application', { name: 'Graph' });
+  const node = page.getByTestId('graph-node-src.features');
+  const [background, color] = await Promise.all([
+    graph.evaluate(element => getComputedStyle(element).backgroundColor),
+    node.evaluate(element => getComputedStyle(element).color),
+  ]);
+  assertEqual('rendered graph background', background, toRgb(expectedBackground));
+  assertEqual('rendered node label color', color, toRgb(expectedText));
+}
+
+/*** Requires the observable class instead of accepting missing graph elements as readable. */
+function assertIncludes(label: string, actual: string | undefined, expected: string): void {
+  if (!actual?.split(' ').includes(expected))
+    throw new Error(`${label}: expected class ${expected}, received ${actual ?? 'missing'}.`);
+}
+
+/*** Converts the fixed harness palette to the browser's computed rgb representation. */
+function toRgb(value: string): string {
+  const parsed = Number.parseInt(value.slice(1), 16);
+  return `rgb(${(parsed >> 16) & 255}, ${(parsed >> 8) & 255}, ${parsed & 255})`;
 }
 
 /*** Raises semantic browser evidence instead of relying on assertion-library internals. */

@@ -9,6 +9,7 @@ const reportPath = resolve(process.env.ATLAS_OFFLINE_REPORT ?? 'offline-smoke.ht
 const browserPath = process.env.ATLAS_CHROME;
 const projectName = process.env.ATLAS_PROJECT_NAME ?? 'my-app';
 const breadcrumbTarget = process.env.ATLAS_BREADCRUMB_TARGET;
+const requireCompoundNodes = process.env.ATLAS_REQUIRE_COMPOUND_NODES === 'true';
 
 if (browserPath === undefined)
   throw new Error('ATLAS_CHROME must point to an installed Chrome or Chromium binary.');
@@ -85,6 +86,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
 
   if (breadcrumbTarget === undefined) await assertGenericWorkspaceInteractions(page);
   else await assertBreadcrumbNavigation(page, breadcrumbTarget);
+  if (requireCompoundNodes) await assertCompoundNodesEnabled(page);
   await assertDarkTheme(page);
 }
 
@@ -119,6 +121,16 @@ async function assertBreadcrumbNavigation(page: Page, target: string): Promise<v
       `Expected breadcrumb ${JSON.stringify(expected)}, received ${JSON.stringify(breadcrumbs)}.`
     );
   }
+}
+
+/*** Enables the real workspace's compound projection after navigation to its parent package. */
+async function assertCompoundNodesEnabled(page: Page): Promise<void> {
+  const compoundNodes = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
+  await compoundNodes.click();
+  if ((await compoundNodes.getAttribute('aria-checked')) !== 'true') {
+    throw new Error('The workspace did not enable compound-node projection.');
+  }
+  await page.getByRole('application', { name: 'Graph' }).locator('canvas').waitFor();
 }
 
 /*** Enters dark mode and proves the workspace surface follows the selected theme. */
