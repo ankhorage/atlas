@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.2
+
+### Patch Changes
+
+- e3cdf9e: Visually distinguish owner-declared nested workspace roots in dependency graphs.
+
 ## 0.14.1
 
 ### Patch Changes
