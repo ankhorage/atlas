@@ -122,7 +122,11 @@ async function assertBreadcrumbNavigation(page: Page, target: string): Promise<v
   await graphCanvas.dblclick({
     position: { x: graphBounds.width / 2, y: graphBounds.height / 2 },
   });
-  await page.getByText('src', { exact: true }).nth(1).waitFor();
+  await page
+    .getByText('Home', { exact: true })
+    .locator('xpath=../../..')
+    .getByText('src', { exact: true })
+    .waitFor();
 
   const navigatedBreadcrumbs = await readBreadcrumbs(page);
   if (!areEqual(navigatedBreadcrumbs, expected)) {
