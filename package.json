@@ -63,6 +63,7 @@
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
     "test:offline-browser": "bun test/e2e/offlineWorkspace.ts",
+    "test:compound-selection-browser": "bun test/e2e/compoundSelectionBrowser.ts",
     "infra:validate": "bun src/cli/runAtlasInfraLifecycleAsync.ts validate",
     "infra:plan": "bun src/cli/runAtlasInfraLifecycleAsync.ts plan",
     "infra:generate": "bun src/cli/runAtlasInfraLifecycleAsync.ts generate",

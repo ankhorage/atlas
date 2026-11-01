@@ -7,6 +7,8 @@ import { chromium, type Page } from 'playwright-core';
 
 const reportPath = resolve(process.env.ATLAS_OFFLINE_REPORT ?? 'offline-smoke.html');
 const browserPath = process.env.ATLAS_CHROME;
+const projectName = process.env.ATLAS_PROJECT_NAME ?? 'my-app';
+const requireCompoundNodes = process.env.ATLAS_REQUIRE_COMPOUND_NODES === 'true';
 
 if (browserPath === undefined)
   throw new Error('ATLAS_CHROME must point to an installed Chrome or Chromium binary.');
@@ -61,7 +63,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   if ((await error.count()) > 0)
     throw new Error(`Workspace failed to start: ${await error.innerText()}`);
   await page
-    .getByText('my-app', { exact: true })
+    .getByText(projectName, { exact: true })
     .waitFor({ timeout: 5000 })
     .catch(async () => {
       throw new Error(
@@ -81,8 +83,21 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   await page.getByLabel('Expand').first().click();
   await page.getByLabel('Collapse').first().click();
 
-  await selectGraphNodes(page);
+  if (requireCompoundNodes) await assertCompoundNodesEnabled(page);
+  else {
+    await assertGenericWorkspaceInteractions(page);
+  }
+  await assertDarkTheme(page);
+}
 
+/*** Covers graph selection and rule evidence in the representative Java workspace smoke fixture. */
+async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
+  await selectGraphNodes(page);
+  await assertRuleEvidence(page);
+}
+
+/*** Verifies user-visible audit evidence without guessing a canvas node position. */
+async function assertRuleEvidence(page: Page): Promise<void> {
   const ruleTab = page.getByRole('tab', { name: /Rules/ });
   await ruleTab.click();
   await page
@@ -91,7 +106,49 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
     .catch(async () => {
       throw new Error(`Audit rule panel did not render: ${await page.locator('body').innerText()}`);
     });
-  await page.getByRole('button', { name: /Dark|Light/ }).click();
+}
+
+/*** Enables the real workspace's compound projection without claiming canvas-node targeting. */
+async function assertCompoundNodesEnabled(page: Page): Promise<void> {
+  const compoundNodes = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
+  if (!(await isSwitchChecked(compoundNodes))) await compoundNodes.click();
+  if (!(await isSwitchChecked(compoundNodes))) {
+    throw new Error('The workspace did not enable compound-node projection.');
+  }
+  const graphCanvas = page.getByRole('application', { name: 'Graph' }).locator('canvas').first();
+  await graphCanvas.waitFor();
+  if ((await graphCanvas.boundingBox()) === null) {
+    throw new Error('Compound-node projection left the GraphView unusable.');
+  }
+}
+
+/*** Reads the generated Switch thumb position because its current web output omits aria-checked. */
+async function isSwitchChecked(control: ReturnType<Page['getByRole']>): Promise<boolean> {
+  return control.evaluate(element => {
+    const thumb = element.querySelector(':scope > div > div > div');
+    return thumb instanceof HTMLElement && thumb.style.alignSelf === 'flex-end';
+  });
+}
+
+/*** Enters dark mode and proves the workspace surface follows the selected theme. */
+async function assertDarkTheme(page: Page): Promise<void> {
+  const darkAction = page.getByRole('button', { name: 'Dark', exact: true });
+  if ((await darkAction.count()) === 0) {
+    await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+    return;
+  }
+
+  const workspace = page.getByTestId('main');
+  const lightSurface = await workspace.evaluate(
+    element => getComputedStyle(element).backgroundColor
+  );
+  await darkAction.click();
+  await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+  const darkSurface = await workspace.evaluate(
+    element => getComputedStyle(element).backgroundColor
+  );
+  if (darkSurface === lightSurface)
+    throw new Error('Dark mode did not change the workspace surface.');
 }
 
 async function selectGraphNodes(page: Page): Promise<void> {
@@ -208,9 +265,14 @@ async function readSelectedTreeItems(page: Page): Promise<readonly string[]> {
 
 /*** Read the visible navigation trail after synchronized graph and tree selection. */
 async function readBreadcrumbs(page: Page): Promise<readonly string[]> {
-  return page
-    .locator('nav [role="button"], nav a, [aria-label*="breadcrumb" i] [role="button"]')
-    .allTextContents();
+  const breadcrumbText = await page
+    .getByText('Home', { exact: true })
+    .locator('xpath=../../..')
+    .innerText();
+  return breadcrumbText
+    .split('›')
+    .map(label => label.trim().split('\n').at(-1) ?? '')
+    .filter(Boolean);
 }
 
 /*** Compare live graph controls while graph-node selection is observed through the synchronized tree. */

@@ -14,13 +14,14 @@ import type { GraphInteractionState } from '@/types/graphInteraction';
 export function useGraphInteractions(
   nodes: readonly GraphViewNode[],
   edges: readonly GraphViewEdge[],
-  selectedNodeIds: readonly string[]
+  selectedNodeIds: readonly string[],
+  parentById: ReadonlyMap<string, string>
 ) {
   const nodeIds = useMemo(() => new Set(nodes.map(node => node.id)), [nodes]);
   const leafIds = useMemo(() => {
-    const parents = new Set(nodes.map(node => node.parentId));
+    const parents = new Set(parentById.values());
     return new Set(nodes.filter(node => !parents.has(node.id)).map(node => node.id));
-  }, [nodes]);
+  }, [nodes, parentById]);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const interaction = useMemo<GraphInteractionState>(
     () => ({
@@ -30,8 +31,8 @@ export function useGraphInteractions(
     [hoveredNodeId, leafIds, nodeIds, selectedNodeIds]
   );
   const presentation = useMemo(
-    () => applyGraphInteractionPresentation(nodes, edges, interaction),
-    [nodes, edges, interaction]
+    () => applyGraphInteractionPresentation(nodes, edges, interaction, parentById),
+    [nodes, edges, interaction, parentById]
   );
 
   /*** Route only approved leaf hover events to local interaction state; selection is workspace-owned. */
