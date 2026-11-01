@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.3
+
+### Patch Changes
+
+- cc1578e: Consume canonical Utility selection behavior when synchronizing repeated TreeView and GraphView activation.
+
 ## 0.14.2
 
 ### Patch Changes
