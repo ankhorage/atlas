@@ -32,8 +32,20 @@ try {
   const browser = await chromium.launch({ executablePath: browserPath, headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    const runtimeDiagnostics: string[] = [];
+    page.on('pageerror', error => runtimeDiagnostics.push(`pageerror:${error.message}`));
+    page.on('console', message => {
+      if (message.type() === 'error') runtimeDiagnostics.push(`console:${message.text()}`);
+    });
     await page.goto(pathToFileURL(documentPath).href, { waitUntil: 'networkidle' });
-    await page.getByRole('application', { name: 'Graph' }).waitFor();
+    await page
+      .getByRole('application', { name: 'Graph' })
+      .waitFor()
+      .catch(async () => {
+        throw new Error(
+          `GraphView did not render: ${runtimeDiagnostics.join(' | ')} ${await page.locator('body').innerText()}`
+        );
+      });
 
     await doublePressMeasuredNode(page, 'src');
     await page.getByLabel('Breadcrumbs').getByText('Home › src').waitFor();
