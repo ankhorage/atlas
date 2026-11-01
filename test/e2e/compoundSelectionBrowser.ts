@@ -26,7 +26,7 @@ try {
   const documentPath = resolve(directory, 'index.html');
   await writeFile(
     documentPath,
-    `<div id="root"></div><script type="module" src="./${basename(script.path)}"></script>`
+    `<div id="root"></div><script src="./${basename(script.path)}"></script>`
   );
 
   const browser = await chromium.launch({ executablePath: browserPath, headless: true });
