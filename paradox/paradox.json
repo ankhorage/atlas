@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.15.1",
+      "value": "v0.15.2",
       "color": "cb3837"
     },
     {
@@ -1853,10 +1853,53 @@
       "exports": []
     },
     {
+      "path": "test/e2e/compoundSelectionBrowser.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    },
+    {
+      "path": "test/e2e/compoundSelectionHarness.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        ".ankh/zora/web/components/graph-view/index.d.ts",
+        "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/e2e/offlineWorkspace.ts",
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
+    },
+    {
+      "path": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts"
+      ],
+      "exports": [
+        "feature"
+      ]
+    },
+    {
+      "path": "test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "nestedFeature"
+      ]
+    },
+    {
+      "path": "test/fixtures/typescript/compound-selection/src/index.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "test/fixtures/typescript/compound-selection/src/features/feature.ts"
+      ],
+      "exports": [
+        "application"
+      ]
     },
     {
       "path": "test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts",
@@ -3964,7 +4007,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 59,
+        "line": 61,
         "column": 1
       }
     },
@@ -3975,7 +4018,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 83,
+        "line": 85,
         "column": 1
       }
     },
@@ -3986,7 +4029,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 100,
+        "line": 102,
         "column": 1
       }
     },
@@ -3997,7 +4040,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 114,
+        "line": 116,
         "column": 1
       }
     },
@@ -4008,7 +4051,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 133,
+        "line": 135,
         "column": 1
       }
     },
@@ -4019,7 +4062,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 156,
+        "line": 158,
         "column": 1
       }
     },
@@ -4030,7 +4073,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 194,
+        "line": 196,
         "column": 1
       }
     },
@@ -4041,7 +4084,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 223,
+        "line": 225,
         "column": 1
       }
     },
@@ -4052,7 +4095,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 230,
+        "line": 232,
         "column": 1
       }
     },
@@ -4063,7 +4106,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 238,
+        "line": 240,
         "column": 1
       }
     },
@@ -4162,7 +4205,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 197,
+        "line": 198,
         "column": 1
       }
     },
@@ -4173,7 +4216,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 210,
+        "line": 211,
         "column": 1
       }
     },
@@ -4239,7 +4282,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
-        "line": 38,
+        "line": 39,
         "column": 9
       }
     },
@@ -4409,13 +4452,68 @@
       }
     },
     {
+      "name": "getChildrenByParent",
+      "description": "Indexes direct visible children so selection expansion and scope classification share one ancestry relation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "name": "getVisibleActiveNodeIds",
+      "description": "Expands selected visible compounds through their logical child relation without changing selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
+        "line": 62,
+        "column": 1
+      }
+    },
+    {
+      "name": "getSelectedCompoundScopes",
+      "description": "Assigns each expanded node to selected compounds that actually contain descendants.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
+        "line": 79,
+        "column": 1
+      }
+    },
+    {
+      "name": "getVisibleCompoundNodeIds",
+      "description": "Expands one compound scope inclusively through its visible child relation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
+        "line": 98,
+        "column": 1
+      }
+    },
+    {
+      "name": "hasSharedSelectedCompoundScope",
+      "description": "Returns whether both dependency endpoints belong to one selected compound scope.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
+        "line": 115,
+        "column": 1
+      }
+    },
+    {
       "name": "getClasses",
       "description": "Keeps dependency direction and active-node emphasis while dimming unrelated elements.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
-        "line": 29,
+        "line": 127,
         "column": 1
       }
     },
@@ -7383,6 +7481,16 @@
         "sourcePath": "test/benchmarks/graphPresentation.ts"
       },
       {
+        "fromPath": "test/e2e/compoundSelectionHarness.tsx",
+        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromPath": "test/e2e/compoundSelectionHarness.tsx",
+        "toPath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
         "fromPath": "test/src/capabilities.spec.ts",
         "toPath": "src/capabilities/index.ts",
         "sourcePath": "test/src/capabilities.spec.ts"
@@ -8758,6 +8866,11 @@
         "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
       },
       {
+        "fromPath": "test/fixtures/typescript/compound-selection/src/index.ts",
+        "toPath": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
+        "sourcePath": "test/fixtures/typescript/compound-selection/src/index.ts"
+      },
+      {
         "fromPath": "test/src/app/api/audit/getAudit.spec.ts",
         "toPath": "src/types/language.ts",
         "sourcePath": "test/src/app/api/audit/getAudit.spec.ts"
@@ -9651,6 +9764,11 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
+        "toPath": "test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts",
+        "sourcePath": "test/fixtures/typescript/compound-selection/src/features/feature.ts"
       }
     ],
     "calls": [
@@ -10165,6 +10283,180 @@
         "sourcePath": "test/benchmarks/graphPresentation.ts"
       },
       {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "mkdtemp",
+        "callExpression": "mkdtemp",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "basename",
+        "callExpression": "basename",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "pathToFileURL",
+        "callExpression": "pathToFileURL",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "assertEqual",
+        "callExpression": "assertEqual",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "assertPresentation",
+        "callExpression": "assertPresentation",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "assertRenderedTheme",
+        "callExpression": "assertRenderedTheme",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertPresentation",
+        "toSymbol": "assertIncludes",
+        "callExpression": "assertIncludes",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertPresentation",
+        "toSymbol": "assertEqual",
+        "callExpression": "assertEqual",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertRenderedTheme",
+        "toSymbol": "assertEqual",
+        "callExpression": "assertEqual",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertRenderedTheme",
+        "toSymbol": "toRgb",
+        "callExpression": "toRgb",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "CompoundSelectionHarness",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "CompoundSelectionHarness",
+        "toSymbol": "useMemo",
+        "callExpression": "useMemo",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "applyGraphInteractionPresentation",
+        "callExpression": "applyGraphInteractionPresentation",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "CompoundSelectionHarness",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setViewport",
+        "callExpression": "setViewport",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "getViewport",
+        "callExpression": "controller.getViewport",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setShowCompoundNodes",
+        "callExpression": "setShowCompoundNodes",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setDark",
+        "callExpression": "setDark",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setSelectedNodeIds",
+        "callExpression": "setSelectedNodeIds",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setCurrentPackage",
+        "callExpression": "setCurrentPackage",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "readMeasurement",
+        "callExpression": "readMeasurement",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setMeasurement",
+        "callExpression": "setMeasurement",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "setController",
+        "callExpression": "setController",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
+        "toSymbol": "createRoot",
+        "callExpression": "createRoot",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
+        "fromSymbol": "readMeasurement",
+        "toSymbol": "measureNodes",
+        "callExpression": "controller.measureNodes",
+        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
+      },
+      {
         "fromSymbol": "test/e2e/offlineWorkspace.ts",
         "toSymbol": "resolve",
         "callExpression": "resolve",
@@ -10238,8 +10530,38 @@
       },
       {
         "fromSymbol": "assertWorkspace",
+        "toSymbol": "assertCompoundNodesEnabled",
+        "callExpression": "assertCompoundNodesEnabled",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspace",
+        "toSymbol": "assertGenericWorkspaceInteractions",
+        "callExpression": "assertGenericWorkspaceInteractions",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspace",
+        "toSymbol": "assertDarkTheme",
+        "callExpression": "assertDarkTheme",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertGenericWorkspaceInteractions",
         "toSymbol": "selectGraphNodes",
         "callExpression": "selectGraphNodes",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertGenericWorkspaceInteractions",
+        "toSymbol": "assertRuleEvidence",
+        "callExpression": "assertRuleEvidence",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertCompoundNodesEnabled",
+        "toSymbol": "isSwitchChecked",
+        "callExpression": "isSwitchChecked",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
@@ -10843,9 +11165,39 @@
         "sourcePath": "src/features/audit/utils/cycleVisualization.ts"
       },
       {
+        "fromSymbol": "getDependencyHighlightClasses",
+        "toSymbol": "getChildrenByParent",
+        "callExpression": "getChildrenByParent",
+        "sourcePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts"
+      },
+      {
+        "fromSymbol": "getDependencyHighlightClasses",
+        "toSymbol": "getVisibleActiveNodeIds",
+        "callExpression": "getVisibleActiveNodeIds",
+        "sourcePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts"
+      },
+      {
+        "fromSymbol": "getDependencyHighlightClasses",
+        "toSymbol": "getSelectedCompoundScopes",
+        "callExpression": "getSelectedCompoundScopes",
+        "sourcePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts"
+      },
+      {
+        "fromSymbol": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
+        "toSymbol": "hasSharedSelectedCompoundScope",
+        "callExpression": "hasSharedSelectedCompoundScope",
+        "sourcePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts"
+      },
+      {
         "fromSymbol": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
         "toSymbol": "getClasses",
         "callExpression": "getClasses",
+        "sourcePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts"
+      },
+      {
+        "fromSymbol": "getSelectedCompoundScopes",
+        "toSymbol": "getVisibleCompoundNodeIds",
+        "callExpression": "getVisibleCompoundNodeIds",
         "sourcePath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts"
       },
       {

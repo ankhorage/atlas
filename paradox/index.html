@@ -414,7 +414,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/domain/getDependencyHighlightClasses.ts">
       src/features/graph-view/domain/getDependencyHighlightClasses.ts
-      <small>2 functions</small>
+      <small>7 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/domain/reduceGraphInteraction.ts">
@@ -778,7 +778,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>229</strong><span class="muted">modules</span></div>
+        <div><strong>234</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1610,11 +1610,36 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts</code>, <code>src/features/graph-view/utils/projectVisibleGraph.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/e2e/compoundSelectionBrowser.ts">
+    <h3>test/e2e/compoundSelectionBrowser.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/e2e/compoundSelectionHarness.tsx .ankh/zora/web/components/graph-view/index.d.ts src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts">
+    <h3>test/e2e/compoundSelectionHarness.tsx</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>.ankh/zora/web/components/graph-view/index.d.ts</code>, <code>src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/e2e/offlineWorkspace.ts">
     <h3>test/e2e/offlineWorkspace.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/features/feature.ts test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts feature">
+    <h3>test/fixtures/typescript/compound-selection/src/features/feature.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts</code></p>
+    <p><strong>Exports:</strong> <code>feature</code></p>
+  </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts nestedFeature">
+    <h3>test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>nestedFeature</code></p>
+  </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/index.ts test/fixtures/typescript/compound-selection/src/features/feature.ts application">
+    <h3>test/fixtures/typescript/compound-selection/src/index.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>test/fixtures/typescript/compound-selection/src/features/feature.ts</code></p>
+    <p><strong>Exports:</strong> <code>application</code></p>
   </article><article class="item" data-search="test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts dashboard">
     <h3>test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2683,8 +2708,22 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_benchmarks_graphPresentation_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_utils_projectVisibleGraph_ts
+  module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_compoundSelectionBrowser_ts
+  module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_compoundSelectionHarness_tsx
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_offlineWorkspace_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_index_ts
+  module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
@@ -3652,8 +3691,22 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_benchmarks_graphPresentation_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_utils_projectVisibleGraph_ts
+  module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_compoundSelectionBrowser_ts
+  module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_compoundSelectionHarness_tsx
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_offlineWorkspace_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_index_ts
+  module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
@@ -4108,7 +4161,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_getProjectName_ts[&quot;src/utils/getProjectName.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
+  module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
+  module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
@@ -4532,6 +4590,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_getProjectName_ts --&gt; module_src_utils_parseProjectPath_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_utils_projectVisibleGraph_ts
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_app_actions_audit_actions_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_language_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_projectFiles_ts
@@ -4846,7 +4908,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_getProjectName_ts[&quot;src/utils/getProjectName.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
+  module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
+  module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
@@ -5270,6 +5337,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_getProjectName_ts --&gt; module_src_utils_parseProjectPath_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_utils_projectVisibleGraph_ts
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
+  module_test_e2e_compoundSelectionHarness_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_app_actions_audit_actions_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_language_ts
   module_test_src_app_api_audit_getAudit_spec_ts --&gt; module_src_types_projectFiles_ts
@@ -5586,7 +5657,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_getProjectName_ts[&quot;src/utils/getProjectName.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
+  module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
+  module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
@@ -5823,7 +5899,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_getProjectName_ts[&quot;src/utils/getProjectName.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
+  module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
+  module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_src_app_api_audit_getAudit_spec_ts[&quot;test/src/app/api/audit/getAudit.spec.ts&quot;]
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
@@ -6806,7 +6887,7 @@ this path; CPU model timings do not establish browser rendering or layout perfor
     
   </article><article class="item" data-search="indexPackageParents src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Indexes package ancestry once instead of scanning the full graph for each visible package.&#10;Replacing this set with nodes.some(...) per visible node restores quadratic work for large&#10;projections. Walk dotted boundaries, including missing intermediate packages, so hidden&#10;descendants remain navigable without confusing sibling prefixes such as a.b and a.bc.&#10;Mutation is confined to this fresh index; source elements are never modified.">
     <h3>indexPackageParents</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:59:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:61:1</code></p>
     <p>Indexes package ancestry once instead of scanning the full graph for each visible package.
 Replacing this set with nodes.some(...) per visible node restores quadratic work for large
 projections. Walk dotted boundaries, including missing intermediate packages, so hidden
@@ -6815,7 +6896,7 @@ Mutation is confined to this fresh index; source elements are never modified.</p
     
   </article><article class="item" data-search="indexCyclePresentation src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Indexes cycle overlays with last-cycle precedence and the first matching directed-edge step.&#10;Visit overlay membership once, not every cycle for every rendered element. The reverse edge&#10;traversal makes the first occurrence win within a cycle; later cycles still overwrite earlier&#10;ones. Keep directed source/target keys distinct. Model regression tests protect this precedence.">
     <h3>indexCyclePresentation</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:83:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:85:1</code></p>
     <p>Indexes cycle overlays with last-cycle precedence and the first matching directed-edge step.
 Visit overlay membership once, not every cycle for every rendered element. The reverse edge
 traversal makes the first occurrence win within a cycle; later cycles still overwrite earlier
@@ -6823,44 +6904,44 @@ ones. Keep directed source/target keys distinct. Model regression tests protect 
     
   </article><article class="item" data-search="createVisibleParentMap src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Builds only compound-parent relations whose parent is present in the visible graph.">
     <h3>createVisibleParentMap</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:100:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:102:1</code></p>
     <p>Builds only compound-parent relations whose parent is present in the visible graph.</p>
     
   </article><article class="item" data-search="getDetachedNodeIds src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Detaches descendants participating in ancestor edges so every dependency has drawable endpoints.">
     <h3>getDetachedNodeIds</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:114:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:116:1</code></p>
     <p>Detaches descendants participating in ancestor edges so every dependency has drawable endpoints.</p>
     
   </article><article class="item" data-search="isAncestor src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Returns whether one visible node contains another through the compound-parent chain.">
     <h3>isAncestor</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:133:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:135:1</code></p>
     <p>Returns whether one visible node contains another through the compound-parent chain.</p>
     
   </article><article class="item" data-search="createGraphViewNode src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Converts one visible node using prepared parent and cycle lookups.&#10;Resolve labels once per model update. ZORA measures styled labels during reconciliation;&#10;do not restore character-count width estimates or per-frame consumer measurement callbacks.">
     <h3>createGraphViewNode</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:156:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:158:1</code></p>
     <p>Converts one visible node using prepared parent and cycle lookups.
 Resolve labels once per model update. ZORA measures styled labels during reconciliation;
 do not restore character-count width estimates or per-frame consumer measurement callbacks.</p>
     
   </article><article class="item" data-search="createGraphViewEdge src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Convert one visible edge while projecting audit-cycle presentation metadata.">
     <h3>createGraphViewEdge</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:194:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:196:1</code></p>
     <p>Convert one visible edge while projecting audit-cycle presentation metadata.</p>
     
   </article><article class="item" data-search="readClasses src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Normalize Cytoscape class declarations into the GraphView string contract.">
     <h3>readClasses</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:223:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:225:1</code></p>
     <p>Normalize Cytoscape class declarations into the GraphView string contract.</p>
     
   </article><article class="item" data-search="appendClasses src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Append optional classes without introducing duplicate whitespace.">
     <h3>appendClasses</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:230:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:232:1</code></p>
     <p>Append optional classes without introducing duplicate whitespace.</p>
     
   </article><article class="item" data-search="readString src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts Read one optional string data field at the adapter boundary.">
     <h3>readString</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:238:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts:240:1</code></p>
     <p>Read one optional string data field at the adapter boundary.</p>
     
   </article>
@@ -6918,12 +6999,12 @@ layout effects here. ZORA owns runtime reconciliation; memoization alone is not 
     
   </article><article class="item" data-search="createGraphNodeEventHandler src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Bridge semantic GraphView press intent without coupling selection to renderer select events.">
     <h3>createGraphNodeEventHandler</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:197:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:198:1</code></p>
     <p>Bridge semantic GraphView press intent without coupling selection to renderer select events.</p>
     
   </article><article class="item" data-search="readGraphViewLayout src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Narrow persisted Cytoscape layout names to the layouts supported by ZORA GraphView.">
     <h3>readGraphViewLayout</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:210:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:211:1</code></p>
     <p>Narrow persisted Cytoscape layout names to the layouts supported by ZORA GraphView.</p>
     
   </article>
@@ -6969,7 +7050,7 @@ Compound hover remains ignored, while selected dependency endpoints may themselv
     
   </article><article class="item" data-search="handleNodeEvent src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts Route only approved leaf hover events to local interaction state; selection is workspace-owned.">
     <h3>handleNodeEvent</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts:38:9</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts:39:9</code></p>
     <p>Route only approved leaf hover events to local interaction state; selection is workspace-owned.</p>
     
   </article>
@@ -7069,9 +7150,34 @@ Missing cycle evidence is left to projection expansion and never measured as a p
     <p>Assigns Atlas highlight/hushed presentation to direct incoming and outgoing dependencies.
 This is product presentation policy; generic graph traversal remains owned by @ankhorage/graph.</p>
     
+  </article><article class="item" data-search="getChildrenByParent src/features/graph-view/domain/getDependencyHighlightClasses.ts Indexes direct visible children so selection expansion and scope classification share one ancestry relation.">
+    <h3>getChildrenByParent</h3>
+    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:49:1</code></p>
+    <p>Indexes direct visible children so selection expansion and scope classification share one ancestry relation.</p>
+    
+  </article><article class="item" data-search="getVisibleActiveNodeIds src/features/graph-view/domain/getDependencyHighlightClasses.ts Expands selected visible compounds through their logical child relation without changing selection.">
+    <h3>getVisibleActiveNodeIds</h3>
+    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:62:1</code></p>
+    <p>Expands selected visible compounds through their logical child relation without changing selection.</p>
+    
+  </article><article class="item" data-search="getSelectedCompoundScopes src/features/graph-view/domain/getDependencyHighlightClasses.ts Assigns each expanded node to selected compounds that actually contain descendants.">
+    <h3>getSelectedCompoundScopes</h3>
+    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:79:1</code></p>
+    <p>Assigns each expanded node to selected compounds that actually contain descendants.</p>
+    
+  </article><article class="item" data-search="getVisibleCompoundNodeIds src/features/graph-view/domain/getDependencyHighlightClasses.ts Expands one compound scope inclusively through its visible child relation.">
+    <h3>getVisibleCompoundNodeIds</h3>
+    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:98:1</code></p>
+    <p>Expands one compound scope inclusively through its visible child relation.</p>
+    
+  </article><article class="item" data-search="hasSharedSelectedCompoundScope src/features/graph-view/domain/getDependencyHighlightClasses.ts Returns whether both dependency endpoints belong to one selected compound scope.">
+    <h3>hasSharedSelectedCompoundScope</h3>
+    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:115:1</code></p>
+    <p>Returns whether both dependency endpoints belong to one selected compound scope.</p>
+    
   </article><article class="item" data-search="getClasses src/features/graph-view/domain/getDependencyHighlightClasses.ts Keeps dependency direction and active-node emphasis while dimming unrelated elements.">
     <h3>getClasses</h3>
-    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:29:1</code></p>
+    <p class="muted"><code>src/features/graph-view/domain/getDependencyHighlightClasses.ts:127:1</code></p>
     <p>Keeps dependency direction and active-node emphasis while dimming unrelated elements.</p>
     
   </article>

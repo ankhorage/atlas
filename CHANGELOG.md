@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.2
+
+### Patch Changes
+
+- 27cb86f: Preserve visible compound descendants and their internal dependency edges when selecting a group.
+
 ## 0.15.1
 
 ### Patch Changes
