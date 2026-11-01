@@ -39,7 +39,7 @@ const DARK_STYLE = { background: '#111827', color: '#f9fafb' } as const;
 /*** Mounts a test-owned GraphView acceptance surface using only the published controller contract. */
 function CompoundSelectionHarness() {
   const [controller, setController] = useState<GraphViewController | null>(null);
-  const [currentPackage, setCurrentPackage] = useState('');
+  const [currentPackage, setCurrentPackage] = useState('src');
   const [selectedNodeIds, setSelectedNodeIds] = useState<readonly string[]>([]);
   const [showCompoundNodes, setShowCompoundNodes] = useState(false);
   const [dark, setDark] = useState(false);

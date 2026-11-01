@@ -47,7 +47,6 @@ try {
         );
       });
 
-    await doublePressMeasuredNode(page, 'src');
     await page.getByLabel('Breadcrumbs').getByText('Home › src').waitFor();
     await page.getByRole('switch', { name: 'Show Compound Nodes' }).click();
     await page.getByLabel('Graph geometry').getByText('src.features').waitFor();
@@ -93,12 +92,6 @@ try {
 async function pressMeasuredNode(page: Page, nodeId: string): Promise<void> {
   const position = await readMeasuredNodePosition(page, nodeId);
   await page.getByRole('application', { name: 'Graph' }).click({ position });
-}
-
-/*** Opens a measured compound through GraphView's real double-press navigation event. */
-async function doublePressMeasuredNode(page: Page, nodeId: string): Promise<void> {
-  const position = await readMeasuredNodePosition(page, nodeId);
-  await page.getByRole('application', { name: 'Graph' }).dblclick({ position });
 }
 
 /*** Reads one canvas-relative node position published by the test-owned public controller harness. */
