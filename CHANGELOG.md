@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.1
+
+### Patch Changes
+
+- 1eba7cc: Run Atlas TypeScript and React specs with Bun-native Testosterone coverage without direct tsx or c8 dependencies.
+
 ## 0.15.0
 
 ### Minor Changes
