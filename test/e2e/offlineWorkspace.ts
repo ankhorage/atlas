@@ -103,22 +103,31 @@ async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
     });
 }
 
-/*** Navigates the real project tree and verifies the resulting stable breadcrumb path. */
+/*** Navigates the initial singleton GraphView package and verifies the resulting breadcrumb path. */
 async function assertBreadcrumbNavigation(page: Page, target: string): Promise<void> {
-  const labels = target.split('.').filter(Boolean);
-  for (const [index, label] of labels.entries()) {
-    const item = page.getByRole('treeitem', { name: label, exact: true });
-    if (index < labels.length - 1 && (await item.getAttribute('aria-expanded')) === 'false') {
-      await item.getByLabel('Expand', { exact: true }).click();
-    }
-    await item.click();
+  const expected = ['Home', target];
+  const breadcrumbs = await readBreadcrumbs(page);
+  if (areEqual(breadcrumbs, expected)) return;
+  if (!areEqual(breadcrumbs, ['Home']) || target !== 'src') {
+    throw new Error(
+      `Expected the compound fixture to begin at Home before navigating to src, received ${JSON.stringify(breadcrumbs)}.`
+    );
   }
 
-  const breadcrumbs = await readBreadcrumbs(page);
-  const expected = ['Home', ...labels];
-  if (JSON.stringify(breadcrumbs) !== JSON.stringify(expected)) {
+  await page.getByRole('treeitem', { name: 'Expand src', exact: true }).waitFor();
+  const graphCanvas = page.getByRole('application', { name: 'Graph' }).locator('canvas').first();
+  const graphBounds = await graphCanvas.boundingBox();
+  if (graphBounds === null) throw new Error('The initial GraphView package was not visible.');
+
+  await graphCanvas.dblclick({
+    position: { x: graphBounds.width / 2, y: graphBounds.height / 2 },
+  });
+  await page.getByText('src', { exact: true }).nth(1).waitFor();
+
+  const navigatedBreadcrumbs = await readBreadcrumbs(page);
+  if (!areEqual(navigatedBreadcrumbs, expected)) {
     throw new Error(
-      `Expected breadcrumb ${JSON.stringify(expected)}, received ${JSON.stringify(breadcrumbs)}.`
+      `Expected breadcrumb ${JSON.stringify(expected)}, received ${JSON.stringify(navigatedBreadcrumbs)}.`
     );
   }
 }
@@ -126,11 +135,23 @@ async function assertBreadcrumbNavigation(page: Page, target: string): Promise<v
 /*** Enables the real workspace's compound projection after navigation to its parent package. */
 async function assertCompoundNodesEnabled(page: Page): Promise<void> {
   const compoundNodes = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
-  await compoundNodes.click();
-  if ((await compoundNodes.getAttribute('aria-checked')) !== 'true') {
+  if (!(await isSwitchChecked(compoundNodes))) await compoundNodes.click();
+  if (!(await isSwitchChecked(compoundNodes))) {
     throw new Error('The workspace did not enable compound-node projection.');
   }
-  await page.getByRole('application', { name: 'Graph' }).locator('canvas').waitFor();
+  const graphCanvas = page.getByRole('application', { name: 'Graph' }).locator('canvas').first();
+  await graphCanvas.waitFor();
+  if ((await graphCanvas.boundingBox()) === null) {
+    throw new Error('Compound-node projection left the GraphView unusable.');
+  }
+}
+
+/*** Reads the generated Switch thumb position because its current web output omits aria-checked. */
+async function isSwitchChecked(control: ReturnType<Page['getByRole']>): Promise<boolean> {
+  return control.evaluate(element => {
+    const thumb = element.querySelector(':scope > div > div > div');
+    return thumb instanceof HTMLElement && thumb.style.alignSelf === 'flex-end';
+  });
 }
 
 /*** Enters dark mode and proves the workspace surface follows the selected theme. */
@@ -268,9 +289,19 @@ async function readSelectedTreeItems(page: Page): Promise<readonly string[]> {
 
 /*** Read the visible navigation trail after synchronized graph and tree selection. */
 async function readBreadcrumbs(page: Page): Promise<readonly string[]> {
-  return page
-    .locator('nav [role="button"], nav a, [aria-label*="breadcrumb" i] [role="button"]')
-    .allTextContents();
+  const breadcrumbText = await page
+    .getByText('Home', { exact: true })
+    .locator('xpath=../../..')
+    .innerText();
+  return breadcrumbText
+    .split('›')
+    .map(label => label.trim().split('\n').at(-1) ?? '')
+    .filter(Boolean);
+}
+
+/*** Compares ordered visible breadcrumb labels without serializing test state. */
+function areEqual(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
 }
 
 /*** Compare live graph controls while graph-node selection is observed through the synchronized tree. */
