@@ -1,6 +1,5 @@
 'use client';
 
-import { toCytoscapeElements } from '@ankhorage/graph-cytoscape';
 import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { GraphView, type GraphViewElementEvent, type GraphViewLayoutName } from '@zora/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@zora/ZoraProvider';
@@ -8,6 +7,7 @@ import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
 import React, { useMemo } from 'react';
 
 import { LAYOUTS } from '@/features/graph-view/adapters/inbound/cytoscape/constants';
+import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
 import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/react/createGraphViewModel';
 import { createGraphViewStyles } from '@/features/graph-view/adapters/inbound/react/createGraphViewStyles';
 import { GraphZoomControls } from '@/features/graph-view/adapters/inbound/react/GraphZoomControls';
@@ -94,13 +94,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
 
 /*** Convert the dependency package graph once per source graph identity. */
 function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
-  return useMemo(
-    () =>
-      toCytoscapeElements(packageGraph, {
-        nodeClasses: node => (node.data.isIntrinsic === true ? undefined : 'isVendor'),
-      }),
-    [packageGraph]
-  );
+  return useMemo(() => createPackageGraphElements(packageGraph), [packageGraph]);
 }
 
 /***

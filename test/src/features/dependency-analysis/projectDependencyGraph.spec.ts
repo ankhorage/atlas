@@ -1,9 +1,24 @@
+import { resolve } from 'node:path';
+
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import { describe, expect, it } from '@artiphishle/testosterone';
 
 import { projectDependencyGraph } from '@/features/dependency-analysis/application/use-cases/projectDependencyGraph';
+import { readProjectSnapshotAsync } from '@/features/project-analysis/composition/readProjectSnapshotAsync';
 
 describe('[canonical dependency package projection]', () => {
+  it('preserves an owner-detected nested workspace root from a representative fixture', async () => {
+    const snapshot = await readProjectSnapshotAsync(
+      resolve('test/fixtures/typescript/nested-workspace')
+    );
+    const workspaceRoot = snapshot.packageGraph.nodes.find(
+      node => node.id === '@fixture/dashboard'
+    );
+
+    expect(workspaceRoot?.data.isIntrinsic).toBe(true);
+    expect(workspaceRoot?.data.isWorkspaceRoot).toBe(true);
+  });
+
   it('preserves intrinsic hierarchy, vendor metadata, weights and owner evidence', () => {
     const graph = projectDependencyGraph(createOwnerGraph());
 
@@ -13,6 +28,7 @@ describe('[canonical dependency package projection]', () => {
       'src',
       'src.features',
       'src.shared',
+      'workspace.dashboard',
     ]);
     expect(graph.nodes.find(node => node.id === 'src')?.data).toEqual({
       classification: 'intrinsic',
@@ -23,6 +39,13 @@ describe('[canonical dependency package projection]', () => {
       isIntrinsic: true,
     });
     expect(graph.nodes.find(node => node.id === 'src.features')?.data.parent).toBe('src');
+    expect(
+      graph.nodes.find(node => node.id === 'src.features')?.data.isWorkspaceRoot
+    ).toBeUndefined();
+    const workspaceRoot = graph.nodes.find(node => node.id === 'workspace.dashboard')?.data;
+    expect(workspaceRoot?.classification).toBe('intrinsic');
+    expect(workspaceRoot?.isIntrinsic).toBe(true);
+    expect(workspaceRoot?.isWorkspaceRoot).toBe(true);
     expect(graph.nodes.find(node => node.id === 'react')?.data.classification).toBe('vendor');
     expect(graph.nodes.find(node => node.id === 'react')?.data.isIntrinsic).toBeUndefined();
     expect(graph.nodes.find(node => node.id === '@zora/list')?.data.classification).toBe('unknown');
@@ -59,6 +82,18 @@ function createOwnerGraph(): DependencyGraph {
       moduleNode('src', ''),
       moduleNode('src.features', 'src'),
       moduleNode('src.shared', 'src'),
+      {
+        id: 'package:current:packages/dashboard',
+        data: {
+          kind: 'package',
+          classification: 'intrinsic',
+          focus: true,
+          label: 'workspace.dashboard',
+          packageName: 'workspace.dashboard',
+          projectId: 'current',
+          path: 'packages/dashboard',
+        },
+      },
       {
         id: 'vendor:react',
         data: {

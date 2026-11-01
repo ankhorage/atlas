@@ -7,6 +7,30 @@ import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/rea
 import { getStyle } from '@/features/graph-view/adapters/inbound/cytoscape/style';
 
 describe('[getStyle]', () => {
+  it('distinguishes declared workspace roots in both themes', () => {
+    const elements = {
+      nodes: [
+        { data: { id: 'ordinary' } },
+        { data: { id: 'workspace', isWorkspaceRoot: true }, classes: 'isWorkspaceRoot' },
+      ],
+      edges: [],
+    };
+    for (const theme of [createTheme('light'), createTheme('dark')]) {
+      const cy = cytoscape({
+        elements: toRenderableElements(elements),
+        headless: true,
+        styleEnabled: true,
+        style: getStyle(elements, theme),
+      });
+      try {
+        expect(cy.getElementById('workspace').style('background-color')).toBe('rgb(253,236,200)');
+        expect(cy.getElementById('ordinary').style('background-color')).toBe('rgb(220,234,251)');
+      } finally {
+        cy.destroy();
+      }
+    }
+  });
+
   it('marks cycle compounds without coloring their entire underlay in either theme', () => {
     const elements = {
       nodes: [
@@ -212,7 +236,7 @@ function createTheme(mode: 'dark' | 'light'): ZoraRuntimeTheme {
     semantics: {
       brand: role,
       secondary: { ...role, softBg: '#ece4fb', outline: '#8069aa', onSoftText: '#402b68' },
-      accent: role,
+      accent: { ...role, softBg: '#fdecc8', outline: '#9a6b17', onSoftText: '#4c3200' },
       highlight: role,
       danger: role,
       success: role,
