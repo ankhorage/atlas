@@ -180,7 +180,8 @@ function useGraphCanvasInteractions(props: DependencyGraphCanvasProps) {
   const interactions = useGraphInteractions(
     props.model.nodes,
     props.model.edges,
-    props.selectedNodeIds
+    props.selectedNodeIds,
+    props.model.parentById
   );
   return {
     ...interactions,

@@ -39,6 +39,7 @@ export function createGraphViewModel(
       createGraphViewNode(node, parentById, detachedNodeIds, parentNodeIds, appearance)
     ),
     parentNodeIds,
+    parentById,
   };
 }
 
@@ -46,6 +47,7 @@ interface GraphViewModel {
   readonly edges: readonly GraphViewEdge[];
   readonly nodes: readonly GraphViewNode[];
   readonly parentNodeIds: ReadonlySet<string>;
+  readonly parentById: ReadonlyMap<string, string>;
 }
 
 /***

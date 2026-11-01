@@ -9,6 +9,7 @@ describe('[useGraphInteractions]', () => {
   it('keeps hover local while rendering controlled visible selection without hushing hidden selection', () => {
     const nodes = [{ id: 'p' }, { id: 'a', parentId: 'p' }, { id: 'b' }];
     const edges = [{ id: 'ab', source: 'a', target: 'b' }];
+    const parentById = new Map([['a', 'p']]);
     const host = render(<div />);
     const root = createRoot(host.container);
 
@@ -19,7 +20,7 @@ describe('[useGraphInteractions]', () => {
       visibleNodes: typeof nodes;
       selectedNodeIds: readonly string[];
     }) {
-      const interaction = useGraphInteractions(visibleNodes, edges, selectedNodeIds);
+      const interaction = useGraphInteractions(visibleNodes, edges, selectedNodeIds, parentById);
       return (
         <>
           <output>
@@ -57,7 +58,7 @@ describe('[useGraphInteractions]', () => {
       expect(output()).toBe('p:hushed|a:highlight|b:highlight-outgoer');
 
       show(nodes, ['p']);
-      expect(output()).toBe('p:highlight|a:hushed|b:hushed');
+      expect(output()).toBe('p:highlight|a:highlight|b:highlight-outgoer');
 
       show([{ id: 'b' }], ['a']);
       expect(output()).toBe('b:');

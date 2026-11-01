@@ -11,7 +11,8 @@ import type { GraphInteractionState } from '@/types/graphInteraction';
 export function applyGraphInteractionPresentation(
   nodes: readonly GraphViewNode[],
   edges: readonly GraphViewEdge[],
-  state: GraphInteractionState
+  state: GraphInteractionState,
+  parentById: ReadonlyMap<string, string>
 ) {
   const activeIds = new Set(
     state.hoveredNodeId === null ? state.selectedNodeIds : [state.hoveredNodeId]
@@ -20,7 +21,8 @@ export function applyGraphInteractionPresentation(
   const classes = getDependencyHighlightClasses(
     nodes.map(node => node.id),
     edges,
-    activeIds
+    activeIds,
+    parentById
   );
   return {
     nodes: nodes.map((node, index) => ({

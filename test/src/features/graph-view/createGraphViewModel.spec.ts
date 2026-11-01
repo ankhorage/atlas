@@ -137,6 +137,12 @@ describe('[createGraphViewModel]', () => {
     expect(child?.parentId).toBeUndefined();
     expect(child?.data?.parent).toBeUndefined();
     expect(sibling?.parentId).toBe('parent');
+    expect(model.parentById).toEqual(
+      new Map([
+        ['parent.child', 'parent'],
+        ['parent.sibling', 'parent'],
+      ])
+    );
     expect(model.edges.map(edge => edge.id)).toEqual(['parent->parent.child']);
   });
 
