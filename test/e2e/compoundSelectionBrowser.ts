@@ -47,7 +47,11 @@ try {
         );
       });
 
-    await page.getByLabel('Breadcrumbs').getByText('Home › src').waitFor();
+    assertEqual(
+      'initial package scope',
+      await page.getByLabel('Breadcrumbs').innerText(),
+      'Home › src'
+    );
     await page.getByRole('switch', { name: 'Show Compound Nodes' }).click();
     await page.getByLabel('Graph geometry').getByText('src.features').waitFor();
 
