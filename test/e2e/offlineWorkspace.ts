@@ -115,6 +115,7 @@ async function assertBreadcrumbNavigation(page: Page, target: string): Promise<v
   }
 
   await page.getByRole('treeitem', { name: 'Expand src', exact: true }).waitFor();
+  await page.getByLabel('Fit graph and optimize spacing for readability').click();
   const graphCanvas = page.getByRole('application', { name: 'Graph' }).locator('canvas').first();
   const graphBounds = await graphCanvas.boundingBox();
   if (graphBounds === null) throw new Error('The initial GraphView package was not visible.');
