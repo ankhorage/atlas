@@ -572,6 +572,11 @@
       <small>1 function</small>
     </button>
   </li><li>
+    <button class="nav-button" type="button" data-target="src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts">
+      src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts
+      <small>22 functions</small>
+    </button>
+  </li><li>
     <button class="nav-button" type="button" data-target="src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts">
       src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts
       <small>1 function</small>
@@ -773,7 +778,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>226</strong><span class="muted">modules</span></div>
+        <div><strong>229</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1330,6 +1335,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts</code>, <code>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</code>, <code>src/features/project-analysis/application/use-cases/selectParserLanguage.ts</code>, <code>src/features/project-analysis/composition/createProjectFileTreeAsync.ts</code>, <code>src/types/projectAnalysis.ts</code></p>
     <p><strong>Exports:</strong> <code>readProjectSnapshotAsync</code></p>
+  </article><article class="item" data-search="src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts src/types/projectSource.ts materializeSourceJarAsync">
+    <h3>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/projectSource.ts</code></p>
+    <p><strong>Exports:</strong> <code>materializeSourceJarAsync</code></p>
   </article><article class="item" data-search="src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts src/types/projectSource.ts createGitHubProjectMaterializer">
     <h3>src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1350,10 +1360,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/project-source/application/use-cases/parseProjectSource.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code>, <code>src/types/audit.ts</code>, <code>src/utils/parseProjectPath.ts</code></p>
     <p><strong>Exports:</strong> <code>createProjectSourceAuditAsync</code></p>
-  </article><article class="item" data-search="src/features/project-source/composition/loadProjectSourceAsync.ts src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts src/types/projectSource.ts loadProjectSourceAsync">
+  </article><article class="item" data-search="src/features/project-source/composition/loadProjectSourceAsync.ts src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts src/types/projectSource.ts loadProjectSourceAsync">
     <h3>src/features/project-source/composition/loadProjectSourceAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts</code>, <code>src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts</code>, <code>src/types/projectSource.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts</code>, <code>src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts</code>, <code>src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts</code>, <code>src/types/projectSource.ts</code></p>
     <p><strong>Exports:</strong> <code>loadProjectSourceAsync</code></p>
   </article><article class="item" data-search="src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx .ankh/zora/web/components/icon/index.d.ts .ankh/zora/web/components/text/index.d.ts .ankh/zora/web/components/tree-view/index.d.ts .ankh/zora/web/components/view/index.d.ts src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts src/features/project-tree/utils/findProjectTreeNode.ts src/types/projectTree.ts ProjectTreePanel">
     <h3>src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx</h3>
@@ -1565,11 +1575,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>ProjectFileMetadata</code>, <code>ProjectFileTree</code>, <code>ProjectImportMetadata</code></p>
-  </article><article class="item" data-search="src/types/projectSource.ts GitHubProjectMaterializer ProjectSource ResolvedProjectSource">
+  </article><article class="item" data-search="src/types/projectSource.ts GitHubProjectMaterializer LocalProjectMaterialization ProjectSource ResolvedProjectSource SourceJarMaterializer">
     <h3>src/types/projectSource.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
-    <p><strong>Exports:</strong> <code>GitHubProjectMaterializer</code>, <code>ProjectSource</code>, <code>ResolvedProjectSource</code></p>
+    <p><strong>Exports:</strong> <code>GitHubProjectMaterializer</code>, <code>LocalProjectMaterialization</code>, <code>ProjectSource</code>, <code>ResolvedProjectSource</code>, <code>SourceJarMaterializer</code></p>
   </article><article class="item" data-search="src/types/projectTree.ts ProjectTreeNode">
     <h3>src/types/projectTree.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1830,10 +1840,20 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/project-analysis/adapters/outbound/source-metadata/readTypeScriptProjectFileMetadata.ts</code>, <code>src/utils/parseProjectPath.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/features/project-source/materializeSourceJarAsync.spec.ts src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts src/features/project-source/composition/loadProjectSourceAsync.ts">
+    <h3>test/src/features/project-source/materializeSourceJarAsync.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/project-source/projectSource.spec.ts src/features/project-source/application/use-cases/parseProjectSource.ts src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts">
     <h3>test/src/features/project-source/projectSource.spec.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/project-source/application/use-cases/parseProjectSource.ts</code>, <code>src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/features/project-source/sourceJarAcceptance.spec.ts src/cli/runAuditSourceAsync.ts src/features/audit/composition/createAuditAsync.ts src/features/project-source/composition/loadProjectSourceAsync.ts">
+    <h3>test/src/features/project-source/sourceJarAcceptance.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/cli/runAuditSourceAsync.ts</code>, <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/project-tree/buildProjectTree.spec.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/features/project-tree/utils/findProjectTreeNodeByGraphPackage.ts src/types/projectFiles.ts">
     <h3>test/src/features/project-tree/buildProjectTree.spec.ts</h3>
@@ -2420,6 +2440,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_application_use_cases_selectParserLanguage_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts[&quot;src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts[&quot;src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts --&gt; module_src_types_projectSource_ts
@@ -2438,6 +2461,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_utils_parseProjectPath_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts[&quot;src/features/project-source/composition/loadProjectSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_types_projectSource_ts
@@ -2847,10 +2871,19 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_features_project_analysis_adapters_outbound_source_metadata_readTypeScriptProjectFileMetadata_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_project_source_materializeSourceJarAsync_spec_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_source_projectSource_spec_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_project_source_sourceJarAcceptance_spec_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_tree_buildProjectTree_spec_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
@@ -3376,6 +3409,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_application_use_cases_selectParserLanguage_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts[&quot;src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts[&quot;src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts --&gt; module_src_types_projectSource_ts
@@ -3394,6 +3430,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_utils_parseProjectPath_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts[&quot;src/features/project-source/composition/loadProjectSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_types_projectSource_ts
@@ -3803,10 +3840,19 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_features_project_analysis_adapters_outbound_source_metadata_readTypeScriptProjectFileMetadata_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_project_source_materializeSourceJarAsync_spec_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_source_projectSource_spec_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_project_source_sourceJarAcceptance_spec_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_tree_buildProjectTree_spec_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
@@ -4007,6 +4053,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts[&quot;src/features/project-analysis/composition/createProjectFileTreeAsync.ts&quot;]
   module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/loadProjectSnapshotAsync.ts&quot;]
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/readProjectSnapshotAsync.ts&quot;]
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts[&quot;src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts&quot;]
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts[&quot;src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts&quot;]
   module_src_features_project_source_application_use_cases_parseProjectSource_ts[&quot;src/features/project-source/application/use-cases/parseProjectSource.ts&quot;]
   module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts[&quot;src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts&quot;]
@@ -4107,7 +4154,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_analysis_selectParserLanguage_spec_ts[&quot;test/src/features/project-analysis/selectParserLanguage.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readJavaProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readJavaProjectFileMetadataAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readTypeScriptProjectFileMetadataAsync.spec.ts&quot;]
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -4350,6 +4399,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_application_use_cases_selectParserLanguage_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_application_use_cases_parseProjectSource_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts --&gt; module_src_types_projectSource_ts
@@ -4358,6 +4408,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_types_audit_ts
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_types_projectSource_ts
@@ -4577,8 +4628,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_analysis_source_metadata_readJavaProjectFileMetadataAsync_spec_ts --&gt; module_src_utils_parseProjectPath_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_features_project_analysis_adapters_outbound_source_metadata_readTypeScriptProjectFileMetadata_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_utils_findProjectTreeNodeByGraphPackage_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_types_projectFiles_ts
@@ -4735,6 +4791,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts[&quot;src/features/project-analysis/composition/createProjectFileTreeAsync.ts&quot;]
   module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/loadProjectSnapshotAsync.ts&quot;]
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/readProjectSnapshotAsync.ts&quot;]
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts[&quot;src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts&quot;]
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts[&quot;src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts&quot;]
   module_src_features_project_source_application_use_cases_parseProjectSource_ts[&quot;src/features/project-source/application/use-cases/parseProjectSource.ts&quot;]
   module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts[&quot;src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts&quot;]
@@ -4835,7 +4892,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_analysis_selectParserLanguage_spec_ts[&quot;test/src/features/project-analysis/selectParserLanguage.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readJavaProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readJavaProjectFileMetadataAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readTypeScriptProjectFileMetadataAsync.spec.ts&quot;]
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -5078,6 +5137,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_application_use_cases_selectParserLanguage_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts --&gt; module_src_types_projectAnalysis_ts
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_application_use_cases_parseProjectSource_ts --&gt; module_src_types_projectSource_ts
   module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts --&gt; module_src_types_projectSource_ts
@@ -5086,6 +5146,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_types_audit_ts
   module_src_features_project_source_composition_createProjectSourceAuditAsync_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
   module_src_features_project_source_composition_loadProjectSourceAsync_ts --&gt; module_src_types_projectSource_ts
@@ -5305,8 +5366,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_analysis_source_metadata_readJavaProjectFileMetadataAsync_spec_ts --&gt; module_src_utils_parseProjectPath_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_features_project_analysis_adapters_outbound_source_metadata_readTypeScriptProjectFileMetadata_ts
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_test_src_features_project_source_projectSource_spec_ts --&gt; module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_utils_findProjectTreeNodeByGraphPackage_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_types_projectFiles_ts
@@ -5465,6 +5531,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts[&quot;src/features/project-analysis/composition/createProjectFileTreeAsync.ts&quot;]
   module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/loadProjectSnapshotAsync.ts&quot;]
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/readProjectSnapshotAsync.ts&quot;]
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts[&quot;src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts&quot;]
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts[&quot;src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts&quot;]
   module_src_features_project_source_application_use_cases_parseProjectSource_ts[&quot;src/features/project-source/application/use-cases/parseProjectSource.ts&quot;]
   module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts[&quot;src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts&quot;]
@@ -5565,7 +5632,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_analysis_selectParserLanguage_spec_ts[&quot;test/src/features/project-analysis/selectParserLanguage.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readJavaProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readJavaProjectFileMetadataAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readTypeScriptProjectFileMetadataAsync.spec.ts&quot;]
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -5699,6 +5768,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_analysis_composition_createProjectFileTreeAsync_ts[&quot;src/features/project-analysis/composition/createProjectFileTreeAsync.ts&quot;]
   module_src_features_project_analysis_composition_loadProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/loadProjectSnapshotAsync.ts&quot;]
   module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts[&quot;src/features/project-analysis/composition/readProjectSnapshotAsync.ts&quot;]
+  module_src_features_project_source_adapters_outbound_archive_materializeSourceJarAsync_ts[&quot;src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts&quot;]
   module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts[&quot;src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts&quot;]
   module_src_features_project_source_application_use_cases_parseProjectSource_ts[&quot;src/features/project-source/application/use-cases/parseProjectSource.ts&quot;]
   module_src_features_project_source_application_use_cases_resolveProjectSourceAsync_ts[&quot;src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts&quot;]
@@ -5799,7 +5869,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_analysis_selectParserLanguage_spec_ts[&quot;test/src/features/project-analysis/selectParserLanguage.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readJavaProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readJavaProjectFileMetadataAsync.spec.ts&quot;]
   module_test_src_features_project_analysis_source_metadata_readTypeScriptProjectFileMetadataAsync_spec_ts[&quot;test/src/features/project-analysis/source-metadata/readTypeScriptProjectFileMetadataAsync.spec.ts&quot;]
+  module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
+  module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -7631,6 +7703,121 @@ Entries are removed after success or failure so later loads observe source chang
     
   </article>
     </section>
+  </section><section id="view-src-features-project-source-adapters-outbound-archive-materializesourcejarasync-ts" class="view" data-view="src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts" hidden>
+    <section class="panel">
+      <h2>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts</h2>
+      <article class="item" data-search="materializeSourceJarAsync src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Materializes a bounded local source JAR into an isolated temporary project root.">
+    <h3>materializeSourceJarAsync</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:34:1</code></p>
+    <p>Materializes a bounded local source JAR into an isolated temporary project root.</p>
+    
+  </article><article class="item" data-search="extractSourceJarAsync src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Owns ZIP reader lifetime and cancellation while extraction stays bounded by the adapter policy.">
+    <h3>extractSourceJarAsync</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:63:1</code></p>
+    <p>Owns ZIP reader lifetime and cancellation while extraction stays bounded by the adapter policy.</p>
+    
+  </article><article class="item" data-search="closeOnAbort src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts ">
+    <h3>closeOnAbort</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:75:9</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="extractSourceEntriesAsync src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Validates and extracts only ordinary archive entries beneath the isolated temporary root.">
+    <h3>extractSourceEntriesAsync</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:95:1</code></p>
+    <p>Validates and extracts only ordinary archive entries beneath the isolated temporary root.</p>
+    
+  </article><article class="item" data-search="assertSafeArchiveEntry src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Rejects archive metadata that could escape the temporary root or require unsupported extraction.">
+    <h3>assertSafeArchiveEntry</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:136:1</code></p>
+    <p>Rejects archive metadata that could escape the temporary root or require unsupported extraction.</p>
+    
+  </article><article class="item" data-search="assertSafeArchiveEntryPath src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Rejects absolute, empty, dot, and backslash paths while allowing one directory suffix slash.">
+    <h3>assertSafeArchiveEntryPath</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:147:1</code></p>
+    <p>Rejects absolute, empty, dot, and backslash paths while allowing one directory suffix slash.</p>
+    
+  </article><article class="item" data-search="assertSupportedArchiveEncoding src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Restricts extraction to the ZIP compression methods that the bounded reader can validate.">
+    <h3>assertSupportedArchiveEncoding</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:160:1</code></p>
+    <p>Restricts extraction to the ZIP compression methods that the bounded reader can validate.</p>
+    
+  </article><article class="item" data-search="assertOrdinaryArchiveEntry src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Allows only ordinary files and directories, with metadata consistent with the archive pathname.">
+    <h3>assertOrdinaryArchiveEntry</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:167:1</code></p>
+    <p>Allows only ordinary files and directories, with metadata consistent with the archive pathname.</p>
+    
+  </article><article class="item" data-search="isInconsistentArchiveEntryType src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Detects conflicting Unix file-type metadata without requiring it from every ZIP producer.">
+    <h3>isInconsistentArchiveEntryType</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:182:1</code></p>
+    <p>Detects conflicting Unix file-type metadata without requiring it from every ZIP producer.</p>
+    
+  </article><article class="item" data-search="assertDistinctArchiveEntry src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Rejects duplicate targets and file-directory collisions before archive extraction mutates disk.">
+    <h3>assertDistinctArchiveEntry</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:193:1</code></p>
+    <p>Rejects duplicate targets and file-directory collisions before archive extraction mutates disk.</p>
+    
+  </article><article class="item" data-search="createExtractedSizeLimit src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Counts actual decompressed bytes because ZIP metadata cannot be trusted as a size bound.">
+    <h3>createExtractedSizeLimit</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:215:1</code></p>
+    <p>Counts actual decompressed bytes because ZIP metadata cannot be trusted as a size bound.</p>
+    
+  </article><article class="item" data-search="getSourceJarLimits src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Limits test-controlled archive budgets to stricter values than the production security ceiling.">
+    <h3>getSourceJarLimits</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:231:1</code></p>
+    <p>Limits test-controlled archive budgets to stricter values than the production security ceiling.</p>
+    
+  </article><article class="item" data-search="getRestrictedLimit src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Rejects invalid limits and prevents callers from weakening production archive protection.">
+    <h3>getRestrictedLimit</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:242:1</code></p>
+    <p>Rejects invalid limits and prevents callers from weakening production archive protection.</p>
+    
+  </article><article class="item" data-search="closeZip src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Closes an open ZIP reader so cancellation releases its file descriptor without double-closing.">
+    <h3>closeZip</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:251:1</code></p>
+    <p>Closes an open ZIP reader so cancellation releases its file descriptor without double-closing.</p>
+    
+  </article><article class="item" data-search="throwIfAborted src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Stops archive work at the adapter boundary while preserving an explicit abort reason.">
+    <h3>throwIfAborted</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:256:1</code></p>
+    <p>Stops archive work at the adapter boundary while preserving an explicit abort reason.</p>
+    
+  </article><article class="item" data-search="getAbortError src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Creates the standard cancellation error when callers did not supply an Error reason.">
+    <h3>getAbortError</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:261:1</code></p>
+    <p>Creates the standard cancellation error when callers did not supply an Error reason.</p>
+    
+  </article><article class="item" data-search="getSourceStatsAsync src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Leaves existing directory and missing-path handling to the canonical project-analysis boundary.">
+    <h3>getSourceStatsAsync</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:268:1</code></p>
+    <p>Leaves existing directory and missing-path handling to the canonical project-analysis boundary.</p>
+    
+  </article><article class="item" data-search="isJarPath src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Restricts archive handling to an explicit JAR input form before opening a ZIP reader.">
+    <h3>isJarPath</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:277:1</code></p>
+    <p>Restricts archive handling to an explicit JAR input form before opening a ZIP reader.</p>
+    
+  </article><article class="item" data-search="assertZipSignatureAsync src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Verifies the ZIP local-file signature before allocating an extraction root or parsing an archive.">
+    <h3>assertZipSignatureAsync</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:282:1</code></p>
+    <p>Verifies the ZIP local-file signature before allocating an extraction root or parsing an archive.</p>
+    
+  </article><article class="item" data-search="resolveArchiveEntryPath src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Resolves one validated archive entry and proves that it remains inside the temporary root.">
+    <h3>resolveArchiveEntryPath</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:296:1</code></p>
+    <p>Resolves one validated archive entry and proves that it remains inside the temporary root.</p>
+    
+  </article><article class="item" data-search="getProjectName src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Derives display-only project identity without exposing the isolated extraction location.">
+    <h3>getProjectName</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:311:1</code></p>
+    <p>Derives display-only project identity without exposing the isolated extraction location.</p>
+    
+  </article><article class="item" data-search="createSourceJarError src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts Preserves actionable input errors while hiding host paths and archive implementation details.">
+    <h3>createSourceJarError</h3>
+    <p class="muted"><code>src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts:316:1</code></p>
+    <p>Preserves actionable input errors while hiding host paths and archive implementation details.</p>
+    
+  </article>
+    </section>
   </section><section id="view-src-features-project-source-adapters-outbound-repository-creategithubprojectmaterializer-ts" class="view" data-view="src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts" hidden>
     <section class="panel">
       <h2>src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts</h2>
@@ -7656,7 +7843,7 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts</h2>
       <article class="item" data-search="resolveProjectSourceAsync src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts Resolve one project source into the filesystem root consumed by the existing analysis pipeline.">
     <h3>resolveProjectSourceAsync</h3>
-    <p class="muted"><code>src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts:10:1</code></p>
+    <p class="muted"><code>src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts:11:1</code></p>
     <p>Resolve one project source into the filesystem root consumed by the existing analysis pipeline.</p>
     
   </article>
@@ -7676,7 +7863,7 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/project-source/composition/loadProjectSourceAsync.ts</h2>
       <article class="item" data-search="loadProjectSourceAsync src/features/project-source/composition/loadProjectSourceAsync.ts Wire the canonical GitHub repository adapter into project-source resolution.">
     <h3>loadProjectSourceAsync</h3>
-    <p class="muted"><code>src/features/project-source/composition/loadProjectSourceAsync.ts:6:1</code></p>
+    <p class="muted"><code>src/features/project-source/composition/loadProjectSourceAsync.ts:7:1</code></p>
     <p>Wire the canonical GitHub repository adapter into project-source resolution.</p>
     
   </article>

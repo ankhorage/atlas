@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.15.0
+
+### Minor Changes
+
+- eb3263b: Accept validated local source JAR archives as analysis input.
+
 ## 0.14.3
 
 ### Patch Changes

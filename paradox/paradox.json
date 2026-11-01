@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.14.3",
+      "value": "v0.15.0",
       "color": "cb3837"
     },
     {
@@ -1209,6 +1209,16 @@
       ]
     },
     {
+      "path": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/projectSource.ts"
+      ],
+      "exports": [
+        "materializeSourceJarAsync"
+      ]
+    },
+    {
       "path": "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -1256,6 +1266,7 @@
       "path": "src/features/project-source/composition/loadProjectSourceAsync.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
         "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
         "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts",
         "src/types/projectSource.ts"
@@ -1778,8 +1789,10 @@
       "dependencies": [],
       "exports": [
         "GitHubProjectMaterializer",
+        "LocalProjectMaterialization",
         "ProjectSource",
-        "ResolvedProjectSource"
+        "ResolvedProjectSource",
+        "SourceJarMaterializer"
       ]
     },
     {
@@ -2258,11 +2271,30 @@
       "exports": []
     },
     {
+      "path": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "src/features/project-source/composition/loadProjectSourceAsync.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/project-source/projectSource.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/project-source/application/use-cases/parseProjectSource.ts",
         "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/cli/runAuditSourceAsync.ts",
+        "src/features/audit/composition/createAuditAsync.ts",
+        "src/features/project-source/composition/loadProjectSourceAsync.ts"
       ],
       "exports": []
     },
@@ -5411,6 +5443,248 @@
       }
     },
     {
+      "name": "materializeSourceJarAsync",
+      "description": "Materializes a bounded local source JAR into an isolated temporary project root.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "name": "extractSourceJarAsync",
+      "description": "Owns ZIP reader lifetime and cancellation while extraction stays bounded by the adapter policy.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 63,
+        "column": 1
+      }
+    },
+    {
+      "name": "closeOnAbort",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 75,
+        "column": 9
+      }
+    },
+    {
+      "name": "extractSourceEntriesAsync",
+      "description": "Validates and extracts only ordinary archive entries beneath the isolated temporary root.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 95,
+        "column": 1
+      }
+    },
+    {
+      "name": "assertSafeArchiveEntry",
+      "description": "Rejects archive metadata that could escape the temporary root or require unsupported extraction.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 136,
+        "column": 1
+      }
+    },
+    {
+      "name": "assertSafeArchiveEntryPath",
+      "description": "Rejects absolute, empty, dot, and backslash paths while allowing one directory suffix slash.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 147,
+        "column": 1
+      }
+    },
+    {
+      "name": "assertSupportedArchiveEncoding",
+      "description": "Restricts extraction to the ZIP compression methods that the bounded reader can validate.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 160,
+        "column": 1
+      }
+    },
+    {
+      "name": "assertOrdinaryArchiveEntry",
+      "description": "Allows only ordinary files and directories, with metadata consistent with the archive pathname.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 167,
+        "column": 1
+      }
+    },
+    {
+      "name": "isInconsistentArchiveEntryType",
+      "description": "Detects conflicting Unix file-type metadata without requiring it from every ZIP producer.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 182,
+        "column": 1
+      }
+    },
+    {
+      "name": "assertDistinctArchiveEntry",
+      "description": "Rejects duplicate targets and file-directory collisions before archive extraction mutates disk.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 193,
+        "column": 1
+      }
+    },
+    {
+      "name": "createExtractedSizeLimit",
+      "description": "Counts actual decompressed bytes because ZIP metadata cannot be trusted as a size bound.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 215,
+        "column": 1
+      }
+    },
+    {
+      "name": "getSourceJarLimits",
+      "description": "Limits test-controlled archive budgets to stricter values than the production security ceiling.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 231,
+        "column": 1
+      }
+    },
+    {
+      "name": "getRestrictedLimit",
+      "description": "Rejects invalid limits and prevents callers from weakening production archive protection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 242,
+        "column": 1
+      }
+    },
+    {
+      "name": "closeZip",
+      "description": "Closes an open ZIP reader so cancellation releases its file descriptor without double-closing.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 251,
+        "column": 1
+      }
+    },
+    {
+      "name": "throwIfAborted",
+      "description": "Stops archive work at the adapter boundary while preserving an explicit abort reason.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 256,
+        "column": 1
+      }
+    },
+    {
+      "name": "getAbortError",
+      "description": "Creates the standard cancellation error when callers did not supply an Error reason.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 261,
+        "column": 1
+      }
+    },
+    {
+      "name": "getSourceStatsAsync",
+      "description": "Leaves existing directory and missing-path handling to the canonical project-analysis boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 268,
+        "column": 1
+      }
+    },
+    {
+      "name": "isJarPath",
+      "description": "Restricts archive handling to an explicit JAR input form before opening a ZIP reader.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 277,
+        "column": 1
+      }
+    },
+    {
+      "name": "assertZipSignatureAsync",
+      "description": "Verifies the ZIP local-file signature before allocating an extraction root or parsing an archive.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 282,
+        "column": 1
+      }
+    },
+    {
+      "name": "resolveArchiveEntryPath",
+      "description": "Resolves one validated archive entry and proves that it remains inside the temporary root.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 296,
+        "column": 1
+      }
+    },
+    {
+      "name": "getProjectName",
+      "description": "Derives display-only project identity without exposing the isolated extraction location.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 311,
+        "column": 1
+      }
+    },
+    {
+      "name": "createSourceJarError",
+      "description": "Preserves actionable input errors while hiding host paths and archive implementation details.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "line": 316,
+        "column": 1
+      }
+    },
+    {
       "name": "createGitHubProjectMaterializer",
       "description": "Adapt the repository package's GitHub materialization capability to Atlas project sources.",
       "see": [],
@@ -5439,7 +5713,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts",
-        "line": 10,
+        "line": 11,
         "column": 1
       }
     },
@@ -5461,7 +5735,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
-        "line": 6,
+        "line": 7,
         "column": 1
       }
     },
@@ -7535,6 +7809,11 @@
       },
       {
         "fromPath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "toPath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "sourcePath": "src/features/project-source/composition/loadProjectSourceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "toPath": "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
         "sourcePath": "src/features/project-source/composition/loadProjectSourceAsync.ts"
       },
@@ -8039,6 +8318,16 @@
         "sourcePath": "test/src/features/project-analysis/selectParserLanguage.spec.ts"
       },
       {
+        "fromPath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toPath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toPath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/project-source/projectSource.spec.ts",
         "toPath": "src/features/project-source/application/use-cases/parseProjectSource.ts",
         "sourcePath": "test/src/features/project-source/projectSource.spec.ts"
@@ -8047,6 +8336,21 @@
         "fromPath": "test/src/features/project-source/projectSource.spec.ts",
         "toPath": "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts",
         "sourcePath": "test/src/features/project-source/projectSource.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toPath": "src/cli/runAuditSourceAsync.ts",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toPath": "src/features/audit/composition/createAuditAsync.ts",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toPath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
       },
       {
         "fromPath": "test/src/features/project-tree/buildProjectTree.spec.ts",
@@ -9032,6 +9336,11 @@
         "fromPath": "src/features/project-analysis/adapters/outbound/source-metadata/readTypeScriptProjectFileMetadata.ts",
         "toPath": "src/types/projectFiles.ts",
         "sourcePath": "src/features/project-analysis/adapters/outbound/source-metadata/readTypeScriptProjectFileMetadata.ts"
+      },
+      {
+        "fromPath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts",
+        "toPath": "src/types/projectSource.ts",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
       },
       {
         "fromPath": "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
@@ -11194,6 +11503,12 @@
         "sourcePath": "src/features/project-source/composition/loadProjectSourceAsync.ts"
       },
       {
+        "fromSymbol": "materializeAsync",
+        "toSymbol": "materializeSourceJarAsync",
+        "callExpression": "materializeSourceJarAsync",
+        "sourcePath": "src/features/project-source/composition/loadProjectSourceAsync.ts"
+      },
+      {
         "fromSymbol": "findProjectTreeNode",
         "toSymbol": "findProjectTreeNode",
         "callExpression": "findProjectTreeNode",
@@ -12934,6 +13249,180 @@
         "sourcePath": "test/src/features/project-analysis/selectParserLanguage.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "mkdtemp",
+        "callExpression": "mkdtemp",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "createJarAsync",
+        "callExpression": "createJarAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "materializeSourceJarAsync",
+        "callExpression": "materializeSourceJarAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "cleanupAsync",
+        "callExpression": "materialized.cleanupAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "access",
+        "callExpression": "access",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "assertRejectedArchiveAsync",
+        "callExpression": "assertRejectedArchiveAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "replaceArchiveEntryName",
+        "callExpression": "replaceArchiveEntryName",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "setCentralDirectorySize",
+        "callExpression": "setCentralDirectorySize",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "readSourceJarTemporaryRootsAsync",
+        "callExpression": "readSourceJarTemporaryRootsAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "stat",
+        "callExpression": "stat",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "setArchiveEntrySize",
+        "callExpression": "setArchiveEntrySize",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "loadProjectSourceAsync",
+        "callExpression": "loadProjectSourceAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
+        "toSymbol": "waitForNewTemporaryRootAsync",
+        "callExpression": "waitForNewTemporaryRootAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "createJarAsync",
+        "toSymbol": "pipeline",
+        "callExpression": "pipeline",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "createJarAsync",
+        "toSymbol": "createWriteStream",
+        "callExpression": "createWriteStream",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "assertRejectedArchiveAsync",
+        "toSymbol": "readSourceJarTemporaryRootsAsync",
+        "callExpression": "readSourceJarTemporaryRootsAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "assertRejectedArchiveAsync",
+        "toSymbol": "materializeSourceJarAsync",
+        "callExpression": "materializeSourceJarAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "assertRejectedArchiveAsync",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "readSourceJarTemporaryRootsAsync",
+        "toSymbol": "readdir",
+        "callExpression": "readdir",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "readSourceJarTemporaryRootsAsync",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "waitForNewTemporaryRootAsync",
+        "toSymbol": "readSourceJarTemporaryRootsAsync",
+        "callExpression": "readSourceJarTemporaryRootsAsync",
+        "sourcePath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/project-source/projectSource.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -12968,6 +13457,144 @@
         "toSymbol": "cleanupAsync",
         "callExpression": "resolved.cleanupAsync",
         "sourcePath": "test/src/features/project-source/projectSource.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "mkdtemp",
+        "callExpression": "mkdtemp",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "cp",
+        "callExpression": "cp",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "createSourceJarAsync",
+        "callExpression": "createSourceJarAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "createAuditAsync",
+        "callExpression": "createAuditAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "loadProjectSourceAsync",
+        "callExpression": "loadProjectSourceAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "cleanupAsync",
+        "callExpression": "localDirectory.cleanupAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "cleanupAsync",
+        "callExpression": "materialized.cleanupAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "access",
+        "callExpression": "access",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "readSourceJarTemporaryRootsAsync",
+        "callExpression": "readSourceJarTemporaryRootsAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "runAuditSourceAsync",
+        "callExpression": "runAuditSourceAsync",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/sourceJarAcceptance.spec.ts",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "createSourceJarAsync",
+        "toSymbol": "pipeline",
+        "callExpression": "pipeline",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "createSourceJarAsync",
+        "toSymbol": "createWriteStream",
+        "callExpression": "createWriteStream",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "readSourceJarTemporaryRootsAsync",
+        "toSymbol": "readdir",
+        "callExpression": "readdir",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "readSourceJarTemporaryRootsAsync",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/project-tree/buildProjectTree.spec.ts",
@@ -13808,6 +14435,12 @@
         "toSymbol": "normalizeGitHubRepositoryUrl",
         "callExpression": "normalizeGitHubRepositoryUrl",
         "sourcePath": "src/features/project-source/application/use-cases/parseProjectSource.ts"
+      },
+      {
+        "fromSymbol": "resolveProjectSourceAsync",
+        "toSymbol": "materializeAsync",
+        "callExpression": "sourceJar?.materializeAsync",
+        "sourcePath": "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts"
       },
       {
         "fromSymbol": "resolveProjectSourceAsync",
@@ -15854,6 +16487,270 @@
         "toSymbol": "extractClassName",
         "callExpression": "extractClassName",
         "sourcePath": "src/features/project-analysis/adapters/outbound/source-metadata/readTypeScriptProjectFileMetadata.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "getSourceJarLimits",
+        "callExpression": "getSourceJarLimits",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "throwIfAborted",
+        "callExpression": "throwIfAborted",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "getSourceStatsAsync",
+        "callExpression": "getSourceStatsAsync",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "isJarPath",
+        "callExpression": "isJarPath",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "assertZipSignatureAsync",
+        "callExpression": "assertZipSignatureAsync",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "mkdtemp",
+        "callExpression": "mkdtemp",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "extractSourceJarAsync",
+        "callExpression": "extractSourceJarAsync",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "getProjectName",
+        "callExpression": "getProjectName",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "cleanupAsync",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "getAbortError",
+        "callExpression": "getAbortError",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeSourceJarAsync",
+        "toSymbol": "createSourceJarError",
+        "callExpression": "createSourceJarError",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceJarAsync",
+        "toSymbol": "openPromise",
+        "callExpression": "openPromise",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "closeOnAbort",
+        "toSymbol": "closeZip",
+        "callExpression": "closeZip",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceJarAsync",
+        "toSymbol": "throwIfAborted",
+        "callExpression": "throwIfAborted",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceJarAsync",
+        "toSymbol": "extractSourceEntriesAsync",
+        "callExpression": "extractSourceEntriesAsync",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceJarAsync",
+        "toSymbol": "closeZip",
+        "callExpression": "closeZip",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "createExtractedSizeLimit",
+        "callExpression": "createExtractedSizeLimit",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "throwIfAborted",
+        "callExpression": "throwIfAborted",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "assertSafeArchiveEntry",
+        "callExpression": "assertSafeArchiveEntry",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "assertDistinctArchiveEntry",
+        "callExpression": "assertDistinctArchiveEntry",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "resolveArchiveEntryPath",
+        "callExpression": "resolveArchiveEntryPath",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "pipeline",
+        "callExpression": "pipeline",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "createEntrySizeLimit",
+        "callExpression": "createEntrySizeLimit",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "extractSourceEntriesAsync",
+        "toSymbol": "createWriteStream",
+        "callExpression": "createWriteStream",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertSafeArchiveEntry",
+        "toSymbol": "assertSafeArchiveEntryPath",
+        "callExpression": "assertSafeArchiveEntryPath",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertSafeArchiveEntry",
+        "toSymbol": "assertSupportedArchiveEncoding",
+        "callExpression": "assertSupportedArchiveEncoding",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertSafeArchiveEntry",
+        "toSymbol": "assertOrdinaryArchiveEntry",
+        "callExpression": "assertOrdinaryArchiveEntry",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertSafeArchiveEntry",
+        "toSymbol": "resolveArchiveEntryPath",
+        "callExpression": "resolveArchiveEntryPath",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertSafeArchiveEntryPath",
+        "toSymbol": "isAbsolute",
+        "callExpression": "isAbsolute",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertOrdinaryArchiveEntry",
+        "toSymbol": "isInconsistentArchiveEntryType",
+        "callExpression": "isInconsistentArchiveEntryType",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "transform",
+        "toSymbol": "callback",
+        "callExpression": "callback",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "getSourceJarLimits",
+        "toSymbol": "getRestrictedLimit",
+        "callExpression": "getRestrictedLimit",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "throwIfAborted",
+        "toSymbol": "getAbortError",
+        "callExpression": "getAbortError",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "getSourceStatsAsync",
+        "toSymbol": "stat",
+        "callExpression": "stat",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "assertZipSignatureAsync",
+        "toSymbol": "open",
+        "callExpression": "open",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "resolveArchiveEntryPath",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "resolveArchiveEntryPath",
+        "toSymbol": "relative",
+        "callExpression": "relative",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "resolveArchiveEntryPath",
+        "toSymbol": "isAbsolute",
+        "callExpression": "isAbsolute",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
+      },
+      {
+        "fromSymbol": "getProjectName",
+        "toSymbol": "basename",
+        "callExpression": "basename",
+        "sourcePath": "src/features/project-source/adapters/outbound/archive/materializeSourceJarAsync.ts"
       },
       {
         "fromSymbol": "materializeAsync",
