@@ -11,11 +11,11 @@ import { applyGraphInteractionPresentation } from '@/features/graph-view/adapter
 
 const NODES: readonly GraphViewNode[] = [
   { id: 'src', label: 'src' },
-  { id: 'src.features', label: 'features', parentId: 'src' },
   { id: 'src.features.nested', label: 'nested', parentId: 'src.features' },
   { id: 'src.features.nested.feature', label: 'feature', parentId: 'src.features.nested' },
   { id: 'src.consumer', label: 'consumer', parentId: 'src' },
   { id: 'src.external', label: 'external', parentId: 'src' },
+  { id: 'src.features', label: 'features', parentId: 'src' },
 ];
 
 const EDGES: readonly GraphViewEdge[] = [
