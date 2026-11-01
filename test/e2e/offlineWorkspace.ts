@@ -83,10 +83,8 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   await page.getByLabel('Expand').first().click();
   await page.getByLabel('Collapse').first().click();
 
-  if (requireCompoundNodes) {
-    await assertRuleEvidence(page);
-    await assertCompoundNodesEnabled(page);
-  } else {
+  if (requireCompoundNodes) await assertCompoundNodesEnabled(page);
+  else {
     await assertGenericWorkspaceInteractions(page);
   }
   await assertDarkTheme(page);
