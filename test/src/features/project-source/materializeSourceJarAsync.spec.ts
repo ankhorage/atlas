@@ -12,9 +12,11 @@ describe('[source JAR materialization]', () => {
   it('materializes source entries into a temporary project and removes it after analysis', async () => {
     const fixtureRoot = await mkdtemp(join(tmpdir(), 'atlas-source-jar-test-'));
     const sourceJarPath = join(fixtureRoot, 'example-sources.jar');
-    await createJarAsync(sourceJarPath, [
-      ['src/example/Hello.java', 'package example; class Hello {}'],
-    ]);
+    await createJarAsync(
+      sourceJarPath,
+      [['src/example/Hello.java', 'package example; class Hello {}']],
+      ['META-INF/', 'src/', 'src/example/']
+    );
 
     const materialized = await materializeSourceJarAsync(sourceJarPath);
 
@@ -34,6 +36,21 @@ describe('[source JAR materialization]', () => {
 
     await assert.rejects(materializeSourceJarAsync(sourceJarPath), /Unsupported binary JAR input/);
 
+    await rm(fixtureRoot, { force: true, recursive: true });
+  });
+
+  it('keeps unrelated local files on the existing filesystem path and rejects invalid JAR signatures', async () => {
+    const fixtureRoot = await mkdtemp(join(tmpdir(), 'atlas-source-jar-test-'));
+    const archiveNamedAsTextPath = join(fixtureRoot, 'source.txt');
+    const invalidJarPath = join(fixtureRoot, 'not-a-jar.jar');
+    await createJarAsync(archiveNamedAsTextPath, [['src/Hello.java', 'class Hello {}']]);
+    await writeFile(invalidJarPath, 'not a JAR');
+
+    expect(await materializeSourceJarAsync(archiveNamedAsTextPath)).toBe(null);
+    await assert.rejects(
+      materializeSourceJarAsync(invalidJarPath),
+      /Unsupported local archive input/
+    );
     await rm(fixtureRoot, { force: true, recursive: true });
   });
 
@@ -70,9 +87,11 @@ describe('[source JAR materialization]', () => {
 
 async function createJarAsync(
   path: string,
-  entries: readonly (readonly [string, string])[]
+  entries: readonly (readonly [string, string])[],
+  directories: readonly string[] = []
 ): Promise<void> {
   const archive = new ZipFile();
+  directories.forEach(directory => archive.addEmptyDirectory(directory));
   entries.forEach(([name, content]) => archive.addBuffer(Buffer.from(content), name));
   archive.end();
   await pipeline(archive.outputStream, createWriteStream(path));
