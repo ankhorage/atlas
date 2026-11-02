@@ -19,7 +19,8 @@ interface GitHubProjectMaterialization {
 
 export interface GitHubProjectMaterializer {
   readonly materializeAsync: (
-    source: Extract<ProjectSource, { readonly kind: 'github' }>
+    source: Extract<ProjectSource, { readonly kind: 'github' }>,
+    signal?: AbortSignal
   ) => Promise<GitHubProjectMaterialization>;
 }
 

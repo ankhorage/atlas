@@ -9,9 +9,13 @@ import {
   isGitHubRepositorySource,
 } from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
-import { loadMultiProjectWorkspaceAsync } from '@/features/workspace/composition/loadMultiProjectWorkspaceAsync';
+import {
+  loadMultiProjectWorkspaceAsync,
+  type MultiProjectWorkspaceProject,
+} from '@/features/workspace/composition/loadMultiProjectWorkspaceAsync';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
+import { settleBoundedAsync } from '@/features/workspace/utils/settleBoundedAsync';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 import { getProjectName } from '@/utils/getProjectName';
@@ -29,8 +33,10 @@ export async function loadWorkspaceProjectSourceAsync(
   sourceValue: string | undefined,
   loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
   materializeAsync: (
-    source: ProjectSource
-  ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync
+    source: ProjectSource,
+    signal?: AbortSignal
+  ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync,
+  signal?: AbortSignal
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(sourceValue, process.env.ATLAS_PROJECT_PATH);
 
@@ -47,13 +53,15 @@ export async function loadWorkspaceProjectSourceAsync(
       return await loadSingleGitHubWorkspaceAsync(
         startupSource.source,
         loadDependencyGraphAsync,
-        materializeAsync
+        materializeAsync,
+        signal
       );
     }
     return await loadGitHubWorkspaceAsync(
       startupSource.source,
       loadDependencyGraphAsync,
-      materializeAsync
+      materializeAsync,
+      signal
     );
   } catch (error) {
     return {
@@ -71,12 +79,13 @@ export async function loadWorkspaceProjectSourceAsync(
 async function loadSingleGitHubWorkspaceAsync(
   sourceValue: string,
   loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
-  materializeAsync: (source: ProjectSource) => Promise<ResolvedProjectSource>
+  materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
+  signal?: AbortSignal
 ): Promise<WorkspaceProjectSourceResult> {
   const source = parseProjectSource(normalizeGitHubRepositoryUrl(sourceValue));
   if (source.kind !== 'github')
     throw new Error('The browser source field accepts GitHub repository URLs only.');
-  const resolved = await materializeAsync(source);
+  const resolved = await materializeAsync(source, signal);
   try {
     return {
       currentSource: source.url,
@@ -92,15 +101,22 @@ async function loadSingleGitHubWorkspaceAsync(
 async function loadGitHubWorkspaceAsync(
   sourceValue: string,
   loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
-  materializeAsync: (source: ProjectSource) => Promise<ResolvedProjectSource>
+  materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
+  signal?: AbortSignal
 ): Promise<WorkspaceProjectSourceResult> {
   const { source, excludedRepositoryIds } = parseGitHubWorkspaceSource(sourceValue);
   const discovery = await discoverWorkspaceGitHubSourcesAsync(source, excludedRepositoryIds);
-  const resolvedProjects = await materializeDiscoveredProjectsAsync(
+  const materialization = await materializeDiscoveredProjectsAsync(
     discovery.selectedRepositories,
-    materializeAsync
+    materializeAsync,
+    signal
   );
+  const { projects: resolvedProjects } = materialization;
   try {
+    if (resolvedProjects.length === 0)
+      throw new Error(
+        materialization.errors.at(0) ?? 'No selected GitHub repositories could be materialized.'
+      );
     return {
       currentSource: sourceValue,
       repositories: discovery.repositories.map(repository => ({
@@ -111,7 +127,11 @@ async function loadGitHubWorkspaceAsync(
         resolvedProjects.length === 1
           ? resolvedProjects[0].resolved.projectName
           : 'GitHub workspace',
-      workspace: await loadDiscoveredWorkspaceAsync(resolvedProjects, loadDependencyGraphAsync),
+      workspace: await loadDiscoveredWorkspaceAsync(
+        resolvedProjects,
+        loadDependencyGraphAsync,
+        signal
+      ),
     };
   } finally {
     await Promise.all(resolvedProjects.map(project => project.resolved.cleanupAsync()));
@@ -119,30 +139,47 @@ async function loadGitHubWorkspaceAsync(
 }
 
 /*** Materialize only selected repositories after cheap owner discovery has completed. */
-function materializeDiscoveredProjectsAsync(
+async function materializeDiscoveredProjectsAsync(
   repositories: readonly Parameters<
     typeof loadMultiProjectWorkspaceAsync
   >[0][number]['repository'][],
-  materializeAsync: (source: ProjectSource) => Promise<ResolvedProjectSource>
-) {
-  return Promise.all(
-    repositories.map(async repository => ({
+  materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
+  signal?: AbortSignal
+): Promise<MaterializedWorkspaceProjects> {
+  const outcomes = await settleBoundedAsync(
+    repositories,
+    MAX_CONCURRENT_REPOSITORY_MATERIALIZATIONS,
+    async (repository, materializationSignal) => ({
       repository,
       resolved: await materializeAsync(
-        parseProjectSource(normalizeGitHubRepositoryUrl(repository.url))
+        parseProjectSource(normalizeGitHubRepositoryUrl(repository.url)),
+        materializationSignal
       ),
-    }))
+    }),
+    signal
   );
+  return {
+    projects: outcomes
+      .filter(
+        (outcome): outcome is PromiseFulfilledResult<MultiProjectWorkspaceProject> =>
+          outcome.status === 'fulfilled'
+      )
+      .map(outcome => outcome.value),
+    errors: outcomes
+      .filter((outcome): outcome is PromiseRejectedResult => outcome.status === 'rejected')
+      .map(outcome => toErrorMessage(outcome.reason, 'Unable to materialize GitHub repository.')),
+  };
 }
 
 /*** Keep the existing single-project loader as the compatibility path for one repository. */
 function loadDiscoveredWorkspaceAsync(
-  projects: Awaited<ReturnType<typeof materializeDiscoveredProjectsAsync>>,
-  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>
+  projects: readonly MultiProjectWorkspaceProject[],
+  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
+  signal?: AbortSignal
 ): Promise<WorkspaceLoadResult> {
   return projects.length === 1
     ? loadWorkspaceAsync(projects[0].resolved.rootPath, loadDependencyGraphAsync)
-    : loadMultiProjectWorkspaceAsync(projects);
+    : loadMultiProjectWorkspaceAsync(projects, signal);
 }
 
 /*** Decode persisted exclusion identities without changing the established source query format. */
@@ -169,3 +206,10 @@ export interface WorkspaceRepositoryOption {
   readonly selected: boolean;
   readonly url: string;
 }
+
+interface MaterializedWorkspaceProjects {
+  readonly projects: readonly MultiProjectWorkspaceProject[];
+  readonly errors: readonly string[];
+}
+
+const MAX_CONCURRENT_REPOSITORY_MATERIALIZATIONS = 4;

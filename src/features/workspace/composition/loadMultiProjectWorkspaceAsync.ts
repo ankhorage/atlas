@@ -10,6 +10,7 @@ import { projectDependencyGraph } from '@/features/dependency-analysis/applicati
 import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
 import { loadProjectSnapshotAsync } from '@/features/project-analysis/composition/loadProjectSnapshotAsync';
 import { hydrateWorkspaceSnapshot } from '@/features/workspace/application/use-cases/hydrateWorkspaceSnapshot';
+import { settleBoundedAsync } from '@/features/workspace/utils/settleBoundedAsync';
 import type { ProjectSnapshot } from '@/types/projectAnalysis';
 import type { ProjectFileTree } from '@/types/projectFiles';
 import type { ResolvedProjectSource } from '@/types/projectSource';
@@ -17,25 +18,19 @@ import type { WorkspaceLoadResult } from '@/types/workspace';
 
 /*** Analyze selected repositories together through the canonical multi-project dependency pipeline. */
 export async function loadMultiProjectWorkspaceAsync(
-  projects: readonly MultiProjectWorkspaceProject[]
+  projects: readonly MultiProjectWorkspaceProject[],
+  signal?: AbortSignal
 ): Promise<WorkspaceLoadResult> {
   try {
     if (projects.length === 0) throw new Error('No GitHub repositories are selected.');
-    const inspected = await Promise.all(
-      projects.map(async project => ({
-        id: project.repository.id,
-        inspection: await inspectProjectForAnalysisAsync(project.resolved.rootPath),
-        project,
-      }))
-    );
+    const inspected = await inspectWorkspaceProjectsAsync(projects, signal);
+    if (inspected.length === 0)
+      throw new Error('No selected GitHub repositories could be analyzed.');
     const graphProjects = inspected.map(({ id, inspection }) => ({ id, inspection }));
     const sourceGraph = await createSourceGraphFromInspectionsAsync({ projects: graphProjects });
     const dependencyGraph = projectDependencyGraphFromInspections(sourceGraph, graphProjects);
-    const snapshots = await Promise.all(
-      inspected.map(({ inspection, project }) =>
-        loadProjectSnapshotAsync(project.resolved.rootPath, dependencyGraph, inspection)
-      )
-    );
+    const snapshots = await loadWorkspaceSnapshotsAsync(inspected, dependencyGraph, signal);
+    if (snapshots.length === 0) throw new Error('No selected GitHub repositories could be loaded.');
     const snapshot = createMultiProjectSnapshot(snapshots, sourceGraph, dependencyGraph);
     return {
       ok: true,
@@ -47,6 +42,50 @@ export async function loadMultiProjectWorkspaceAsync(
       error: toErrorMessage(error, 'Unable to load selected GitHub repositories.'),
     };
   }
+}
+
+/*** Inspect selected repositories independently so one unavailable project does not blank the workspace. */
+async function inspectWorkspaceProjectsAsync(
+  projects: readonly MultiProjectWorkspaceProject[],
+  signal?: AbortSignal
+): Promise<readonly InspectedWorkspaceProject[]> {
+  const outcomes = await settleBoundedAsync(
+    projects,
+    MAX_CONCURRENT_REPOSITORY_ANALYSES,
+    async project => ({
+      id: project.repository.id,
+      inspection: await inspectProjectForAnalysisAsync(project.resolved.rootPath),
+      project,
+    }),
+    signal
+  );
+  return outcomes
+    .filter(
+      (outcome): outcome is PromiseFulfilledResult<InspectedWorkspaceProject> =>
+        outcome.status === 'fulfilled'
+    )
+    .map(outcome => outcome.value);
+}
+
+/*** Read successful project snapshots independently after the shared dependency graph is available. */
+async function loadWorkspaceSnapshotsAsync(
+  inspected: readonly InspectedWorkspaceProject[],
+  dependencyGraph: Parameters<typeof projectDependencyGraph>[0],
+  signal?: AbortSignal
+): Promise<readonly ProjectSnapshot[]> {
+  const outcomes = await settleBoundedAsync(
+    inspected,
+    MAX_CONCURRENT_REPOSITORY_ANALYSES,
+    ({ inspection, project }) =>
+      loadProjectSnapshotAsync(project.resolved.rootPath, dependencyGraph, inspection),
+    signal
+  );
+  return outcomes
+    .filter(
+      (outcome): outcome is PromiseFulfilledResult<ProjectSnapshot> =>
+        outcome.status === 'fulfilled'
+    )
+    .map(outcome => outcome.value);
 }
 
 /*** Merge display trees while preserving each repository as an explicit virtual root. */
@@ -79,3 +118,11 @@ export interface MultiProjectWorkspaceProject {
   readonly repository: GitHubRepositoryDiscoveryRepository;
   readonly resolved: ResolvedProjectSource;
 }
+
+interface InspectedWorkspaceProject {
+  readonly id: string;
+  readonly inspection: Awaited<ReturnType<typeof inspectProjectForAnalysisAsync>>;
+  readonly project: MultiProjectWorkspaceProject;
+}
+
+const MAX_CONCURRENT_REPOSITORY_ANALYSES = 4;
