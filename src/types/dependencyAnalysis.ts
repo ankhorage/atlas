@@ -14,6 +14,12 @@ export interface PackageDependencyNodeData extends Readonly<Record<string, unkno
   readonly isWorkspaceRoot?: boolean;
 }
 
+/** Stable Atlas presentation identity for one repository-backed analysis project. */
+export interface RepositoryGraphIdentity {
+  readonly id: string;
+  readonly label: string;
+}
+
 export interface PackageDependencyEdgeData extends Readonly<Record<string, unknown>> {
   readonly weight: number;
   readonly evidence: readonly DependencyImportEvidence[];

@@ -62,7 +62,91 @@ describe('[canonical dependency package projection]', () => {
     expect(intrinsic?.data.weight).toBe(1);
     expect(intrinsic?.data.evidence[0]?.classification).toBe('intrinsic');
   });
+
+  it('keeps identical module paths distinct across immutable repository identities', () => {
+    const graph: DependencyGraph = {
+      nodes: [
+        repositoryRoot('101', 'first'),
+        repositoryModule('101', 'src.shared'),
+        repositoryRoot('202', 'second'),
+        repositoryModule('202', 'src.shared'),
+      ],
+      edges: [
+        {
+          id: 'first-to-second',
+          source: 'package:101:.#src.shared',
+          target: 'package:202:.#src.shared',
+          data: {
+            kind: 'import',
+            analyzerId: 'typescript',
+            weight: 1,
+            evidence: [dependencyEvidence('src/shared.ts', '@scope/second', 'intrinsic')],
+          },
+        },
+      ],
+    };
+
+    const projected = projectDependencyGraph(
+      graph,
+      new Map([
+        ['101', { id: '101', label: 'renamed-first' }],
+        ['202', { id: '202', label: 'renamed-second' }],
+      ])
+    );
+
+    expect(projected.nodes.map(node => node.id).sort()).toEqual([
+      'repository.101',
+      'repository.101.module.src.shared',
+      'repository.202',
+      'repository.202.module.src.shared',
+    ]);
+    expect(projected.nodes.find(node => node.id === 'repository.101')?.data.label).toBe(
+      'renamed-first'
+    );
+    expect(projected.edges).toEqual([
+      {
+        id: 'repository.101.module.src.shared->repository.202.module.src.shared',
+        source: 'repository.101.module.src.shared',
+        target: 'repository.202.module.src.shared',
+        data: {
+          weight: 1,
+          evidence: [dependencyEvidence('src/shared.ts', '@scope/second', 'intrinsic')],
+        },
+      },
+    ]);
+  });
 });
+
+/*** Create the canonical focus package for one independently selected GitHub repository. */
+function repositoryRoot(projectId: string, label: string): DependencyGraph['nodes'][number] {
+  return {
+    id: `package:${projectId}:.`,
+    data: {
+      kind: 'package',
+      classification: 'intrinsic',
+      focus: true,
+      label,
+      projectId,
+      path: '.',
+    },
+  };
+}
+
+/*** Create one project-local module whose visible path intentionally collides with another project. */
+function repositoryModule(projectId: string, path: string): DependencyGraph['nodes'][number] {
+  return {
+    id: `package:${projectId}:.#${path}`,
+    data: {
+      kind: 'module',
+      classification: 'intrinsic',
+      focus: true,
+      label: path.split('.').at(-1) ?? path,
+      projectId,
+      path,
+      parentPath: path.split('.').slice(0, -1).join('.'),
+    },
+  };
+}
 
 /*** Create owner graph data with canonical node IDs that must not leak into Atlas projection. */
 function createOwnerGraph(): DependencyGraph {

@@ -68,8 +68,23 @@ function resolveRedirectPackage(input: ProjectVisibleGraphInput): string | null 
   const currentPackage = input.currentPackage.replaceAll('/', '.');
   if (input.preservePackageScope || currentPackage !== '') return null;
 
+  if (hasMultipleRepositoryRoots(input.elements)) return null;
+
   const nextPackage = filterEmptyPackages('', input.elements);
   return nextPackage === '' ? null : nextPackage;
+}
+
+/*** Keep a disconnected multi-project overview at Home instead of picking an arbitrary repository. */
+function hasMultipleRepositoryRoots(elements: ElementsDefinition): boolean {
+  const roots = new Set(
+    elements.nodes
+      .filter(node => node.data.isIntrinsic === true)
+      .filter(node => !node.data.parent)
+      .map(node => String(node.data.id ?? ''))
+      .filter(id => id.startsWith('repository.'))
+      .filter(Boolean)
+  );
+  return roots.size > 1;
 }
 
 /*** Adds package-relative display labels without changing graph ids. */

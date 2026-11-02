@@ -17,6 +17,7 @@ import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/Wo
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
+import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
 /*** Renders the active Atlas workspace through its feature-owned React adapter. */
@@ -38,6 +39,7 @@ export function WorkspaceView({
           currentSource={currentSource}
           offline={offline}
           projectName={projectName}
+          projectTree={navigation.projectTree}
           repositories={repositories}
           onNavigate={navigation.navigateToPackage}
         />
@@ -89,7 +91,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
       subtitle={
         <Breadcrumbs
           compact
-          items={createBreadcrumbItems(props.currentPackage)}
+          items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
           separator="›"
           onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
         />
@@ -207,7 +209,12 @@ function WorkspaceError({ message }: { readonly message: string }) {
 }
 
 /*** Creates package breadcrumbs from a stable Home root to the active package path. */
-function createBreadcrumbItems(currentPackage: string): readonly BreadcrumbItem[] {
+function createBreadcrumbItems(
+  currentPackage: string,
+  projectTree: readonly ProjectTreeNode[]
+): readonly BreadcrumbItem[] {
+  const repositoryCrumbs = findRepositoryBreadcrumbs(currentPackage, projectTree);
+  if (repositoryCrumbs !== null) return repositoryCrumbs;
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
     id: packageSegments.slice(0, index + 1).join('.'),
@@ -215,6 +222,38 @@ function createBreadcrumbItems(currentPackage: string): readonly BreadcrumbItem[
   }));
 
   return [{ id: '', label: 'Home', icon: { name: 'home-outline' } }, ...packageItems];
+}
+
+/*** Present virtual owner and repository labels without leaking technical graph identities. */
+function findRepositoryBreadcrumbs(
+  currentPackage: string,
+  projectTree: readonly ProjectTreeNode[]
+): readonly BreadcrumbItem[] | null {
+  const match = projectTree
+    .flatMap(owner => (owner.children ?? []).map(repository => ({ owner, repository })))
+    .find(
+      ({ repository }) =>
+        repository.kind === 'virtual' &&
+        repository.graphPackage !== '' &&
+        (currentPackage === repository.graphPackage ||
+          currentPackage.startsWith(`${repository.graphPackage}.`))
+    );
+  if (match === undefined) return null;
+
+  const remainder = currentPackage
+    .slice(match.repository.graphPackage.length)
+    .replace(/^\./, '')
+    .split('.')
+    .filter(segment => segment && segment !== 'module' && segment !== 'package');
+  return [
+    { id: '', label: 'Home', icon: { name: 'home-outline' } },
+    { id: '', label: match.owner.label },
+    { id: match.repository.graphPackage, label: match.repository.label },
+    ...remainder.map((label, index) => ({
+      id: `${match.repository.graphPackage}.${remainder.slice(0, index + 1).join('.')}`,
+      label,
+    })),
+  ];
 }
 
 /*** Normalizes navigation paths to the package identity representation used by the graph view. */
@@ -238,6 +277,7 @@ interface WorkspaceHeaderProps {
   readonly currentSource?: string;
   readonly offline?: boolean;
   readonly projectName: string;
+  readonly projectTree: readonly ProjectTreeNode[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly onNavigate: (path: string) => void;
 }

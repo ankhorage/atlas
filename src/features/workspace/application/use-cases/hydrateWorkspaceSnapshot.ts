@@ -7,7 +7,7 @@ export function hydrateWorkspaceSnapshot(snapshot: WorkspaceSnapshot): ProjectOv
     evaluation: snapshot.audit.evaluation,
     packageGraph: snapshot.audit.packageGraph,
     projectIdentity: createProjectIdentity(snapshot),
-    tree: buildProjectTree(snapshot.audit.files),
+    tree: snapshot.navigationTree ?? buildProjectTree(snapshot.audit.files),
   };
 }
 

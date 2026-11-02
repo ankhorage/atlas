@@ -13,6 +13,7 @@ export interface ProjectOverview {
 export interface WorkspaceSnapshot {
   readonly version: 1;
   readonly audit: Audit;
+  readonly navigationTree?: readonly ProjectTreeNode[];
 }
 
 export type WorkspaceLoadResult =

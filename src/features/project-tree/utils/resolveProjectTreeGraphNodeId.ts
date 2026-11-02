@@ -5,6 +5,10 @@ export function resolveProjectTreeGraphNodeId(
   node: ProjectTreeNode,
   graphNodeIds: readonly string[]
 ): string | null {
+  if (node.kind === 'virtual')
+    return node.graphPackage !== '' && graphNodeIds.includes(node.graphPackage)
+      ? node.graphPackage
+      : null;
   if (node.kind === 'file') {
     const packageId = normalizeGraphPackage(node.graphPackage);
     return packageId !== '' && graphNodeIds.includes(packageId) ? packageId : null;

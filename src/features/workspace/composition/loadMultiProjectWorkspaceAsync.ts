@@ -9,11 +9,12 @@ import { createAuditFromSnapshot } from '@/features/audit/application/use-cases/
 import { projectDependencyGraph } from '@/features/dependency-analysis/application/use-cases/projectDependencyGraph';
 import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
 import { loadProjectSnapshotAsync } from '@/features/project-analysis/composition/loadProjectSnapshotAsync';
+import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import { hydrateWorkspaceSnapshot } from '@/features/workspace/application/use-cases/hydrateWorkspaceSnapshot';
 import { settleBoundedAsync } from '@/features/workspace/utils/settleBoundedAsync';
 import type { ProjectSnapshot } from '@/types/projectAnalysis';
-import type { ProjectFileTree } from '@/types/projectFiles';
 import type { ResolvedProjectSource } from '@/types/projectSource';
+import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
 /*** Analyze selected repositories together through the canonical multi-project dependency pipeline. */
@@ -34,7 +35,11 @@ export async function loadMultiProjectWorkspaceAsync(
     const snapshot = createMultiProjectSnapshot(snapshots, sourceGraph, dependencyGraph);
     return {
       ok: true,
-      value: hydrateWorkspaceSnapshot({ audit: createAuditFromSnapshot(snapshot), version: 1 }),
+      value: hydrateWorkspaceSnapshot({
+        audit: createAuditFromSnapshot(snapshot),
+        navigationTree: createMultiProjectNavigationTree(snapshots),
+        version: 1,
+      }),
     };
   } catch (error) {
     return {
@@ -72,17 +77,23 @@ async function loadWorkspaceSnapshotsAsync(
   inspected: readonly InspectedWorkspaceProject[],
   dependencyGraph: Parameters<typeof projectDependencyGraph>[0],
   signal?: AbortSignal
-): Promise<readonly ProjectSnapshot[]> {
+): Promise<readonly InspectedWorkspaceSnapshot[]> {
   const outcomes = await settleBoundedAsync(
     inspected,
     MAX_CONCURRENT_REPOSITORY_ANALYSES,
-    ({ inspection, project }) =>
-      loadProjectSnapshotAsync(project.resolved.rootPath, dependencyGraph, inspection),
+    async ({ inspection, project }) => ({
+      project,
+      snapshot: await loadProjectSnapshotAsync(
+        project.resolved.rootPath,
+        dependencyGraph,
+        inspection
+      ),
+    }),
     signal
   );
   return outcomes
     .filter(
-      (outcome): outcome is PromiseFulfilledResult<ProjectSnapshot> =>
+      (outcome): outcome is PromiseFulfilledResult<InspectedWorkspaceSnapshot> =>
         outcome.status === 'fulfilled'
     )
     .map(outcome => outcome.value);
@@ -90,28 +101,73 @@ async function loadWorkspaceSnapshotsAsync(
 
 /*** Merge display trees while preserving each repository as an explicit virtual root. */
 function createMultiProjectSnapshot(
-  snapshots: readonly ProjectSnapshot[],
+  snapshots: readonly InspectedWorkspaceSnapshot[],
   sourceGraph: ProjectSnapshot['sourceGraph'],
   dependencyGraph: Parameters<typeof projectDependencyGraph>[0]
 ): ProjectSnapshot {
-  const first = snapshots.at(0);
+  const first = snapshots.at(0)?.snapshot;
   if (first === undefined) throw new Error('No project snapshots were available.');
+  const repositories = new Map(
+    snapshots.map(({ project }) => [
+      project.repository.id,
+      { id: project.repository.id, label: project.repository.name },
+    ])
+  );
   return {
     ...first,
-    files: mergeProjectFiles(snapshots),
-    packageGraph: projectDependencyGraph(dependencyGraph),
+    packageGraph: projectDependencyGraph(dependencyGraph, repositories),
     sourceGraph,
   };
 }
 
-/*** Give each filesystem tree a stable repository root before passing it to the existing TreeView. */
-function mergeProjectFiles(snapshots: readonly ProjectSnapshot[]): ProjectFileTree {
-  return Object.fromEntries(
-    snapshots.map(snapshot => [
-      snapshot.projectPath.split('/').at(-1) ?? snapshot.projectPath,
-      snapshot.files,
-    ])
-  );
+/*** Build virtual GitHub owner and repository rows around unchanged project file trees. */
+function createMultiProjectNavigationTree(
+  snapshots: readonly InspectedWorkspaceSnapshot[]
+): readonly ProjectTreeNode[] {
+  const owners = new Map<string, InspectedWorkspaceSnapshot[]>();
+  for (const snapshot of snapshots) {
+    const grouped = owners.get(snapshot.project.repository.owner) ?? [];
+    owners.set(snapshot.project.repository.owner, [...grouped, snapshot]);
+  }
+  return [...owners.entries()]
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([owner, projects]) => ({
+      id: `owner:${owner}`,
+      kind: 'virtual' as const,
+      label: owner,
+      graphPackage: '',
+      children: projects
+        .toSorted((left, right) =>
+          left.project.repository.name.localeCompare(right.project.repository.name)
+        )
+        .map(({ project, snapshot }) => ({
+          id: `repository:${project.repository.id}`,
+          kind: 'virtual' as const,
+          label: project.repository.name,
+          graphPackage: repositoryGraphId(project.repository.id),
+          children: prefixProjectTree(buildProjectTree(snapshot.files), project.repository.id),
+        })),
+    }));
+}
+
+/*** Translate only local graph-package references into their repository-scoped graph identities. */
+function prefixProjectTree(
+  nodes: readonly ProjectTreeNode[],
+  repositoryId: string
+): readonly ProjectTreeNode[] {
+  return nodes.map(node => ({
+    ...node,
+    graphPackage:
+      node.graphPackage === ''
+        ? ''
+        : `${repositoryGraphId(repositoryId)}.module.${node.graphPackage}`,
+    ...(node.children ? { children: prefixProjectTree(node.children, repositoryId) } : {}),
+  }));
+}
+
+/*** Keep repository grouping IDs independent from owner/repository display names and checkout paths. */
+function repositoryGraphId(repositoryId: string): string {
+  return `repository.${encodeURIComponent(repositoryId).replaceAll('.', '%2E')}`;
 }
 
 export interface MultiProjectWorkspaceProject {
@@ -123,6 +179,11 @@ interface InspectedWorkspaceProject {
   readonly id: string;
   readonly inspection: Awaited<ReturnType<typeof inspectProjectForAnalysisAsync>>;
   readonly project: MultiProjectWorkspaceProject;
+}
+
+interface InspectedWorkspaceSnapshot {
+  readonly project: MultiProjectWorkspaceProject;
+  readonly snapshot: ProjectSnapshot;
 }
 
 const MAX_CONCURRENT_REPOSITORY_ANALYSES = 4;
