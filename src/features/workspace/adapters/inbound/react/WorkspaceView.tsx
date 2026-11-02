@@ -24,25 +24,28 @@ export function WorkspaceView({
   offline,
   projectName,
   repositories,
+  workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
   const navigation = useWorkspaceNavigation(workspace);
+  const settingsScope = workspaceScope ?? resolveWorkspaceProjectIdentity(workspace, projectName);
 
   return (
-    <AppShell
-      header={
-        <WorkspaceHeader
-          currentPackage={navigation.currentPackage}
-          currentSource={currentSource}
-          offline={offline}
-          projectName={projectName}
-          projectTree={navigation.projectTree}
-          repositories={repositories}
-          onNavigate={navigation.navigateToPackage}
-        />
-      }
-    >
-      <SettingsProvider workspaceScope={resolveWorkspaceProjectIdentity(workspace, projectName)}>
+    <SettingsProvider workspaceScope={settingsScope}>
+      <AppShell
+        header={
+          <WorkspaceHeader
+            currentPackage={navigation.currentPackage}
+            currentSource={currentSource}
+            offline={offline}
+            projectName={projectName}
+            projectTree={navigation.projectTree}
+            repositories={repositories}
+            workspaceScope={workspaceScope}
+            onNavigate={navigation.navigateToPackage}
+          />
+        }
+      >
         <WorkspaceBody
           currentSource={currentSource}
           auditExportActions={auditExportActions}
@@ -51,8 +54,8 @@ export function WorkspaceView({
           projectName={projectName}
           workspace={workspace}
         />
-      </SettingsProvider>
-    </AppShell>
+      </AppShell>
+    </SettingsProvider>
   );
 }
 
@@ -70,6 +73,7 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
             <span aria-label="Offline snapshot">Offline snapshot</span>
           ) : (
             <ProjectSourceForm
+              activeWorkspaceId={props.workspaceScope}
               currentSource={props.currentSource}
               repositories={props.repositories}
             />
@@ -221,6 +225,7 @@ interface WorkspaceViewProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly workspaceScope?: string;
   readonly workspace: WorkspaceLoadResult;
 }
 
@@ -231,6 +236,7 @@ interface WorkspaceHeaderProps {
   readonly projectName: string;
   readonly projectTree: readonly ProjectTreeNode[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly workspaceScope?: string;
   readonly onNavigate: (path: string) => void;
 }
 

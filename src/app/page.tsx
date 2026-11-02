@@ -14,6 +14,7 @@ export default async function Home({ searchParams }: HomeProps) {
   await connection();
   const params = await searchParams;
   const source = readSearchParam(params.source);
+  const workspaceScope = readSearchParam(params.workspace);
   const result = await loadWorkspaceProjectSourceAsync(source, inspection =>
     requestDependencyGraphAsync(inspection)
   );
@@ -27,6 +28,7 @@ export default async function Home({ searchParams }: HomeProps) {
       currentSource={result.currentSource}
       projectName={result.projectName}
       repositories={result.repositories}
+      workspaceScope={workspaceScope}
       workspace={result.workspace}
     />
   );
@@ -40,5 +42,6 @@ function readSearchParam(value: string | readonly string[] | undefined): string 
 interface HomeProps {
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
+    readonly workspace?: string | readonly string[];
   }>;
 }

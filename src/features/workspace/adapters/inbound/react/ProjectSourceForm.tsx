@@ -4,29 +4,21 @@ import { TextInput } from '@zora/text-input';
 import { View } from '@zora/view';
 import { useMemo, useState } from 'react';
 
+import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 /*** Edits a GitHub source and stages repository inclusion before one explicit workspace refresh. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
-  const [source, setSource] = useState(readSource(props.currentSource));
-  const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(props.repositories));
-  const [search, setSearch] = useState('');
+  const sourceForm = useProjectSourceForm(props);
   const visibleRepositories = useMemo(
     () =>
       props.repositories?.filter(repository =>
         `${repository.owner}/${repository.name}`
           .toLocaleLowerCase()
-          .includes(search.toLocaleLowerCase())
+          .includes(sourceForm.search.toLocaleLowerCase())
       ) ?? [],
-    [props.repositories, search]
+    [props.repositories, sourceForm.search]
   );
-  const openSource = () => {
-    const params = new URLSearchParams();
-    const normalizedSource = source.trim();
-    if (normalizedSource !== '')
-      params.set('source', serializeSource(normalizedSource, props.repositories, selectedIds));
-    window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
-  };
 
   return (
     <View align="center" direction="row" gap="xs" style={{ flexWrap: 'wrap', maxWidth: 720 }}>
@@ -34,27 +26,48 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         accessibilityLabel="GitHub owner or repository"
         placeholder="ankhorage, @ankhorage, or GitHub URL"
         size="s"
-        value={source}
-        onChangeText={setSource}
-        onSubmitEditing={openSource}
+        value={sourceForm.source}
+        onChangeText={sourceForm.setSource}
+        onSubmitEditing={sourceForm.openSource}
       />
       <RepositoryPicker
         repositories={visibleRepositories}
-        search={search}
-        selectedIds={selectedIds}
+        search={sourceForm.search}
+        selectedIds={sourceForm.selectedIds}
         totalCount={props.repositories?.length ?? 0}
-        onDeselectAll={() => setSelectedIds(new Set())}
-        onSearchChange={setSearch}
+        onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
+        onSearchChange={sourceForm.setSearch}
         onSelectAll={() =>
-          setSelectedIds(new Set(props.repositories?.map(repository => repository.id)))
+          sourceForm.setSelectedIds(new Set(props.repositories?.map(repository => repository.id)))
         }
-        onSelectionChange={setSelectedIds}
+        onSelectionChange={sourceForm.setSelectedIds}
       />
-      <Button size="s" variant="outline" onPress={openSource}>
+      <Button size="s" variant="outline" onPress={sourceForm.openSource}>
         Open
       </Button>
+      <WorkspaceControls
+        activeWorkspaceId={props.activeWorkspaceId}
+        repositories={props.repositories}
+        selectedIds={sourceForm.selectedIds}
+        source={sourceForm.source}
+      />
     </View>
   );
+}
+
+/*** Keeps staged source edits isolated until an explicit workspace refresh is requested. */
+function useProjectSourceForm(props: ProjectSourceFormProps) {
+  const [source, setSource] = useState(readSource(props.currentSource));
+  const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(props.repositories));
+  const [search, setSearch] = useState('');
+  const openSource = () => {
+    const params = new URLSearchParams();
+    const normalizedSource = source.trim();
+    if (normalizedSource !== '')
+      params.set('source', serializeSource(normalizedSource, props.repositories, selectedIds));
+    window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
+  };
+  return { openSource, search, selectedIds, setSearch, setSelectedIds, setSource, source };
 }
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
@@ -147,6 +160,7 @@ function readSource(currentSource: string | undefined): string {
 }
 
 interface ProjectSourceFormProps {
+  readonly activeWorkspaceId?: string;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
 }
