@@ -39,6 +39,9 @@ const en: ILanguage = {
   'audit.noEvidence': 'No source/import evidence available.',
   'audit.closeInspector': 'Close cycle inspector',
   'audit.rule.cyclicDependencies': 'Cyclic Dependencies',
+  'audit.crossProjectCycles': 'Cross-Project Cycles',
+  'audit.hiddenCycleEvidence': 'Some cycle evidence is hidden by active filters.',
+  'audit.revealCycleEvidence': 'Reveal complete cycle',
 
   // Layouts
   breadthfirst: 'Breadthfirst',

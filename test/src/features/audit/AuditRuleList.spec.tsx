@@ -70,6 +70,37 @@ describe('[AuditRuleList]', () => {
 
     expect(container.textContent).toBe('');
   });
+
+  it('groups repository cycles and cross-project cycles exactly once', () => {
+    const repositoryCycle: PackageCycleDetail = {
+      ...cycles[0],
+      projects: [{ id: '1', label: 'Atlas' }],
+    };
+    const crossProjectCycle: PackageCycleDetail = {
+      ...cycles[1],
+      projects: [
+        { id: '1', label: 'Atlas' },
+        { id: '2', label: 'ZORA' },
+      ],
+    };
+    const evaluation: Audit['evaluation'] = {
+      ...failedEvaluation,
+      cyclicPackages: [repositoryCycle, crossProjectCycle],
+      rules: [{ ...failedRule, evidence: { cycles: [repositoryCycle, crossProjectCycle] } }],
+    };
+    const { getByText } = render(
+      <ZoraProvider mode="light">
+        <AuditRuleList
+          evaluation={evaluation}
+          cycleSelection={{ highlights: [], selectedIds: [], setSelected: () => undefined }}
+          onCycleInspectionChange={() => undefined}
+        />
+      </ZoraProvider>
+    );
+
+    expect(getByText('Atlas (1)')).toBeDefined();
+    expect(getByText('Cross-Project Cycles (1)')).toBeDefined();
+  });
 });
 
 const failedRule: AuditRuleResult = {

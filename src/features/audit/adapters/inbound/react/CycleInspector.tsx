@@ -1,6 +1,6 @@
 'use client';
 import { Accordion, AccordionItem } from '@zora/accordion';
-import { IconButton } from '@zora/button';
+import { Button, IconButton } from '@zora/button';
 import { Card } from '@zora/card';
 import { Text } from '@zora/text';
 import { View } from '@zora/view';
@@ -20,7 +20,12 @@ const INSPECTOR_STYLE = {
 } as const;
 
 /*** Renders detailed cycle evidence in a ZORA card outside the constrained settings sidebar. */
-export function CycleInspector({ inspection, onClose }: CycleInspectorProps) {
+export function CycleInspector({
+  hiddenEvidence,
+  inspection,
+  onClose,
+  onReveal,
+}: CycleInspectorProps) {
   const packageCount = new Set(inspection.cycle.packages).size;
 
   return (
@@ -50,6 +55,16 @@ export function CycleInspector({ inspection, onClose }: CycleInspectorProps) {
           <Text selectable variant="code">
             {inspection.cycle.packages.join(' → ')}
           </Text>
+          {hiddenEvidence && onReveal !== undefined ? (
+            <View gap="xs">
+              <Text emphasis="muted" variant="caption">
+                {t('audit.hiddenCycleEvidence')}
+              </Text>
+              <Button size="s" variant="outline" onPress={onReveal}>
+                {t('audit.revealCycleEvidence')}
+              </Button>
+            </View>
+          ) : null}
           <CycleEvidence edges={inspection.cycle.edges} />
         </View>
       </Card>
@@ -110,8 +125,10 @@ function EvidenceEdge({ edge, index }: EvidenceEdgeProps) {
 }
 
 interface CycleInspectorProps {
+  readonly hiddenEvidence?: boolean;
   readonly inspection: CycleInspection;
   readonly onClose: () => void;
+  readonly onReveal?: () => void;
 }
 
 interface CycleEvidenceProps {

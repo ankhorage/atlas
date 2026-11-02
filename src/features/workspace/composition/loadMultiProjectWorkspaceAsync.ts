@@ -36,7 +36,13 @@ export async function loadMultiProjectWorkspaceAsync(
     return {
       ok: true,
       value: hydrateWorkspaceSnapshot({
-        audit: createAuditFromSnapshot(snapshot),
+        audit: createAuditFromSnapshot(
+          snapshot,
+          {},
+          {
+            workspaceIdentity: createWorkspaceIdentity(snapshots),
+          }
+        ),
         navigationTree: createMultiProjectNavigationTree(snapshots),
         version: 1,
       }),
@@ -47,6 +53,14 @@ export async function loadMultiProjectWorkspaceAsync(
       error: toErrorMessage(error, 'Unable to load selected GitHub repositories.'),
     };
   }
+}
+
+/*** Scope browser preferences to stable selected repository identities, independent of ordering. */
+function createWorkspaceIdentity(snapshots: readonly InspectedWorkspaceSnapshot[]): string {
+  return `workspace:${snapshots
+    .map(({ project }) => project.repository.id)
+    .toSorted((left, right) => left.localeCompare(right))
+    .join(',')}`;
 }
 
 /*** Inspect selected repositories independently so one unavailable project does not blank the workspace. */

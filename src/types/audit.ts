@@ -61,8 +61,18 @@ export interface CycleEdgeEvidence {
 }
 
 export interface PackageCycleDetail {
+  /** Canonical graph identities retained for highlighting and persistence. */
   readonly packages: readonly string[];
+  /** Human-readable labels derived from canonical graph metadata. */
+  readonly displayPackages?: readonly string[];
   readonly edges: readonly CycleEdgeEvidence[];
+  /** Repository owners represented by the cycle; empty for legacy single-project audits. */
+  readonly projects?: readonly CycleProject[];
+}
+
+export interface CycleProject {
+  readonly id: string;
+  readonly label: string;
 }
 
 export interface AuditRuleResult<TEvidence = unknown> {
@@ -95,6 +105,7 @@ interface AuditSourceMetadata {
 export interface AuditMetaInput {
   readonly projectName?: string;
   readonly source?: AuditSourceMetadata;
+  readonly workspaceIdentity?: string;
 }
 
 interface AuditMeta {
@@ -103,6 +114,7 @@ interface AuditMeta {
   readonly language: ParserSelection;
   readonly projectName: string;
   readonly source?: AuditSourceMetadata;
+  readonly workspaceIdentity?: string;
 }
 
 export interface Audit {

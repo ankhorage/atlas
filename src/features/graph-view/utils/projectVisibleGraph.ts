@@ -8,7 +8,9 @@ import { filterVendorPackages } from '@/features/graph-view/utils/filterVendorPa
 import { getMaxDepth } from '@/features/graph-view/utils/getMaxDepth';
 import { groupScopedVendorPackages } from '@/features/graph-view/utils/groupScopedVendorPackages';
 import { removeEmptyStructuralNodes } from '@/features/graph-view/utils/removeEmptyStructuralNodes';
+import { revealCycleProjection } from '@/features/graph-view/utils/revealCycleProjection';
 import { toggleCompoundNodes } from '@/features/graph-view/utils/toggleCompoundNodes';
+import type { PackageCycleDetail } from '@/types/audit';
 import type { DependencyFilterKind } from '@/types/settings';
 
 /*** Projects the complete dependency graph into the explicitly selected package/depth/filter view. */
@@ -33,11 +35,12 @@ export function projectVisibleGraph(input: ProjectVisibleGraphInput): ProjectVis
     input.currentPackage
   );
 
+  const projected =
+    input.showCompoundNodes && input.showVendorPackages
+      ? groupScopedVendorPackages(labeled)
+      : labeled;
   return {
-    elements:
-      input.showCompoundNodes && input.showVendorPackages
-        ? groupScopedVendorPackages(labeled)
-        : labeled,
+    elements: revealCycleProjection(input.elements, projected, input.revealedCycle),
     maxSubPackageDepth: Math.max(
       1,
       getMaxDepth(
@@ -54,6 +57,7 @@ interface ProjectVisibleGraphInput {
   readonly elements: ElementsDefinition;
   readonly enabledDependencyKinds?: ReadonlySet<DependencyFilterKind>;
   readonly preservePackageScope?: boolean;
+  readonly revealedCycle?: PackageCycleDetail;
   readonly showCompoundNodes: boolean;
   readonly showVendorPackages: boolean;
   readonly subPackageDepth: number;

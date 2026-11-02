@@ -2,21 +2,18 @@
 import { AppHeader } from '@zora/app-header';
 import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
-import { Card } from '@zora/card';
 import { AppShell, View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
-import { useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
 import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
+import { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
-import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
-import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
+import { WorkspacePanels } from '@/features/workspace/adapters/inbound/react/WorkspacePanels';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { Audit } from '@/types/audit';
-import type { CycleInspection } from '@/types/auditVisualization';
 import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 
@@ -114,7 +111,7 @@ function WorkspaceBody({
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const projectError = workspace.ok ? null : workspace.error;
   const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
-  const [cycleInspection, setCycleInspection] = useState<CycleInspection | null>(null);
+  const cycleInspection = useWorkspaceCycleInspection();
 
   return (
     <main
@@ -129,24 +126,15 @@ function WorkspaceBody({
         overflow: 'hidden',
       }}
     >
-      <WorkspaceSidebar
+      <WorkspacePanels
         auditExportActions={auditExportActions}
         currentSource={currentSource}
-        cycleSelection={cycleSelection}
-        evaluation={auditEvaluation}
-        inspectedCycleId={cycleInspection?.id ?? null}
-        projectTree={navigation.projectTree}
-        selectedTreeIds={navigation.selectedTreeIds}
-        onCycleInspectionChange={setCycleInspection}
-        onProjectTreeSelect={navigation.selectProjectTreeNode}
-        offline={offline}
-      />
-      <WorkspaceContent
         cycleInspection={cycleInspection}
         cycleSelection={cycleSelection}
+        evaluation={auditEvaluation}
         navigation={navigation}
+        offline={offline}
         projectError={projectError}
-        onCloseInspection={() => setCycleInspection(null)}
       />
     </main>
   );
@@ -170,42 +158,6 @@ function resolveWorkspaceProjectIdentity(
   projectName: string
 ): string {
   return workspace.ok ? workspace.value.projectIdentity : projectName;
-}
-
-/*** Renders the graph or the current project-source load error. */
-function WorkspaceContent(props: WorkspaceContentProps) {
-  if (props.projectError !== null) return <WorkspaceError message={props.projectError} />;
-
-  return (
-    <WorkspaceGraph
-      currentPackage={props.navigation.currentPackage}
-      cycleHighlights={props.cycleSelection.highlights}
-      cycleInspection={props.cycleInspection}
-      packageGraph={props.navigation.packageGraph}
-      selectedGraphNodeIds={props.navigation.selectedGraphNodeIds}
-      setCurrentPackage={props.navigation.navigateToPackage}
-      onCloseInspection={props.onCloseInspection}
-      onGraphNodeSelect={props.navigation.selectGraphNode}
-    />
-  );
-}
-
-/*** Renders the persistent project-load failure state. */
-function WorkspaceError({ message }: { readonly message: string }) {
-  return (
-    <div
-      role="alert"
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        flex: 1,
-        justifyContent: 'center',
-        padding: 24,
-      }}
-    >
-      <Card compact description={message} title="Unable to load project" tone="outline" />
-    </div>
-  );
 }
 
 /*** Creates package breadcrumbs from a stable Home root to the active package path. */
@@ -289,14 +241,6 @@ interface WorkspaceBodyProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly workspace: WorkspaceLoadResult;
-}
-
-interface WorkspaceContentProps {
-  readonly cycleInspection: CycleInspection | null;
-  readonly cycleSelection: ReturnType<typeof useCycleSelection>;
-  readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
-  readonly projectError: string | null;
-  readonly onCloseInspection: () => void;
 }
 
 interface BreadcrumbItem {

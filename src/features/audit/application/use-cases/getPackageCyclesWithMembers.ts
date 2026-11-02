@@ -2,7 +2,12 @@ import path from 'node:path';
 
 import { findCyclePath, findCyclicComponents } from '@ankhorage/graph';
 
-import type { CycleEdgeEvidence, ImportEvidence, PackageCycleDetail } from '@/types/audit';
+import type {
+  CycleEdgeEvidence,
+  CycleProject,
+  ImportEvidence,
+  PackageCycleDetail,
+} from '@/types/audit';
 import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 import type { ProjectFileMetadata, ProjectFileTree } from '@/types/projectFiles';
 
@@ -25,6 +30,10 @@ export function getPackageCyclesWithMembers(
     const cycle = [...(findCyclePath(graph, scc) ?? [...scc, scc[0]])];
     cycles.push({
       packages: cycle,
+      displayPackages: cycle.map(
+        packageId => graph.nodes.find(node => node.id === packageId)?.data.label ?? packageId
+      ),
+      projects: getCycleProjects(graph, cycle),
       edges: cycle
         .slice(0, -1)
         .map((from, index) => cycleEdgeEvidence(graph, fileMetadata, from, cycle[index + 1])),
@@ -32,6 +41,21 @@ export function getPackageCyclesWithMembers(
   }
 
   return { cycles, packageSet, graph };
+}
+
+/*** Resolve repository ownership from canonical graph metadata, not presentation identities. */
+function getCycleProjects(
+  graph: PackageDependencyGraph,
+  packages: readonly string[]
+): readonly CycleProject[] {
+  const projects = new Map<string, CycleProject>();
+  for (const packageId of packages) {
+    const data = graph.nodes.find(node => node.id === packageId)?.data;
+    if (data?.repositoryId !== undefined && data.repositoryLabel !== undefined) {
+      projects.set(data.repositoryId, { id: data.repositoryId, label: data.repositoryLabel });
+    }
+  }
+  return [...projects.values()].toSorted((left, right) => left.id.localeCompare(right.id));
 }
 
 type TUniquePackageName = string;

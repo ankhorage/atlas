@@ -83,6 +83,9 @@ function projectNode(
       parent,
       label,
       name: data.packageName ?? data.label,
+      ...(repository === undefined
+        ? {}
+        : { repositoryId: repository.id, repositoryLabel: repository.label }),
       ...(intrinsic ? { isIntrinsic: true } : {}),
       ...(data.kind === 'package' && data.focus ? { isWorkspaceRoot: true } : {}),
     },

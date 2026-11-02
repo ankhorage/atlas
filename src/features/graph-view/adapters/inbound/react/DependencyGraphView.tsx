@@ -4,7 +4,7 @@ import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { GraphView, type GraphViewElementEvent, type GraphViewLayoutName } from '@zora/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@zora/ZoraProvider';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { LAYOUTS } from '@/features/graph-view/adapters/inbound/cytoscape/constants';
 import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
@@ -16,7 +16,7 @@ import { useGraphInteractions } from '@/features/graph-view/adapters/inbound/rea
 import { useGraphProjection } from '@/features/graph-view/adapters/inbound/react/useGraphProjection';
 import { useGraphViewport } from '@/features/graph-view/adapters/inbound/react/useGraphViewport';
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
-import type { CycleHighlight } from '@/types/auditVisualization';
+import type { CycleHighlight, CycleInspection } from '@/types/auditVisualization';
 import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 
 const GRAPH_CANVAS_STYLE = {
@@ -49,6 +49,11 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
   });
   const packageGraph = usePackageGraphElements(props.packageGraph);
   const visibleElements = useDependencyGraphProjection(props, packageGraph, settings);
+  useCycleEvidenceVisibility(
+    props.cycleInspection,
+    visibleElements,
+    props.onCycleEvidenceVisibilityChange
+  );
 
   useGraphFocus({
     cycleHighlights: props.cycleHighlights,
@@ -94,6 +99,7 @@ function useDependencyGraphProjection(
     elements: packageGraph,
     enabledDependencyKinds: settings.enabledDependencyKinds,
     preservePackageScope: props.cycleHighlights.length > 0,
+    revealedCycle: props.revealedCycle?.cycle,
     setCurrentPackage: props.setCurrentPackage,
     setMaxSubPackageDepth: settings.setMaxSubPackageDepth,
     setSubPackageDepth: settings.setSubPackageDepth,
@@ -101,6 +107,25 @@ function useDependencyGraphProjection(
     showVendorPackages: settings.showVendorPackages,
     subPackageDepth: settings.subPackageDepth,
   });
+}
+
+/*** Report whether the inspected canonical cycle is fully present in the current projection. */
+function useCycleEvidenceVisibility(
+  inspection: CycleInspection | null | undefined,
+  elements: ElementsDefinition | null,
+  onChange: ((hidden: boolean) => void) | undefined
+) {
+  useEffect(() => {
+    if (onChange === undefined) return;
+    if (inspection === null || inspection === undefined || elements === null) {
+      onChange(false);
+      return;
+    }
+    const visibleEdges = new Set(
+      elements.edges.map(edge => `${String(edge.data.source)}->${String(edge.data.target)}`)
+    );
+    onChange(inspection.cycle.edges.some(edge => !visibleEdges.has(`${edge.from}->${edge.to}`)));
+  }, [elements, inspection, onChange]);
 }
 
 /*** Convert the dependency package graph once per source graph identity. */
@@ -241,6 +266,9 @@ interface DependencyGraphViewProps {
   readonly setCurrentPackage: (path: string) => void;
   readonly onNodeSelect: (id: string, intent: SelectionIntent) => void;
   readonly cycleHighlights: readonly CycleHighlight[];
+  readonly cycleInspection?: CycleInspection | null;
+  readonly onCycleEvidenceVisibilityChange?: (hidden: boolean) => void;
+  readonly revealedCycle?: CycleHighlight | null;
   readonly overlay?: React.ReactNode;
 }
 
