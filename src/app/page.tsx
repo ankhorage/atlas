@@ -26,6 +26,7 @@ export default async function Home({ searchParams }: HomeProps) {
       }}
       currentSource={result.currentSource}
       projectName={result.projectName}
+      repositories={result.repositories}
       workspace={result.workspace}
     />
   );

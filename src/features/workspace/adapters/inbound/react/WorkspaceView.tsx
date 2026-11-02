@@ -3,7 +3,6 @@ import { AppHeader } from '@zora/app-header';
 import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { Card } from '@zora/card';
-import { TextInput } from '@zora/text-input';
 import { AppShell, View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
 import { useState } from 'react';
@@ -11,9 +10,11 @@ import { useState } from 'react';
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
+import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
+import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection } from '@/types/auditVisualization';
 import type { WorkspaceLoadResult } from '@/types/workspace';
@@ -24,6 +25,7 @@ export function WorkspaceView({
   currentSource,
   offline,
   projectName,
+  repositories,
   workspace,
 }: WorkspaceViewProps) {
   const navigation = useWorkspaceNavigation(workspace);
@@ -36,6 +38,7 @@ export function WorkspaceView({
           currentSource={currentSource}
           offline={offline}
           projectName={projectName}
+          repositories={repositories}
           onNavigate={navigation.navigateToPackage}
         />
       }
@@ -67,7 +70,10 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
           {props.offline ? (
             <span aria-label="Offline snapshot">Offline snapshot</span>
           ) : (
-            <ProjectSourceForm currentSource={props.currentSource} />
+            <ProjectSourceForm
+              currentSource={props.currentSource}
+              repositories={props.repositories}
+            />
           )}
           <Button
             leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
@@ -90,34 +96,6 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
       }
       title={props.projectName}
     />
-  );
-}
-
-/*** Navigates the workspace to one GitHub repository source selected through a ZORA text input. */
-function ProjectSourceForm(props: ProjectSourceFormProps) {
-  const [source, setSource] = useState(props.currentSource ?? '');
-
-  const openSource = () => {
-    const normalizedSource = source.trim();
-    const params = new URLSearchParams();
-    if (normalizedSource !== '') params.set('source', normalizedSource);
-    window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
-  };
-
-  return (
-    <View align="center" direction="row" gap="xs">
-      <TextInput
-        accessibilityLabel="GitHub repository URL"
-        placeholder="ankhorage/zora or GitHub URL"
-        size="s"
-        value={source}
-        onChangeText={setSource}
-        onSubmitEditing={openSource}
-      />
-      <Button size="s" variant="outline" onPress={openSource}>
-        Open
-      </Button>
-    </View>
   );
 }
 
@@ -251,6 +229,7 @@ interface WorkspaceViewProps {
   readonly currentSource?: string;
   readonly offline?: boolean;
   readonly projectName: string;
+  readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly workspace: WorkspaceLoadResult;
 }
 
@@ -259,11 +238,8 @@ interface WorkspaceHeaderProps {
   readonly currentSource?: string;
   readonly offline?: boolean;
   readonly projectName: string;
+  readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly onNavigate: (path: string) => void;
-}
-
-interface ProjectSourceFormProps {
-  readonly currentSource?: string;
 }
 
 interface WorkspaceBodyProps {

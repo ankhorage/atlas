@@ -87,7 +87,7 @@
     "@ankhorage/infra-local": "^0.3.28",
     "@ankhorage/infra-minikube": "^0.4.129",
     "@ankhorage/project-detector": "^0.3.3",
-    "@ankhorage/repository": "^0.5.1",
+    "@ankhorage/repository": "^0.7.0",
     "@ankhorage/rules": "^0.2.0",
     "@ankhorage/rules-architecture": "^0.5.0",
     "@ankhorage/utility": "^1.9.85",
