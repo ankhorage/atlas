@@ -10,6 +10,7 @@ import type { useWorkspaceNavigation } from '@/features/workspace/adapters/inbou
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
 import type { Audit } from '@/types/audit';
+import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
 /*** Connect sidebar inspection controls to the one graph view without duplicating navigation state. */
 export function WorkspacePanels(props: WorkspacePanelsProps) {
@@ -33,6 +34,7 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
         cycleSelection={props.cycleSelection}
         navigation={props.navigation}
         projectError={props.projectError}
+        repositoryStatuses={props.repositoryStatuses}
         revealedCycleId={props.cycleInspection.revealedId}
         onCloseInspection={() => props.cycleInspection.change(null)}
         onCycleEvidenceVisibilityChange={props.cycleInspection.setHiddenEvidence}
@@ -46,20 +48,46 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
 function WorkspaceContent(props: WorkspaceContentProps) {
   if (props.projectError !== null) return <WorkspaceError message={props.projectError} />;
   return (
-    <WorkspaceGraph
-      currentPackage={props.navigation.currentPackage}
-      cycleHighlights={props.cycleSelection.highlights}
-      cycleInspection={props.cycleInspection}
-      cycleEvidenceHidden={props.cycleEvidenceHidden}
-      packageGraph={props.navigation.packageGraph}
-      revealedCycleId={props.revealedCycleId}
-      selectedGraphNodeIds={props.navigation.selectedGraphNodeIds}
-      setCurrentPackage={props.navigation.navigateToPackage}
-      onCloseInspection={props.onCloseInspection}
-      onCycleEvidenceVisibilityChange={props.onCycleEvidenceVisibilityChange}
-      onGraphNodeSelect={props.navigation.selectGraphNode}
-      onRevealCycle={props.onRevealCycle}
-    />
+    <>
+      <RepositoryLoadFailures statuses={props.repositoryStatuses} />
+      <WorkspaceGraph
+        currentPackage={props.navigation.currentPackage}
+        cycleHighlights={props.cycleSelection.highlights}
+        cycleInspection={props.cycleInspection}
+        cycleEvidenceHidden={props.cycleEvidenceHidden}
+        packageGraph={props.navigation.packageGraph}
+        revealedCycleId={props.revealedCycleId}
+        selectedGraphNodeIds={props.navigation.selectedGraphNodeIds}
+        setCurrentPackage={props.navigation.navigateToPackage}
+        onCloseInspection={props.onCloseInspection}
+        onCycleEvidenceVisibilityChange={props.onCycleEvidenceVisibilityChange}
+        onGraphNodeSelect={props.navigation.selectGraphNode}
+        onRevealCycle={props.onRevealCycle}
+      />
+    </>
+  );
+}
+
+/*** Surface only incomplete repository work while the shared graph remains usable for successful projects. */
+function RepositoryLoadFailures({
+  statuses,
+}: {
+  readonly statuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
+}) {
+  const failures = statuses?.filter(status => status.status !== 'successful') ?? [];
+  if (failures.length === 0) return null;
+  return (
+    <section aria-label="Repository loading status" role="status" style={{ padding: 12 }}>
+      {failures.map(({ description, repository, status }) => (
+        <Card
+          compact
+          key={repository.id}
+          description={description}
+          title={`${repository.owner}/${repository.name}: ${status === 'cancelled' ? 'cancelled' : 'failed'}`}
+          tone="outline"
+        />
+      ))}
+    </section>
   );
 }
 
@@ -90,6 +118,7 @@ interface WorkspacePanelsProps {
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
   readonly projectError: string | null;
+  readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
 }
 
 interface WorkspaceContentProps {
@@ -98,6 +127,7 @@ interface WorkspaceContentProps {
   readonly cycleSelection: ReturnType<typeof useCycleSelection>;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly projectError: string | null;
+  readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly revealedCycleId: string | null;
   readonly onCloseInspection: () => void;
   readonly onCycleEvidenceVisibilityChange: (hidden: boolean) => void;

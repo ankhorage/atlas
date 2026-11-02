@@ -57,4 +57,68 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
       error: 'Unable to materialize GitHub repository.',
     });
   });
+
+  it('keeps a successful repository workspace visible with a sanitized failed-repository status', async () => {
+    const result = await loadWorkspaceProjectSourceAsync(
+      'ankhorage,another-owner',
+      async () => ({ edges: [], nodes: [] }),
+      async source => {
+        if (source.kind === 'github' && source.url.endsWith('/broken'))
+          throw new Error('token=secret /private/tmp/checkout');
+        return {
+          source,
+          rootPath: resolve('examples/java/my-app'),
+          projectName: 'my-app',
+          cleanupAsync: async () => {},
+        };
+      },
+      async () => ({
+        repositories: [
+          {
+            id: 'repository-good',
+            name: 'atlas-ui',
+            owner: 'ankhorage',
+            url: 'https://github.com/ankhorage/atlas-ui',
+            visibility: 'public',
+          },
+          {
+            id: 'repository-broken',
+            name: 'broken',
+            owner: 'another-owner',
+            url: 'https://github.com/another-owner/broken',
+            visibility: 'public',
+          },
+        ],
+        selectedRepositories: [
+          {
+            id: 'repository-good',
+            name: 'atlas-ui',
+            owner: 'ankhorage',
+            url: 'https://github.com/ankhorage/atlas-ui',
+            visibility: 'public',
+          },
+          {
+            id: 'repository-broken',
+            name: 'broken',
+            owner: 'another-owner',
+            url: 'https://github.com/another-owner/broken',
+            visibility: 'public',
+          },
+        ],
+      })
+    );
+
+    assert.equal(result.workspace.ok, true);
+    assert.deepEqual(result.repositoryStatuses, [
+      {
+        description: 'Repository materialization failed.',
+        repository: { id: 'repository-broken', name: 'broken', owner: 'another-owner' },
+        status: 'failed',
+      },
+      {
+        repository: { id: 'repository-good', name: 'atlas-ui', owner: 'ankhorage' },
+        status: 'successful',
+      },
+    ]);
+  });
 });

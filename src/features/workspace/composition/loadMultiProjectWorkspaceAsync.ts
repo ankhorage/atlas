@@ -16,41 +16,50 @@ import type { ProjectSnapshot } from '@/types/projectAnalysis';
 import type { ResolvedProjectSource } from '@/types/projectSource';
 import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
+import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
 /*** Analyze selected repositories together through the canonical multi-project dependency pipeline. */
 export async function loadMultiProjectWorkspaceAsync(
   projects: readonly MultiProjectWorkspaceProject[],
   signal?: AbortSignal
-): Promise<WorkspaceLoadResult> {
+): Promise<MultiProjectWorkspaceLoadResult> {
   try {
     if (projects.length === 0) throw new Error('No GitHub repositories are selected.');
-    const inspected = await inspectWorkspaceProjectsAsync(projects, signal);
+    const inspection = await inspectWorkspaceProjectsAsync(projects, signal);
+    const { projects: inspected } = inspection;
     if (inspected.length === 0)
       throw new Error('No selected GitHub repositories could be analyzed.');
     const graphProjects = inspected.map(({ id, inspection }) => ({ id, inspection }));
     const sourceGraph = await createSourceGraphFromInspectionsAsync({ projects: graphProjects });
     const dependencyGraph = projectDependencyGraphFromInspections(sourceGraph, graphProjects);
-    const snapshots = await loadWorkspaceSnapshotsAsync(inspected, dependencyGraph, signal);
+    const snapshotLoading = await loadWorkspaceSnapshotsAsync(inspected, dependencyGraph, signal);
+    const { projects: snapshots } = snapshotLoading;
     if (snapshots.length === 0) throw new Error('No selected GitHub repositories could be loaded.');
     const snapshot = createMultiProjectSnapshot(snapshots, sourceGraph, dependencyGraph);
     return {
-      ok: true,
-      value: hydrateWorkspaceSnapshot({
-        audit: createAuditFromSnapshot(
-          snapshot,
-          {},
-          {
-            workspaceIdentity: createWorkspaceIdentity(snapshots),
-          }
-        ),
-        navigationTree: createMultiProjectNavigationTree(snapshots),
-        version: 1,
-      }),
+      workspace: {
+        ok: true,
+        value: hydrateWorkspaceSnapshot({
+          audit: createAuditFromSnapshot(
+            snapshot,
+            {},
+            {
+              workspaceIdentity: createWorkspaceIdentity(snapshots),
+            }
+          ),
+          navigationTree: createMultiProjectNavigationTree(snapshots),
+          version: 1,
+        }),
+      },
+      repositoryStatuses: [...inspection.statuses, ...snapshotLoading.statuses],
     };
   } catch (error) {
     return {
-      ok: false,
-      error: toErrorMessage(error, 'Unable to load selected GitHub repositories.'),
+      workspace: {
+        ok: false,
+        error: toErrorMessage(error, 'Unable to load selected GitHub repositories.'),
+      },
+      repositoryStatuses: [],
     };
   }
 }
@@ -67,7 +76,7 @@ function createWorkspaceIdentity(snapshots: readonly InspectedWorkspaceSnapshot[
 async function inspectWorkspaceProjectsAsync(
   projects: readonly MultiProjectWorkspaceProject[],
   signal?: AbortSignal
-): Promise<readonly InspectedWorkspaceProject[]> {
+): Promise<RepositoryOutcomeCollection<InspectedWorkspaceProject>> {
   const outcomes = await settleBoundedAsync(
     projects,
     MAX_CONCURRENT_REPOSITORY_ANALYSES,
@@ -78,12 +87,11 @@ async function inspectWorkspaceProjectsAsync(
     }),
     signal
   );
-  return outcomes
-    .filter(
-      (outcome): outcome is PromiseFulfilledResult<InspectedWorkspaceProject> =>
-        outcome.status === 'fulfilled'
-    )
-    .map(outcome => outcome.value);
+  return collectRepositoryOutcomes(
+    projects.map(project => ({ project })),
+    outcomes,
+    'analysis'
+  );
 }
 
 /*** Read successful project snapshots independently after the shared dependency graph is available. */
@@ -91,7 +99,7 @@ async function loadWorkspaceSnapshotsAsync(
   inspected: readonly InspectedWorkspaceProject[],
   dependencyGraph: Parameters<typeof projectDependencyGraph>[0],
   signal?: AbortSignal
-): Promise<readonly InspectedWorkspaceSnapshot[]> {
+): Promise<RepositoryOutcomeCollection<InspectedWorkspaceSnapshot>> {
   const outcomes = await settleBoundedAsync(
     inspected,
     MAX_CONCURRENT_REPOSITORY_ANALYSES,
@@ -105,12 +113,72 @@ async function loadWorkspaceSnapshotsAsync(
     }),
     signal
   );
-  return outcomes
-    .filter(
-      (outcome): outcome is PromiseFulfilledResult<InspectedWorkspaceSnapshot> =>
-        outcome.status === 'fulfilled'
-    )
-    .map(outcome => outcome.value);
+  return collectRepositoryOutcomes(inspected, outcomes, 'snapshot');
+}
+
+/*** Preserve successful work while describing the exact selected repositories that could not continue. */
+function collectRepositoryOutcomes<
+  Input extends { readonly project: MultiProjectWorkspaceProject },
+  Output,
+>(
+  projects: readonly Input[],
+  outcomes: readonly PromiseSettledResult<Output>[],
+  phase: 'analysis' | 'snapshot'
+): RepositoryOutcomeCollection<Output> {
+  const successful: Output[] = [];
+  const statuses: WorkspaceRepositoryLoadStatus[] = [];
+  const projectIterator = projects.values();
+  for (const outcome of outcomes) {
+    const nextProject = projectIterator.next();
+    if (nextProject.done) break;
+    const { project } = nextProject.value;
+    if (outcome.status === 'fulfilled') {
+      successful.push(outcome.value);
+      if (phase === 'snapshot') statuses.push(createRepositoryLoadStatus(project, 'successful'));
+      continue;
+    }
+    statuses.push(
+      createRepositoryLoadStatus(
+        project,
+        isCancellation(outcome.reason) ? 'cancelled' : 'failed',
+        phase
+      )
+    );
+  }
+  return { projects: successful, statuses };
+}
+
+/*** Render cancellation separately from failures without exposing provider exception text or local paths. */
+function isCancellation(error: unknown): boolean {
+  return error instanceof DOMException
+    ? error.name === 'AbortError'
+    : error instanceof Error && error.name === 'AbortError';
+}
+
+/*** Create a stable, credential-free UI status for one repository loading stage. */
+function createRepositoryLoadStatus(
+  project: MultiProjectWorkspaceProject,
+  status: WorkspaceRepositoryLoadStatus['status'],
+  phase?: 'analysis' | 'snapshot'
+): WorkspaceRepositoryLoadStatus {
+  return {
+    repository: {
+      id: project.repository.id,
+      name: project.repository.name,
+      owner: project.repository.owner,
+    },
+    status,
+    ...(status === 'successful'
+      ? {}
+      : {
+          description:
+            status === 'cancelled'
+              ? 'Loading was cancelled.'
+              : phase === 'analysis'
+                ? 'Repository analysis failed.'
+                : 'Repository snapshot loading failed.',
+        }),
+  };
 }
 
 /*** Merge display trees while preserving each repository as an explicit virtual root. */
@@ -198,6 +266,16 @@ interface InspectedWorkspaceProject {
 interface InspectedWorkspaceSnapshot {
   readonly project: MultiProjectWorkspaceProject;
   readonly snapshot: ProjectSnapshot;
+}
+
+interface MultiProjectWorkspaceLoadResult {
+  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[];
+  readonly workspace: WorkspaceLoadResult;
+}
+
+interface RepositoryOutcomeCollection<Output> {
+  readonly projects: readonly Output[];
+  readonly statuses: readonly WorkspaceRepositoryLoadStatus[];
 }
 
 const MAX_CONCURRENT_REPOSITORY_ANALYSES = 4;

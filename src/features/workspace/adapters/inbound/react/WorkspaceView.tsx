@@ -16,6 +16,7 @@ import type { WorkspaceRepositoryOption } from '@/features/workspace/composition
 import type { Audit } from '@/types/audit';
 import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
+import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
 /*** Renders the active Atlas workspace through its feature-owned React adapter. */
 export function WorkspaceView({
@@ -24,6 +25,7 @@ export function WorkspaceView({
   offline,
   projectName,
   repositories,
+  repositoryStatuses,
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
@@ -52,6 +54,7 @@ export function WorkspaceView({
           navigation={navigation}
           offline={offline}
           projectName={projectName}
+          repositoryStatuses={repositoryStatuses}
           workspace={workspace}
         />
       </AppShell>
@@ -109,6 +112,7 @@ function WorkspaceBody({
   navigation,
   offline,
   projectName,
+  repositoryStatuses,
   workspace,
 }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
@@ -139,6 +143,7 @@ function WorkspaceBody({
         navigation={navigation}
         offline={offline}
         projectError={projectError}
+        repositoryStatuses={repositoryStatuses}
       />
     </main>
   );
@@ -225,6 +230,7 @@ interface WorkspaceViewProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly workspaceScope?: string;
   readonly workspace: WorkspaceLoadResult;
 }
@@ -246,6 +252,7 @@ interface WorkspaceBodyProps {
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
   readonly projectName: string;
+  readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly workspace: WorkspaceLoadResult;
 }
 
