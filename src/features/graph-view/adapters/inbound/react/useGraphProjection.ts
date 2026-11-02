@@ -3,6 +3,7 @@ import type { ElementsDefinition } from 'cytoscape';
 import { useEffect, useMemo } from 'react';
 
 import { projectVisibleGraph } from '@/features/graph-view/utils/projectVisibleGraph';
+import type { DependencyFilterKind } from '@/types/settings';
 
 /***
  * Projects graph inputs without changing the explicitly selected package scope.
@@ -15,7 +16,9 @@ import { projectVisibleGraph } from '@/features/graph-view/utils/projectVisibleG
 export function useGraphProjection(input: UseGraphProjectionInput): ElementsDefinition | null {
   const {
     currentPackage,
+    dependencyPackagePrefix,
     elements,
+    enabledDependencyKinds,
     preservePackageScope,
     setCurrentPackage,
     setMaxSubPackageDepth,
@@ -30,7 +33,9 @@ export function useGraphProjection(input: UseGraphProjectionInput): ElementsDefi
         ? null
         : projectVisibleGraph({
             currentPackage,
+            dependencyPackagePrefix,
             elements,
+            enabledDependencyKinds,
             preservePackageScope,
             showCompoundNodes,
             showVendorPackages,
@@ -38,7 +43,9 @@ export function useGraphProjection(input: UseGraphProjectionInput): ElementsDefi
           }),
     [
       currentPackage,
+      dependencyPackagePrefix,
       elements,
+      enabledDependencyKinds,
       preservePackageScope,
       showCompoundNodes,
       showVendorPackages,
@@ -60,7 +67,9 @@ export function useGraphProjection(input: UseGraphProjectionInput): ElementsDefi
 
 interface UseGraphProjectionInput {
   readonly currentPackage: string;
+  readonly dependencyPackagePrefix?: string;
   readonly elements: ElementsDefinition | null;
+  readonly enabledDependencyKinds?: ReadonlySet<DependencyFilterKind>;
   readonly preservePackageScope?: boolean;
   readonly setCurrentPackage: (path: string) => void;
   readonly setMaxSubPackageDepth: (depth: number) => void;

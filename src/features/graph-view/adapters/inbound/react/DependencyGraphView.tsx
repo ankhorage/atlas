@@ -48,17 +48,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
     spacingFactor: settings.cytoscapeLayoutSpacing,
   });
   const packageGraph = usePackageGraphElements(props.packageGraph);
-  const visibleElements = useGraphProjection({
-    currentPackage: props.currentPackage,
-    elements: packageGraph,
-    preservePackageScope: props.cycleHighlights.length > 0,
-    setCurrentPackage: props.setCurrentPackage,
-    setMaxSubPackageDepth: settings.setMaxSubPackageDepth,
-    setSubPackageDepth: settings.setSubPackageDepth,
-    showCompoundNodes: settings.showCompoundNodes,
-    showVendorPackages: settings.showVendorPackages,
-    subPackageDepth: settings.subPackageDepth,
-  });
+  const visibleElements = useDependencyGraphProjection(props, packageGraph, settings);
 
   useGraphFocus({
     cycleHighlights: props.cycleHighlights,
@@ -90,6 +80,27 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
       viewport={viewport}
     />
   );
+}
+
+/*** Applies workspace settings to the one existing graph projection pipeline. */
+function useDependencyGraphProjection(
+  props: DependencyGraphViewProps,
+  packageGraph: ElementsDefinition,
+  settings: ReturnType<typeof useSettings>
+) {
+  return useGraphProjection({
+    currentPackage: props.currentPackage,
+    dependencyPackagePrefix: settings.dependencyPackagePrefix,
+    elements: packageGraph,
+    enabledDependencyKinds: settings.enabledDependencyKinds,
+    preservePackageScope: props.cycleHighlights.length > 0,
+    setCurrentPackage: props.setCurrentPackage,
+    setMaxSubPackageDepth: settings.setMaxSubPackageDepth,
+    setSubPackageDepth: settings.setSubPackageDepth,
+    showCompoundNodes: settings.showCompoundNodes,
+    showVendorPackages: settings.showVendorPackages,
+    subPackageDepth: settings.subPackageDepth,
+  });
 }
 
 /*** Convert the dependency package graph once per source graph identity. */

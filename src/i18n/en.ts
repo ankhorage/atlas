@@ -17,6 +17,11 @@ const en: ILanguage = {
   'settings.layout': 'Layout',
   'settings.layoutSpacing': 'Layout Spacing',
   'settings.filter': 'Filter',
+  'settings.packagePrefix': 'Package prefix',
+  'settings.dependency': 'Runtime dependencies',
+  'settings.devDependency': 'Dev dependencies',
+  'settings.peerDependency': 'Peer dependencies',
+  'settings.optionalDependency': 'Optional dependencies',
 
   // Audit
   'audit.rules': 'Audit rules',

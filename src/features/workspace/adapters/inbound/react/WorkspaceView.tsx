@@ -45,7 +45,7 @@ export function WorkspaceView({
         />
       }
     >
-      <SettingsProvider>
+      <SettingsProvider workspaceScope={resolveWorkspaceProjectIdentity(workspace, projectName)}>
         <WorkspaceBody
           currentSource={currentSource}
           auditExportActions={auditExportActions}

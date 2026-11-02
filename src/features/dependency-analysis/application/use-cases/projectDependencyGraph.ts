@@ -64,7 +64,9 @@ function projectNode(
   repositories: ReadonlyMap<string, RepositoryGraphIdentity>
 ): GraphNode<PackageDependencyNodeData> {
   const repository = data.projectId === undefined ? undefined : repositories.get(data.projectId);
-  const intrinsic = data.classification === 'intrinsic' || data.focus;
+  // Every repository explicitly selected into a workspace is first-party, even when its package
+  // is observed as an external dependency from another selected repository.
+  const intrinsic = repository !== undefined || data.classification === 'intrinsic' || data.focus;
   const parent =
     repository === undefined
       ? data.kind === 'module'
@@ -80,7 +82,7 @@ function projectNode(
       path: id,
       parent,
       label,
-      name: label,
+      name: data.packageName ?? data.label,
       ...(intrinsic ? { isIntrinsic: true } : {}),
       ...(data.kind === 'package' && data.focus ? { isWorkspaceRoot: true } : {}),
     },

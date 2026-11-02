@@ -1,6 +1,7 @@
 import type { ElementsDefinition, NodeDefinition } from 'cytoscape';
 
 import { filterByPackagePrefix } from '@/features/graph-view/utils/filterByPackagePrefix';
+import { filterDependencyProjection } from '@/features/graph-view/utils/filterDependencyProjection';
 import { filterEmptyPackages } from '@/features/graph-view/utils/filterEmptyPackages';
 import { filterSubPackagesByDepth } from '@/features/graph-view/utils/filterSubPackagesByDepth';
 import { filterVendorPackages } from '@/features/graph-view/utils/filterVendorPackages';
@@ -8,11 +9,16 @@ import { getMaxDepth } from '@/features/graph-view/utils/getMaxDepth';
 import { groupScopedVendorPackages } from '@/features/graph-view/utils/groupScopedVendorPackages';
 import { removeEmptyStructuralNodes } from '@/features/graph-view/utils/removeEmptyStructuralNodes';
 import { toggleCompoundNodes } from '@/features/graph-view/utils/toggleCompoundNodes';
+import type { DependencyFilterKind } from '@/types/settings';
 
 /*** Projects the complete dependency graph into the explicitly selected package/depth/filter view. */
 export function projectVisibleGraph(input: ProjectVisibleGraphInput): ProjectVisibleGraphResult {
+  const dependencyFiltered = filterDependencyProjection(input.elements, {
+    enabledKinds: input.enabledDependencyKinds ?? ALL_DEPENDENCY_KINDS,
+    packagePrefix: input.dependencyPackagePrefix ?? '',
+  });
   const compoundFiltered = toggleCompoundNodes(
-    input.elements,
+    dependencyFiltered,
     input.showCompoundNodes,
     input.currentPackage
   );
@@ -44,12 +50,21 @@ export function projectVisibleGraph(input: ProjectVisibleGraphInput): ProjectVis
 
 interface ProjectVisibleGraphInput {
   readonly currentPackage: string;
+  readonly dependencyPackagePrefix?: string;
   readonly elements: ElementsDefinition;
+  readonly enabledDependencyKinds?: ReadonlySet<DependencyFilterKind>;
   readonly preservePackageScope?: boolean;
   readonly showCompoundNodes: boolean;
   readonly showVendorPackages: boolean;
   readonly subPackageDepth: number;
 }
+
+const ALL_DEPENDENCY_KINDS = new Set<DependencyFilterKind>([
+  'dependency',
+  'devDependency',
+  'peerDependency',
+  'optionalDependency',
+]);
 
 interface ProjectVisibleGraphResult {
   readonly elements: ElementsDefinition;
