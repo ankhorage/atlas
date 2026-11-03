@@ -6,7 +6,7 @@ import type { ProjectInspection } from '@ankhorage/project-detector/types';
 import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 
-const fixtureRoot = resolve(process.cwd(), 'test/fixtures/workspace-multi');
+const fixtureRoot = resolve(process.cwd(), '../../fixtures/workspace-multi');
 
 const repositories = [
   repository('owner-a-catalog', 'owner-a', 'catalog'),
@@ -52,9 +52,23 @@ function discoverFixtureAsync(ownerSource: string, excluded: ReadonlySet<string>
     .split(',')
     .map(owner => owner.trim().replace(/^@/u, ''))
     .filter(Boolean);
-  const discovered = repositories.filter(repository => owners.includes(repository.owner));
+  const discovered = deduplicateRepositories(
+    owners.flatMap(owner =>
+      repositories.filter(
+        repository =>
+          repository.owner === owner || (owner === 'owner-b' && repository.id === 'owner-a-shared')
+      )
+    )
+  );
   const selectedRepositories = discovered.filter(repository => !excluded.has(repository.id));
   return Promise.resolve({ repositories: discovered, selectedRepositories });
+}
+
+/*** Retains one canonical record when two owners expose the same repository through discovery. */
+function deduplicateRepositories<T extends { readonly id: string }>(
+  repositories: readonly T[]
+): readonly T[] {
+  return [...new Map(repositories.map(repository => [repository.id, repository])).values()];
 }
 
 /*** Creates one credential-free repository record that matches the public GitHub discovery contract. */

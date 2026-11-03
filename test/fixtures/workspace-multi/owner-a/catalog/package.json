@@ -2,7 +2,8 @@
   "name": "@fixture/catalog-api",
   "version": "1.0.0",
   "dependencies": {
-    "@fixture/shared": "^1.0.0"
+    "@fixture/shared": "^1.0.0",
+    "@fixture/client": "^1.0.0"
   },
   "devDependencies": {
     "@fixture/dev-tools": "^1.0.0"
