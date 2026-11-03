@@ -1,0 +1,7 @@
+{
+  "name": "@fixture/cycle",
+  "version": "1.0.0",
+  "dependencies": {
+    "@fixture/client": "^1.0.0"
+  }
+}

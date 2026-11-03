@@ -64,6 +64,7 @@
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
     "test:offline-browser": "bun test/e2e/offlineWorkspace.ts",
     "test:compound-selection-browser": "bun test/e2e/compoundSelectionBrowser.ts",
+    "test:multi-project-browser": "bunx next build test/e2e/next-fixture-app --webpack && bun test/e2e/multiProjectBrowser.ts",
     "infra:validate": "bun src/cli/runAtlasInfraLifecycleAsync.ts validate",
     "infra:plan": "bun src/cli/runAtlasInfraLifecycleAsync.ts plan",
     "infra:generate": "bun src/cli/runAtlasInfraLifecycleAsync.ts generate",
