@@ -87,6 +87,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   else {
     await assertGenericWorkspaceInteractions(page);
   }
+  await assertOfflineSettingsInteractions(page);
   await assertDarkTheme(page);
 }
 
@@ -94,6 +95,35 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
 async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
   await selectGraphNodes(page);
   await assertRuleEvidence(page);
+}
+
+/*** Exercise the persistent presentation controls that an offline snapshot intentionally retains. */
+async function assertOfflineSettingsInteractions(page: Page): Promise<void> {
+  const packagePrefix = page.getByLabel('Package prefix', { exact: true });
+  await packagePrefix.fill('com.');
+  await packagePrefix.fill('');
+
+  const switches = page.locator('[data-testid^="switch-"]');
+  const switchCount = await switches.count();
+  for (let index = 0; index < switchCount; index += 1) {
+    await switches.nth(index).click();
+    await switches.nth(index).click();
+  }
+
+  const depth = page.getByLabel('Subpackage depth', { exact: true });
+  await depth.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowLeft');
+
+  const spacing = page.getByLabel('Layout Spacing', { exact: true });
+  await spacing.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowLeft');
+
+  const layout = page.getByTestId('cytoscape-layout');
+  await layout.focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('Enter');
 }
 
 /*** Verifies user-visible audit evidence without guessing a canvas node position. */
@@ -204,6 +234,9 @@ async function findSelectionIndex(
 async function assertUnavailableOfflineActions(page: Page): Promise<void> {
   if ((await page.getByRole('button', { name: /Export|JSON|XML/i }).count()) > 0) {
     throw new Error('Offline workspace exposed a live export action.');
+  }
+  if ((await page.getByRole('button', { name: /Retry|Refresh/i }).count()) > 0) {
+    throw new Error('Offline workspace exposed a repository retry or refresh action.');
   }
   if ((await page.getByPlaceholder(/GitHub repository URL/i).count()) > 0) {
     throw new Error('Offline workspace exposed the live source selector.');
