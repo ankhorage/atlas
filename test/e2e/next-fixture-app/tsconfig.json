@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": "../../..",
+    "jsx": "react-jsx",
+    "ignoreDeprecations": "6.0",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["src/*"],
+      "@zora/ZoraProvider": [".ankh/zora/web/runtime/ZoraProvider"],
+      "@zora/*": [".ankh/zora/web/components/*"]
+    },
+    "target": "es2022",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "../fixtureWorkspace.ts",
+    "build/types/**/*.ts",
+    "build/dev/types/**/*.ts"
+  ],
+  "exclude": ["build", "node_modules"]
+}

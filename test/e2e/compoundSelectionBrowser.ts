@@ -54,10 +54,12 @@ try {
     );
     await page.getByRole('switch', { name: 'Show Compound Nodes' }).click();
     await page.getByTestId('graph-node-src.features').waitFor();
+    const visibleLayout = await waitForNextGraphLayout(page, 0);
 
     const breadcrumbs = await page.getByLabel('Breadcrumbs').innerText();
-    const viewport = await page.getByLabel('Graph viewport').innerText();
+    const viewport = JSON.stringify(visibleLayout.viewport);
     await page.getByTestId('graph-node-src.features').click();
+    const selectedLayout = await waitForNextGraphLayout(page, visibleLayout.layoutSequence);
 
     assertEqual(
       'breadcrumbs after GraphView selection',
@@ -69,6 +71,24 @@ try {
       await page.getByLabel('Graph viewport').innerText(),
       viewport
     );
+    assertEqual(
+      'selection did not change the settled GraphView viewport',
+      selectedLayout.viewport,
+      visibleLayout.viewport
+    );
+    assertEqual(
+      'selection did not change graph container dimensions',
+      selectedLayout.container,
+      visibleLayout.container
+    );
+    assertEqual(
+      'selection retained the compound visibility state',
+      selectedLayout.showCompoundNodes,
+      true
+    );
+    assertEqual('selection state after GraphView selection', selectedLayout.selectedNodeIds, [
+      'src.features',
+    ]);
     assertEqual(
       'synchronized TreeView selection',
       await page
@@ -138,6 +158,37 @@ function toRgb(value: string): string {
 
 /*** Raises semantic browser evidence instead of relying on assertion-library internals. */
 function assertEqual(label: string, actual: unknown, expected: unknown): void {
-  if (actual !== expected)
-    throw new Error(`${label}: expected ${String(expected)}, received ${String(actual)}.`);
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(
+      `${label}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}.`
+    );
+}
+
+/*** Waits for GraphView's published layout completion snapshot instead of sampling an active transition. */
+async function waitForNextGraphLayout(
+  page: Page,
+  previousSequence: number
+): Promise<GraphLifecycle> {
+  await page
+    .getByLabel('Graph lifecycle')
+    .filter({ hasText: /"layoutSequence":/u })
+    .waitFor();
+  await page.waitForFunction(previous => {
+    const serialized = document.querySelector('[aria-label="Graph lifecycle"]')?.textContent;
+    if (serialized === null || serialized === undefined) return false;
+    const lifecycle = JSON.parse(serialized) as GraphLifecycle;
+    return lifecycle.layoutSequence > previous && lifecycle.viewport !== null;
+  }, previousSequence);
+  return JSON.parse(await page.getByLabel('Graph lifecycle').innerText()) as GraphLifecycle;
+}
+
+interface GraphLifecycle {
+  readonly container: { readonly height: number; readonly width: number };
+  readonly layoutSequence: number;
+  readonly selectedNodeIds: readonly string[];
+  readonly showCompoundNodes: boolean;
+  readonly viewport: {
+    readonly pan: { readonly x: number; readonly y: number };
+    readonly zoom: number;
+  } | null;
 }

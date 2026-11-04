@@ -50,6 +50,9 @@ export function createAuditFromSnapshot(
       language: snapshot.language,
       projectName: metaInput.projectName ?? getProjectName(snapshot.projectPath),
       ...(metaInput.source === undefined ? {} : { source: metaInput.source }),
+      ...(metaInput.workspaceIdentity === undefined
+        ? {}
+        : { workspaceIdentity: metaInput.workspaceIdentity }),
       timeStart: snapshot.timeStart,
       timeEnd: Date.now(),
     },

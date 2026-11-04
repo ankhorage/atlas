@@ -43,10 +43,7 @@ function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
       </Text>
     ),
     icon: (
-      <Icon
-        name={node.kind === 'directory' ? 'folder-outline' : 'document-text-outline'}
-        size="s"
-      />
+      <Icon name={node.kind === 'file' ? 'document-text-outline' : 'folder-outline'} size="s" />
     ),
     ...(node.children ? { children: node.children.map(child => toTreeItemNode(child)) } : {}),
   };

@@ -12,6 +12,16 @@ export interface PackageDependencyNodeData extends Readonly<Record<string, unkno
   readonly name: string;
   readonly isIntrinsic?: boolean;
   readonly isWorkspaceRoot?: boolean;
+  /** Immutable selected-repository identity, absent for unscoped single-project nodes. */
+  readonly repositoryId?: string;
+  /** Canonical repository metadata for audit presentation, never a checkout path. */
+  readonly repositoryLabel?: string;
+}
+
+/** Stable Atlas presentation identity for one repository-backed analysis project. */
+export interface RepositoryGraphIdentity {
+  readonly id: string;
+  readonly label: string;
 }
 
 export interface PackageDependencyEdgeData extends Readonly<Record<string, unknown>> {

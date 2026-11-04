@@ -62,3 +62,6 @@ next-env.d.ts
 .cache/
 
 /.ankh/
+
+# Browser-acceptance evidence retained outside temporary fixture directories.
+/artifacts/browser-acceptance/

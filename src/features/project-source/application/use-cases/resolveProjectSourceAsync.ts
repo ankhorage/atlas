@@ -27,7 +27,7 @@ export async function resolveProjectSourceAsync(
     };
   }
 
-  const materialized = await github.materializeAsync(source);
+  const materialized = await github.materializeAsync(source, signal);
   return {
     rootPath: materialized.rootPath,
     projectName: materialized.projectName,

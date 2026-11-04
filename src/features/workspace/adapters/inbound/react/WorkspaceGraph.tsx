@@ -14,11 +14,15 @@ export function WorkspaceGraph({
   currentPackage,
   cycleHighlights,
   cycleInspection,
+  cycleEvidenceHidden,
+  revealedCycleId,
   packageGraph,
   selectedGraphNodeIds,
   setCurrentPackage,
   onGraphNodeSelect,
   onCloseInspection,
+  onCycleEvidenceVisibilityChange,
+  onRevealCycle,
 }: WorkspaceGraphProps) {
   if (packageGraph === null) {
     return (
@@ -35,10 +39,18 @@ export function WorkspaceGraph({
       packageGraph={packageGraph}
       selectedNodeIds={selectedGraphNodeIds}
       cycleHighlights={cycleHighlights}
+      cycleInspection={cycleInspection}
       onNodeSelect={onGraphNodeSelect}
+      onCycleEvidenceVisibilityChange={onCycleEvidenceVisibilityChange}
+      revealedCycle={revealedCycleId === cycleInspection?.id ? cycleInspection : null}
       overlay={
         cycleInspection === null ? null : (
-          <CycleInspector inspection={cycleInspection} onClose={onCloseInspection} />
+          <CycleInspector
+            hiddenEvidence={cycleEvidenceHidden}
+            inspection={cycleInspection}
+            onClose={onCloseInspection}
+            onReveal={onRevealCycle}
+          />
         )
       }
     />
@@ -49,9 +61,13 @@ interface WorkspaceGraphProps {
   readonly currentPackage: string;
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly cycleInspection: CycleInspection | null;
+  readonly cycleEvidenceHidden: boolean;
+  readonly revealedCycleId: string | null;
   readonly packageGraph: PackageDependencyGraph | null;
   readonly selectedGraphNodeIds: readonly string[];
   readonly setCurrentPackage: (path: string) => void;
   readonly onGraphNodeSelect: (id: string, intent: SelectionIntent) => void;
   readonly onCloseInspection: () => void;
+  readonly onCycleEvidenceVisibilityChange: (hidden: boolean) => void;
+  readonly onRevealCycle: () => void;
 }

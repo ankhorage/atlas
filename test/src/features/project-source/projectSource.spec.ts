@@ -48,6 +48,31 @@ describe('[project source]', () => {
     expect(cleaned).toBe(true);
   });
 
+  it('propagates workspace cancellation to GitHub materialization', async () => {
+    const controller = new AbortController();
+    let receivedSignal: AbortSignal | undefined;
+    const source = parseProjectSource('ankhorage/zora');
+
+    await resolveProjectSourceAsync(
+      source,
+      {
+        materializeAsync: async (_source, signal) => {
+          receivedSignal = signal;
+          return {
+            rootPath: '/tmp/zora',
+            projectName: 'zora',
+            revision: 'abc123',
+            cleanupAsync: async () => {},
+          };
+        },
+      },
+      undefined,
+      controller.signal
+    );
+
+    expect(receivedSignal).toBe(controller.signal);
+  });
+
   it('rejects unsupported remote providers', () => {
     expect(() => parseProjectSource('https://gitlab.com/ankhorage/zora')).toThrow(
       'Only local project paths'

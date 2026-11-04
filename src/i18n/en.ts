@@ -17,6 +17,11 @@ const en: ILanguage = {
   'settings.layout': 'Layout',
   'settings.layoutSpacing': 'Layout Spacing',
   'settings.filter': 'Filter',
+  'settings.packagePrefix': 'Package prefix',
+  'settings.dependency': 'Runtime dependencies',
+  'settings.devDependency': 'Dev dependencies',
+  'settings.peerDependency': 'Peer dependencies',
+  'settings.optionalDependency': 'Optional dependencies',
 
   // Audit
   'audit.rules': 'Audit rules',
@@ -34,6 +39,9 @@ const en: ILanguage = {
   'audit.noEvidence': 'No source/import evidence available.',
   'audit.closeInspector': 'Close cycle inspector',
   'audit.rule.cyclicDependencies': 'Cyclic Dependencies',
+  'audit.crossProjectCycles': 'Cross-Project Cycles',
+  'audit.hiddenCycleEvidence': 'Some cycle evidence is hidden by active filters.',
+  'audit.revealCycleEvidence': 'Reveal complete cycle',
 
   // Layouts
   breadthfirst: 'Breadthfirst',

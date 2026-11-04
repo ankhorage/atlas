@@ -1,45 +1,89 @@
-import { describe, expect, it, resolve } from '@artiphishle/testosterone';
+import { describe, expect, it } from '@artiphishle/testosterone';
 
 import { getPackageCyclesWithMembers } from '@/features/audit/application/use-cases/getPackageCyclesWithMembers';
-import { readProjectSnapshotAsync } from '@/features/project-analysis/composition/readProjectSnapshotAsync';
+import { getCycleId } from '@/features/audit/utils/cycleVisualization';
+import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 
-describe('[package cycles]', () => {
-  it('detects the A-B-A package cycle on the canonical package graph', async () => {
-    const snapshot = await readProjectSnapshotAsync(resolve(process.cwd(), 'examples/java/my-app'));
-    const result = getPackageCyclesWithMembers(snapshot.files, snapshot.packageGraph);
-    const cyclic = Array.from(result.packageSet);
+describe('[project-aware package cycles]', () => {
+  it('keeps same-named modules distinct and classifies intra-project and cross-project cycles once', () => {
+    const result = getPackageCyclesWithMembers({}, graph());
 
-    expect(cyclic.length).toBe(2);
-    expect(cyclic.sort()).toEqual(['com.example.myapp.a', 'com.example.myapp.b']);
+    expect(result.cycles).toHaveLength(2);
+    expect(result.cycles.map(cycle => cycle.projects?.map(project => project.label))).toEqual([
+      ['Atlas'],
+      ['ZORA', 'Runtime'],
+    ]);
+    expect(result.cycles.map(cycle => cycle.displayPackages)).toEqual([
+      ['Atlas', 'src', 'Atlas'],
+      ['Runtime', 'ZORA', 'Runtime'],
+    ]);
+    expect(new Set(result.cycles.map(getCycleId)).size).toBe(2);
   });
 
-  it('preserves canonical member evidence for every edge in the cycle', async () => {
-    const snapshot = await readProjectSnapshotAsync(resolve(process.cwd(), 'examples/java/my-app'));
-    const details = getPackageCyclesWithMembers(snapshot.files, snapshot.packageGraph);
+  it('keeps stable cycle identities when canonical repository order changes', () => {
+    const forward = getPackageCyclesWithMembers({}, graph()).cycles.map(getCycleId).sort();
+    const reversed = getPackageCyclesWithMembers(
+      {},
+      { nodes: [...graph().nodes].reverse(), edges: [...graph().edges].reverse() }
+    )
+      .cycles.map(getCycleId)
+      .sort();
 
-    expect(details.cycles.length).toBe(1);
+    expect(reversed).toEqual(forward);
+  });
 
-    const cycle = details.cycles[0];
-    expect(cycle.packages.length).toBe(3);
-    expect(cycle.packages[0]).toBe(cycle.packages[2]);
+  it('reports no findings for acyclic repositories', () => {
+    const acyclic: PackageDependencyGraph = {
+      nodes: graph().nodes,
+      edges: [edge('atlas-root', 'atlas-src')],
+    };
 
-    const aToB = cycle.edges.find(
-      edge => edge.from === 'com.example.myapp.a' && edge.to === 'com.example.myapp.b'
-    );
-    const bToA = cycle.edges.find(
-      edge => edge.from === 'com.example.myapp.b' && edge.to === 'com.example.myapp.a'
-    );
-
-    expect(aToB?.via.length).toBe(1);
-    expect(aToB?.via[0].filePath).toBe('com/example/myapp/a/A.java');
-    expect(aToB?.via[0].fileClass).toBe('A');
-    expect(aToB?.via[0].importName).toBe('com.example.myapp.b.B');
-    expect(aToB?.via[0].isIntrinsic).toBe(true);
-
-    expect(bToA?.via.length).toBe(1);
-    expect(bToA?.via[0].filePath).toBe('com/example/myapp/b/B.java');
-    expect(bToA?.via[0].fileClass).toBe('B');
-    expect(bToA?.via[0].importName).toBe('com.example.myapp.a.A');
-    expect(bToA?.via[0].isIntrinsic).toBe(true);
+    expect(getPackageCyclesWithMembers({}, acyclic).cycles).toEqual([]);
   });
 });
+
+/*** Creates two genuine cycles plus same-named modules that never form a false cycle. */
+function graph(): PackageDependencyGraph {
+  return {
+    nodes: [
+      node('atlas-root', 'Atlas', '1', 'Atlas'),
+      node('atlas-src', 'src', '1', 'Atlas'),
+      node('zora-root', 'ZORA', '2', 'ZORA'),
+      node('zora-src', 'src', '2', 'ZORA'),
+      node('runtime-root', 'Runtime', '3', 'Runtime'),
+    ],
+    edges: [
+      edge('atlas-root', 'atlas-src'),
+      edge('atlas-src', 'atlas-root'),
+      edge('zora-root', 'runtime-root'),
+      edge('runtime-root', 'zora-root'),
+    ],
+  };
+}
+
+/*** Creates one repository-scoped canonical package node. */
+function node(
+  id: string,
+  label: string,
+  repositoryId: string,
+  repositoryLabel: string
+): PackageDependencyGraph['nodes'][number] {
+  return {
+    id,
+    data: {
+      classification: 'intrinsic',
+      isIntrinsic: true,
+      label,
+      name: label,
+      parent: '',
+      path: id,
+      repositoryId,
+      repositoryLabel,
+    },
+  };
+}
+
+/*** Creates one directed dependency edge with preserved source evidence shape. */
+function edge(source: string, target: string): PackageDependencyGraph['edges'][number] {
+  return { id: `${source}->${target}`, source, target, data: { evidence: [], weight: 1 } };
+}

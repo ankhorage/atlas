@@ -17,6 +17,11 @@ export function getCycleId(cycle: PackageCycleDetail): string {
   ]);
 }
 
+/*** Read display labels without ever replacing the canonical identities used by the graph. */
+export function getCycleDisplayPath(cycle: PackageCycleDetail): readonly string[] {
+  return cycle.displayPackages ?? cycle.packages;
+}
+
 /*** Creates one stable cycle highlight descriptor. */
 function createCycleHighlight(
   cycle: PackageCycleDetail,

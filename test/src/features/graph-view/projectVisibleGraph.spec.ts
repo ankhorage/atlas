@@ -34,7 +34,7 @@ describe('[graph view projection]', () => {
     const maximum = projectVisibleGraph({
       ...input,
       showVendorPackages: false,
-      subPackageDepth: 2,
+      subPackageDepth: 3,
     });
     const excessive = projectVisibleGraph({ ...input, showVendorPackages: false });
     expect(maximum.elements).toEqual(excessive.elements);
@@ -68,6 +68,36 @@ describe('[graph view projection]', () => {
     expect(home.redirectPackage).toBe('src.io.reflectoring');
     expect(src.redirectPackage).toBeNull();
     expect(io.redirectPackage).toBeNull();
+  });
+
+  it('keeps disconnected repository roots at Home instead of redirecting to the first project', () => {
+    const result = projectVisibleGraph({
+      currentPackage: '',
+      elements: {
+        nodes: [
+          { data: { id: 'repository.101', isIntrinsic: true, parent: '' } },
+          {
+            data: { id: 'repository.101.module.src', isIntrinsic: true, parent: 'repository.101' },
+          },
+          { data: { id: 'repository.202', isIntrinsic: true, parent: '' } },
+          {
+            data: { id: 'repository.202.module.src', isIntrinsic: true, parent: 'repository.202' },
+          },
+        ],
+        edges: [],
+      },
+      showCompoundNodes: true,
+      showVendorPackages: true,
+      subPackageDepth: 3,
+    });
+
+    expect(result.redirectPackage).toBeNull();
+    expect(result.elements.nodes.map(node => node.data.id)).toEqual([
+      'repository.101',
+      'repository.101.module.src',
+      'repository.202',
+      'repository.202.module.src',
+    ]);
   });
 
   it('does not skip an explicit cycle scope even when it has only one direct package', () => {

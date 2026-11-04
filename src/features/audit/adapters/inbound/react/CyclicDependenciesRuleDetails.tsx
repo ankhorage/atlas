@@ -8,7 +8,11 @@ import { useZoraTheme } from '@zora/ZoraProvider';
 import React from 'react';
 
 import { createCycleThemeColors } from '@/features/audit/utils/createCycleThemeColors';
-import { createCycleInspection, getCycleId } from '@/features/audit/utils/cycleVisualization';
+import {
+  createCycleInspection,
+  getCycleDisplayPath,
+  getCycleId,
+} from '@/features/audit/utils/cycleVisualization';
 import { t } from '@/i18n/i18n';
 import type { PackageCycleDetail } from '@/types/audit';
 import type { CycleInspection, CycleSelection } from '@/types/auditVisualization';
@@ -51,32 +55,75 @@ function CycleRows({
   inspectedCycleId,
   onCycleInspectionChange,
 }: CycleRowsProps) {
+  const groups = groupCycles(cycles);
   return (
     <View gap="none">
-      {cycles.map((cycle, index) => {
+      {groups.map(group => (
+        <CycleGroup
+          cycleColors={cycleColors}
+          cycleSelection={cycleSelection}
+          group={group}
+          inspectedCycleId={inspectedCycleId}
+          key={group.id}
+          onCycleInspectionChange={onCycleInspectionChange}
+        />
+      ))}
+    </View>
+  );
+}
+
+/*** Group each cycle once by its canonical repository metadata or cross-project membership. */
+function groupCycles(cycles: readonly PackageCycleDetail[]): readonly CycleGroup[] {
+  const groups = new Map<string, CycleGroup>();
+  for (const [index, cycle] of cycles.entries()) {
+    const projects = cycle.projects ?? [];
+    const group =
+      projects.length > 1
+        ? { id: 'cross-project', label: t('audit.crossProjectCycles') }
+        : projects.length === 1
+          ? { id: `project:${projects[0].id}`, label: projects[0].label }
+          : { id: 'single-project', label: null };
+    const existing = groups.get(group.id) ?? { ...group, entries: [] };
+    groups.set(group.id, { ...existing, entries: [...existing.entries, { cycle, index }] });
+  }
+  return [...groups.values()];
+}
+
+/*** Render a non-empty ownership group while retaining the audit-wide deterministic cycle index. */
+function CycleGroup(props: CycleGroupProps) {
+  return (
+    <View gap="none">
+      {props.group.label === null ? null : (
+        <Text emphasis="muted" variant="caption">
+          {props.group.label} ({props.group.entries.length})
+        </Text>
+      )}
+      {props.group.entries.map(({ cycle, index }) => {
         const cycleId = getCycleId(cycle);
         return (
           <CycleRow
             cycle={cycle}
             index={index}
-            inspected={inspectedCycleId === cycleId}
+            inspected={props.inspectedCycleId === cycleId}
             key={cycleId}
-            selected={cycleSelection.selectedIds.includes(cycleId)}
+            selected={props.cycleSelection.selectedIds.includes(cycleId)}
             onInspect={() =>
-              onCycleInspectionChange(
-                inspectedCycleId === cycleId
+              props.onCycleInspectionChange(
+                props.inspectedCycleId === cycleId
                   ? null
                   : createCycleInspection(
                       cycle,
                       index,
                       t('audit.cycle') + ' ' + (index + 1),
-                      cycleColors
+                      props.cycleColors
                     )
               )
             }
             onSelectedChange={selected => {
-              cycleSelection.setSelected(cycleId, selected);
-              if (!selected && inspectedCycleId === cycleId) onCycleInspectionChange(null);
+              props.cycleSelection.setSelected(cycleId, selected);
+              if (!selected && props.inspectedCycleId === cycleId) {
+                props.onCycleInspectionChange(null);
+              }
             }}
           />
         );
@@ -87,7 +134,7 @@ function CycleRows({
 
 /*** Renders one compact single-line cycle row with the selection switch in the trailing slot. */
 function CycleRow(props: CycleRowProps) {
-  const route = props.cycle.packages.join(' → ');
+  const route = getCycleDisplayPath(props.cycle).join(' → ');
   const label = `C${props.index + 1}: ${route}`;
 
   return (
@@ -120,6 +167,20 @@ interface CyclicDependenciesRuleDetailsProps {
 
 interface CycleRowsProps extends CyclicDependenciesRuleDetailsProps {
   readonly cycleColors: readonly string[];
+}
+
+interface CycleGroup {
+  readonly id: string;
+  readonly label: string | null;
+  readonly entries: readonly { readonly cycle: PackageCycleDetail; readonly index: number }[];
+}
+
+interface CycleGroupProps {
+  readonly cycleColors: readonly string[];
+  readonly cycleSelection: CycleSelection;
+  readonly group: CycleGroup;
+  readonly inspectedCycleId: string | null | undefined;
+  readonly onCycleInspectionChange: (inspection: CycleInspection | null) => void;
 }
 
 interface CycleRowProps {

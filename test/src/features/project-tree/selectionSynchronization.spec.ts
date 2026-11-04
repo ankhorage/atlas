@@ -53,6 +53,20 @@ describe('[graph/tree selection synchronization]', () => {
       resolveGraphProjectTreeSelection(tree, 'io.reflectoring.coderadar', graphNodeIds)?.id
     ).toBe('directory:io/reflectoring/coderadar');
   });
+
+  it('synchronizes a virtual repository root with its stable graph identity', () => {
+    const repository: ProjectTreeNode = {
+      id: 'repository:101',
+      kind: 'virtual',
+      label: 'zora',
+      graphPackage: 'repository.101',
+    };
+
+    expect(resolveProjectTreeGraphNodeId(repository, ['repository.101'])).toBe('repository.101');
+    expect(
+      resolveGraphProjectTreeSelection([repository], 'repository.101', ['repository.101'])?.id
+    ).toBe('repository:101');
+  });
 });
 
 /*** Build a regression tree whose source containers previously collapsed to the deepest package. */

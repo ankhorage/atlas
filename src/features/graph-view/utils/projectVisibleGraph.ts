@@ -1,18 +1,26 @@
 import type { ElementsDefinition, NodeDefinition } from 'cytoscape';
 
 import { filterByPackagePrefix } from '@/features/graph-view/utils/filterByPackagePrefix';
+import { filterDependencyProjection } from '@/features/graph-view/utils/filterDependencyProjection';
 import { filterEmptyPackages } from '@/features/graph-view/utils/filterEmptyPackages';
 import { filterSubPackagesByDepth } from '@/features/graph-view/utils/filterSubPackagesByDepth';
 import { filterVendorPackages } from '@/features/graph-view/utils/filterVendorPackages';
 import { getMaxDepth } from '@/features/graph-view/utils/getMaxDepth';
 import { groupScopedVendorPackages } from '@/features/graph-view/utils/groupScopedVendorPackages';
 import { removeEmptyStructuralNodes } from '@/features/graph-view/utils/removeEmptyStructuralNodes';
+import { revealCycleProjection } from '@/features/graph-view/utils/revealCycleProjection';
 import { toggleCompoundNodes } from '@/features/graph-view/utils/toggleCompoundNodes';
+import type { PackageCycleDetail } from '@/types/audit';
+import type { DependencyFilterKind } from '@/types/settings';
 
 /*** Projects the complete dependency graph into the explicitly selected package/depth/filter view. */
 export function projectVisibleGraph(input: ProjectVisibleGraphInput): ProjectVisibleGraphResult {
+  const dependencyFiltered = filterDependencyProjection(input.elements, {
+    enabledKinds: input.enabledDependencyKinds ?? ALL_DEPENDENCY_KINDS,
+    packagePrefix: input.dependencyPackagePrefix ?? '',
+  });
   const compoundFiltered = toggleCompoundNodes(
-    input.elements,
+    dependencyFiltered,
     input.showCompoundNodes,
     input.currentPackage
   );
@@ -27,11 +35,12 @@ export function projectVisibleGraph(input: ProjectVisibleGraphInput): ProjectVis
     input.currentPackage
   );
 
+  const projected =
+    input.showCompoundNodes && input.showVendorPackages
+      ? groupScopedVendorPackages(labeled)
+      : labeled;
   return {
-    elements:
-      input.showCompoundNodes && input.showVendorPackages
-        ? groupScopedVendorPackages(labeled)
-        : labeled,
+    elements: revealCycleProjection(input.elements, projected, input.revealedCycle),
     maxSubPackageDepth: Math.max(
       1,
       getMaxDepth(
@@ -44,12 +53,22 @@ export function projectVisibleGraph(input: ProjectVisibleGraphInput): ProjectVis
 
 interface ProjectVisibleGraphInput {
   readonly currentPackage: string;
+  readonly dependencyPackagePrefix?: string;
   readonly elements: ElementsDefinition;
+  readonly enabledDependencyKinds?: ReadonlySet<DependencyFilterKind>;
   readonly preservePackageScope?: boolean;
+  readonly revealedCycle?: PackageCycleDetail;
   readonly showCompoundNodes: boolean;
   readonly showVendorPackages: boolean;
   readonly subPackageDepth: number;
 }
+
+const ALL_DEPENDENCY_KINDS = new Set<DependencyFilterKind>([
+  'dependency',
+  'devDependency',
+  'peerDependency',
+  'optionalDependency',
+]);
 
 interface ProjectVisibleGraphResult {
   readonly elements: ElementsDefinition;
@@ -68,8 +87,23 @@ function resolveRedirectPackage(input: ProjectVisibleGraphInput): string | null 
   const currentPackage = input.currentPackage.replaceAll('/', '.');
   if (input.preservePackageScope || currentPackage !== '') return null;
 
+  if (hasMultipleRepositoryRoots(input.elements)) return null;
+
   const nextPackage = filterEmptyPackages('', input.elements);
   return nextPackage === '' ? null : nextPackage;
+}
+
+/*** Keep a disconnected multi-project overview at Home instead of picking an arbitrary repository. */
+function hasMultipleRepositoryRoots(elements: ElementsDefinition): boolean {
+  const roots = new Set(
+    elements.nodes
+      .filter(node => node.data.isIntrinsic === true)
+      .filter(node => !node.data.parent)
+      .map(node => String(node.data.id ?? ''))
+      .filter(id => id.startsWith('repository.'))
+      .filter(Boolean)
+  );
+  return roots.size > 1;
 }
 
 /*** Adds package-relative display labels without changing graph ids. */

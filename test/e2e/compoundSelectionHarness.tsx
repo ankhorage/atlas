@@ -4,7 +4,7 @@ import {
   type GraphViewEdge,
   type GraphViewNode,
 } from '@zora/graph-view';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { applyGraphInteractionPresentation } from '@/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation';
@@ -45,6 +45,9 @@ function CompoundSelectionHarness() {
   const [dark, setDark] = useState(false);
   const [measurement, setMeasurement] = useState('null');
   const [viewport, setViewport] = useState('');
+  const [layoutSequence, setLayoutSequence] = useState(0);
+  const controllerRef = useRef<GraphViewController | null>(null);
+  const layoutIntentRef = useRef('');
   const visibleNodes = useMemo(
     () => (showCompoundNodes ? NODES : NODES.filter(node => node.parentId === undefined)),
     [showCompoundNodes]
@@ -68,6 +71,15 @@ function CompoundSelectionHarness() {
     if (controller === null) return;
     setViewport(JSON.stringify(controller.getViewport()));
   }, [controller, selectedNodeIds, showCompoundNodes]);
+  const lifecycle = JSON.stringify({
+    breadcrumbs: ['Home', ...currentPackage.split('.').filter(Boolean)].join(' › '),
+    container: { height: 640, width: 960 },
+    layoutSequence,
+    measurement: JSON.parse(measurement),
+    selectedNodeIds,
+    showCompoundNodes,
+    viewport: controllerRef.current?.getViewport() ?? null,
+  });
 
   return (
     <main style={{ ...LIGHT_STYLE, ...(dark ? DARK_STYLE : {}), height: '100vh' }}>
@@ -129,10 +141,17 @@ function CompoundSelectionHarness() {
           if (event.type === 'double-press' && event.id === 'src') setCurrentPackage('src');
         }}
         onLayoutComplete={nextController => {
+          controllerRef.current = nextController;
           const nextMeasurement = readMeasurement(nextController);
+          const nextLayoutIntent = JSON.stringify({ selectedNodeIds, showCompoundNodes });
           setMeasurement(previous => (previous === nextMeasurement ? previous : nextMeasurement));
+          if (layoutIntentRef.current !== nextLayoutIntent) {
+            layoutIntentRef.current = nextLayoutIntent;
+            setLayoutSequence(previous => previous + 1);
+          }
         }}
         onReady={nextController => {
+          controllerRef.current = nextController;
           setController(nextController);
           setMeasurement(readMeasurement(nextController));
         }}
@@ -140,6 +159,7 @@ function CompoundSelectionHarness() {
       />
       <output aria-label="Graph geometry">{measurement}</output>
       <output aria-label="Graph viewport">{viewport}</output>
+      <output aria-label="Graph lifecycle">{lifecycle}</output>
       <output aria-label="Graph presentation">
         {JSON.stringify({
           nodes: presentation.nodes.map(node => [node.id, node.classes]),

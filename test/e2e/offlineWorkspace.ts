@@ -9,6 +9,7 @@ const reportPath = resolve(process.env.ATLAS_OFFLINE_REPORT ?? 'offline-smoke.ht
 const browserPath = process.env.ATLAS_CHROME;
 const projectName = process.env.ATLAS_PROJECT_NAME ?? 'my-app';
 const requireCompoundNodes = process.env.ATLAS_REQUIRE_COMPOUND_NODES === 'true';
+const layoutLabels = ['Breadthfirst', 'Circle', 'Concentric', 'Elk: Layered', 'Grid'] as const;
 
 if (browserPath === undefined)
   throw new Error('ATLAS_CHROME must point to an installed Chrome or Chromium binary.');
@@ -87,6 +88,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   else {
     await assertGenericWorkspaceInteractions(page);
   }
+  await assertOfflineSettingsInteractions(page);
   await assertDarkTheme(page);
 }
 
@@ -94,6 +96,58 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
 async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
   await selectGraphNodes(page);
   await assertRuleEvidence(page);
+}
+
+/*** Exercise the persistent presentation controls that an offline snapshot intentionally retains. */
+async function assertOfflineSettingsInteractions(page: Page): Promise<void> {
+  const packagePrefix = page.getByLabel('Package prefix', { exact: true });
+  await packagePrefix.fill('com.');
+  await packagePrefix.fill('');
+
+  const switches = page.locator('[data-testid^="switch-"]');
+  const switchCount = await switches.count();
+  for (let index = 0; index < switchCount; index += 1) {
+    await switches.nth(index).click();
+    await switches.nth(index).click();
+  }
+
+  const depth = page.getByLabel('Subpackage depth', { exact: true });
+  await depth.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowLeft');
+
+  const spacing = page.getByLabel('Layout Spacing', { exact: true });
+  await spacing.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowLeft');
+
+  const layout = page.getByTestId('cytoscape-layout-trigger');
+  const originalLayout = await readSelectedLayout(layout);
+  const alternativeLayout = originalLayout === 'Circle' ? 'Grid' : 'Circle';
+  await selectLayout(page, alternativeLayout);
+  if ((await readSelectedLayout(layout)) !== alternativeLayout) {
+    throw new Error(`Layout did not change from ${originalLayout} to ${alternativeLayout}.`);
+  }
+  await selectLayout(page, originalLayout);
+  if ((await readSelectedLayout(layout)) !== originalLayout) {
+    throw new Error(`Layout did not restore to ${originalLayout}.`);
+  }
+}
+
+/*** Selects a layout through ZORA Select's public trigger and option controls. */
+async function selectLayout(page: Page, layout: string): Promise<void> {
+  const trigger = page.getByTestId('cytoscape-layout-trigger');
+  await trigger.click();
+  await page.getByTestId(`cytoscape-layout-option-${layout.toLowerCase()}`).click();
+  await trigger.getByText(layout, { exact: true }).waitFor();
+}
+
+/*** Reads the user-visible layout label from ZORA Select's public trigger. */
+async function readSelectedLayout(layout: ReturnType<Page['getByTestId']>): Promise<string> {
+  for (const label of layoutLabels) {
+    if (await layout.getByText(label, { exact: true }).isVisible()) return label;
+  }
+  throw new Error('ZORA Select did not render a known layout label in its trigger.');
 }
 
 /*** Verifies user-visible audit evidence without guessing a canvas node position. */
@@ -204,6 +258,9 @@ async function findSelectionIndex(
 async function assertUnavailableOfflineActions(page: Page): Promise<void> {
   if ((await page.getByRole('button', { name: /Export|JSON|XML/i }).count()) > 0) {
     throw new Error('Offline workspace exposed a live export action.');
+  }
+  if ((await page.getByRole('button', { name: /Retry|Refresh/i }).count()) > 0) {
+    throw new Error('Offline workspace exposed a repository retry or refresh action.');
   }
   if ((await page.getByPlaceholder(/GitHub repository URL/i).count()) > 0) {
     throw new Error('Offline workspace exposed the live source selector.');

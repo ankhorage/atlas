@@ -123,7 +123,17 @@ function aggregateEdge(
 
   const existing = edgeMap.get(key);
   if (existing !== undefined) {
-    existing.data.weight = readWeight(existing.data.weight) + readWeight(edge.data.weight);
+    edgeMap.set(key, {
+      ...existing,
+      data: {
+        ...existing.data,
+        evidence: mergeEvidence(
+          (existing.data as Readonly<Record<string, unknown>>).evidence,
+          (edge.data as Readonly<Record<string, unknown>>).evidence
+        ),
+        weight: readWeight(existing.data.weight) + readWeight(edge.data.weight),
+      },
+    });
     return;
   }
 
@@ -138,6 +148,19 @@ function aggregateEdge(
       weight: readWeight(edge.data.weight),
     },
   });
+}
+
+/*** Combines serializable edge evidence when depth lifts several canonical edges onto one endpoint. */
+function mergeEvidence(left: unknown, right: unknown): readonly unknown[] | undefined {
+  const leftEvidence = toUnknownArray(left);
+  const rightEvidence = toUnknownArray(right);
+  if (leftEvidence === null && rightEvidence === null) return undefined;
+  return [...(leftEvidence ?? []), ...(rightEvidence ?? [])];
+}
+
+/*** Narrows unknown serialized presentation data without allowing Cytoscape's any to escape. */
+function toUnknownArray(value: unknown): readonly unknown[] | null {
+  return Array.isArray(value) ? Array.from(value, item => item as unknown) : null;
 }
 
 /*** Reads the numeric edge weight used by Atlas aggregation, defaulting missing values to one. */

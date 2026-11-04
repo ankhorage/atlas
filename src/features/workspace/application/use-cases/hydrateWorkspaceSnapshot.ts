@@ -7,12 +7,14 @@ export function hydrateWorkspaceSnapshot(snapshot: WorkspaceSnapshot): ProjectOv
     evaluation: snapshot.audit.evaluation,
     packageGraph: snapshot.audit.packageGraph,
     projectIdentity: createProjectIdentity(snapshot),
-    tree: buildProjectTree(snapshot.audit.files),
+    tree: snapshot.navigationTree ?? buildProjectTree(snapshot.audit.files),
   };
 }
 
 /*** Creates a stable browser-safe scope for workspace preferences without exposing a local path. */
 function createProjectIdentity(snapshot: WorkspaceSnapshot): string {
+  if (snapshot.audit.meta.workspaceIdentity !== undefined)
+    return snapshot.audit.meta.workspaceIdentity;
   const { source } = snapshot.audit.meta;
   if (source !== undefined) return `github:${source.url}@${source.revision}`;
   const fingerprint = Array.from(

@@ -1,6 +1,6 @@
 export type ProjectSource =
   | { readonly kind: 'filesystem'; readonly path: string }
-  | { readonly kind: 'github'; readonly url: string };
+  | { readonly kind: 'github'; readonly url: string; readonly revision?: string };
 
 export interface ResolvedProjectSource {
   readonly rootPath: string;
@@ -19,7 +19,8 @@ interface GitHubProjectMaterialization {
 
 export interface GitHubProjectMaterializer {
   readonly materializeAsync: (
-    source: Extract<ProjectSource, { readonly kind: 'github' }>
+    source: Extract<ProjectSource, { readonly kind: 'github' }>,
+    signal?: AbortSignal
   ) => Promise<GitHubProjectMaterialization>;
 }
 

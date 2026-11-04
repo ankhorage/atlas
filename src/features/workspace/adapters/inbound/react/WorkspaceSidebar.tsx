@@ -41,7 +41,9 @@ export function WorkspaceSidebar(props: WorkspaceSidebarProps) {
         minHeight: 0,
         minWidth: 288,
         overflow: 'hidden',
+        position: 'relative',
         width: 288,
+        zIndex: 1,
       }}
     >
       <Surface style={{ height: '100%', overflow: 'hidden' }}>
