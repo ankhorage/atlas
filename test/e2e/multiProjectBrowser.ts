@@ -2,7 +2,7 @@ import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 
-import { chromium, type Browser, type Page } from 'playwright-core';
+import { chromium, type Browser, type Locator, type Page } from 'playwright-core';
 
 const browserPath = process.env.ATLAS_CHROME;
 if (browserPath === undefined) throw new Error('Missing ENV: ATLAS_CHROME');
@@ -172,6 +172,19 @@ function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
+/*** Proves that a visible control, rather than the graph canvas, owns its pointer interaction point. */
+async function assertTopmostControlAsync(control: Locator, name: string): Promise<void> {
+  const receivesPointerEvents = await control.evaluate(element => {
+    const bounds = element.getBoundingClientRect();
+    const target = document.elementFromPoint(
+      bounds.left + bounds.width / 2,
+      bounds.top + bounds.height / 2
+    );
+    return target !== null && (target === element || element.contains(target));
+  });
+  assert(receivesPointerEvents, `${name} is obstructed by another layer.`);
+}
+
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
@@ -189,7 +202,9 @@ const scenarios: readonly Scenario[] = [
     'Filters repository choices and changes checkbox state.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByLabel('Choose repositories').click();
+      const picker = page.getByLabel('Choose repositories');
+      await assertTopmostControlAsync(picker, 'Repository picker');
+      await picker.click();
       await page.getByLabel('Search repositories').fill('catalog');
       const box = page.getByLabel('owner-a/catalog');
       assert(await box.isChecked(), 'Catalog was not selected.');
@@ -317,19 +332,24 @@ const scenarios: readonly Scenario[] = [
     'Changes vendor, compound, and subpackage-depth controls.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByLabel('Show Vendor').click();
-      await page.getByLabel('Show Compound Nodes').click();
-      await page.getByLabel('Subpackage depth').fill('2');
-      assert(
-        (await page.getByLabel('Subpackage depth').inputValue()) === '2',
-        'Depth was not applied.'
-      );
+      const vendor = page.getByLabel('Show Vendor');
+      const compound = page.getByLabel('Show Compound Nodes');
+      const depth = page.getByLabel('Subpackage depth');
+      await assertTopmostControlAsync(vendor, 'Vendor sidebar switch');
+      await assertTopmostControlAsync(compound, 'Compound sidebar switch');
+      await assertTopmostControlAsync(depth, 'Subpackage-depth sidebar input');
+      await vendor.click();
+      await compound.click();
+      await depth.fill('2');
+      assert((await depth.inputValue()) === '2', 'Depth was not applied.');
       return [];
     }
   ),
   scenario('cycle-groups', 'Exposes intra-project and cross-project cycle groups.', async page => {
     await openWorkspaceAsync(page);
-    await page.getByRole('tab', { name: 'Rules' }).click();
+    const rules = page.getByRole('tab', { name: 'Rules' });
+    await assertTopmostControlAsync(rules, 'Rules sidebar tab');
+    await rules.click();
     await page.getByText(/cycle/i).first().waitFor();
     return [];
   }),
@@ -348,7 +368,9 @@ const scenarios: readonly Scenario[] = [
     'Saves, opens, renames, and confirmed-deletes a workspace.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByLabel('Manage workspaces').click();
+      const menu = page.getByLabel('Manage workspaces');
+      await assertTopmostControlAsync(menu, 'Workspace management menu');
+      await menu.click();
       page.once('dialog', dialog => dialog.accept('Acceptance workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.getByLabel('Manage workspaces').click();

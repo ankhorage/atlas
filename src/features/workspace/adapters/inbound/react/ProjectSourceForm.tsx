@@ -21,7 +21,12 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   );
 
   return (
-    <View align="center" direction="row" gap="xs" style={{ flexWrap: 'wrap', maxWidth: 720 }}>
+    <View
+      align="center"
+      direction="row"
+      gap="xs"
+      style={{ flexWrap: 'wrap', maxWidth: 720, position: 'relative', zIndex: 1 }}
+    >
       <TextInput
         accessibilityLabel="GitHub owner or repository"
         placeholder="ankhorage, @ankhorage, or GitHub URL"
