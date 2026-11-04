@@ -376,6 +376,15 @@ async function openWorkspaceAsync(page: Page, source = 'owner-a%2Cowner-b'): Pro
   await page.getByRole('application', { name: 'Graph' }).waitFor();
 }
 
+/*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
+async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
+  const thumb = switchControl.locator(':scope > div > div:first-child > div');
+  assert(
+    (await thumb.evaluate(element => getComputedStyle(element).alignSelf)) === 'flex-end',
+    message
+  );
+}
+
 /*** Fails with a concrete diagnostic instead of accepting a missing user-visible state. */
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -432,7 +441,20 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('owner-a/catalog').uncheck();
       assert(page.url() === before, 'Selection navigated before Open.');
       await page.getByRole('button', { name: 'Open' }).click();
-      await page.waitForURL(/exclude=owner-a-catalog/u);
+      await page.waitForURL(openedUrl => {
+        const source = openedUrl.searchParams.get('source');
+        return source === 'owner-a,owner-b|exclude=owner-a-catalog';
+      });
+      const openedSource = new URL(page.url()).searchParams.get('source');
+      assert(
+        openedSource === 'owner-a,owner-b|exclude=owner-a-catalog',
+        `Open navigated to an unexpected source: ${String(openedSource)}`
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        'Excluded repository was selected after Open.'
+      );
       return [];
     }
   ),
@@ -597,12 +619,18 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page);
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').uncheck();
-      await page.getByLabel('Show Vendor').click();
+      const vendor = page.getByRole('switch', { name: 'Show Vendor' });
+      await vendor.click();
+      await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
       await page.getByLabel('Manage workspaces').click();
       page.once('dialog', dialog => dialog.accept('Restored workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=restored-workspace/u);
+      await page.evaluate(() => window.localStorage.removeItem('showVendorPackages'));
       await page.reload({ waitUntil: 'networkidle' });
+      const restoredVendor = page.getByRole('switch', { name: 'Show Vendor' });
+      await assertSwitchCheckedAsync(restoredVendor, 'Saved vendor setting was not restored.');
+      await page.getByRole('application', { name: 'Graph' }).waitFor();
       await page.getByLabel('Choose repositories').click();
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),

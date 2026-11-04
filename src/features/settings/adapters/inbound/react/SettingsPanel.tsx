@@ -64,6 +64,7 @@ function FilterSettings() {
         onToggle={toggleDependencyKind}
       />
       <Switch
+        accessibilityLabel={t('settings.showVendorPackages')}
         checked={showVendorPackages}
         onCheckedChange={(checked: boolean) => {
           if (checked !== showVendorPackages) toggleShowVendorPackages();
@@ -73,6 +74,7 @@ function FilterSettings() {
         {t('settings.showVendorPackages')}
       </Switch>
       <Switch
+        accessibilityLabel={t('settings.showCompoundNodes')}
         checked={showCompoundNodes}
         onCheckedChange={(checked: boolean) => {
           if (checked !== showCompoundNodes) toggleShowCompoundNodes();
@@ -89,6 +91,7 @@ function FilterSettings() {
 function DependencyKindSettings({ enabledKinds, onToggle }: DependencyKindSettingsProps) {
   return DEPENDENCY_KINDS.map(kind => (
     <Switch
+      accessibilityLabel={t(`settings.${kind}`)}
       checked={enabledKinds.has(kind)}
       key={kind}
       onCheckedChange={(checked: boolean) => {

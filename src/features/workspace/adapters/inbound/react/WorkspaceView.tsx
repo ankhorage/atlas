@@ -39,7 +39,8 @@ export function WorkspaceView({
   return (
     <SettingsProvider workspaceScope={settingsScope}>
       <AppShell
-        header={
+        header={<div aria-hidden style={{ height: 56 }} />}
+        overlay={
           <WorkspaceHeader
             currentPackage={navigation.currentPackage}
             currentSource={currentSource}
@@ -81,11 +82,11 @@ function useWorkspaceRepositoryRetry(
 /*** Renders workspace breadcrumbs, source selector, and theme action. */
 function WorkspaceHeader(props: WorkspaceHeaderProps) {
   const { mode, setMode } = useZoraTheme();
-  const isDark = mode === 'dark';
 
   return (
     <AppHeader
       inverted
+      style={{ position: 'relative', zIndex: 4 }}
       actions={
         <View align="center" direction="row" gap="s">
           {props.offline ? (
@@ -98,12 +99,12 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
             />
           )}
           <Button
-            leadingIcon={{ name: isDark ? 'sunny-outline' : 'moon-outline' }}
+            leadingIcon={{ name: mode === 'dark' ? 'sunny-outline' : 'moon-outline' }}
             size="s"
             variant="outline"
-            onPress={() => setMode(isDark ? 'light' : 'dark')}
+            onPress={() => setMode(mode === 'dark' ? 'light' : 'dark')}
           >
-            {isDark ? 'Light' : 'Dark'}
+            {mode === 'dark' ? 'Light' : 'Dark'}
           </Button>
         </View>
       }
@@ -218,7 +219,7 @@ function useWorkspaceCycleSelection(
   projectName: string
 ) {
   return useCycleSelection(
-    evaluation?.cyclicPackages ?? EMPTY_CYCLES,
+    evaluation?.cyclicPackages ?? [],
     resolveWorkspaceProjectIdentity(workspace, projectName)
   );
 }
@@ -283,8 +284,6 @@ function findRepositoryBreadcrumbs(
 function normalizeGraphPackage(path: string): string {
   return path.replaceAll('/', '.').replace(/^\.+|\.+$/g, '');
 }
-
-const EMPTY_CYCLES: NonNullable<Audit['evaluation']>['cyclicPackages'] = [];
 
 interface WorkspaceViewProps {
   readonly auditExportActions?: AuditExportActions;
