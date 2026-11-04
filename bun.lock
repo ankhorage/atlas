@@ -16,7 +16,7 @@
         "@ankhorage/infra-local": "^0.3.28",
         "@ankhorage/infra-minikube": "^0.4.129",
         "@ankhorage/project-detector": "^0.3.3",
-        "@ankhorage/repository": "^0.7.0",
+        "@ankhorage/repository": "^0.8.0",
         "@ankhorage/rules": "^0.2.0",
         "@ankhorage/rules-architecture": "^0.5.0",
         "@ankhorage/utility": "^1.9.85",
@@ -79,7 +79,7 @@
 
     "@ankhorage/project-detector": ["@ankhorage/project-detector@0.3.3", "", { "dependencies": { "@ankhorage/utility": "^0.8.0", "minimatch": "^10.2.6", "yaml": "^2.9.1" }, "peerDependencies": { "@ankhorage/ankh": "^0.8.13" }, "optionalPeers": ["@ankhorage/ankh"], "bin": { "project-detector": "dist/cli/runAsync.js" } }, "sha512-GSZbi53L81bdMA5j/VjqEyVBSHDzkJ44MMmZOdiXuF6HZOrwNBZ80PFERidALRArIgRj6qvR3SguLgOzzIvSMg=="],
 
-    "@ankhorage/repository": ["@ankhorage/repository@0.7.0", "", { "dependencies": { "@ankhorage/ankh": "^0.13.3", "@ankhorage/capability": "^0.2.2", "@ankhorage/contracts": "^26.3.0", "ignore": "^7.0.14" } }, "sha512-VFQ8F8VnYUs7gKTBV4K3KAipOSFnHKYrRV2ztH+7KYKQ3hdtOtpUN48fBF4dM0hfTb94oqq67tMElQrNWPchhw=="],
+    "@ankhorage/repository": ["@ankhorage/repository@0.8.0", "", { "dependencies": { "@ankhorage/ankh": "^0.13.3", "@ankhorage/capability": "^0.2.2", "@ankhorage/contracts": "^26.3.0", "ignore": "^7.0.14" } }, "sha512-LjdAg04Gj58VZwjv0NEBcr+7Wv362RD+hLssryiWEv96A7kQlYTBxFKuznMKQO2ioKpwD2Po2Sw7zvHIUwCKaw=="],
 
     "@ankhorage/rules": ["@ankhorage/rules@0.2.0", "", { "dependencies": { "@ankhorage/utility": "^1.9.0" }, "bin": { "ankhorage-rules": "dist/cli/standalone.js" } }, "sha512-st23ry6Nnnus0Z4bnwpLOt41PnKMx/uR1crc3JEDGsyn9OshvQRB2IeeGlMgJHR5MUGCXDdSXYtNYwecGo/lPQ=="],
 

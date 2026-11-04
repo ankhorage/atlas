@@ -14,11 +14,13 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
       repository('owner-b-disconnected', 'owner-b', 'disconnected'),
       repository('owner-b-failed', 'owner-b', 'failed'),
     ];
+    const materializedRevisions: string[] = [];
     const result = await loadWorkspaceProjectSourceAsync(
       'owner-a,owner-b',
       async () => ({ edges: [], nodes: [] }),
       async source => {
         if (source.kind !== 'github') throw new Error('Fixture only materializes GitHub sources.');
+        materializedRevisions.push(source.revision ?? 'missing');
         const repository = repositories.find(item => item.url === source.url);
         if (repository === undefined || repository.id === 'owner-b-failed')
           throw new Error('Fixture materialization failed.');
@@ -34,12 +36,21 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
         selectedRepositories: repositories
           .filter(repository => repository.owner === owner || owner.includes(repository.owner))
           .filter(repository => !excluded.has(repository.id)),
-      })
+      }),
+      undefined,
+      resolveRevision
     );
 
     assert.equal(result.workspace.ok, true);
     assert.equal(result.projectName, 'GitHub workspace');
     assert.equal(result.repositories?.length, 5);
+    assert.deepEqual(materializedRevisions.toSorted(), [
+      'owner-a-catalog-commit',
+      'owner-a-shared-commit',
+      'owner-b-disconnected-commit',
+      'owner-b-failed-commit',
+      'owner-b-workspace-commit',
+    ]);
     assert.equal(
       result.repositoryStatuses?.some(status => status.repository.id === 'owner-b-failed'),
       true
@@ -156,7 +167,9 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
             visibility: 'public',
           },
         ],
-      })
+      }),
+      undefined,
+      resolveRevision
     );
 
     assert.equal(result.workspace.ok, true);
@@ -181,5 +194,22 @@ function repository(id: string, owner: string, name: string) {
     owner,
     url: `https://github.com/${owner}/${name}`,
     visibility: 'public' as const,
+  };
+}
+
+/*** Resolve fixture repositories to deterministic immutable commits without network access. */
+async function resolveRevision(url: string) {
+  const [, owner, name] = new URL(url).pathname.split('/');
+  if (owner === undefined || name === undefined)
+    throw new Error('Fixture repository URL is invalid.');
+  return {
+    repository: {
+      id: `${owner}-${name}`,
+      owner,
+      name,
+      url,
+      defaultBranch: 'main',
+    },
+    revision: { commitSha: `${owner}-${name}-commit`, ref: 'main' },
   };
 }

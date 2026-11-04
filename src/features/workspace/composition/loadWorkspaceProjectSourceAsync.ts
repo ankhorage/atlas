@@ -1,5 +1,9 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
+import {
+  type GitHubRepositoryRevisionResolutionResult,
+  resolveGitHubRepositoryRevisionAsync,
+} from '@ankhorage/repository/github';
 import { toErrorMessage } from '@ankhorage/utility/error';
 import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 
@@ -39,7 +43,8 @@ export async function loadWorkspaceProjectSourceAsync(
     signal?: AbortSignal
   ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync,
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync = discoverWorkspaceGitHubSourcesAsync,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  resolveRevisionAsync: GitHubRevisionResolver = resolveGitHubRevisionAsync
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(sourceValue, process.env.ATLAS_PROJECT_PATH);
 
@@ -65,6 +70,7 @@ export async function loadWorkspaceProjectSourceAsync(
       loadDependencyGraphAsync,
       materializeAsync,
       discoverAsync,
+      resolveRevisionAsync,
       signal
     );
   } catch (error) {
@@ -107,6 +113,7 @@ async function loadGitHubWorkspaceAsync(
   loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
   materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync,
+  resolveRevisionAsync: GitHubRevisionResolver,
   signal?: AbortSignal
 ): Promise<WorkspaceProjectSourceResult> {
   const { source, excludedRepositoryIds } = parseGitHubWorkspaceSource(sourceValue);
@@ -114,6 +121,7 @@ async function loadGitHubWorkspaceAsync(
   const materialization = await materializeDiscoveredProjectsAsync(
     discovery.selectedRepositories,
     materializeAsync,
+    resolveRevisionAsync,
     signal
   );
   const { projects: resolvedProjects } = materialization;
@@ -155,18 +163,25 @@ async function materializeDiscoveredProjectsAsync(
     typeof loadMultiProjectWorkspaceAsync
   >[0][number]['repository'][],
   materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
+  resolveRevisionAsync: GitHubRevisionResolver,
   signal?: AbortSignal
 ): Promise<MaterializedWorkspaceProjects> {
   const outcomes = await settleBoundedAsync(
     repositories,
     MAX_CONCURRENT_REPOSITORY_MATERIALIZATIONS,
-    async (repository, materializationSignal) => ({
-      repository,
-      resolved: await materializeAsync(
-        parseProjectSource(normalizeGitHubRepositoryUrl(repository.url)),
-        materializationSignal
-      ),
-    }),
+    async (repository, materializationSignal) => {
+      const revision = await resolveRevisionAsync(repository.url, materializationSignal);
+      const source = parseProjectSource(normalizeGitHubRepositoryUrl(repository.url));
+      if (source.kind !== 'github')
+        throw new Error('Workspace repositories must be GitHub sources.');
+      return {
+        repository,
+        resolved: await materializeAsync(
+          { ...source, revision: revision.revision.commitSha },
+          materializationSignal
+        ),
+      };
+    },
     signal
   );
   return {
@@ -292,6 +307,19 @@ interface MaterializedWorkspaceProjects {
 interface DiscoveredWorkspaceLoad {
   readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[];
   readonly workspace: WorkspaceLoadResult;
+}
+
+type GitHubRevisionResolver = (
+  url: string,
+  signal?: AbortSignal
+) => Promise<GitHubRepositoryRevisionResolutionResult>;
+
+/*** Resolve a GitHub URL to its immutable revision through the public Repository capability. */
+function resolveGitHubRevisionAsync(
+  url: string,
+  signal?: AbortSignal
+): Promise<GitHubRepositoryRevisionResolutionResult> {
+  return resolveGitHubRepositoryRevisionAsync({ url, signal });
 }
 
 const MAX_CONCURRENT_REPOSITORY_MATERIALIZATIONS = 4;
