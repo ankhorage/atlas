@@ -20,27 +20,44 @@ export function getPackageCyclesWithMembers(
   packageSet: Set<TUniquePackageName>;
   graph: PackageDependencyGraph;
 } {
-  const sccs = findCyclicComponents(graph);
+  const cycleGraph = addPackageContainmentEdges(graph);
+  const sccs = findCyclicComponents(cycleGraph);
   const fileMetadata = collectFiles(files);
   const cycles: PackageCycleDetail[] = [];
   const packageSet = new Set<TUniquePackageName>();
 
   for (const scc of sccs) {
     scc.forEach(packageName => packageSet.add(packageName));
-    const cycle = [...(findCyclePath(graph, scc) ?? [...scc, scc[0]])];
+    const cycle = [...(findCyclePath(cycleGraph, scc) ?? [...scc, scc[0]])];
     cycles.push({
       packages: cycle,
       displayPackages: cycle.map(
-        packageId => graph.nodes.find(node => node.id === packageId)?.data.label ?? packageId
+        packageId => cycleGraph.nodes.find(node => node.id === packageId)?.data.label ?? packageId
       ),
-      projects: getCycleProjects(graph, cycle),
+      projects: getCycleProjects(cycleGraph, cycle),
       edges: cycle
         .slice(0, -1)
-        .map((from, index) => cycleEdgeEvidence(graph, fileMetadata, from, cycle[index + 1])),
+        .map((from, index) =>
+          cycleEdgeEvidence(cycleGraph, fileMetadata, from, cycle[index + 1])
+        ),
     });
   }
 
   return { cycles, packageSet, graph };
+}
+
+/*** Add canonical package hierarchy relations only for audit cycle traversal, not graph rendering. */
+function addPackageContainmentEdges(graph: PackageDependencyGraph): PackageDependencyGraph {
+  const nodeIds = new Set(graph.nodes.map(node => node.id));
+  const containmentEdges = graph.nodes.flatMap(node => {
+    const parent = node.data.parent;
+    if (parent === '' || !nodeIds.has(parent)) return [];
+    const id = `${parent}->${node.id}`;
+    return graph.edges.some(edge => edge.id === id)
+      ? []
+      : [{ data: { evidence: [], weight: 1 }, id, source: parent, target: node.id }];
+  });
+  return { edges: [...graph.edges, ...containmentEdges], nodes: graph.nodes };
 }
 
 /*** Resolve repository ownership from canonical graph metadata, not presentation identities. */
