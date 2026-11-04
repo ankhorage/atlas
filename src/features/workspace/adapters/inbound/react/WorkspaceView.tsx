@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@zora/breadcrumbs';
 import { Button } from '@zora/button';
 import { AppShell, View } from '@zora/view';
 import { useZoraTheme } from '@zora/ZoraProvider';
+import { useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
@@ -26,10 +27,13 @@ export function WorkspaceView({
   projectName,
   repositories,
   repositoryStatuses,
+  runtimeId,
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
-  const navigation = useWorkspaceNavigation(workspace);
+  const [liveWorkspace, setLiveWorkspace] = useState({ repositoryStatuses, runtimeId, workspace });
+  const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
+  const navigation = useWorkspaceNavigation(liveWorkspace.workspace);
   const settingsScope = workspaceScope ?? resolveWorkspaceProjectIdentity(workspace, projectName);
 
   return (
@@ -54,12 +58,24 @@ export function WorkspaceView({
           navigation={navigation}
           offline={offline}
           projectName={projectName}
-          repositoryStatuses={repositoryStatuses}
-          workspace={workspace}
+          repositoryStatuses={liveWorkspace.repositoryStatuses}
+          workspace={liveWorkspace.workspace}
+          onRetry={onRetry}
         />
       </AppShell>
     </SettingsProvider>
   );
+}
+
+/*** Keep only the most recent retry response eligible to replace the live workspace state. */
+function useWorkspaceRepositoryRetry(
+  liveWorkspace: LiveWorkspace,
+  setLiveWorkspace: (value: LiveWorkspace) => void
+): ((repositoryId: string) => Promise<void>) | undefined {
+  const latestRetry = useRef(0);
+  if (liveWorkspace.runtimeId === undefined) return undefined;
+  return repositoryId =>
+    retryRepositoryAsync(liveWorkspace.runtimeId, repositoryId, latestRetry, setLiveWorkspace);
 }
 
 /*** Renders workspace breadcrumbs, source selector, and theme action. */
@@ -114,6 +130,7 @@ function WorkspaceBody({
   projectName,
   repositoryStatuses,
   workspace,
+  onRetry,
 }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
@@ -144,8 +161,52 @@ function WorkspaceBody({
         offline={offline}
         projectError={projectError}
         repositoryStatuses={repositoryStatuses}
+        onRetry={onRetry}
       />
     </main>
+  );
+}
+
+/*** Request one server-owned repository retry while preserving the live React workspace and selections. */
+async function retryRepositoryAsync(
+  runtimeId: string | undefined,
+  repositoryId: string,
+  latestRetry: { current: number },
+  setLiveWorkspace: (value: LiveWorkspace) => void
+): Promise<void> {
+  if (runtimeId === undefined) throw new Error('The workspace runtime is unavailable.');
+  const requestId = ++latestRetry.current;
+  const response = await fetch('/api/workspace/retry', {
+    body: JSON.stringify({ repositoryId, runtimeId }),
+    headers: { 'content-type': 'application/json' },
+    method: 'POST',
+  });
+  if (!response.ok) throw new Error('Unable to retry repository.');
+  const result: unknown = await response.json();
+  if (!isWorkspaceRetryResult(result))
+    throw new Error('The repository retry returned an invalid workspace.');
+  if (requestId !== latestRetry.current) return;
+  setLiveWorkspace({
+    repositoryStatuses: result.repositoryStatuses,
+    runtimeId: result.runtimeId,
+    workspace: result.workspace,
+  });
+}
+
+/*** Narrow the transport response before it replaces the active browser workspace state. */
+function isWorkspaceRetryResult(value: unknown): value is {
+  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[];
+  readonly runtimeId: string;
+  readonly workspace: WorkspaceLoadResult;
+} {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'runtimeId' in value &&
+    typeof value.runtimeId === 'string' &&
+    'workspace' in value &&
+    'repositoryStatuses' in value &&
+    Array.isArray(value.repositoryStatuses)
   );
 }
 
@@ -231,7 +292,15 @@ interface WorkspaceViewProps {
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly runtimeId?: string;
   readonly workspaceScope?: string;
+  readonly workspace: WorkspaceLoadResult;
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
+}
+
+interface LiveWorkspace {
+  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
+  readonly runtimeId: string | undefined;
   readonly workspace: WorkspaceLoadResult;
 }
 
@@ -254,6 +323,7 @@ interface WorkspaceBodyProps {
   readonly projectName: string;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly workspace: WorkspaceLoadResult;
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
 
 interface BreadcrumbItem {

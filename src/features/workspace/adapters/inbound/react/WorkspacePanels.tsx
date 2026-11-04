@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@zora/button';
 import { Card } from '@zora/card';
 import React from 'react';
 
@@ -35,6 +36,7 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
         navigation={props.navigation}
         projectError={props.projectError}
         repositoryStatuses={props.repositoryStatuses}
+        onRetry={props.onRetry}
         revealedCycleId={props.cycleInspection.revealedId}
         onCloseInspection={() => props.cycleInspection.change(null)}
         onCycleEvidenceVisibilityChange={props.cycleInspection.setHiddenEvidence}
@@ -49,7 +51,7 @@ function WorkspaceContent(props: WorkspaceContentProps) {
   if (props.projectError !== null) return <WorkspaceError message={props.projectError} />;
   return (
     <>
-      <RepositoryLoadFailures statuses={props.repositoryStatuses} />
+      <RepositoryLoadFailures statuses={props.repositoryStatuses} onRetry={props.onRetry} />
       <WorkspaceGraph
         currentPackage={props.navigation.currentPackage}
         cycleHighlights={props.cycleSelection.highlights}
@@ -71,8 +73,10 @@ function WorkspaceContent(props: WorkspaceContentProps) {
 /*** Surface only incomplete repository work while the shared graph remains usable for successful projects. */
 function RepositoryLoadFailures({
   statuses,
+  onRetry,
 }: {
   readonly statuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
 }) {
   const failures = statuses?.filter(status => status.status !== 'successful') ?? [];
   if (failures.length === 0) return null;
@@ -83,9 +87,15 @@ function RepositoryLoadFailures({
           compact
           key={repository.id}
           description={description}
-          title={`${repository.owner}/${repository.name}: ${status === 'cancelled' ? 'cancelled' : 'failed'}`}
+          title={`${repository.owner}/${repository.name}: ${status}`}
           tone="outline"
-        />
+        >
+          {status === 'failed' && onRetry !== undefined ? (
+            <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
+              Retry
+            </Button>
+          ) : null}
+        </Card>
       ))}
     </section>
   );
@@ -119,6 +129,7 @@ interface WorkspacePanelsProps {
   readonly offline?: boolean;
   readonly projectError: string | null;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
 
 interface WorkspaceContentProps {
@@ -132,4 +143,5 @@ interface WorkspaceContentProps {
   readonly onCloseInspection: () => void;
   readonly onCycleEvidenceVisibilityChange: (hidden: boolean) => void;
   readonly onRevealCycle: () => void;
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
 }

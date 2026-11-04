@@ -20,6 +20,7 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
       projectName={result.projectName}
       repositories={result.repositories}
       repositoryStatuses={result.repositoryStatuses}
+      runtimeId={result.runtimeId}
       workspaceScope={readSearchParam(params.workspace)}
       workspace={result.workspace}
     />
