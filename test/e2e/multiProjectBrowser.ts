@@ -1,5 +1,5 @@
-import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
-import { spawn } from 'node:child_process';
+import { access, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { spawn, type ChildProcess } from 'node:child_process';
 import { resolve } from 'node:path';
 
 import { chromium, type Browser, type Locator, type Page } from 'playwright-core';
@@ -10,6 +10,8 @@ const port = 4400 + Math.floor(Math.random() * 400);
 const url = `http://127.0.0.1:${port}`;
 const evidenceDirectory = resolve('artifacts/browser-acceptance');
 const fixtureApplication = resolve('test/e2e/next-fixture-app');
+const fixtureBuildDirectory = resolve(fixtureApplication, 'build');
+const fixtureServerMetadataPath = resolve(evidenceDirectory, 'fixture-server.json');
 const command = process.platform === 'win32' ? 'bunx.cmd' : 'bunx';
 
 type Status = 'passed' | 'failed' | 'blocked' | 'unexecuted';
@@ -29,47 +31,250 @@ type Scenario = {
   readonly id: string;
   readonly run: (page: Page) => Promise<readonly string[]>;
 };
+type FixtureServerMetadata = {
+  readonly pid: number;
+  readonly port: number;
+  readonly startedAt: string;
+};
 const startedAt = performance.now();
 const startedAtIso = new Date().toISOString();
 const results: Result[] = [];
 
 await mkdir(evidenceDirectory, { recursive: true });
-const server = spawn(command, ['next', 'start', '--port', String(port)], {
-  cwd: fixtureApplication,
-  stdio: 'pipe',
-});
 const serverOutput: string[] = [];
-server.stdout.on('data', chunk => serverOutput.push(String(chunk)));
-server.stderr.on('data', chunk => serverOutput.push(String(chunk)));
 let browser: Browser | undefined;
+let server: ChildProcess | undefined;
+let serverExit:
+  Promise<{ readonly code: number | null; readonly signal: NodeJS.Signals | null }> | undefined;
+let serverExitResult:
+  { readonly code: number | null; readonly signal: NodeJS.Signals | null } | undefined;
 async function runAcceptanceAsync(): Promise<void> {
+  let failure: unknown;
   try {
     assertScenarioRegistry();
+    await prepareFixtureBuildAsync();
+    await buildFixtureAsync();
+    await assertFixtureBuildAsync();
+    await startFixtureServerAsync();
     await waitForServerAsync();
+    await assertFixtureAssetsAsync();
     browser = await chromium.launch({ executablePath: browserPath, headless: true });
-    for (const scenario of scenarios) results.push(await runScenarioAsync(browser, scenario));
+    for (const scenario of scenarios) {
+      assertServerRunning();
+      results.push(await runScenarioAsync(browser, scenario));
+    }
     assertCompleteAcceptance();
   } catch (error) {
+    failure = error;
     recordUnexecutedScenarios(String(error));
     await writeReportAsync('failed');
     await writeFile(
       resolve(evidenceDirectory, 'multi-project-failure.txt'),
       `${String(error)}\n${serverOutput.join('')}`
     );
-    throw error;
   } finally {
     await browser?.close();
-    server.kill('SIGTERM');
-    await rm(resolve(fixtureApplication, 'build'), { force: true, recursive: true });
+    const shutdownFailure = await stopFixtureServerAsync();
+    if (shutdownFailure !== undefined) failure ??= shutdownFailure;
+    if (failure === undefined) await rm(fixtureBuildDirectory, { force: true, recursive: true });
   }
+  if (failure !== undefined) throw failure;
   await writeReportAsync('passed');
+}
+
+/*** Removes only an idle test fixture build so a live server can never lose its generated assets. */
+async function prepareFixtureBuildAsync(): Promise<void> {
+  await stopPreviousFixtureServerAsync();
+  await assertFixtureBuildIsUnusedAsync();
+  await rm(fixtureBuildDirectory, { force: true, recursive: true });
+}
+
+/*** Builds the isolated Next fixture to completion before its single owned server starts. */
+async function buildFixtureAsync(): Promise<void> {
+  try {
+    const output = await runProcessAsync(
+      command,
+      ['next', 'build', fixtureApplication, '--webpack'],
+      process.cwd()
+    );
+    await writeFile(resolve(evidenceDirectory, 'fixture-build.log'), output);
+  } catch (error) {
+    await writeFile(resolve(evidenceDirectory, 'fixture-build-failure.txt'), String(error));
+    throw error;
+  }
+}
+
+/*** Verifies the production build has the files required for Next to serve application assets. */
+async function assertFixtureBuildAsync(): Promise<void> {
+  await Promise.all([
+    access(resolve(fixtureBuildDirectory, 'BUILD_ID')),
+    access(resolve(fixtureBuildDirectory, 'static')),
+  ]);
+}
+
+/*** Starts exactly one detached process group so the runner can also terminate its Next children. */
+async function startFixtureServerAsync(): Promise<void> {
+  const fixtureServer = spawn(command, ['next', 'start', '--port', String(port)], {
+    cwd: fixtureApplication,
+    detached: process.platform !== 'win32',
+    stdio: 'pipe',
+  });
+  server = fixtureServer;
+  fixtureServer.stdout?.on('data', chunk => serverOutput.push(String(chunk)));
+  fixtureServer.stderr?.on('data', chunk => serverOutput.push(String(chunk)));
+  serverExit = new Promise(resolve => {
+    fixtureServer.once('exit', (code, signal) => {
+      serverExitResult = { code, signal };
+      resolve(serverExitResult);
+    });
+  });
+  if (fixtureServer.pid === undefined)
+    throw new Error('Fixture server did not expose a process identifier.');
+  const metadata: FixtureServerMetadata = {
+    pid: fixtureServer.pid,
+    port,
+    startedAt: new Date().toISOString(),
+  };
+  await writeFile(fixtureServerMetadataPath, JSON.stringify(metadata, null, 2));
+}
+
+/*** Refuses to run beside an earlier owned fixture server and shuts down only that recorded process group. */
+async function stopPreviousFixtureServerAsync(): Promise<void> {
+  const metadata = await readFixtureServerMetadataAsync();
+  if (metadata === undefined || !isProcessRunning(metadata.pid)) return;
+  await assertOwnedFixtureServerAsync(metadata);
+  terminateProcessGroup(metadata.pid, 'SIGTERM');
+  if (!(await waitForProcessExitAsync(metadata.pid)))
+    throw new Error(`Previous fixture server ${metadata.pid} did not exit after SIGTERM.`);
+}
+
+/*** Verifies persisted ownership before signalling a process recorded by an earlier acceptance run. */
+async function assertOwnedFixtureServerAsync(metadata: FixtureServerMetadata): Promise<void> {
+  const commandLine = await runProcessAsync(
+    'ps',
+    ['-p', String(metadata.pid), '-o', 'command='],
+    process.cwd()
+  );
+  assert(
+    commandLine.includes('next start') && commandLine.includes(`--port ${metadata.port}`),
+    `Recorded fixture-server process ${metadata.pid} is not an owned Next fixture server.`
+  );
+}
+
+/*** Detects processes holding files in the fixture build before allowing cleanup to proceed. */
+async function assertFixtureBuildIsUnusedAsync(): Promise<void> {
+  try {
+    await access(fixtureBuildDirectory);
+  } catch {
+    return;
+  }
+  const users = await runProcessAsync(
+    'lsof',
+    ['-Fn', '+D', fixtureBuildDirectory],
+    process.cwd(),
+    [0, 1]
+  );
+  if (users.trim() !== '') throw new Error(`Fixture build directory is still in use:\n${users}`);
+}
+
+/*** Captures command output so build and lifecycle failures remain inspectable in acceptance artifacts. */
+function runProcessAsync(
+  executable: string,
+  arguments_: readonly string[],
+  cwd: string,
+  acceptedExitCodes: readonly number[] = [0]
+): Promise<string> {
+  return new Promise((resolvePromise, reject) => {
+    const child = spawn(executable, arguments_, { cwd, stdio: 'pipe' });
+    const output: string[] = [];
+    child.stdout.on('data', chunk => output.push(String(chunk)));
+    child.stderr.on('data', chunk => output.push(String(chunk)));
+    child.once('error', reject);
+    child.once('exit', code => {
+      const text = output.join('');
+      if (code !== null && acceptedExitCodes.includes(code)) resolvePromise(text);
+      else
+        reject(
+          new Error(`${executable} ${arguments_.join(' ')} exited with ${String(code)}.\n${text}`)
+        );
+    });
+  });
+}
+
+/*** Reads persistent ownership metadata without treating an absent first-run file as a failure. */
+async function readFixtureServerMetadataAsync(): Promise<FixtureServerMetadata | undefined> {
+  try {
+    return JSON.parse(await readFile(fixtureServerMetadataPath, 'utf8')) as FixtureServerMetadata;
+  } catch (error) {
+    if (error instanceof Error && 'code' in error && error.code === 'ENOENT') return undefined;
+    throw error;
+  }
+}
+
+/*** Tests process liveness without signalling or modifying an unknown process. */
+function isProcessRunning(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/*** Stops an owned process group on POSIX so `bunx` cannot leave its Next child behind. */
+function terminateProcessGroup(pid: number, signal: NodeJS.Signals): void {
+  if (process.platform === 'win32') process.kill(pid, signal);
+  else process.kill(-pid, signal);
+}
+
+/*** Waits for confirmed process exit using bounded lifecycle polling rather than a fixed delay. */
+async function waitForProcessExitAsync(pid: number): Promise<boolean> {
+  const deadline = performance.now() + 5_000;
+  while (isProcessRunning(pid) && performance.now() < deadline) await Bun.sleep(50);
+  return !isProcessRunning(pid);
+}
+
+/*** Stops this runner's server and retains generated output when its shutdown cannot be confirmed. */
+async function stopFixtureServerAsync(): Promise<unknown> {
+  if (server === undefined || server.pid === undefined) return undefined;
+  try {
+    if (serverExitResult === undefined) {
+      terminateProcessGroup(server.pid, 'SIGTERM');
+      if (!(await waitForProcessExitAsync(server.pid))) {
+        terminateProcessGroup(server.pid, 'SIGKILL');
+        if (!(await waitForProcessExitAsync(server.pid)))
+          throw new Error(`Fixture server ${server.pid} did not exit after SIGKILL.`);
+      }
+    }
+    await serverExit;
+    await rm(fixtureServerMetadataPath, { force: true });
+    return undefined;
+  } catch (error) {
+    await writeFile(
+      resolve(evidenceDirectory, 'fixture-shutdown-failure.txt'),
+      `${String(error)}\n${serverOutput.join('')}`
+    );
+    return error;
+  }
+}
+
+/*** Rejects scenarios after an unexpected fixture-server exit instead of accepting stale browser state. */
+function assertServerRunning(): void {
+  if (serverExitResult !== undefined)
+    throw new Error(
+      `Fixture server exited unexpectedly: code=${String(serverExitResult.code)} signal=${String(serverExitResult.signal)}.`
+    );
 }
 
 /*** Executes every scenario in a fresh context so no browser storage or selection leaks across them. */
 async function runScenarioAsync(browser: Browser, scenario: Scenario): Promise<Result> {
   const started = performance.now();
   const startedAt = new Date().toISOString();
-  const diagnostics: BrowserDiagnostics = { consoleErrors: [], outboundRequests: [] };
+  const diagnostics: BrowserDiagnostics = {
+    consoleErrors: [],
+    failedResources: [],
+    outboundRequests: [],
+  };
   let context: Awaited<ReturnType<Browser['newContext']>> | undefined;
   let artifacts: readonly string[] = [];
   try {
@@ -84,6 +289,10 @@ async function runScenarioAsync(browser: Browser, scenario: Scenario): Promise<R
     assert(
       diagnostics.consoleErrors.length === 0,
       `Browser console errors: ${diagnostics.consoleErrors.join('; ')}`
+    );
+    assert(
+      diagnostics.failedResources.length === 0,
+      `Browser resource failures: ${diagnostics.failedResources.join('; ')}`
     );
     assert(
       diagnostics.outboundRequests.length === 0,
@@ -518,7 +727,7 @@ function recordUnexecutedScenarios(summary: string): void {
         new Date().toISOString(),
         'unexecuted',
         [],
-        { consoleErrors: [], outboundRequests: [] },
+        { consoleErrors: [], failedResources: [], outboundRequests: [] },
         summary
       )
     );
@@ -528,12 +737,26 @@ await runAcceptanceAsync();
 
 /*** Captures console and network diagnostics for every isolated scenario. */
 function collectDiagnostics(page: Page): BrowserDiagnostics {
-  const diagnostics: BrowserDiagnostics = { consoleErrors: [], outboundRequests: [] };
+  const diagnostics: BrowserDiagnostics = {
+    consoleErrors: [],
+    failedResources: [],
+    outboundRequests: [],
+  };
   page.on('console', message => {
-    if (message.type() === 'error' && !message.text().includes('status of 404'))
-      diagnostics.consoleErrors.push(message.text());
+    if (message.type() === 'error') diagnostics.consoleErrors.push(message.text());
   });
   page.on('pageerror', error => diagnostics.consoleErrors.push(error.message));
+  page.on('response', response => {
+    if (response.url().startsWith(url) && response.status() >= 400)
+      diagnostics.failedResources.push(
+        `${response.status()} ${response.request().resourceType()} ${response.url()}`
+      );
+  });
+  page.on('requestfailed', request =>
+    diagnostics.failedResources.push(
+      `${request.resourceType()} ${request.url()} ${request.failure()?.errorText ?? 'failed'}`
+    )
+  );
   page.on('request', request => {
     if (!request.url().startsWith(url))
       diagnostics.outboundRequests.push(`${request.method()} ${request.url()}`);
@@ -543,6 +766,7 @@ function collectDiagnostics(page: Page): BrowserDiagnostics {
 /*** Waits for the fixture server without browser timing sleeps. */
 async function waitForServerAsync(): Promise<void> {
   for (const _attempt of Array.from({ length: 80 })) {
+    assertServerRunning();
     try {
       if ((await fetch(url)).ok) return;
     } catch {
@@ -552,7 +776,27 @@ async function waitForServerAsync(): Promise<void> {
   }
   throw new Error('Timed out waiting for the fixture application.');
 }
+
+/*** Fetches every initial Next script and stylesheet before the browser matrix starts. */
+async function assertFixtureAssetsAsync(): Promise<void> {
+  const response = await fetch(url);
+  assert(response.ok, `Fixture root returned ${response.status}.`);
+  const document = await response.text();
+  const assets = [...document.matchAll(/(?:src|href)="(\/_next\/[^"?]+)/gu)].map(match => match[1]);
+  assert(assets.length > 0, 'Fixture root did not reference any generated Next assets.');
+  await Promise.all(
+    assets.map(async asset => {
+      const assetResponse = await fetch(`${url}${asset}`);
+      assert(assetResponse.ok, `Fixture asset ${asset} returned ${assetResponse.status}.`);
+      assert(
+        (await assetResponse.arrayBuffer()).byteLength > 0,
+        `Fixture asset ${asset} was empty.`
+      );
+    })
+  );
+}
 interface BrowserDiagnostics {
   readonly consoleErrors: string[];
+  readonly failedResources: string[];
   readonly outboundRequests: string[];
 }
