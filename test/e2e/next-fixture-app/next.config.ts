@@ -11,6 +11,7 @@ const aliases = {
 const nextConfig: NextConfig = {
   agentRules: false,
   distDir: 'build',
+  env: { ATLAS_FIXTURE_ROOT: resolve(root, 'test/fixtures/workspace-multi') },
   experimental: { externalDir: true },
   outputFileTracingRoot: root,
   turbopack: { root, resolveAlias: aliases },

@@ -46,6 +46,12 @@ describe('[workspace repository runtime]', () => {
     const initial = await runtime.loadAsync({ repositories, source: 'owner-a,owner-b' });
     assert.equal(initial.workspace.ok, true);
     if (!initial.workspace.ok) return;
+    assert.deepEqual(
+      initial.workspace.value.evaluation.cyclicPackages.map(cycle =>
+        cycle.projects?.map(project => project.id)
+      ),
+      [['A', 'B'], ['C']]
+    );
     assert.equal(JSON.stringify(initial).includes('workspace-multi'), false);
     assert.equal(
       initial.repositoryStatuses.find(status => status.repository.id === 'D')?.status,

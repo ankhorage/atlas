@@ -13,7 +13,10 @@ import {
   isGitHubRepositorySource,
 } from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
-import { createWorkspaceRepositoryRuntime } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
+import {
+  createWorkspaceRepositoryRuntime,
+  type WorkspaceRepositoryRuntime,
+} from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
@@ -50,7 +53,8 @@ export async function loadWorkspaceProjectSourceAsync(
   ) => Promise<ResolvedProjectSource> = loadProjectSourceAsync,
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync = discoverWorkspaceGitHubSourcesAsync,
   signal?: AbortSignal,
-  resolveRevisionAsync: GitHubRevisionResolver = resolveGitHubRevisionAsync
+  resolveRevisionAsync: GitHubRevisionResolver = resolveGitHubRevisionAsync,
+  runtime?: WorkspaceRepositoryRuntime
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(sourceValue, process.env.ATLAS_PROJECT_PATH);
 
@@ -77,6 +81,7 @@ export async function loadWorkspaceProjectSourceAsync(
       materializeAsync,
       discoverAsync,
       resolveRevisionAsync,
+      runtime,
       signal
     );
   } catch (error) {
@@ -120,17 +125,19 @@ async function loadGitHubWorkspaceAsync(
   materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync,
   resolveRevisionAsync: GitHubRevisionResolver,
+  runtime: WorkspaceRepositoryRuntime | undefined,
   signal?: AbortSignal
 ): Promise<WorkspaceProjectSourceResult> {
   const { source, excludedRepositoryIds } = parseGitHubWorkspaceSource(sourceValue);
   const discovery = await discoverAsync(source, excludedRepositoryIds);
-  const runtime =
-    materializeAsync === loadProjectSourceAsync &&
+  const workspaceRuntime =
+    runtime ??
+    (materializeAsync === loadProjectSourceAsync &&
     discoverAsync === discoverWorkspaceGitHubSourcesAsync &&
     resolveRevisionAsync === resolveGitHubRevisionAsync
       ? defaultWorkspaceRepositoryRuntime
-      : createWorkspaceRepositoryRuntime({ materializeAsync, resolveRevisionAsync });
-  const result = await runtime.loadAsync(
+      : createWorkspaceRepositoryRuntime({ materializeAsync, resolveRevisionAsync }));
+  const result = await workspaceRuntime.loadAsync(
     { repositories: discovery.selectedRepositories, source: sourceValue },
     signal
   );
