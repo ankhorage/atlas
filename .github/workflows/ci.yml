@@ -128,6 +128,20 @@ jobs:
           ATLAS_OFFLINE_REPORT=compound-selection.html ATLAS_PROJECT_NAME=compound-selection ATLAS_REQUIRE_COMPOUND_NODES=true bun run test:offline-browser
           rm -f compound-selection.html
 
+      - name: Verify multi-project browser acceptance
+        run: |
+          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$ATLAS_CHROME"
+          bun run test:multi-project-browser
+
+      - name: Retain multi-project browser acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: multi-project-browser-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/browser-acceptance/
+          if-no-files-found: warn
+
       - name: Run typecheck
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.typecheck ? 0 : 1)"; then

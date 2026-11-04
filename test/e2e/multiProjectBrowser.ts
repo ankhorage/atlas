@@ -408,10 +408,35 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'partial-repository-failure',
-    'Keeps successful projects visible beside a failed repository.',
+    'Retries only the failed repository while retaining graph state and successful projects.',
     async page => {
       await openWorkspaceAsync(page);
       await page.getByText('owner-b/failed: failed', { exact: true }).waitFor();
+      await page.getByText('owner-a', { exact: true }).waitFor();
+      await page.getByText('owner-b', { exact: true }).waitFor();
+      await page.getByRole('button', { name: 'Expand' }).first().click();
+      await page.getByText('catalog', { exact: true }).click();
+      const selectedCatalogs = await page.getByText('catalog', { exact: true }).count();
+      const zoom = await page.getByLabel('Zoom').inputValue();
+      const location = page.url();
+      const retryRequest = page.waitForRequest(request => {
+        if (!request.url().endsWith('/api/workspace/retry') || request.method() !== 'POST')
+          return false;
+        return JSON.parse(request.postData() ?? '{}').repositoryId === 'owner-b-failed';
+      });
+      await page.getByRole('button', { name: 'Retry' }).click();
+      await retryRequest;
+      await page.getByText('owner-b/failed: failed', { exact: true }).waitFor({ state: 'hidden' });
+      assert(page.url() === location, 'Retry reloaded or navigated the page.');
+      assert(
+        (await page.getByText('catalog', { exact: true }).count()) === selectedCatalogs,
+        'Retry removed the existing tree selection.'
+      );
+      assert((await page.getByLabel('Zoom').inputValue()) === zoom, 'Retry changed the viewport.');
+      assert(
+        (await page.getByRole('button', { name: 'Retry' }).count()) === 0,
+        'Repository D did not become ready after retry.'
+      );
       return [];
     }
   ),
