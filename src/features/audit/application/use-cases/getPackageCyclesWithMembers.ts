@@ -37,9 +37,7 @@ export function getPackageCyclesWithMembers(
       projects: getCycleProjects(cycleGraph, cycle),
       edges: cycle
         .slice(0, -1)
-        .map((from, index) =>
-          cycleEdgeEvidence(cycleGraph, fileMetadata, from, cycle[index + 1])
-        ),
+        .map((from, index) => cycleEdgeEvidence(cycleGraph, fileMetadata, from, cycle[index + 1])),
     });
   }
 
@@ -50,7 +48,7 @@ export function getPackageCyclesWithMembers(
 function addPackageContainmentEdges(graph: PackageDependencyGraph): PackageDependencyGraph {
   const nodeIds = new Set(graph.nodes.map(node => node.id));
   const containmentEdges = graph.nodes.flatMap(node => {
-    const parent = node.data.parent;
+    const { parent } = node.data;
     if (parent === '' || !nodeIds.has(parent)) return [];
     const id = `${parent}->${node.id}`;
     return graph.edges.some(edge => edge.id === id)
