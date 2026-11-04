@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   validate:
@@ -22,10 +23,71 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Classify expensive acceptance
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            configurations:
+              - added|modified|deleted:
+                  - '.github/workflows/**'
+                  - 'ankh.config.json'
+                  - 'zora.web.json'
+                  - 'next.config.*'
+                  - 'tsconfig*.json'
+                  - 'package.json'
+                  - 'bun.lock'
+            jvm:
+              - added|modified|deleted:
+                  - 'bin/**'
+                  - 'src/cli/**'
+                  - 'src/features/audit/application/**'
+                  - 'src/features/audit/composition/**'
+                  - 'src/features/audit/domain/**'
+                  - 'src/features/dependency-analysis/**'
+                  - 'src/features/project-analysis/**'
+                  - 'src/features/project-source/**'
+                  - 'src/types/audit.ts'
+                  - 'src/types/cli.ts'
+                  - 'src/utils/getProjectName.ts'
+                  - 'src/utils/parseProjectPath.ts'
+                  - 'maven-plugin/**'
+                  - 'gradle-plugin/**'
+            offline_browser:
+              - added|modified|deleted:
+                  - 'bin/**'
+                  - 'src/**'
+                  - 'test/e2e/offlineWorkspace.ts'
+                  - 'examples/java/my-app/**'
+                  - 'test/fixtures/**'
+            compound_browser:
+              - added|modified|deleted:
+                  - 'bin/**'
+                  - 'src/app/**'
+                  - 'src/features/graph-view/**'
+                  - 'src/features/offline-export/**'
+                  - 'src/features/settings/**'
+                  - 'src/features/theme/**'
+                  - 'src/features/workspace/**'
+                  - 'src/i18n/**'
+                  - 'src/types/**'
+                  - 'test/e2e/compoundSelectionBrowser.ts'
+                  - 'test/e2e/compoundSelectionHarness.tsx'
+                  - 'test/e2e/offlineWorkspace.ts'
+                  - 'test/fixtures/typescript/compound-selection/**'
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.4.2'
+
+      - name: Restore Bun cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-1.4.2-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-1.4.2-
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -33,12 +95,16 @@ jobs:
           node-version: '24'
 
       - name: Setup Java
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+          cache: maven
+          cache-dependency-path: maven-plugin/pom.xml
 
       - name: Setup Gradle
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.10'
@@ -92,14 +158,18 @@ jobs:
           fi
 
       - name: Run tests
-        run: |
-          if node -e "const p=require('./package.json'); process.exit(p.scripts?.test ? 0 : 1)"; then
-            bun run test
-          else
-            echo "No test script found; skipping."
-          fi
+        run: bun run test:unit
+
+      - name: Run Maven adapter tests
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
+        run: bun run test:maven
+
+      - name: Run Gradle adapter tests
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
+        run: bun run test:gradle
 
       - name: Verify offline workspace in an isolated browser
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.offline_browser == 'true'
         env:
           ATLAS_PROJECT_PATH: ${{ github.workspace }}/examples/java/my-app
         run: |
@@ -117,6 +187,7 @@ jobs:
           ATLAS_ONLINE_URL=http://127.0.0.1:3000/ bun run test:offline-browser
 
       - name: Verify compound selection browser acceptance
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.compound_browser == 'true'
         env:
           ATLAS_PROJECT_PATH: ${{ github.workspace }}/test/fixtures/typescript/compound-selection
           ATLAS_PROJECT_NAME: compound-selection
