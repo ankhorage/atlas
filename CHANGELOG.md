@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.0
+
+### Minor Changes
+
+- 65f6156: Add multi-repository GitHub workspaces for owner sources.
+
 ## 0.15.2
 
 ### Patch Changes
