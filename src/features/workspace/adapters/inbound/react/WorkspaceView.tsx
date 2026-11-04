@@ -149,7 +149,6 @@ function WorkspaceBody({
         minHeight: 0,
         minWidth: 0,
         overflow: 'hidden',
-        position: 'relative',
         zIndex: 0,
       }}
     >
