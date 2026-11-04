@@ -18,6 +18,8 @@ export default createKnipConfig({
     'examples/**',
     'test/fixtures/typescript/compound-selection/src/**/*.ts',
     'test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts',
+    // Workspace repository-runtime specs likewise analyze these fixture projects from disk.
+    'test/fixtures/workspace-multi/**/*.ts',
   ],
   ignoreBinaries: ['mvn', 'gradle'],
   // Infra resolves the manifest-selected provider packages through its published dynamic resolver.

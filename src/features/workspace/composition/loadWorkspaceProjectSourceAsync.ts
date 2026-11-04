@@ -13,13 +13,9 @@ import {
   isGitHubRepositorySource,
 } from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
-import {
-  loadMultiProjectWorkspaceAsync,
-  type MultiProjectWorkspaceProject,
-} from '@/features/workspace/composition/loadMultiProjectWorkspaceAsync';
+import { createWorkspaceRepositoryRuntime } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
-import { settleBoundedAsync } from '@/features/workspace/utils/settleBoundedAsync';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
@@ -30,8 +26,18 @@ export interface WorkspaceProjectSourceResult {
   readonly currentSource?: string;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly runtimeId?: string;
   readonly projectName: string;
   readonly workspace: WorkspaceLoadResult;
+}
+
+/*** Retry one failed repository through the process-local runtime that owns its retained snapshots. */
+export function retryWorkspaceRepositoryAsync(
+  runtimeId: string,
+  repositoryId: string,
+  signal?: AbortSignal
+) {
+  return defaultWorkspaceRepositoryRuntime.retryAsync(runtimeId, repositoryId, signal);
 }
 
 /*** Load the configured local project or one GitHub URL supplied by the browser query. */
@@ -107,10 +113,10 @@ async function loadSingleGitHubWorkspaceAsync(
   }
 }
 
-/*** Discover, materialize, and analyze explicitly selected GitHub repositories. */
+/*** Delegate multi-project loading to the server-owned revision runtime. */
 async function loadGitHubWorkspaceAsync(
   sourceValue: string,
-  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
+  _loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
   materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync,
   resolveRevisionAsync: GitHubRevisionResolver,
@@ -118,124 +124,17 @@ async function loadGitHubWorkspaceAsync(
 ): Promise<WorkspaceProjectSourceResult> {
   const { source, excludedRepositoryIds } = parseGitHubWorkspaceSource(sourceValue);
   const discovery = await discoverAsync(source, excludedRepositoryIds);
-  const materialization = await materializeDiscoveredProjectsAsync(
-    discovery.selectedRepositories,
-    materializeAsync,
-    resolveRevisionAsync,
+  const runtime =
+    materializeAsync === loadProjectSourceAsync &&
+    discoverAsync === discoverWorkspaceGitHubSourcesAsync &&
+    resolveRevisionAsync === resolveGitHubRevisionAsync
+      ? defaultWorkspaceRepositoryRuntime
+      : createWorkspaceRepositoryRuntime({ materializeAsync, resolveRevisionAsync });
+  const result = await runtime.loadAsync(
+    { repositories: discovery.selectedRepositories, source: sourceValue },
     signal
   );
-  const { projects: resolvedProjects } = materialization;
-  try {
-    if (resolvedProjects.length === 0)
-      return {
-        currentSource: sourceValue,
-        projectName: 'GitHub workspace',
-        repositories: toRepositoryOptions(discovery),
-        repositoryStatuses: materialization.statuses,
-        workspace: {
-          ok: false,
-          error: 'No selected GitHub repositories could be materialized.',
-        },
-      };
-    const loaded = await loadDiscoveredWorkspaceAsync(
-      resolvedProjects,
-      loadDependencyGraphAsync,
-      signal
-    );
-    return {
-      currentSource: sourceValue,
-      repositories: toRepositoryOptions(discovery),
-      repositoryStatuses: [...materialization.statuses, ...loaded.repositoryStatuses],
-      projectName:
-        resolvedProjects.length === 1
-          ? resolvedProjects[0].resolved.projectName
-          : 'GitHub workspace',
-      workspace: loaded.workspace,
-    };
-  } finally {
-    await Promise.all(resolvedProjects.map(project => project.resolved.cleanupAsync()));
-  }
-}
-
-/*** Materialize only selected repositories after cheap owner discovery has completed. */
-async function materializeDiscoveredProjectsAsync(
-  repositories: readonly Parameters<
-    typeof loadMultiProjectWorkspaceAsync
-  >[0][number]['repository'][],
-  materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
-  resolveRevisionAsync: GitHubRevisionResolver,
-  signal?: AbortSignal
-): Promise<MaterializedWorkspaceProjects> {
-  const outcomes = await settleBoundedAsync(
-    repositories,
-    MAX_CONCURRENT_REPOSITORY_MATERIALIZATIONS,
-    async (repository, materializationSignal) => {
-      const revision = await resolveRevisionAsync(repository.url, materializationSignal);
-      const source = parseProjectSource(normalizeGitHubRepositoryUrl(repository.url));
-      if (source.kind !== 'github')
-        throw new Error('Workspace repositories must be GitHub sources.');
-      return {
-        repository,
-        resolved: await materializeAsync(
-          { ...source, revision: revision.revision.commitSha },
-          materializationSignal
-        ),
-      };
-    },
-    signal
-  );
-  return {
-    projects: outcomes
-      .filter(
-        (outcome): outcome is PromiseFulfilledResult<MultiProjectWorkspaceProject> =>
-          outcome.status === 'fulfilled'
-      )
-      .map(outcome => outcome.value),
-    statuses: collectMaterializationStatuses(repositories, outcomes),
-  };
-}
-
-/*** Keep one failure status per selected repository without retaining provider exception details. */
-function collectMaterializationStatuses(
-  repositories: readonly MultiProjectWorkspaceProject['repository'][],
-  outcomes: readonly PromiseSettledResult<MultiProjectWorkspaceProject>[]
-): readonly WorkspaceRepositoryLoadStatus[] {
-  const statuses: WorkspaceRepositoryLoadStatus[] = [];
-  const repositoryIterator = repositories.values();
-  for (const outcome of outcomes) {
-    const nextRepository = repositoryIterator.next();
-    if (nextRepository.done) break;
-    if (outcome.status === 'rejected') {
-      statuses.push(
-        createRepositoryMaterializationStatus(
-          nextRepository.value,
-          isCancellation(outcome.reason) ? 'cancelled' : 'failed'
-        )
-      );
-    }
-  }
-  return statuses;
-}
-
-/*** Keep the existing single-project loader as the compatibility path for one repository. */
-function loadDiscoveredWorkspaceAsync(
-  projects: readonly MultiProjectWorkspaceProject[],
-  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
-  signal?: AbortSignal
-): Promise<DiscoveredWorkspaceLoad> {
-  if (projects.length > 1) return loadMultiProjectWorkspaceAsync(projects, signal);
-  const [project] = projects;
-  return loadWorkspaceAsync(project.resolved.rootPath, loadDependencyGraphAsync).then(
-    workspace => ({
-      workspace,
-      repositoryStatuses: [
-        createRepositoryMaterializationStatus(
-          project.repository,
-          workspace.ok ? 'successful' : 'failed'
-        ),
-      ],
-    })
-  );
+  return { ...result, repositories: toRepositoryOptions(discovery) };
 }
 
 /*** Preserve picker state from discovery while keeping the runtime status model separate. */
@@ -246,32 +145,6 @@ function toRepositoryOptions(
     ...repository,
     selected: discovery.selectedRepositories.some(selected => selected.id === repository.id),
   }));
-}
-
-/*** Avoid rendering provider exception text because it may contain transient paths or credentials. */
-function createRepositoryMaterializationStatus(
-  repository: MultiProjectWorkspaceProject['repository'],
-  status: WorkspaceRepositoryLoadStatus['status']
-): WorkspaceRepositoryLoadStatus {
-  return {
-    repository: { id: repository.id, name: repository.name, owner: repository.owner },
-    status,
-    ...(status === 'successful'
-      ? {}
-      : {
-          description:
-            status === 'cancelled'
-              ? 'Loading was cancelled.'
-              : 'Repository materialization failed.',
-        }),
-  };
-}
-
-/*** Match the bounded-operation cancellation semantics without treating an intentional abort as a failure. */
-function isCancellation(error: unknown): boolean {
-  return error instanceof DOMException
-    ? error.name === 'AbortError'
-    : error instanceof Error && error.name === 'AbortError';
 }
 
 /*** Decode persisted exclusion identities without changing the established source query format. */
@@ -299,16 +172,6 @@ export interface WorkspaceRepositoryOption {
   readonly url: string;
 }
 
-interface MaterializedWorkspaceProjects {
-  readonly projects: readonly MultiProjectWorkspaceProject[];
-  readonly statuses: readonly WorkspaceRepositoryLoadStatus[];
-}
-
-interface DiscoveredWorkspaceLoad {
-  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[];
-  readonly workspace: WorkspaceLoadResult;
-}
-
 type GitHubRevisionResolver = (
   url: string,
   signal?: AbortSignal
@@ -322,4 +185,7 @@ function resolveGitHubRevisionAsync(
   return resolveGitHubRepositoryRevisionAsync({ url, signal });
 }
 
-const MAX_CONCURRENT_REPOSITORY_MATERIALIZATIONS = 4;
+/*** Keep the default cache process-local; another server instance transparently starts a fresh runtime. */
+const defaultWorkspaceRepositoryRuntime = createWorkspaceRepositoryRuntime({
+  resolveRevisionAsync: resolveGitHubRevisionAsync,
+});

@@ -24,7 +24,7 @@ export type WorkspaceLoadResult =
 export interface WorkspaceRepositoryLoadStatus {
   readonly description?: string;
   readonly repository: WorkspaceRepositoryIdentity;
-  readonly status: 'cancelled' | 'failed' | 'successful';
+  readonly status: 'cancelled' | 'failed' | 'loading' | 'successful';
 }
 
 /*** Keeps repository presentation identity independent from checkout paths and provider response details. */
