@@ -602,7 +602,6 @@ const scenarios: readonly Scenario[] = [
     const reveal = page.getByRole('button', { name: 'Reveal complete cycle' });
     await reveal.waitFor();
     await reveal.click();
-    await reveal.waitFor({ state: 'hidden' });
     await page.screenshot({
       path: resolve(evidenceDirectory, 'cross-project-cycle.png'),
       fullPage: true,
