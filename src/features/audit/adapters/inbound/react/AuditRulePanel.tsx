@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { AuditRuleList } from '@/features/audit/adapters/inbound/react/AuditRuleList';
+import { RuleDagExplorer } from '@/features/rule-explorer/adapters/inbound/react/RuleDagExplorer';
 import type { Audit } from '@/types/audit';
 import type { CycleInspection, CycleSelection } from '@/types/auditVisualization';
 
@@ -13,12 +14,15 @@ export function AuditRulePanel({
   onCycleInspectionChange,
 }: AuditRulePanelProps) {
   return (
-    <AuditRuleList
-      evaluation={evaluation}
-      cycleSelection={cycleSelection}
-      inspectedCycleId={inspectedCycleId}
-      onCycleInspectionChange={onCycleInspectionChange}
-    />
+    <>
+      <RuleDagExplorer evaluation={evaluation.genericRules} />
+      <AuditRuleList
+        evaluation={evaluation}
+        cycleSelection={cycleSelection}
+        inspectedCycleId={inspectedCycleId}
+        onCycleInspectionChange={onCycleInspectionChange}
+      />
+    </>
   );
 }
 

@@ -62,7 +62,12 @@ function sourceRuleCapabilities(graph: SourceGraph): readonly string[] {
 
 /*** Create an empty canonical generic Rules result for explicitly disabled audit rules. */
 function emptyRuleEvaluation(): RuleEvaluationResult {
-  return { diagnostics: [], findings: [] };
+  return {
+    diagnostics: [],
+    findings: [],
+    plan: { diagnostics: [], nodes: [], rootRuleIds: [] },
+    results: [],
+  };
 }
 
 /*** Return the effective mode for one known Atlas audit rule. */

@@ -54,7 +54,12 @@ describe('[AuditRulePanel]', () => {
 
 const evaluation: Audit['evaluation'] = {
   architecture: { candidates: [] },
-  genericRules: { diagnostics: [], findings: [] },
+  genericRules: {
+    diagnostics: [],
+    findings: [],
+    plan: { diagnostics: [], nodes: [], rootRuleIds: [] },
+    results: [],
+  },
   cyclicPackages: [
     {
       packages: ['app.a', 'app.b', 'app.a'],
@@ -102,7 +107,12 @@ const architectureEvaluation: Audit['evaluation'] = {
       },
     ],
   },
-  genericRules: { diagnostics: [], findings: [] },
+  genericRules: {
+    diagnostics: [],
+    findings: [],
+    plan: { diagnostics: [], nodes: [], rootRuleIds: [] },
+    results: [],
+  },
   cyclicPackages: [],
   rules: [],
 };

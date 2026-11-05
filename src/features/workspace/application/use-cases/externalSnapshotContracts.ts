@@ -218,7 +218,77 @@ function isRuleEvaluation(value: unknown): boolean {
   return (
     validation.isRecord(value) &&
     validation.isArrayOf(value.diagnostics, isRuleDiagnostic) &&
-    validation.isArrayOf(value.findings, isRuleFinding)
+    validation.isArrayOf(value.findings, isRuleFinding) &&
+    isRuleEvaluationPlan(value.plan) &&
+    validation.isArrayOf(value.results, isRuleResult)
+  );
+}
+
+/*** Validates the evaluator-owned serializable plan that Atlas projects into the Rules DAG. */
+function isRuleEvaluationPlan(value: unknown): boolean {
+  return (
+    validation.isRecord(value) &&
+    validation.isArrayOf(value.diagnostics, isRuleDiagnostic) &&
+    validation.isArrayOf(value.nodes, isRulePlanNode) &&
+    validation.isArrayOf(value.rootRuleIds, validation.isString)
+  );
+}
+
+/*** Validates one scoped plan instance without closing provider-owned rule or facet identities. */
+function isRulePlanNode(value: unknown): boolean {
+  return (
+    validation.isRecord(value) &&
+    typeof value.id === 'string' &&
+    validation.isArrayOf(value.dependencyRuleIds, validation.isString) &&
+    validation.isArrayOf(value.facets, isRuleFacet) &&
+    isRuleIdentity(value.rule) &&
+    isRuleScope(value.scope)
+  );
+}
+
+/*** Validates one versioned facet that is safe to present as a controlled explorer filter. */
+function isRuleFacet(value: unknown): boolean {
+  return (
+    validation.isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.value === 'string' &&
+    typeof value.version === 'string'
+  );
+}
+
+/*** Validates one evaluated scoped result and preserves optional legacy provenance. */
+function isRuleResult(value: unknown): boolean {
+  return (
+    validation.isRecord(value) &&
+    validation.isArrayOf(value.diagnostics, isRuleResultDiagnostic) &&
+    validation.isOptional(value.execution, validation.isString) &&
+    validation.isArrayOf(value.findings, isRuleFinding) &&
+    isRuleIdentity(value.rule) &&
+    isRuleScope(value.scope) &&
+    typeof value.status === 'string'
+  );
+}
+
+/*** Validates evaluator diagnostics attached to one concrete scoped rule result. */
+function isRuleResultDiagnostic(value: unknown): boolean {
+  return (
+    validation.isRecord(value) &&
+    typeof value.code === 'string' &&
+    typeof value.message === 'string'
+  );
+}
+
+/*** Validates a provider-owned versioned rule identity. */
+function isRuleIdentity(value: unknown): boolean {
+  return (
+    validation.isRecord(value) && typeof value.id === 'string' && typeof value.version === 'string'
+  );
+}
+
+/*** Validates the semantic scope that differentiates otherwise identical rule IDs. */
+function isRuleScope(value: unknown): boolean {
+  return (
+    validation.isRecord(value) && typeof value.id === 'string' && typeof value.kind === 'string'
   );
 }
 

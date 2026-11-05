@@ -68,5 +68,11 @@ function mergeRuleEvaluation(
   return {
     diagnostics: [...base.diagnostics, ...architecture.result.diagnostics],
     findings: [...base.findings, ...architecture.result.findings],
+    plan: {
+      diagnostics: [...base.plan.diagnostics, ...architecture.result.plan.diagnostics],
+      nodes: [...base.plan.nodes, ...architecture.result.plan.nodes],
+      rootRuleIds: [...base.plan.rootRuleIds, ...architecture.result.plan.rootRuleIds],
+    },
+    results: [...base.results, ...architecture.result.results],
   };
 }
