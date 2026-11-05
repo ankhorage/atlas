@@ -123,14 +123,24 @@ const passedRule: AuditRuleResult = {
 
 const failedEvaluation: Audit['evaluation'] = {
   architecture: { candidates: [] },
-  genericRules: { diagnostics: [], findings: [] },
+  genericRules: {
+    diagnostics: [],
+    findings: [],
+    plan: { diagnostics: [], nodes: [], rootRuleIds: [] },
+    results: [],
+  },
   cyclicPackages: cycles,
   rules: [failedRule],
 };
 
 const passedEvaluation: Audit['evaluation'] = {
   architecture: { candidates: [] },
-  genericRules: { diagnostics: [], findings: [] },
+  genericRules: {
+    diagnostics: [],
+    findings: [],
+    plan: { diagnostics: [], nodes: [], rootRuleIds: [] },
+    results: [],
+  },
   cyclicPackages: [],
   rules: [passedRule],
 };

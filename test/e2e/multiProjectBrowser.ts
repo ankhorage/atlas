@@ -581,13 +581,27 @@ const scenarios: readonly Scenario[] = [
     const rules = page.getByRole('tab', { name: 'Rules' });
     await assertTopmostControlAsync(rules, 'Rules sidebar tab');
     await rules.click();
-    await page.getByText(/cycle/i).first().waitFor();
+    await page.getByText('Cyclic Dependencies', { exact: true }).waitFor();
+    await page.getByText('Cross-Project Cycles (1)', { exact: true }).waitFor();
+    await page.getByText('workspace (1)', { exact: true }).waitFor();
+    const crossProjectCycle = page.getByTestId('cycle-row-0');
+    const intraProjectCycle = page.getByTestId('cycle-row-1');
+    await intraProjectCycle.scrollIntoViewIfNeeded();
+    await crossProjectCycle.scrollIntoViewIfNeeded();
+    await assertTopmostControlAsync(intraProjectCycle, 'Intra-project cycle row');
+    await assertTopmostControlAsync(crossProjectCycle, 'Cross-project cycle row');
     return [];
   }),
   scenario('cycle-evidence-reveal', 'Reveals hidden cycle evidence temporarily.', async page => {
     await openWorkspaceAsync(page);
     await page.getByRole('tab', { name: 'Rules' }).click();
-    await page.getByText(/cycle/i).first().click();
+    const crossProjectCycle = page.getByTestId('cycle-row-0');
+    await crossProjectCycle.scrollIntoViewIfNeeded();
+    await assertTopmostControlAsync(crossProjectCycle, 'Cross-project cycle row');
+    await crossProjectCycle.click();
+    const reveal = page.getByRole('button', { name: 'Reveal complete cycle' });
+    await reveal.waitFor();
+    await reveal.click();
     await page.screenshot({
       path: resolve(evidenceDirectory, 'cross-project-cycle.png'),
       fullPage: true,

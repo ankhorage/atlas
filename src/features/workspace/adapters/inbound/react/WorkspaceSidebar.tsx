@@ -136,7 +136,10 @@ function WorkspaceRulesPanel(props: WorkspaceSidebarProps) {
 
 /*** Report whether the Rules tool has actual rule findings to inspect. */
 function hasRulesContent(evaluation: Audit['evaluation'] | null): boolean {
-  return evaluation !== null && countRuleFindings(evaluation) > 0;
+  return (
+    evaluation !== null &&
+    (countRuleFindings(evaluation) > 0 || evaluation.genericRules.plan.nodes.length > 0)
+  );
 }
 
 /*** Count canonical and specialized findings represented by the workspace Rules tool. */

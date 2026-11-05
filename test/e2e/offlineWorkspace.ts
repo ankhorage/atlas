@@ -155,7 +155,7 @@ async function assertRuleEvidence(page: Page): Promise<void> {
   const ruleTab = page.getByRole('tab', { name: /Rules/ });
   await ruleTab.click();
   await page
-    .getByText(/cyclic/i)
+    .getByText('Cyclic Dependencies', { exact: true })
     .waitFor({ timeout: 5000 })
     .catch(async () => {
       throw new Error(`Audit rule panel did not render: ${await page.locator('body').innerText()}`);

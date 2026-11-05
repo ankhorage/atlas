@@ -150,7 +150,12 @@ function createWorkspace(tree: readonly ProjectTreeNode[]): WorkspaceLoadResult 
       evaluation: {
         architecture: { candidates: [] },
         cyclicPackages: [],
-        genericRules: { diagnostics: [], findings: [] },
+        genericRules: {
+          diagnostics: [],
+          findings: [],
+          plan: { diagnostics: [], nodes: [], rootRuleIds: [] },
+          results: [],
+        },
         rules: [],
       },
     },
