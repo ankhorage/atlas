@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.16.0",
+      "value": "v0.17.0",
       "color": "cb3837"
     },
     {
@@ -418,6 +418,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
+        "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
         "src/types/audit.ts",
         "src/types/auditVisualization.ts"
       ],
@@ -1422,6 +1423,44 @@
       ],
       "exports": [
         "resolveProjectTreeGraphNodeId"
+      ]
+    },
+    {
+      "path": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/rule-explorer/domain/projectRuleDag.ts"
+      ],
+      "exports": [
+        "createRuleDagElements"
+      ]
+    },
+    {
+      "path": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        ".ankh/zora/web/components/graph-view/index.d.ts",
+        ".ankh/zora/web/components/text/index.d.ts",
+        ".ankh/zora/web/components/tree-view/index.d.ts",
+        ".ankh/zora/web/components/view/index.d.ts",
+        "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
+        "src/features/rule-explorer/domain/projectRuleDag.ts"
+      ],
+      "exports": [
+        "RuleDagExplorer"
+      ]
+    },
+    {
+      "path": "src/features/rule-explorer/domain/projectRuleDag.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "formatRuleDagStatus",
+        "projectRuleDag",
+        "RuleDagNodeData",
+        "RuleDagProjection",
+        "RuleDagView",
+        "RuleFacetFilter"
       ]
     },
     {
@@ -2788,6 +2827,14 @@
       "exports": []
     },
     {
+      "path": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/rule-explorer/domain/projectRuleDag.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/settings/utils/readSettingsEnvironment.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -3637,7 +3684,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx",
-        "line": 9,
+        "line": 10,
         "column": 1
       }
     },
@@ -3956,7 +4003,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/domain/evaluateAuditRules.ts",
-        "line": 69,
+        "line": 74,
         "column": 1
       }
     },
@@ -6843,6 +6890,182 @@
       }
     },
     {
+      "name": "createRuleDagElements",
+      "description": "Adapts the canonical Rule DAG into Cytoscape elements for renderer-neutral graph consumers.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "name": "RuleDagExplorer",
+      "description": "Renders the evaluator-owned dependency and execution evidence without changing rule semantics.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "name": "RuleDagContents",
+      "description": "Renders explorer controls and shared graph/tree selection after the pure projection is complete.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 60,
+        "column": 1
+      }
+    },
+    {
+      "name": "RuleDagVisualization",
+      "description": "Renders graph and tree renderers only when the visible projection has graph content.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 100,
+        "column": 1
+      }
+    },
+    {
+      "name": "RuleDagGraph",
+      "description": "Renders the stable projected topology through the shared GraphView controller runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 118,
+        "column": 1
+      }
+    },
+    {
+      "name": "RuleFacetFilters",
+      "description": "Renders typed, provider-owned facets as controlled filters rather than inferred presentation tags.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 137,
+        "column": 1
+      }
+    },
+    {
+      "name": "toGraphViewNodes",
+      "description": "Maps stable evaluator node identities into the existing graph renderer's neutral contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 165,
+        "column": 1
+      }
+    },
+    {
+      "name": "toTreeNodes",
+      "description": "Presents scoped instances once in the tree while the graph retains shared dependency edges.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 180,
+        "column": 1
+      }
+    },
+    {
+      "name": "groupFacetsById",
+      "description": "Groups only explicitly versioned plan facets for filter controls.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 191,
+        "column": 1
+      }
+    },
+    {
+      "name": "projectRuleDag",
+      "description": "Projects the evaluator-owned scoped rule plan into a stable dependency DAG.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "name": "formatRuleDagStatus",
+      "description": "Returns the status label without fabricating a result for a plan-only rule instance.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 85,
+        "column": 1
+      }
+    },
+    {
+      "name": "matchesFacetFilters",
+      "description": "Keeps a node when every actively controlled facet category matches its provider-owned value.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 90,
+        "column": 1
+      }
+    },
+    {
+      "name": "ruleEvaluationIdentity",
+      "description": "Forms the evaluator's exact rule-and-scope identity without treating a plain rule ID as scoped.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 101,
+        "column": 1
+      }
+    },
+    {
+      "name": "scopedRuleId",
+      "description": "Forms the evaluator's scope-aware dependency lookup key without inventing a node identity.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 106,
+        "column": 1
+      }
+    },
+    {
+      "name": "groupNodeIdsByScopedRuleId",
+      "description": "Indexes visible nodes by the dependency identity the evaluator can resolve within one scope.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 111,
+        "column": 1
+      }
+    },
+    {
+      "name": "uniqueFacets",
+      "description": "Deduplicates provider-owned facet descriptors while retaining their declared versions.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "line": 125,
+        "column": 1
+      }
+    },
+    {
       "name": "SettingsPanel",
       "description": "Renders persistent graph controls from generated ZORA form and layout elements.",
       "see": [],
@@ -7707,7 +7930,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 143,
+        "line": 146,
         "column": 1
       }
     },
@@ -8130,13 +8353,90 @@
       }
     },
     {
+      "name": "isRuleEvaluationPlan",
+      "description": "Validates the evaluator-owned serializable plan that Atlas projects into the Rules DAG.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 228,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRulePlanNode",
+      "description": "Validates one scoped plan instance without closing provider-owned rule or facet identities.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 238,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleFacet",
+      "description": "Validates one versioned facet that is safe to present as a controlled explorer filter.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 250,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleResult",
+      "description": "Validates one evaluated scoped result and preserves optional legacy provenance.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 260,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleResultDiagnostic",
+      "description": "Validates evaluator diagnostics attached to one concrete scoped rule result.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 273,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleIdentity",
+      "description": "Validates a provider-owned versioned rule identity.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 282,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuleScope",
+      "description": "Validates the semantic scope that differentiates otherwise identical rule IDs.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 289,
+        "column": 1
+      }
+    },
+    {
       "name": "isRuleSourceLocation",
       "description": "Validates optional source coordinates attached to a Rules finding.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 226,
+        "line": 296,
         "column": 1
       }
     },
@@ -8147,7 +8447,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 238,
+        "line": 308,
         "column": 1
       }
     },
@@ -10439,6 +10739,11 @@
         "sourcePath": "test/src/features/project-tree/useProjectTreeExpansion.spec.tsx"
       },
       {
+        "fromPath": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toPath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts",
         "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "sourcePath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts"
@@ -10961,6 +11266,11 @@
       {
         "fromPath": "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
+        "sourcePath": "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx"
+      },
+      {
+        "fromPath": "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx",
+        "toPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
         "sourcePath": "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx"
       },
       {
@@ -11507,6 +11817,41 @@
         "fromPath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "toPath": "src/types/projectTree.ts",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
+        "toPath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toPath": ".ankh/zora/web/components/text/index.d.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toPath": ".ankh/zora/web/components/tree-view/index.d.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toPath": ".ankh/zora/web/components/view/index.d.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toPath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toPath": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
       {
         "fromPath": "src/features/settings/adapters/inbound/react/SettingsContext.ts",
@@ -14766,6 +15111,36 @@
         "sourcePath": "src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts"
       },
       {
+        "fromSymbol": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "toSymbol": "matchesFacetFilters",
+        "callExpression": "matchesFacetFilters",
+        "sourcePath": "src/features/rule-explorer/domain/projectRuleDag.ts"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "toSymbol": "ruleEvaluationIdentity",
+        "callExpression": "ruleEvaluationIdentity",
+        "sourcePath": "src/features/rule-explorer/domain/projectRuleDag.ts"
+      },
+      {
+        "fromSymbol": "projectRuleDag",
+        "toSymbol": "groupNodeIdsByScopedRuleId",
+        "callExpression": "groupNodeIdsByScopedRuleId",
+        "sourcePath": "src/features/rule-explorer/domain/projectRuleDag.ts"
+      },
+      {
+        "fromSymbol": "projectRuleDag",
+        "toSymbol": "uniqueFacets",
+        "callExpression": "uniqueFacets",
+        "sourcePath": "src/features/rule-explorer/domain/projectRuleDag.ts"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/domain/projectRuleDag.ts",
+        "toSymbol": "scopedRuleId",
+        "callExpression": "scopedRuleId",
+        "sourcePath": "src/features/rule-explorer/domain/projectRuleDag.ts"
+      },
+      {
         "fromSymbol": "readSettingsEnvironment",
         "toSymbol": "readEnvString",
         "callExpression": "readEnvString",
@@ -17370,6 +17745,48 @@
         "sourcePath": "test/src/features/project-tree/useProjectTreeExpansion.spec.tsx"
       },
       {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "projectRuleDag",
+        "callExpression": "projectRuleDag",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "formatRuleDagStatus",
+        "callExpression": "formatRuleDagStatus",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "planNode",
+        "callExpression": "planNode",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/rule-explorer/projectRuleDag.spec.ts",
+        "toSymbol": "result",
+        "callExpression": "result",
+        "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -18765,6 +19182,102 @@
         "fromSymbol": "isRuleEvaluation",
         "toSymbol": "isArrayOf",
         "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleEvaluation",
+        "toSymbol": "isRuleEvaluationPlan",
+        "callExpression": "isRuleEvaluationPlan",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleEvaluationPlan",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleEvaluationPlan",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRulePlanNode",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRulePlanNode",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRulePlanNode",
+        "toSymbol": "isRuleIdentity",
+        "callExpression": "isRuleIdentity",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRulePlanNode",
+        "toSymbol": "isRuleScope",
+        "callExpression": "isRuleScope",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleFacet",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleResult",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleResult",
+        "toSymbol": "isArrayOf",
+        "callExpression": "validation.isArrayOf",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleResult",
+        "toSymbol": "isOptional",
+        "callExpression": "validation.isOptional",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleResult",
+        "toSymbol": "isRuleIdentity",
+        "callExpression": "isRuleIdentity",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleResult",
+        "toSymbol": "isRuleScope",
+        "callExpression": "isRuleScope",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleResultDiagnostic",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleIdentity",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
+        "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromSymbol": "isRuleScope",
+        "toSymbol": "isRecord",
+        "callExpression": "validation.isRecord",
         "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
       },
       {
@@ -20914,6 +21427,72 @@
         "toSymbol": "dedupeBy",
         "callExpression": "dedupeBy",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
+      },
+      {
+        "fromSymbol": "createRuleDagElements",
+        "toSymbol": "toCytoscapeElements",
+        "callExpression": "toCytoscapeElements",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "projectRuleDag",
+        "callExpression": "projectRuleDag",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "createRuleDagElements",
+        "callExpression": "createRuleDagElements",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "toGraphViewNodes",
+        "callExpression": "toGraphViewNodes",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "toTreeNodes",
+        "callExpression": "toTreeNodes",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "setView",
+        "callExpression": "props.setView",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "setSelectedIds",
+        "callExpression": "props.setSelectedIds",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "setSelectedIds",
+        "callExpression": "setSelectedIds",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "RuleFacetFilters",
+        "toSymbol": "groupFacetsById",
+        "callExpression": "groupFacetsById",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "onChange",
+        "callExpression": "onChange",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "formatRuleDagStatus",
+        "callExpression": "formatRuleDagStatus",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
       {
         "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsContext.ts",

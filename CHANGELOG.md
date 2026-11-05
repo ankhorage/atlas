@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.17.0
+
+### Minor Changes
+
+- 95c288d: Visualize serialized Rules dependency plans and execution evidence in the Atlas Rules workspace panel.
+
 ## 0.16.0
 
 ### Minor Changes
