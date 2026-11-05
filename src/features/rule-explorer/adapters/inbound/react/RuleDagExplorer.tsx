@@ -37,8 +37,6 @@ export function RuleDagExplorer({ evaluation }: RuleDagExplorerProps) {
   );
   const treeNodes = React.useMemo(() => toTreeNodes(projection.graph.nodes), [projection]);
 
-  if (projection.graph.nodes.length === 0) return null;
-
   return (
     <RuleDagContents
       view={view}
@@ -90,6 +88,18 @@ function RuleDagContents(props: RuleDagContentsProps) {
           />
         </View>
       </section>
+      {props.nodes.length === 0 ? null : <RuleDagVisualization {...props} />}
+      <output aria-label="Rule graph projection" hidden>
+        {JSON.stringify(props.cytoscapeElements)}
+      </output>
+    </View>
+  );
+}
+
+/*** Renders graph and tree renderers only when the visible projection has graph content. */
+function RuleDagVisualization(props: RuleDagContentsProps) {
+  return (
+    <>
       <RuleDagGraph {...props} />
       <TreeView
         ariaLabel="Rule DAG nodes"
@@ -100,10 +110,7 @@ function RuleDagContents(props: RuleDagContentsProps) {
         onExpandedChange={props.setExpandedIds}
         onSelect={id => props.setSelectedIds([id])}
       />
-      <output aria-label="Rule graph projection" hidden>
-        {JSON.stringify(props.cytoscapeElements)}
-      </output>
-    </View>
+    </>
   );
 }
 

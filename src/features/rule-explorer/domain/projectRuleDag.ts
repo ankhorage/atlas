@@ -1,9 +1,12 @@
 import type { Graph } from '@ankhorage/graph';
 import type {
   RuleEvaluationPlanFacet,
+  RuleEvaluationPlanNode,
   RuleEvaluationResult,
   RuleExecutionProvenance,
+  RuleIdentity,
   RuleResultStatus,
+  RuleScope,
 } from '@ankhorage/rules';
 
 export type RuleDagView = 'dependencies' | 'execution';
@@ -41,18 +44,15 @@ export function projectRuleDag(
   );
   const visibleNodeIds = new Set(visibleNodes.map(node => node.id));
   const resultsByScopedRule = new Map(
-    evaluation.results.map(result => [scopedRuleId(result.rule.id, result.scope.id), result])
+    evaluation.results.map(result => [ruleEvaluationIdentity(result.rule, result.scope), result])
   );
-  const nodeIdsByRuleId = new Map<string, readonly string[]>();
-  for (const node of visibleNodes) {
-    nodeIdsByRuleId.set(node.rule.id, [...(nodeIdsByRuleId.get(node.rule.id) ?? []), node.id]);
-  }
+  const nodeIdsByScopedRuleId = groupNodeIdsByScopedRuleId(visibleNodes);
 
   return {
-    availableFacets: uniqueFacets(visibleNodes.flatMap(node => node.facets)),
+    availableFacets: uniqueFacets(evaluation.plan.nodes.flatMap(node => node.facets)),
     graph: {
       nodes: visibleNodes.map(node => {
-        const result = resultsByScopedRule.get(scopedRuleId(node.rule.id, node.scope.id));
+        const result = resultsByScopedRule.get(ruleEvaluationIdentity(node.rule, node.scope));
         return {
           id: node.id,
           data: {
@@ -67,7 +67,7 @@ export function projectRuleDag(
       }),
       edges: visibleNodes.flatMap(node =>
         node.dependencyRuleIds.flatMap(dependencyRuleId =>
-          (nodeIdsByRuleId.get(dependencyRuleId) ?? [])
+          (nodeIdsByScopedRuleId.get(scopedRuleId(dependencyRuleId, node.scope)) ?? [])
             .filter(dependencyId => visibleNodeIds.has(dependencyId))
             .map(dependencyId => ({
               id: `${node.id}->${dependencyId}`,
@@ -98,8 +98,27 @@ function matchesFacetFilters(
 }
 
 /*** Forms the evaluator's exact rule-and-scope identity without treating a plain rule ID as scoped. */
-function scopedRuleId(ruleId: string, scopeId: string): string {
-  return `${ruleId}\u0000${scopeId}`;
+function ruleEvaluationIdentity(rule: RuleIdentity, scope: RuleScope): string {
+  return `${rule.id}\u0000${rule.version}\u0000${scope.kind}\u0000${scope.id}`;
+}
+
+/*** Forms the evaluator's scope-aware dependency lookup key without inventing a node identity. */
+function scopedRuleId(ruleId: string, scope: RuleScope): string {
+  return `${ruleId}\u0000${scope.kind}\u0000${scope.id}`;
+}
+
+/*** Indexes visible nodes by the dependency identity the evaluator can resolve within one scope. */
+function groupNodeIdsByScopedRuleId(
+  nodes: readonly RuleEvaluationPlanNode[]
+): ReadonlyMap<string, readonly string[]> {
+  return nodes.reduce(
+    (nodeIdsByScopedRuleId, node) =>
+      new Map(nodeIdsByScopedRuleId).set(scopedRuleId(node.rule.id, node.scope), [
+        ...(nodeIdsByScopedRuleId.get(scopedRuleId(node.rule.id, node.scope)) ?? []),
+        node.id,
+      ]),
+    new Map<string, readonly string[]>()
+  );
 }
 
 /*** Deduplicates provider-owned facet descriptors while retaining their declared versions. */
