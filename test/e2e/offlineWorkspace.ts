@@ -5,6 +5,11 @@ import { pathToFileURL } from 'node:url';
 
 import { chromium, type Page } from 'playwright-core';
 
+import {
+  assertProductionCompoundCanvasAsync,
+  installProductionGraphProbeAsync,
+} from './productionCompoundCanvas';
+
 const reportPath = resolve(process.env.ATLAS_OFFLINE_REPORT ?? 'offline-smoke.html');
 const browserPath = process.env.ATLAS_CHROME;
 const projectName = process.env.ATLAS_PROJECT_NAME ?? 'my-app';
@@ -25,6 +30,7 @@ const context = await chromium.launchPersistentContext(resolve(temporaryDirector
 
 try {
   const offline = await context.newPage();
+  if (requireCompoundNodes) await installProductionGraphProbeAsync(offline);
   const networkAttempts = observeOfflineRuntime(offline);
   await offline.goto(pathToFileURL(copiedReportPath).href, { waitUntil: 'networkidle' });
   await assertWorkspace(offline, networkAttempts);
@@ -36,6 +42,7 @@ try {
 
   if (process.env.ATLAS_ONLINE_URL !== undefined) {
     const online = await context.newPage();
+    if (requireCompoundNodes) await installProductionGraphProbeAsync(online);
     await online.goto(process.env.ATLAS_ONLINE_URL, { waitUntil: 'networkidle' });
     await assertWorkspace(online, []);
     await assertParity(offline, online);
@@ -84,7 +91,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   await page.getByLabel('Expand').first().click();
   await page.getByLabel('Collapse').first().click();
 
-  if (requireCompoundNodes) await assertCompoundNodesEnabled(page);
+  if (requireCompoundNodes) await assertProductionCompoundCanvasAsync(page);
   else {
     await assertGenericWorkspaceInteractions(page);
   }
@@ -160,28 +167,6 @@ async function assertRuleEvidence(page: Page): Promise<void> {
     .catch(async () => {
       throw new Error(`Audit rule panel did not render: ${await page.locator('body').innerText()}`);
     });
-}
-
-/*** Enables the real workspace's compound projection without claiming canvas-node targeting. */
-async function assertCompoundNodesEnabled(page: Page): Promise<void> {
-  const compoundNodes = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
-  if (!(await isSwitchChecked(compoundNodes))) await compoundNodes.click();
-  if (!(await isSwitchChecked(compoundNodes))) {
-    throw new Error('The workspace did not enable compound-node projection.');
-  }
-  const graphCanvas = page.getByRole('application', { name: 'Graph' }).locator('canvas').first();
-  await graphCanvas.waitFor();
-  if ((await graphCanvas.boundingBox()) === null) {
-    throw new Error('Compound-node projection left the GraphView unusable.');
-  }
-}
-
-/*** Reads the generated Switch thumb position because its current web output omits aria-checked. */
-async function isSwitchChecked(control: ReturnType<Page['getByRole']>): Promise<boolean> {
-  return control.evaluate(element => {
-    const thumb = element.querySelector(':scope > div > div > div');
-    return thumb instanceof HTMLElement && thumb.style.alignSelf === 'flex-end';
-  });
 }
 
 /*** Enters dark mode and proves the workspace surface follows the selected theme. */

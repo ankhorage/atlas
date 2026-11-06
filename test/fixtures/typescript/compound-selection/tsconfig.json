@@ -4,5 +4,5 @@
     "moduleResolution": "bundler",
     "target": "ES2022"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "support/**/*.ts"]
 }
