@@ -20,15 +20,16 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
       if (event.target.getAttribute('role') !== 'application') return;
       if (event.target.getAttribute('aria-label') !== 'Graph') return;
       const detail: unknown = event.detail;
-      if (typeof detail !== 'object' || detail === null || !('controller' in detail))
-        return;
+      if (typeof detail !== 'object' || detail === null || !('controller' in detail)) return;
       const controller = detail.controller;
       if (
         typeof controller !== 'object' ||
         controller === null ||
         !('measureNodes' in controller) ||
         typeof controller.measureNodes !== 'function'
-      ) return;
+      ) {
+        return;
+      }
       probe.controller = controller as GraphViewController;
       if (event.type === layoutComplete) probe.layoutCount += 1;
     };
@@ -66,19 +67,27 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
   await saveEvidenceAsync(page, 'production-compound-light.png');
 
   const graph = page.getByRole('application', { name: 'Graph' });
-  const lightBackground = await graph.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const lightBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
   await page.getByRole('button', { name: 'Dark', exact: true }).click();
   await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
-  const darkBackground = await graph.evaluate((element) => getComputedStyle(element).backgroundColor);
+  const darkBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
   if (lightBackground === darkBackground)
     throw new Error('Real GraphView background did not respond to dark mode.');
-  assertSame('dark mode preserves selection viewport', await readPublicViewportAsync(page), viewportAfter);
+  assertSame(
+    'dark mode preserves selection viewport',
+    await readPublicViewportAsync(page),
+    viewportAfter
+  );
   await page.getByRole('treeitem', { selected: true, name: /features/iu }).waitFor();
   await saveEvidenceAsync(page, 'production-compound-dark.png');
 }
 
 /*** Press a measured node once or twice using actual public rendered geometry on the real canvas. */
-async function clickMeasuredNodeAsync(page: Page, nodeId: string, clickCount: number): Promise<void> {
+async function clickMeasuredNodeAsync(
+  page: Page,
+  nodeId: string,
+  clickCount: number
+): Promise<void> {
   const node = await readRenderedNodeAsync(page, nodeId);
   const graph = page.getByRole('application', { name: 'Graph' });
   const box = await graph.boundingBox();
@@ -91,28 +100,31 @@ async function clickMeasuredNodeAsync(page: Page, nodeId: string, clickCount: nu
       }
     : node.position;
   if (
-    position.x <= 0 || position.y <= 0 ||
-    position.x >= box.width || position.y >= box.height
-  ) throw new Error(`Measured graph node ${nodeId} lies outside its rendered canvas.`);
+    position.x <= 0 ||
+    position.y <= 0 ||
+    position.x >= box.width ||
+    position.y >= box.height
+  )
+    throw new Error(`Measured graph node ${nodeId} lies outside its rendered canvas.`);
   await page.mouse.click(box.x + position.x, box.y + position.y, { clickCount });
 }
 
 /*** Wait until the released GraphView controller measures the exact requested rendered node. */
 async function readRenderedNodeAsync(page: Page, nodeId: string) {
-  await page.waitForFunction((id) => {
+  await page.waitForFunction(id => {
     const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
       .__atlasGraphAcceptance;
     const result = probe?.controller?.measureNodes?.([id]);
     return result?.nodes.some(
-      (node) => node.id === id && node.size.width > 0 && node.size.height > 0
+      node => node.id === id && node.size.width > 0 && node.size.height > 0
     ) ?? false;
   }, nodeId);
-  const measurement = await page.evaluate((id) => {
+  const measurement = await page.evaluate(id => {
     const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
       .__atlasGraphAcceptance;
     return probe?.controller?.measureNodes?.([id]) ?? null;
   }, nodeId);
-  const node = measurement?.nodes.find((item) => item.id === nodeId);
+  const node = measurement?.nodes.find(item => item.id === nodeId);
   if (node === undefined)
     throw new Error(`Public GraphView controller cannot measure production node ${nodeId}.`);
   return node;
@@ -131,10 +143,11 @@ async function readPublicViewportAsync(page: Page) {
 
 /*** Read the same semantic breadcrumb trail used by the existing workspace browser acceptance. */
 async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
-  const text = await page.getByText('Home', { exact: true }).locator('xpath=../../..').innerText();
+  const home = page.getByText('Home', { exact: true });
+  const text = await home.locator('xpath=../../..').innerText();
   return text
     .split('›')
-    .map((part) => part.trim().split('\n').at(-1) ?? '')
+    .map(part => part.trim().split('\n').at(-1) ?? '')
     .filter(Boolean);
 }
 
@@ -146,7 +159,7 @@ async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]):
 
 /*** Observe the existing generated switch semantics without adding an Atlas test hook. */
 async function isSwitchEnabledAsync(control: ReturnType<Page['getByRole']>): Promise<boolean> {
-  return control.evaluate((element) => {
+  return control.evaluate(element => {
     const thumb = element.querySelector(':scope > div > div > div');
     return thumb instanceof HTMLElement && thumb.style.alignSelf === 'flex-end';
   });
@@ -163,6 +176,9 @@ async function saveEvidenceAsync(page: Page, name: string): Promise<void> {
 
 /*** Compare exact browser states to detect unwanted navigation or automatic viewport changes. */
 function assertSame(label: string, actual: unknown, expected: unknown): void {
-  if (JSON.stringify(actual) !== JSON.stringify(expected))
-    throw new Error(`${label}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}.`);
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new Error(
+      `${label}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}.`
+    );
+  }
 }
