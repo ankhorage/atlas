@@ -110,12 +110,14 @@ function WorkspaceHeader(props: WorkspaceHeaderProps) {
       }
       safeAreaTop={false}
       subtitle={
-        <Breadcrumbs
-          compact
-          items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
-          separator="›"
-          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
-        />
+        <nav aria-label="Workspace breadcrumbs">
+          <Breadcrumbs
+            compact
+            items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
+            separator="›"
+            onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
+          />
+        </nav>
       }
       title={props.projectName}
     />
@@ -297,13 +299,11 @@ interface WorkspaceViewProps {
   readonly workspace: WorkspaceLoadResult;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
-
 interface LiveWorkspace {
   readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
   readonly runtimeId: string | undefined;
   readonly workspace: WorkspaceLoadResult;
 }
-
 interface WorkspaceHeaderProps {
   readonly currentPackage: string;
   readonly currentSource?: string;
@@ -326,8 +326,4 @@ interface WorkspaceBodyProps {
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
 
-interface BreadcrumbItem {
-  readonly id: string;
-  readonly label: string;
-  readonly icon?: { readonly name: string };
-}
+type BreadcrumbItem = Readonly<{ id: string; label: string; icon?: { readonly name: string } }>;

@@ -142,8 +142,12 @@ async function readPublicViewportAsync(page: Page) {
 
 /*** Read the same semantic breadcrumb trail used by the existing workspace browser acceptance. */
 async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
-  const home = page.getByText('Home', { exact: true });
-  const text = await home.locator('xpath=../../..').innerText();
+  const text = await page.getByRole('navigation', { name: 'Workspace breadcrumbs' }).innerText();
+  return readBreadcrumbLabels(text);
+}
+
+/*** Extract visible breadcrumb labels from their named navigation landmark. */
+function readBreadcrumbLabels(text: string): readonly string[] {
   return text
     .split('›')
     .map(part => part.trim().split('\n').at(-1) ?? '')
@@ -152,17 +156,20 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 
 /*** Reject navigation drift with the actual rendered breadcrumb values. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
-  await page.waitForFunction(expectedBreadcrumbs => {
-    const home = [...document.querySelectorAll('*')].find(
-      element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
-    );
-    const text = home?.parentElement?.parentElement?.parentElement?.innerText;
-    const breadcrumbs = text
-      ?.split('›')
-      .map(part => part.trim().split('\n').at(-1) ?? '')
-      .filter(Boolean);
-    return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
-  }, expected);
+  await page.waitForFunction(
+    ({ expectedBreadcrumbs, selector }) => {
+      const landmark = document.querySelector(selector);
+      const breadcrumbs = (landmark?.textContent ?? '')
+        .split('›')
+        .map(part => part.trim().split('\n').at(-1) ?? '')
+        .filter(Boolean);
+      return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
+    },
+    {
+      expectedBreadcrumbs: expected,
+      selector: 'nav[aria-label="Workspace breadcrumbs"]',
+    }
+  );
   const actual = await readBreadcrumbsAsync(page);
   assertSame('workspace breadcrumbs', actual, expected);
 }
