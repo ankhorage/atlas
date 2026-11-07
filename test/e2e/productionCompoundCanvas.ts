@@ -67,7 +67,9 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
   await saveEvidenceAsync(page, 'production-compound-light.png');
 
   const graph = page.getByRole('application', { name: 'Graph' });
-  const lightBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
+  const lightBackground = await graph.evaluate(
+    element => getComputedStyle(element).backgroundColor
+  );
   await page.getByRole('button', { name: 'Dark', exact: true }).click();
   await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
   const darkBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
@@ -99,12 +101,7 @@ async function clickMeasuredNodeAsync(
         y: node.position.y - node.size.height * 0.4,
       }
     : node.position;
-  if (
-    position.x <= 0 ||
-    position.y <= 0 ||
-    position.x >= box.width ||
-    position.y >= box.height
-  )
+  if (position.x <= 0 || position.y <= 0 || position.x >= box.width || position.y >= box.height)
     throw new Error(`Measured graph node ${nodeId} lies outside its rendered canvas.`);
   await page.mouse.click(box.x + position.x, box.y + position.y, { clickCount });
 }
@@ -115,9 +112,10 @@ async function readRenderedNodeAsync(page: Page, nodeId: string) {
     const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
       .__atlasGraphAcceptance;
     const result = probe?.controller?.measureNodes?.([id]);
-    return result?.nodes.some(
-      node => node.id === id && node.size.width > 0 && node.size.height > 0
-    ) ?? false;
+    return (
+      result?.nodes.some(node => node.id === id && node.size.width > 0 && node.size.height > 0) ??
+      false
+    );
   }, nodeId);
   const measurement = await page.evaluate(id => {
     const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })

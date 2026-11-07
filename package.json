@@ -168,6 +168,11 @@
       }
     ]
   },
+  "knip": {
+    "ignore": [
+      "test/fixtures/typescript/compound-selection/support/auxiliary.ts"
+    ]
+  },
   "exports": {
     "./capabilities": "./src/capabilities/index.ts",
     "./cli": "./src/cli/index.ts",
