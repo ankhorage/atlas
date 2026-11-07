@@ -9,6 +9,11 @@ interface BrowserGraphProbe {
   layoutCount: number;
 }
 
+interface MeasuredNodeClick {
+  readonly node: Awaited<ReturnType<typeof readRenderedNodeAsync>>;
+  readonly point: { readonly x: number; readonly y: number };
+}
+
 /*** Capture only the published GraphView controller events inside the test browser context. */
 export async function installProductionGraphProbeAsync(page: Page): Promise<void> {
   await page.addInitScript(({ ready, layoutComplete }) => {
@@ -41,8 +46,17 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
 /*** Exercise the actual production canvas with publicly measured src and features nodes. */
 export async function assertProductionCompoundCanvasAsync(page: Page): Promise<void> {
   await requireBreadcrumbsAsync(page, ['Home']);
-  await clickMeasuredNodeAsync(page, 'src', 2);
-  await requireBreadcrumbsAsync(page, ['Home', 'src']);
+  const navigationClick = await clickMeasuredNodeAsync(page, 'src', 2);
+  try {
+    await requireBreadcrumbsAsync(page, ['Home', 'src']);
+  } catch (error) {
+    throw new Error(
+      `Production compound navigation failed: ${JSON.stringify(
+        await readCompoundNavigationEvidenceAsync(page, navigationClick)
+      )}`,
+      { cause: error }
+    );
+  }
 
   const compounds = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
   if (!(await isSwitchEnabledAsync(compounds))) await compounds.click();
@@ -88,7 +102,7 @@ async function clickMeasuredNodeAsync(
   page: Page,
   nodeId: string,
   clickCount: number
-): Promise<void> {
+): Promise<MeasuredNodeClick> {
   const node = await readRenderedNodeAsync(page, nodeId);
   const graph = page.getByRole('application', { name: 'Graph' });
   const box = await graph.boundingBox();
@@ -105,6 +119,29 @@ async function clickMeasuredNodeAsync(
   const point = { x: box.x + position.x, y: box.y + position.y };
   if (clickCount === 2) await page.mouse.dblclick(point.x, point.y);
   else await page.mouse.click(point.x, point.y);
+  return { node, point };
+}
+
+/*** Capture public browser evidence when a real compound navigation does not settle. */
+async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNodeClick) {
+  return page.evaluate(
+    ({ clickPoint, node }) => {
+      const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+        .__atlasGraphAcceptance;
+      const breadcrumbs = document.querySelector('nav[aria-label="Workspace breadcrumbs"]');
+      const target = document.elementFromPoint(clickPoint.x, clickPoint.y);
+      return {
+        breadcrumbs: breadcrumbs?.textContent ?? null,
+        breadcrumbsHtml: breadcrumbs?.outerHTML ?? null,
+        clickPoint,
+        measuredNode: node,
+        nodeAfterClick: probe?.controller?.measureNodes?.([node.id]) ?? null,
+        target: target?.outerHTML ?? null,
+        workspace: document.body.innerText,
+      };
+    },
+    { clickPoint: click.point, node: click.node }
+  );
 }
 
 /*** Wait until the released GraphView controller measures the exact requested rendered node. */
