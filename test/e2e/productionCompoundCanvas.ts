@@ -102,7 +102,9 @@ async function clickMeasuredNodeAsync(
     : node.position;
   if (position.x <= 0 || position.y <= 0 || position.x >= box.width || position.y >= box.height)
     throw new Error(`Measured graph node ${nodeId} lies outside its rendered canvas.`);
-  await page.mouse.click(box.x + position.x, box.y + position.y, { clickCount });
+  const point = { x: box.x + position.x, y: box.y + position.y };
+  if (clickCount === 2) await page.mouse.dblclick(point.x, point.y);
+  else await page.mouse.click(point.x, point.y);
 }
 
 /*** Wait until the released GraphView controller measures the exact requested rendered node. */
