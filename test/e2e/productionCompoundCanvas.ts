@@ -53,8 +53,7 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
     throw new Error(
       `Production compound navigation failed: ${JSON.stringify(
         await readCompoundNavigationEvidenceAsync(page, navigationClick)
-      )}`,
-      { cause: error }
+      )}; original error: ${String(error)}`
     );
   }
 
