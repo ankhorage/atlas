@@ -7,6 +7,13 @@ import type { Page } from 'playwright-core';
 interface BrowserGraphProbe {
   controller: GraphViewController | null;
   layoutCount: number;
+  nativeEvents: {
+    readonly type: string;
+    readonly detail: number;
+    readonly target: string;
+    readonly x: number;
+    readonly y: number;
+  }[];
 }
 
 interface MeasuredNodeClick {
@@ -18,8 +25,26 @@ interface MeasuredNodeClick {
 export async function installProductionGraphProbeAsync(page: Page): Promise<void> {
   await page.addInitScript(({ ready, layoutComplete }) => {
     const target = window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe };
-    const probe: BrowserGraphProbe = { controller: null, layoutCount: 0 };
+    const probe: BrowserGraphProbe = { controller: null, layoutCount: 0, nativeEvents: [] };
     target.__atlasGraphAcceptance = probe;
+    for (const type of ['mousedown', 'mouseup', 'click', 'dblclick']) {
+      document.addEventListener(
+        type,
+        event => {
+          if (!(event instanceof MouseEvent) || !(event.target instanceof Element)) return;
+          if (event.target.closest('[role="application"][aria-label="Graph"]') === null) return;
+          probe.nativeEvents.push({
+            type: event.type,
+            detail: event.detail,
+            target: event.target.tagName.toLowerCase(),
+            x: event.clientX,
+            y: event.clientY,
+          });
+          if (probe.nativeEvents.length > 16) probe.nativeEvents.shift();
+        },
+        true
+      );
+    }
     const capture = (event: Event) => {
       if (!(event instanceof CustomEvent) || !(event.target instanceof HTMLElement)) return;
       if (event.target.getAttribute('role') !== 'application') return;
@@ -50,10 +75,14 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
   try {
     await requireBreadcrumbsAsync(page, ['Home', 'src']);
   } catch (error) {
+    const evidence = await readCompoundNavigationEvidenceAsync(page, navigationClick).catch(
+      diagnosticError => ({ diagnosticError: String(diagnosticError) })
+    );
+    console.error('Production compound navigation diagnostic:', JSON.stringify(evidence));
+    await saveEvidenceAsync(page, 'production-navigation-failure.png').catch(() => undefined);
     throw new Error(
-      `Production compound navigation failed: ${JSON.stringify(
-        await readCompoundNavigationEvidenceAsync(page, navigationClick)
-      )}; original error: ${String(error)}`
+      `Production compound navigation failed; original error: ${String(error)}; ` +
+        `browser evidence: ${JSON.stringify(evidence)}`
     );
   }
 
@@ -127,16 +156,24 @@ async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNo
     ({ clickPoint, node }) => {
       const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
         .__atlasGraphAcceptance;
-      const breadcrumbs = document.querySelector('nav[aria-label="Workspace breadcrumbs"]');
+      const home = [...document.querySelectorAll('*')].find(
+        element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
+      );
       const target = document.elementFromPoint(clickPoint.x, clickPoint.y);
+      const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+      const bounds = graph?.getBoundingClientRect();
       return {
-        breadcrumbs: breadcrumbs?.textContent ?? null,
-        breadcrumbsHtml: breadcrumbs?.outerHTML ?? null,
+        breadcrumbs: home?.parentElement?.parentElement?.parentElement?.textContent ?? null,
         clickPoint,
+        graphBounds: bounds
+          ? { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
+          : null,
+        layoutCount: probe?.layoutCount ?? 0,
         measuredNode: node,
+        nativeEvents: probe?.nativeEvents ?? [],
         nodeAfterClick: probe?.controller?.measureNodes?.([node.id]) ?? null,
-        target: target?.outerHTML ?? null,
-        workspace: document.body.innerText,
+        target: target?.outerHTML.slice(0, 1000) ?? null,
+        workspace: document.body.innerText.slice(0, 1500),
       };
     },
     { clickPoint: click.point, node: click.node }
@@ -176,36 +213,29 @@ async function readPublicViewportAsync(page: Page) {
   return viewport;
 }
 
-/*** Read the same semantic breadcrumb trail used by the existing workspace browser acceptance. */
+/*** Read the same visible Home-anchored breadcrumb trail as the existing workspace tests. */
 async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
-  const text = await page.getByRole('navigation', { name: 'Workspace breadcrumbs' }).innerText();
-  return readBreadcrumbLabels(text);
-}
-
-/*** Extract visible breadcrumb labels from their named navigation landmark. */
-function readBreadcrumbLabels(text: string): readonly string[] {
+  const home = page.getByText('Home', { exact: true });
+  const text = await home.locator('xpath=../../..').innerText();
   return text
     .split('›')
     .map(part => part.trim().split('\n').at(-1) ?? '')
     .filter(Boolean);
 }
 
-/*** Reject navigation drift with the actual rendered breadcrumb values. */
+/*** Require real visible navigation labels without introducing production-only landmarks. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
-  await page.waitForFunction(
-    ({ expectedBreadcrumbs, selector }) => {
-      const landmark = document.querySelector(selector);
-      const breadcrumbs = (landmark?.textContent ?? '')
-        .split('›')
-        .map(part => part.trim().split('\n').at(-1) ?? '')
-        .filter(Boolean);
-      return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
-    },
-    {
-      expectedBreadcrumbs: expected,
-      selector: 'nav[aria-label="Workspace breadcrumbs"]',
-    }
-  );
+  await page.waitForFunction(expectedBreadcrumbs => {
+    const home = [...document.querySelectorAll('*')].find(
+      element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
+    );
+    const text = home?.parentElement?.parentElement?.parentElement?.innerText;
+    const breadcrumbs = text
+      ?.split('›')
+      .map(part => part.trim().split('\n').at(-1) ?? '')
+      .filter(Boolean);
+    return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
+  }, expected);
   const actual = await readBreadcrumbsAsync(page);
   assertSame('workspace breadcrumbs', actual, expected);
 }
