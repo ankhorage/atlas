@@ -92,7 +92,12 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
     throw new Error('Production GraphView did not enable its compound projection.');
 
   const depth = page.getByLabel('Subpackage depth', { exact: true });
-  await depth.fill('3');
+  const maximumDepth = await depth.getAttribute('max');
+  if (maximumDepth === null || Number(maximumDepth) < 2)
+    throw new Error('Compound fixture does not expose the required nested package depth.');
+  await depth.press('End');
+  if ((await depth.inputValue()) !== maximumDepth)
+    throw new Error('Keyboard input did not set the maximum visible package depth.');
   await readRenderedNodeAsync(page, 'src.features');
   await readRenderedNodeAsync(page, 'src.features.nested');
 
