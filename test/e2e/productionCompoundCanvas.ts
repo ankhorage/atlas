@@ -95,9 +95,13 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
   const maximumDepth = await depth.getAttribute('max');
   if (maximumDepth === null || Number(maximumDepth) < 2)
     throw new Error('Compound fixture does not expose the required nested package depth.');
+  const previousDepth = await depth.inputValue();
+  const previousLayoutCount = await readGraphLayoutCountAsync(page);
   await depth.press('End');
   if ((await depth.inputValue()) !== maximumDepth)
     throw new Error('Keyboard input did not set the maximum visible package depth.');
+  if (previousDepth !== maximumDepth)
+    await waitForSettledGraphLayoutAsync(page, previousLayoutCount);
   await readRenderedNodeAsync(page, 'src.features');
   await readRenderedNodeAsync(page, 'src.features.nested');
 
@@ -206,6 +210,34 @@ async function readRenderedNodeAsync(page: Page, nodeId: string) {
   if (node === undefined)
     throw new Error(`Public GraphView controller cannot measure production node ${nodeId}.`);
   return node;
+}
+
+/*** Read the latest public layout-complete generation before changing graph geometry. */
+async function readGraphLayoutCountAsync(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    return probe?.layoutCount ?? 0;
+  });
+}
+
+/*** Wait for ZORA's settled layout and unchanged measured geometry across browser frames. */
+async function waitForSettledGraphLayoutAsync(page: Page, previousLayoutCount: number) {
+  await page.waitForFunction(async previous => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    if (probe?.controller === null || probe === undefined || probe.layoutCount <= previous)
+      return false;
+    const controller = probe.controller;
+    const measure = () =>
+      JSON.stringify({
+        viewport: controller.getViewport(),
+        nodes: controller.measureNodes?.(['src.features', 'src.features.nested']) ?? null,
+      });
+    const before = measure();
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    return measure() === before;
+  }, previousLayoutCount);
 }
 
 /*** Observe viewport ownership through the published controller, never a Cytoscape private API. */
