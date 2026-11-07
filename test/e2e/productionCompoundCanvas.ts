@@ -235,7 +235,9 @@ async function waitForSettledGraphLayoutAsync(page: Page, previousLayoutCount: n
         nodes: controller.measureNodes?.(['src.features', 'src.features.nested']) ?? null,
       });
     const before = measure();
-    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
     return measure() === before;
   }, previousLayoutCount);
 }
