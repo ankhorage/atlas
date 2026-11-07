@@ -42,7 +42,6 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
 export async function assertProductionCompoundCanvasAsync(page: Page): Promise<void> {
   await requireBreadcrumbsAsync(page, ['Home']);
   await clickMeasuredNodeAsync(page, 'src', 2);
-  await page.getByRole('button', { name: 'Home', exact: true }).waitFor();
   await requireBreadcrumbsAsync(page, ['Home', 'src']);
 
   const compounds = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
@@ -151,6 +150,17 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 
 /*** Reject navigation drift with the actual rendered breadcrumb values. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
+  await page.waitForFunction(expectedBreadcrumbs => {
+    const home = [...document.querySelectorAll('*')].find(
+      element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
+    );
+    const text = home?.parentElement?.parentElement?.parentElement?.innerText;
+    const breadcrumbs = text
+      ?.split('›')
+      .map(part => part.trim().split('\n').at(-1) ?? '')
+      .filter(Boolean);
+    return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
+  }, expected);
   const actual = await readBreadcrumbsAsync(page);
   assertSame('workspace breadcrumbs', actual, expected);
 }
