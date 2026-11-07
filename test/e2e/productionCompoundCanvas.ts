@@ -145,7 +145,8 @@ async function clickMeasuredNodeAsync(
   if (position.x <= 0 || position.y <= 0 || position.x >= box.width || position.y >= box.height)
     throw new Error(`Measured graph node ${nodeId} lies outside its rendered canvas.`);
   const point = { x: box.x + position.x, y: box.y + position.y };
-  if (clickCount === 2) await page.mouse.dblclick(point.x, point.y);
+  await page.mouse.move(point.x, point.y);
+  if (clickCount === 2) await page.mouse.dblclick(point.x, point.y, { delay: 40 });
   else await page.mouse.click(point.x, point.y);
   return { node, point };
 }
