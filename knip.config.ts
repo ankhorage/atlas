@@ -25,6 +25,6 @@ export default createKnipConfig({
     'test/fixtures/workspace-multi/**/*.ts',
   ],
   ignoreBinaries: ['mvn', 'gradle'],
-  // Infra resolves the manifest-selected provider packages through its published dynamic resolver.
-  ignoreDependencies: ['@ankhorage/infra-local', '@ankhorage/infra-minikube'],
+  // These packages are resolved by supported published dynamic providers, not static imports.
+  ignoreDependencies: ['@ankhorage/infra-local', '@ankhorage/infra-minikube', '@ankhorage/zora'],
 });

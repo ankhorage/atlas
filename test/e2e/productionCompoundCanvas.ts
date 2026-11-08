@@ -1,19 +1,34 @@
 import { mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-import { GraphView, type GraphViewController } from '@zora/graph-view';
+import {
+  GraphView,
+  type GraphViewController,
+  type GraphViewMeasurement,
+  type GraphViewViewport,
+} from '@zora/graph-view';
 import type { Page } from 'playwright-core';
 
 interface BrowserGraphProbe {
   controller: GraphViewController | null;
   layoutCount: number;
+  readyCount: number;
+  lifecycle: BrowserGraphLifecycle[];
   nativeEvents: {
     readonly type: string;
     readonly detail: number;
     readonly target: string;
     readonly x: number;
     readonly y: number;
+    readonly node: GraphViewMeasurement | null;
+    readonly viewport: GraphViewViewport | null;
   }[];
+}
+
+interface BrowserGraphLifecycle {
+  readonly type: string;
+  readonly nodes: GraphViewMeasurement | null;
+  readonly viewport: GraphViewViewport;
 }
 
 interface MeasuredNodeClick {
@@ -25,7 +40,13 @@ interface MeasuredNodeClick {
 export async function installProductionGraphProbeAsync(page: Page): Promise<void> {
   await page.addInitScript(({ ready, layoutComplete }) => {
     const target = window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe };
-    const probe: BrowserGraphProbe = { controller: null, layoutCount: 0, nativeEvents: [] };
+    const probe: BrowserGraphProbe = {
+      controller: null,
+      layoutCount: 0,
+      readyCount: 0,
+      lifecycle: [],
+      nativeEvents: [],
+    };
     target.__atlasGraphAcceptance = probe;
     for (const type of ['mousedown', 'mouseup', 'click', 'dblclick']) {
       document.addEventListener(
@@ -39,6 +60,8 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
             target: event.target.tagName.toLowerCase(),
             x: event.clientX,
             y: event.clientY,
+            node: probe.controller?.measureNodes?.(['src']) ?? null,
+            viewport: probe.controller?.getViewport() ?? null,
           });
           if (probe.nativeEvents.length > 16) probe.nativeEvents.shift();
         },
@@ -61,6 +84,13 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
         return;
       }
       probe.controller = controller as GraphViewController;
+      probe.lifecycle.push({
+        type: event.type,
+        nodes: probe.controller.measureNodes?.(['src']) ?? null,
+        viewport: probe.controller.getViewport(),
+      });
+      if (probe.lifecycle.length > 16) probe.lifecycle.shift();
+      if (event.type === ready) probe.readyCount += 1;
       if (event.type === layoutComplete) probe.layoutCount += 1;
     };
     document.addEventListener(ready, capture);
@@ -71,6 +101,7 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
 /*** Exercise the actual production canvas with publicly measured src and features nodes. */
 export async function assertProductionCompoundCanvasAsync(page: Page): Promise<void> {
   await requireBreadcrumbsAsync(page, ['Home']);
+  await waitForInitialSettledGraphLayoutAsync(page);
   const navigationClick = await clickMeasuredNodeAsync(page, 'src', 2);
   try {
     await requireBreadcrumbsAsync(page, ['Home', 'src']);
@@ -178,7 +209,9 @@ async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNo
         graphBounds: bounds
           ? { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
           : null,
+        lifecycle: probe?.lifecycle ?? [],
         layoutCount: probe?.layoutCount ?? 0,
+        readyCount: probe?.readyCount ?? 0,
         measuredNode: node,
         nativeEvents: probe?.nativeEvents ?? [],
         nodeAfterClick: probe?.controller?.measureNodes?.([node.id]) ?? null,
@@ -188,6 +221,27 @@ async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNo
     },
     { clickPoint: click.point, node: click.node }
   );
+}
+
+/*** Require ZORA's initial public lifecycle before starting a native compound-navigation gesture. */
+async function waitForInitialSettledGraphLayoutAsync(page: Page): Promise<void> {
+  await page.waitForFunction(async () => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    if (probe?.controller === null || probe === undefined) return false;
+    if (probe.readyCount === 0 || probe.layoutCount === 0) return false;
+    const measure = () =>
+      JSON.stringify({
+        node: probe.controller?.measureNodes?.(['src']) ?? null,
+        viewport: probe.controller?.getViewport() ?? null,
+      });
+    const first = measure();
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    return measure() === first;
+  });
+  await readRenderedNodeAsync(page, 'src');
 }
 
 /*** Wait until the released GraphView controller measures the exact requested rendered node. */
