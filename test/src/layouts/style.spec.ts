@@ -113,6 +113,44 @@ describe('[getStyle]', () => {
     }
   });
 
+  it('colors selected repositories without changing dimensions or overriding vendor, audit, and selection states', () => {
+    const elements = {
+      nodes: [
+        { classes: 'repositoryColor0', data: { id: 'root', repositoryId: 'R_catalog' } },
+        {
+          classes: 'repositoryColor0',
+          data: { id: 'child', parent: 'root', repositoryId: 'R_catalog' },
+        },
+        { classes: 'isVendor', data: { id: 'vendor', repositoryId: 'R_catalog' } },
+        {
+          classes: 'repositoryColor0 auditCycle',
+          data: { id: 'audit', auditCycleColor: '#dc2626', repositoryId: 'R_catalog' },
+        },
+      ],
+      edges: [],
+    };
+    const cy = cytoscape({
+      elements: toRenderableElements(elements),
+      headless: true,
+      styleEnabled: true,
+      style: getStyle(elements, createTheme('light')),
+    });
+    try {
+      const root = cy.getElementById('root');
+      const child = cy.getElementById('child');
+      const before = child.layoutDimensions({ nodeDimensionsIncludeLabels: true });
+      expect(root.style('background-color')).toBe('rgb(220,234,251)');
+      expect(child.style('background-color')).toBe('rgb(220,234,251)');
+      expect(cy.getElementById('vendor').style('background-color')).toBe('rgb(236,228,251)');
+      expect(cy.getElementById('audit').style('border-color')).toBe('rgb(220,38,38)');
+      root.select();
+      expect(root.style('background-color')).toBe('rgb(45,85,125)');
+      expect(child.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
+    } finally {
+      cy.destroy();
+    }
+  });
+
   it('keeps node dimensions stable across repeated style and highlight updates', () => {
     const elements = { nodes: [{ data: { id: 'a', name: 'a', label: 'package.a' } }], edges: [] };
     const cy = cytoscape({

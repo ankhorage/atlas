@@ -16,9 +16,16 @@ export interface GraphPalette {
   readonly selectedFill: string;
   readonly selectedRing: string;
   readonly selectedText: string;
+  readonly repositoryColors: readonly GraphRepositoryColor[];
   readonly weightMd: string;
   readonly weightXl: string;
   readonly weightXs: string;
+}
+
+interface GraphRepositoryColor {
+  readonly background: string;
+  readonly border: string;
+  readonly text: string;
 }
 
 /*** Maps the active ZORA theme semantics into Atlas graph presentation roles. */
@@ -39,6 +46,19 @@ export function getGraphPalette(theme: ZoraRuntimeTheme): GraphPalette {
     selectedFill: theme.semantics.selection.background,
     selectedRing: theme.semantics.selection.border,
     selectedText: theme.semantics.selection.content,
+    repositoryColors: [
+      theme.semantics.brand,
+      theme.semantics.secondary,
+      theme.semantics.accent,
+      theme.semantics.highlight,
+      theme.semantics.success,
+      theme.semantics.warning,
+      theme.semantics.info,
+    ].map(role => ({
+      background: role.softBg,
+      border: role.outline,
+      text: role.onSoftText,
+    })),
     weightMd: theme.semantics.border.strong,
     weightXl: theme.semantics.content.default,
     weightXs: theme.semantics.border.subtle,

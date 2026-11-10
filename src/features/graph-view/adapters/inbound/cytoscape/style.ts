@@ -5,6 +5,7 @@ import {
   getGraphPalette,
   type GraphPalette,
 } from '@/features/graph-view/adapters/inbound/cytoscape/getGraphPalette';
+import { getRepositoryColorStyles } from '@/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles';
 import { getWeightBuckets } from '@/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets';
 import { createCompoundOpacityIndex } from '@/features/graph-view/utils/createCompoundOpacityIndex';
 
@@ -14,13 +15,16 @@ export function getStyle(
   theme: ZoraRuntimeTheme
 ): StylesheetJson {
   const colors = getGraphPalette(theme);
+  const repositoryStyles = getRepositoryColorStyles(colors);
   const { thresholds } = getWeightBuckets(3, 'linear', filteredElements);
 
   return [
     ...getNodeBaseStyles(colors),
+    ...repositoryStyles.leaf,
     ...getNodeInteractionStyles(colors),
     ...getNodeStateStyles(colors),
     ...getCompoundStyles(colors),
+    ...repositoryStyles.compound,
     ...getCompoundOpacityStyles(filteredElements),
     ...getEdgeBaseStyles(colors),
     ...getEdgeWeightStyles(colors, thresholds),
