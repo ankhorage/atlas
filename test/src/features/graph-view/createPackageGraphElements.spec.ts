@@ -69,18 +69,45 @@ describe('[package graph Cytoscape presentation]', () => {
     expect(firstClasses.get('owner:example')).toBe('');
     expect(reorderedClasses).toEqual(firstClasses);
   });
+
+  it('derives identity only from repository IDs, including predictable palette collisions', () => {
+    const [firstCollision, secondCollision] = findRepositoryColorCollision();
+    const baseline = repositoryClasses(
+      repositoryGraph(['R_stable', firstCollision, secondCollision])
+    );
+    const relabeled = repositoryClasses(
+      repositoryGraph(['R_stable', firstCollision, secondCollision], {
+        [firstCollision]: 'unrelated-package-label',
+        [secondCollision]: 'another-unrelated-slug',
+      })
+    );
+    const filtered = repositoryClasses(repositoryGraph(['R_stable', firstCollision]));
+
+    expect(baseline.get(`repository.${firstCollision}`)).toBe(
+      baseline.get(`repository.${secondCollision}`)
+    );
+    expect(relabeled).toEqual(baseline);
+    expect(filtered.get('repository.R_stable')).toBe(baseline.get('repository.R_stable'));
+    expect(filtered.get(`repository.${firstCollision}`)).toBe(
+      baseline.get(`repository.${firstCollision}`)
+    );
+  });
 });
 
 /*** Builds selected repository nodes plus deliberately neutral owner and vendor nodes. */
-function repositoryGraph(repositoryIds: readonly string[]) {
+function repositoryGraph(
+  repositoryIds: readonly string[],
+  labels: Readonly<Record<string, string>> = {}
+) {
   return {
     nodes: [
       ...repositoryIds.flatMap(repositoryId => [
-        repositoryNode(`repository.${repositoryId}`, repositoryId, ''),
+        repositoryNode(`repository.${repositoryId}`, repositoryId, '', labels[repositoryId]),
         repositoryNode(
           `repository.${repositoryId}.module.src`,
           repositoryId,
-          `repository.${repositoryId}`
+          `repository.${repositoryId}`,
+          labels[repositoryId]
         ),
       ]),
       {
@@ -111,23 +138,45 @@ function repositoryGraph(repositoryIds: readonly string[]) {
 }
 
 /*** Creates one first-party node whose identity is independent from its display path. */
-function repositoryNode(id: string, repositoryId: string, parent: string) {
+function repositoryNode(id: string, repositoryId: string, parent: string, label = repositoryId) {
   return {
     id,
     data: {
       classification: 'intrinsic' as const,
       isIntrinsic: true,
-      label: id.includes('R_zora')
-        ? 'package-name-unlike-slug'
-        : id.endsWith('.src')
-          ? 'src'
-          : repositoryId,
+      label: id.endsWith('.src') ? `${label}/src` : label,
       name: id,
       parent,
       path: id,
       repositoryId,
     },
   };
+}
+
+/*** Reads presentation classes through the owning graph-element boundary. */
+function repositoryClasses(graph: ReturnType<typeof repositoryGraph>): Map<string, string> {
+  return new Map(
+    createPackageGraphElements(graph).nodes.map(node => {
+      if (typeof node.data.id !== 'string') throw new Error('Graph node is missing its ID.');
+      return [node.data.id, normalizeClasses(node.classes)];
+    })
+  );
+}
+
+/*** Finds two stable test identities that deliberately share one of the seven public palette slots. */
+function findRepositoryColorCollision(): readonly [string, string] {
+  const byClass = new Map<string, string>();
+  for (let index = 0; index < 100; index += 1) {
+    const repositoryId = `R_collision_${index}`;
+    const colorClass = repositoryClasses(repositoryGraph([repositoryId])).get(
+      `repository.${repositoryId}`
+    );
+    if (colorClass === undefined) throw new Error('Repository root did not receive a color class.');
+    const first = byClass.get(colorClass);
+    if (first !== undefined) return [first, repositoryId];
+    byClass.set(colorClass, repositoryId);
+  }
+  throw new Error('Expected a collision within the seven-slot repository palette.');
 }
 
 /*** Normalizes Cytoscape's string-or-token-list class representation for assertions. */
