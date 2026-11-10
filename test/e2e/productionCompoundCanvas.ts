@@ -1,0 +1,361 @@
+import { mkdir } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+import {
+  GraphView,
+  type GraphViewController,
+  type GraphViewMeasurement,
+  type GraphViewViewport,
+} from '@zora/graph-view';
+import type { Page } from 'playwright-core';
+
+interface BrowserGraphProbe {
+  controller: GraphViewController | null;
+  layoutCount: number;
+  readyCount: number;
+  lifecycle: BrowserGraphLifecycle[];
+  nativeEvents: {
+    readonly type: string;
+    readonly detail: number;
+    readonly target: string;
+    readonly x: number;
+    readonly y: number;
+    readonly node: GraphViewMeasurement | null;
+    readonly viewport: GraphViewViewport | null;
+  }[];
+}
+
+interface BrowserGraphLifecycle {
+  readonly type: string;
+  readonly nodes: GraphViewMeasurement | null;
+  readonly viewport: GraphViewViewport;
+}
+
+interface MeasuredNodeClick {
+  readonly node: Awaited<ReturnType<typeof readRenderedNodeAsync>>;
+  readonly point: { readonly x: number; readonly y: number };
+}
+
+/*** Capture only the published GraphView controller events inside the test browser context. */
+export async function installProductionGraphProbeAsync(page: Page): Promise<void> {
+  await page.addInitScript(({ ready, layoutComplete }) => {
+    const target = window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe };
+    const probe: BrowserGraphProbe = {
+      controller: null,
+      layoutCount: 0,
+      readyCount: 0,
+      lifecycle: [],
+      nativeEvents: [],
+    };
+    target.__atlasGraphAcceptance = probe;
+    for (const type of ['mousedown', 'mouseup', 'click', 'dblclick']) {
+      document.addEventListener(
+        type,
+        event => {
+          if (!(event instanceof MouseEvent) || !(event.target instanceof Element)) return;
+          if (event.target.closest('[role="application"][aria-label="Graph"]') === null) return;
+          probe.nativeEvents.push({
+            type: event.type,
+            detail: event.detail,
+            target: event.target.tagName.toLowerCase(),
+            x: event.clientX,
+            y: event.clientY,
+            node: probe.controller?.measureNodes?.(['src']) ?? null,
+            viewport: probe.controller?.getViewport() ?? null,
+          });
+          if (probe.nativeEvents.length > 16) probe.nativeEvents.shift();
+        },
+        true
+      );
+    }
+    const capture = (event: Event) => {
+      if (!(event instanceof CustomEvent) || !(event.target instanceof HTMLElement)) return;
+      if (event.target.getAttribute('role') !== 'application') return;
+      if (event.target.getAttribute('aria-label') !== 'Graph') return;
+      const detail: unknown = event.detail;
+      if (typeof detail !== 'object' || detail === null || !('controller' in detail)) return;
+      const controller = detail.controller;
+      if (
+        typeof controller !== 'object' ||
+        controller === null ||
+        !('measureNodes' in controller) ||
+        typeof controller.measureNodes !== 'function'
+      ) {
+        return;
+      }
+      probe.controller = controller as GraphViewController;
+      probe.lifecycle.push({
+        type: event.type,
+        nodes: probe.controller.measureNodes?.(['src']) ?? null,
+        viewport: probe.controller.getViewport(),
+      });
+      if (probe.lifecycle.length > 16) probe.lifecycle.shift();
+      if (event.type === ready) probe.readyCount += 1;
+      if (event.type === layoutComplete) probe.layoutCount += 1;
+    };
+    document.addEventListener(ready, capture);
+    document.addEventListener(layoutComplete, capture);
+  }, GraphView.events);
+}
+
+/*** Exercise the actual production canvas with publicly measured src and features nodes. */
+export async function assertProductionCompoundCanvasAsync(page: Page): Promise<void> {
+  await requireBreadcrumbsAsync(page, ['Home']);
+  await waitForInitialSettledGraphLayoutAsync(page);
+  const navigationClick = await clickMeasuredNodeAsync(page, 'src', 2);
+  try {
+    await requireBreadcrumbsAsync(page, ['Home', 'src']);
+  } catch (error) {
+    const evidence = await readCompoundNavigationEvidenceAsync(page, navigationClick).catch(
+      diagnosticError => ({ diagnosticError: String(diagnosticError) })
+    );
+    console.error('Production compound navigation diagnostic:', JSON.stringify(evidence));
+    await saveEvidenceAsync(page, 'production-navigation-failure.png').catch(() => undefined);
+    throw new Error(
+      `Production compound navigation failed; original error: ${String(error)}; ` +
+        `browser evidence: ${JSON.stringify(evidence)}`
+    );
+  }
+
+  const compounds = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
+  if (!(await isSwitchEnabledAsync(compounds))) await compounds.click();
+  if (!(await isSwitchEnabledAsync(compounds)))
+    throw new Error('Production GraphView did not enable its compound projection.');
+
+  const depth = page.getByLabel('Subpackage depth', { exact: true });
+  const maximumDepth = await depth.getAttribute('max');
+  if (maximumDepth === null || Number(maximumDepth) < 2)
+    throw new Error('Compound fixture does not expose the required nested package depth.');
+  const previousDepth = await depth.inputValue();
+  const previousLayoutCount = await readGraphLayoutCountAsync(page);
+  await depth.press('End');
+  if ((await depth.inputValue()) !== maximumDepth)
+    throw new Error('Keyboard input did not set the maximum visible package depth.');
+  if (previousDepth !== maximumDepth)
+    await waitForSettledGraphLayoutAsync(page, previousLayoutCount);
+  await readRenderedNodeAsync(page, 'src.features');
+  await readRenderedNodeAsync(page, 'src.features.nested');
+
+  const breadcrumbBefore = await readBreadcrumbsAsync(page);
+  const viewportBefore = await readPublicViewportAsync(page);
+  await clickMeasuredNodeAsync(page, 'src.features', 1);
+  await page.getByRole('treeitem', { selected: true, name: /features/iu }).waitFor();
+
+  await requireBreadcrumbsAsync(page, breadcrumbBefore);
+  const viewportAfter = await readPublicViewportAsync(page);
+  assertSame('real canvas compound press preserves viewport', viewportAfter, viewportBefore);
+  await readRenderedNodeAsync(page, 'src.features.nested');
+  await saveEvidenceAsync(page, 'production-compound-light.png');
+
+  const graph = page.getByRole('application', { name: 'Graph' });
+  const lightBackground = await graph.evaluate(
+    element => getComputedStyle(element).backgroundColor
+  );
+  await page.getByRole('button', { name: 'Dark', exact: true }).click();
+  await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+  const darkBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
+  if (lightBackground === darkBackground)
+    throw new Error('Real GraphView background did not respond to dark mode.');
+  assertSame(
+    'dark mode preserves selection viewport',
+    await readPublicViewportAsync(page),
+    viewportAfter
+  );
+  await page.getByRole('treeitem', { selected: true, name: /features/iu }).waitFor();
+  await saveEvidenceAsync(page, 'production-compound-dark.png');
+}
+
+/*** Press a measured node once or twice using actual public rendered geometry on the real canvas. */
+async function clickMeasuredNodeAsync(
+  page: Page,
+  nodeId: string,
+  clickCount: number
+): Promise<MeasuredNodeClick> {
+  const node = await readRenderedNodeAsync(page, nodeId);
+  const graph = page.getByRole('application', { name: 'Graph' });
+  const box = await graph.boundingBox();
+  if (box === null) throw new Error('The real GraphView canvas has no visible bounds.');
+  const isCompound = nodeId === 'src.features';
+  const position = isCompound
+    ? {
+        x: node.position.x - node.size.width * 0.4,
+        y: node.position.y - node.size.height * 0.4,
+      }
+    : node.position;
+  if (position.x <= 0 || position.y <= 0 || position.x >= box.width || position.y >= box.height)
+    throw new Error(`Measured graph node ${nodeId} lies outside its rendered canvas.`);
+  const point = { x: box.x + position.x, y: box.y + position.y };
+  await page.mouse.move(point.x, point.y);
+  if (clickCount === 2) await page.mouse.dblclick(point.x, point.y, { delay: 40 });
+  else await page.mouse.click(point.x, point.y);
+  return { node, point };
+}
+
+/*** Capture public browser evidence when a real compound navigation does not settle. */
+async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNodeClick) {
+  return page.evaluate(
+    ({ clickPoint, node }) => {
+      const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+        .__atlasGraphAcceptance;
+      const home = [...document.querySelectorAll('*')].find(
+        element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
+      );
+      const target = document.elementFromPoint(clickPoint.x, clickPoint.y);
+      const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+      const bounds = graph?.getBoundingClientRect();
+      return {
+        breadcrumbs: home?.parentElement?.parentElement?.parentElement?.textContent ?? null,
+        clickPoint,
+        graphBounds: bounds
+          ? { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
+          : null,
+        lifecycle: probe?.lifecycle ?? [],
+        layoutCount: probe?.layoutCount ?? 0,
+        readyCount: probe?.readyCount ?? 0,
+        measuredNode: node,
+        nativeEvents: probe?.nativeEvents ?? [],
+        nodeAfterClick: probe?.controller?.measureNodes?.([node.id]) ?? null,
+        target: target?.outerHTML.slice(0, 1000) ?? null,
+        workspace: document.body.innerText.slice(0, 1500),
+      };
+    },
+    { clickPoint: click.point, node: click.node }
+  );
+}
+
+/*** Require ZORA's initial public lifecycle before starting a native compound-navigation gesture. */
+async function waitForInitialSettledGraphLayoutAsync(page: Page): Promise<void> {
+  await page.waitForFunction(async () => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    if (probe?.controller === null || probe === undefined) return false;
+    if (probe.readyCount === 0 || probe.layoutCount === 0) return false;
+    const measure = () =>
+      JSON.stringify({
+        node: probe.controller?.measureNodes?.(['src']) ?? null,
+        viewport: probe.controller?.getViewport() ?? null,
+      });
+    const first = measure();
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    return measure() === first;
+  });
+  await readRenderedNodeAsync(page, 'src');
+}
+
+/*** Wait until the released GraphView controller measures the exact requested rendered node. */
+async function readRenderedNodeAsync(page: Page, nodeId: string) {
+  await page.waitForFunction(id => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    const result = probe?.controller?.measureNodes?.([id]);
+    return (
+      result?.nodes.some(node => node.id === id && node.size.width > 0 && node.size.height > 0) ??
+      false
+    );
+  }, nodeId);
+  const measurement = await page.evaluate(id => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    return probe?.controller?.measureNodes?.([id]) ?? null;
+  }, nodeId);
+  const node = measurement?.nodes.find(item => item.id === nodeId);
+  if (node === undefined)
+    throw new Error(`Public GraphView controller cannot measure production node ${nodeId}.`);
+  return node;
+}
+
+/*** Read the latest public layout-complete generation before changing graph geometry. */
+async function readGraphLayoutCountAsync(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    return probe?.layoutCount ?? 0;
+  });
+}
+
+/*** Wait for ZORA's settled layout and unchanged measured geometry across browser frames. */
+async function waitForSettledGraphLayoutAsync(page: Page, previousLayoutCount: number) {
+  await page.waitForFunction(async previous => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    if (probe?.controller === null || probe === undefined || probe.layoutCount <= previous)
+      return false;
+    const controller = probe.controller;
+    const measure = () =>
+      JSON.stringify({
+        viewport: controller.getViewport(),
+        nodes: controller.measureNodes?.(['src.features', 'src.features.nested']) ?? null,
+      });
+    const before = measure();
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    return measure() === before;
+  }, previousLayoutCount);
+}
+
+/*** Observe viewport ownership through the published controller, never a Cytoscape private API. */
+async function readPublicViewportAsync(page: Page) {
+  const viewport = await page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
+      .__atlasGraphAcceptance;
+    return probe?.controller?.getViewport() ?? null;
+  });
+  if (viewport === null) throw new Error('Public GraphView viewport is unavailable.');
+  return viewport;
+}
+
+/*** Read the same visible Home-anchored breadcrumb trail as the existing workspace tests. */
+async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
+  const home = page.getByText('Home', { exact: true });
+  const text = await home.locator('xpath=../../..').innerText();
+  return text
+    .split('›')
+    .map(part => part.trim().split('\n').at(-1) ?? '')
+    .filter(Boolean);
+}
+
+/*** Require real visible navigation labels without introducing production-only landmarks. */
+async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
+  await page.waitForFunction(expectedBreadcrumbs => {
+    const home = [...document.querySelectorAll('*')].find(
+      element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
+    );
+    const text = home?.parentElement?.parentElement?.parentElement?.innerText;
+    const breadcrumbs = text
+      ?.split('›')
+      .map(part => part.trim().split('\n').at(-1) ?? '')
+      .filter(Boolean);
+    return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
+  }, expected);
+  const actual = await readBreadcrumbsAsync(page);
+  assertSame('workspace breadcrumbs', actual, expected);
+}
+
+/*** Observe the existing generated switch semantics without adding an Atlas test hook. */
+async function isSwitchEnabledAsync(control: ReturnType<Page['getByRole']>): Promise<boolean> {
+  return control.evaluate(element => {
+    const thumb = element.querySelector(':scope > div > div > div');
+    return thumb instanceof HTMLElement && thumb.style.alignSelf === 'flex-end';
+  });
+}
+
+/*** Preserve concrete screenshots for review of real internal and directional graph edges. */
+async function saveEvidenceAsync(page: Page, name: string): Promise<void> {
+  const destination = resolve('artifacts/browser-acceptance');
+  await mkdir(destination, { recursive: true });
+  await page.getByRole('application', { name: 'Graph' }).screenshot({
+    path: resolve(destination, name),
+  });
+}
+
+/*** Compare exact browser states to detect unwanted navigation or automatic viewport changes. */
+function assertSame(label: string, actual: unknown, expected: unknown): void {
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    throw new Error(
+      `${label}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}.`
+    );
+  }
+}
