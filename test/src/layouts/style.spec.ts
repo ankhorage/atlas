@@ -23,8 +23,12 @@ describe('[getStyle]', () => {
         style: getStyle(elements, theme),
       });
       try {
-        expect(cy.getElementById('workspace').style('background-color')).toBe('rgb(253,236,200)');
-        expect(cy.getElementById('ordinary').style('background-color')).toBe('rgb(220,234,251)');
+        expect(cy.getElementById('workspace').style('background-color')).toBe(
+          rgb(theme.semantics.accent.softBg)
+        );
+        expect(cy.getElementById('ordinary').style('background-color')).toBe(
+          rgb(theme.semantics.brand.softBg)
+        );
       } finally {
         cy.destroy();
       }
@@ -110,6 +114,77 @@ describe('[getStyle]', () => {
       expect(node.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
     } finally {
       cy.destroy();
+    }
+  });
+
+  it('colors selected repositories without changing dimensions or overriding vendor, audit, and selection states', () => {
+    const elements = {
+      nodes: [
+        { classes: 'repositoryColor0', data: { id: 'root', repositoryId: 'R_catalog' } },
+        {
+          classes: 'repositoryColor0',
+          data: { id: 'child', parent: 'root', repositoryId: 'R_catalog' },
+        },
+        { classes: 'isVendor', data: { id: 'vendor', repositoryId: 'R_catalog' } },
+        {
+          classes: 'repositoryColor0 auditCycle',
+          data: { id: 'audit', auditCycleColor: '#dc2626', repositoryId: 'R_catalog' },
+        },
+      ],
+      edges: [],
+    };
+    const cy = cytoscape({
+      elements: toRenderableElements(elements),
+      headless: true,
+      styleEnabled: true,
+      style: getStyle(elements, createTheme('light')),
+    });
+    try {
+      const root = cy.getElementById('root');
+      const child = cy.getElementById('child');
+      const before = child.layoutDimensions({ nodeDimensionsIncludeLabels: true });
+      expect(root.style('background-color')).toBe('rgb(220,234,251)');
+      expect(child.style('background-color')).toBe('rgb(220,234,251)');
+      expect(cy.getElementById('vendor').style('background-color')).toBe('rgb(236,228,251)');
+      expect(cy.getElementById('audit').style('border-color')).toBe('rgb(220,38,38)');
+      root.select();
+      expect(root.style('background-color')).toBe('rgb(45,85,125)');
+      expect(child.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
+    } finally {
+      cy.destroy();
+    }
+  });
+
+  it('keeps all seven repository roles distinct and readable in representative light and dark themes', () => {
+    const elements = {
+      nodes: Array.from({ length: 7 }, (_, index) => ({
+        classes: `repositoryColor${index}`,
+        data: { id: `repository-${index}` },
+      })),
+      edges: [],
+    };
+    for (const theme of [createTheme('light'), createTheme('dark')]) {
+      const cy = cytoscape({
+        elements: toRenderableElements(elements),
+        headless: true,
+        styleEnabled: true,
+        style: getStyle(elements, theme),
+      });
+      try {
+        const backgrounds = elements.nodes.map(node =>
+          cy.getElementById(node.data.id).style('background-color')
+        );
+        expect(new Set(backgrounds).size).toBe(7);
+        for (const node of elements.nodes) {
+          const rendered = cy.getElementById(node.data.id);
+          expect(
+            contrastRatio(rendered.style('color'), rendered.style('background-color')) >= 4.5
+          ).toBe(true);
+          expect(rendered.style('border-color') !== rendered.style('background-color')).toBe(true);
+        }
+      } finally {
+        cy.destroy();
+      }
     }
   });
 
@@ -210,24 +285,8 @@ describe('[getStyle]', () => {
 function createTheme(mode: 'dark' | 'light'): ZoraRuntimeTheme {
   const surface = mode === 'dark' ? '#101820' : '#f7f9fc';
   const content = mode === 'dark' ? '#edf4fb' : '#15202b';
-  const role = {
-    base: '#245b92',
-    hover: '#1d4d7d',
-    strong: '#173f68',
-    softBg: '#dceafb',
-    softHover: '#c8ddf5',
-    softActive: '#b3cff0',
-    outline: '#537fad',
-    onSurfaceText: content,
-    onSolidText: '#ffffff',
-    onHoverText: '#ffffff',
-    onStrongText: '#ffffff',
-    onSoftText: '#173f68',
-    onSoftHoverText: '#173f68',
-    onSoftActiveText: '#173f68',
-    disabledBg: '#d4d9df',
-    onDisabledText: '#727b84',
-  };
+  const [brand, secondary, accent, highlight, success, warning, info] = repositoryRoles(mode);
+  const role = brand;
 
   return {
     colors: { primary: role.base },
@@ -235,14 +294,14 @@ function createTheme(mode: 'dark' | 'light'): ZoraRuntimeTheme {
     radii: { s: 6, m: 10 },
     semantics: {
       brand: role,
-      secondary: { ...role, softBg: '#ece4fb', outline: '#8069aa', onSoftText: '#402b68' },
-      accent: { ...role, softBg: '#fdecc8', outline: '#9a6b17', onSoftText: '#4c3200' },
-      highlight: role,
+      secondary,
+      accent,
+      highlight,
       danger: role,
-      success: role,
-      warning: role,
+      success,
+      warning,
       error: role,
-      info: role,
+      info,
       surface: {
         default: surface,
         subtle: mode === 'dark' ? '#18232d' : '#eef3f8',
@@ -276,6 +335,72 @@ function createTheme(mode: 'dark' | 'light'): ZoraRuntimeTheme {
       },
     },
   };
+}
+
+/*** Models representative, independently distinguishable ZORA semantic roles for presentation tests. */
+function repositoryRoles(mode: 'dark' | 'light') {
+  const colors =
+    mode === 'light'
+      ? [
+          ['#dceafb', '#537fad', '#173f68'],
+          ['#ece4fb', '#8069aa', '#402b68'],
+          ['#fdecc8', '#9a6b17', '#4c3200'],
+          ['#f9e0ec', '#aa557f', '#65183d'],
+          ['#d7f0df', '#47845b', '#153f24'],
+          ['#fce5c4', '#a8691d', '#542b00'],
+          ['#d9eff5', '#35778d', '#083d4d'],
+        ]
+      : [
+          ['#173f68', '#78a8d8', '#edf4fb'],
+          ['#402b68', '#b199df', '#f3ecff'],
+          ['#4c3200', '#d9ab55', '#fff1d6'],
+          ['#65183d', '#df8caf', '#ffeaf3'],
+          ['#153f24', '#7cc691', '#e7ffed'],
+          ['#542b00', '#e6a757', '#fff0dd'],
+          ['#083d4d', '#70bed3', '#e3faff'],
+        ];
+  return colors.map(([softBg, outline, onSoftText]) => ({
+    base: outline,
+    hover: outline,
+    strong: outline,
+    softBg,
+    softHover: softBg,
+    softActive: softBg,
+    outline,
+    onSurfaceText: onSoftText,
+    onSolidText: '#ffffff',
+    onHoverText: '#ffffff',
+    onStrongText: '#ffffff',
+    onSoftText,
+    onSoftHoverText: onSoftText,
+    onSoftActiveText: onSoftText,
+    disabledBg: '#d4d9df',
+    onDisabledText: '#727b84',
+  }));
+}
+
+/*** Calculates WCAG relative contrast from Cytoscape's normalized RGB output. */
+function contrastRatio(foreground: string, background: string): number {
+  const luminance = (color: string) => {
+    const channels = color.match(/\d+/gu)?.map(Number);
+    if (channels === undefined || channels.length < 3)
+      throw new Error(`Expected RGB color, got ${color}.`);
+    const [red, green, blue] = channels.map(channel => {
+      const normalized = channel / 255;
+      return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  };
+  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/*** Converts the representative ZORA semantic hex values to Cytoscape's normalized RGB output. */
+function rgb(hex: string): string {
+  const channels = hex.match(/[a-f0-9]{2}/giu)?.map(value => Number.parseInt(value, 16));
+  if (channels === undefined || channels.length !== 3)
+    throw new Error(`Expected hex color, got ${hex}.`);
+  return `rgb(${channels.join(',')})`;
 }
 
 function toRenderableElements(elements: ElementsDefinition): ElementsDefinition {
