@@ -120,6 +120,28 @@ jobs:
             echo "No build script found; skipping."
           fi
 
+      - name: Verify materialized ZORA owner version
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+
+          const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+          const materialization = JSON.parse(
+            readFileSync('.ankh/zora/web/materialization.json', 'utf8')
+          );
+          const expected = pkg.dependencies?.['@ankhorage/zora'];
+          if (
+            typeof expected !== 'string' ||
+            !/^\d+\.\d+\.\d+$/.test(expected) ||
+            materialization.ownerVersion !== expected
+          ) {
+            throw new Error(
+              `ZORA materialization mismatch: expected ${String(expected)}, received ${String(materialization.ownerVersion)}.`
+            );
+          }
+          console.log(`Verified ZORA materialization ownerVersion: ${expected}`);
+          NODE
+
       - name: Validate opted-in APM owner release
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.ankh?.apm === undefined ? 1 : 0)"; then
