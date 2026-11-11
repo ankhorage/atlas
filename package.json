@@ -73,13 +73,13 @@
     "infra:up": "bun src/cli/runAtlasInfraLifecycleAsync.ts up",
     "infra:status": "bun src/cli/runAtlasInfraLifecycleAsync.ts status",
     "image:build": "docker build --tag atlas-web:local .",
-    "zora:materialize": "bunx @ankhorage/ankh@0.12.2 zora sync --web",
+    "zora:materialize": "bunx @ankhorage/ankh@0.13.4 zora sync --web",
     "offline:bundle": "bun run zora:materialize && bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts",
     "docs": "paradox",
     "typecheck": "bun x tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@ankhorage/ankh": "^0.12.2",
+    "@ankhorage/ankh": "0.13.4",
     "@ankhorage/api-nextjs": "^0.2.0",
     "@ankhorage/capability": "^0.2.1",
     "@ankhorage/contracts": "^25.0.0",
