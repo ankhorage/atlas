@@ -7,7 +7,8 @@ import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 /*** Discover the repositories represented by owner or repository sources without materializing them. */
 export async function discoverWorkspaceGitHubSourcesAsync(
   sourceValue: string,
-  excludedRepositoryIds: ReadonlySet<string>
+  excludedRepositoryIds: ReadonlySet<string>,
+  selectedRepositoryIds?: ReadonlySet<string> | 'all'
 ): Promise<WorkspaceGitHubDiscovery> {
   const sources = sourceValue
     .split(',')
@@ -19,18 +20,32 @@ export async function discoverWorkspaceGitHubSourcesAsync(
     sources.map(source => discoverGitHubRepositoriesAsync({ authentication: 'anonymous', source }))
   );
   const repositories = dedupeRepositories(discoveries.flatMap(discovery => discovery.repositories));
-  const selectedIds = new Set(
-    discoveries.flatMap(discovery =>
-      discovery.selectedRepository === undefined
-        ? discovery.repositories.map(repository => repository.id)
-        : [discovery.selectedRepository.id]
-    )
-  );
+  const selectedIds =
+    selectedRepositoryIds === 'all'
+      ? new Set(repositories.map(repository => repository.id))
+      : (selectedRepositoryIds ?? selectedIdsFromDiscovery(discoveries));
+  const knownIds = new Set(repositories.map(repository => repository.id));
+  if ([...selectedIds].some(repositoryId => !knownIds.has(repositoryId)))
+    throw new Error('The selected GitHub repository is not available from this source.');
   const selectedRepositories = repositories.filter(
     repository => selectedIds.has(repository.id) && !excludedRepositoryIds.has(repository.id)
   );
 
   return { repositories, selectedRepositories };
+}
+
+/*** Preserve direct repository choices while owner discovery waits for an explicit selection. */
+function selectedIdsFromDiscovery(
+  discoveries: readonly {
+    readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
+    readonly selectedRepository?: GitHubRepositoryDiscoveryRepository;
+  }[]
+): ReadonlySet<string> {
+  return new Set(
+    discoveries.flatMap(discovery =>
+      discovery.selectedRepository === undefined ? [] : [discovery.selectedRepository.id]
+    )
+  );
 }
 
 /*** Keep repository identity stable when several owner sources overlap. */

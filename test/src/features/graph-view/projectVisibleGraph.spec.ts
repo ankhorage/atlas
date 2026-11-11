@@ -100,6 +100,63 @@ describe('[graph view projection]', () => {
     ]);
   });
 
+  it('uses repository names instead of technical repository identities at Home depth 1', () => {
+    const result = projectVisibleGraph({
+      currentPackage: '',
+      elements: {
+        nodes: [
+          {
+            data: {
+              id: 'repository.101',
+              isIntrinsic: true,
+              label: 'zora',
+              parent: '',
+              repositoryId: '101',
+            },
+          },
+          {
+            data: {
+              id: 'repository.202',
+              isIntrinsic: true,
+              label: 'studio',
+              parent: '',
+              repositoryId: '202',
+            },
+          },
+          {
+            data: {
+              id: 'repository.303',
+              isIntrinsic: true,
+              label: 'contracts',
+              parent: '',
+              repositoryId: '303',
+            },
+          },
+          {
+            data: {
+              id: 'repository.404',
+              isIntrinsic: true,
+              label: 'surface',
+              parent: '',
+              repositoryId: '404',
+            },
+          },
+        ],
+        edges: [],
+      },
+      showCompoundNodes: true,
+      showVendorPackages: true,
+      subPackageDepth: 1,
+    });
+
+    expect(result.elements.nodes.map(node => node.data.label)).toEqual([
+      'zora',
+      'studio',
+      'contracts',
+      'surface',
+    ]);
+  });
+
   it('does not skip an explicit cycle scope even when it has only one direct package', () => {
     const result = projectVisibleGraph({
       currentPackage: 'src.io',

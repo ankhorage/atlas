@@ -12,6 +12,7 @@ export default async function FixturePage({ searchParams }: FixturePageProps) {
 interface FixturePageProps {
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
+    readonly repositories?: string | readonly string[];
     readonly workspace?: string | readonly string[];
   }>;
 }

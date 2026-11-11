@@ -16,7 +16,7 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     ];
     const materializedRevisions: string[] = [];
     const result = await loadWorkspaceProjectSourceAsync(
-      'owner-a,owner-b',
+      'owner-a,owner-b|include=owner-a-catalog,owner-a-shared,owner-b-workspace,owner-b-disconnected,owner-b-failed',
       async () => ({ edges: [], nodes: [] }),
       async source => {
         if (source.kind !== 'github') throw new Error('Fixture only materializes GitHub sources.');
@@ -64,6 +64,77 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     assert.equal(
       result.workspace.value.tree.some(node => node.label === 'owner-b'),
       true
+    );
+  });
+
+  it('discovers an owner before materializing any repository', async () => {
+    const materialized: string[] = [];
+    const result = await loadWorkspaceProjectSourceAsync(
+      'owner-a',
+      async () => ({ edges: [], nodes: [] }),
+      async source => {
+        if (source.kind === 'github') materialized.push(source.url);
+        throw new Error('Discovery must not materialize a repository.');
+      },
+      async () => ({
+        repositories: [repository('owner-a-catalog', 'owner-a', 'catalog')],
+        selectedRepositories: [],
+      })
+    );
+
+    assert.equal(result.selectionRequired, true);
+    assert.deepEqual(materialized, []);
+    assert.deepEqual(
+      result.repositories?.map(item => [item.id, item.selected]),
+      [['owner-a-catalog', false]]
+    );
+  });
+
+  it('materializes only repository ids selected from the server-discovered owner inventory', async () => {
+    const repositories = [
+      repository('owner-a-catalog', 'owner-a', 'catalog'),
+      repository('owner-a-shared', 'owner-a', 'shared'),
+      repository('owner-a-excluded', 'owner-a', 'excluded'),
+    ];
+    const materialized: string[] = [];
+    const result = await loadWorkspaceProjectSourceAsync(
+      'owner-a|include=owner-a-catalog,owner-a-shared',
+      async () => ({ edges: [], nodes: [] }),
+      async source => {
+        if (source.kind !== 'github') throw new Error('Fixture only materializes GitHub sources.');
+        materialized.push(source.url);
+        const selected = repositories.find(repository => repository.url === source.url);
+        if (selected === undefined) throw new Error('Unexpected repository materialization.');
+        return {
+          source,
+          rootPath: resolve('test/fixtures/workspace-multi', selected.owner, selected.name),
+          projectName: selected.name,
+          cleanupAsync: async () => {},
+        };
+      },
+      async (_source, _excluded, selected) => ({
+        repositories,
+        selectedRepositories:
+          selected === 'all'
+            ? repositories
+            : repositories.filter(repository => selected?.has(repository.id)),
+      }),
+      undefined,
+      resolveRevision
+    );
+
+    assert.equal(result.workspace.ok, true);
+    assert.deepEqual(materialized.toSorted(), [
+      'https://github.com/owner-a/catalog',
+      'https://github.com/owner-a/shared',
+    ]);
+    assert.deepEqual(
+      result.repositories?.map(repository => [repository.id, repository.selected]),
+      [
+        ['owner-a-catalog', true],
+        ['owner-a-shared', true],
+        ['owner-a-excluded', false],
+      ]
     );
   });
 
@@ -122,7 +193,7 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
 
   it('keeps a successful repository workspace visible with a sanitized failed-repository status', async () => {
     const result = await loadWorkspaceProjectSourceAsync(
-      'ankhorage,another-owner',
+      'ankhorage,another-owner|include=repository-good,repository-broken',
       async () => ({ edges: [], nodes: [] }),
       async source => {
         if (source.kind === 'github' && source.url.endsWith('/broken'))

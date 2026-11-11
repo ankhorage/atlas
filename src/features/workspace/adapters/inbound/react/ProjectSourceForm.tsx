@@ -10,15 +10,7 @@ import type { WorkspaceRepositoryOption } from '@/features/workspace/composition
 /*** Edits a GitHub source and stages repository inclusion before one explicit workspace refresh. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
-  const visibleRepositories = useMemo(
-    () =>
-      props.repositories?.filter(repository =>
-        `${repository.owner}/${repository.name}`
-          .toLocaleLowerCase()
-          .includes(sourceForm.search.toLocaleLowerCase())
-      ) ?? [],
-    [props.repositories, sourceForm.search]
-  );
+  const visibleRepositories = useVisibleRepositories(props.repositories, sourceForm.search);
 
   return (
     <View
@@ -40,6 +32,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         search={sourceForm.search}
         selectedIds={sourceForm.selectedIds}
         totalCount={props.repositories?.length ?? 0}
+        initiallyOpen={props.selectionRequired}
         onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
         onSearchChange={sourceForm.setSearch}
         onSelectAll={() =>
@@ -60,6 +53,22 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   );
 }
 
+/*** Filters the server-discovered repository inventory without changing staged selection. */
+function useVisibleRepositories(
+  repositories: readonly WorkspaceRepositoryOption[] | undefined,
+  search: string
+): readonly WorkspaceRepositoryOption[] {
+  return useMemo(
+    () =>
+      repositories?.filter(repository =>
+        `${repository.owner}/${repository.name}`
+          .toLocaleLowerCase()
+          .includes(search.toLocaleLowerCase())
+      ) ?? [],
+    [repositories, search]
+  );
+}
+
 /*** Keeps staged source edits isolated until an explicit workspace refresh is requested. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
   const [source, setSource] = useState(readSource(props.currentSource));
@@ -68,8 +77,9 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
   const openSource = () => {
     const params = new URLSearchParams();
     const normalizedSource = source.trim();
-    if (normalizedSource !== '')
-      params.set('source', serializeSource(normalizedSource, props.repositories, selectedIds));
+    if (normalizedSource !== '') params.set('source', normalizedSource);
+    if (props.repositories !== undefined)
+      params.set('repositories', [...selectedIds].toSorted().join(','));
     window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
   };
   return { openSource, search, selectedIds, setSearch, setSelectedIds, setSource, source };
@@ -78,7 +88,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
 /*** Renders one searchable multi-select rather than a header action for every repository. */
 function RepositoryPicker(props: RepositoryPickerProps) {
   return (
-    <details>
+    <details open={props.initiallyOpen}>
       <summary aria-label="Choose repositories">
         Repositories ({props.selectedIds.size}/{props.totalCount})
       </summary>
@@ -146,28 +156,16 @@ function createSelectedRepositoryIds(
   );
 }
 
-/*** Preserve repository exclusions in the existing source query field. */
-function serializeSource(
-  source: string,
-  repositories: readonly WorkspaceRepositoryOption[] | undefined,
-  selectedIds: ReadonlySet<string>
-): string {
-  const excluded =
-    repositories
-      ?.filter(repository => !selectedIds.has(repository.id))
-      .map(repository => repository.id) ?? [];
-  return excluded.length === 0 ? source : `${source}|exclude=${excluded.join(',')}`;
-}
-
 /*** Remove query-only workspace selection state before displaying the editable source. */
 function readSource(currentSource: string | undefined): string {
-  return currentSource?.split('|exclude=')[0] ?? '';
+  return currentSource?.split('|')[0] ?? '';
 }
 
 interface ProjectSourceFormProps {
   readonly activeWorkspaceId?: string;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly selectionRequired?: boolean;
 }
 
 interface RepositoryPickerProps {
@@ -175,6 +173,7 @@ interface RepositoryPickerProps {
   readonly search: string;
   readonly selectedIds: ReadonlySet<string>;
   readonly totalCount: number;
+  readonly initiallyOpen?: boolean;
   readonly onDeselectAll: () => void;
   readonly onSearchChange: (search: string) => void;
   readonly onSelectAll: () => void;

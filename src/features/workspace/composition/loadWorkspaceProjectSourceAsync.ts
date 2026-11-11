@@ -30,6 +30,7 @@ export interface WorkspaceProjectSourceResult {
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly runtimeId?: string;
+  readonly selectionRequired?: boolean;
   readonly projectName: string;
   readonly workspace: WorkspaceLoadResult;
 }
@@ -128,8 +129,21 @@ async function loadGitHubWorkspaceAsync(
   runtime: WorkspaceRepositoryRuntime | undefined,
   signal?: AbortSignal
 ): Promise<WorkspaceProjectSourceResult> {
-  const { source, excludedRepositoryIds } = parseGitHubWorkspaceSource(sourceValue);
-  const discovery = await discoverAsync(source, excludedRepositoryIds);
+  const { excludedRepositoryIds, selectedRepositoryIds, source } =
+    parseGitHubWorkspaceSource(sourceValue);
+  const discovery = await discoverAsync(source, excludedRepositoryIds, selectedRepositoryIds);
+  const repositories = toRepositoryOptions(discovery);
+  if (
+    selectedRepositoryIds === undefined ||
+    (selectedRepositoryIds !== 'all' && selectedRepositoryIds.size === 0)
+  )
+    return {
+      currentSource: source,
+      projectName: 'Choose GitHub repositories',
+      repositories,
+      selectionRequired: true,
+      workspace: { ok: false, error: 'Choose one or more repositories, then select Open.' },
+    };
   const workspaceRuntime =
     runtime ??
     (materializeAsync === loadProjectSourceAsync &&
@@ -141,7 +155,7 @@ async function loadGitHubWorkspaceAsync(
     { repositories: discovery.selectedRepositories, source: sourceValue },
     signal
   );
-  return { ...result, repositories: toRepositoryOptions(discovery) };
+  return { ...result, repositories };
 }
 
 /*** Preserve picker state from discovery while keeping the runtime status model separate. */
@@ -158,16 +172,21 @@ function toRepositoryOptions(
 function parseGitHubWorkspaceSource(value: string): {
   readonly source: string;
   readonly excludedRepositoryIds: ReadonlySet<string>;
+  readonly selectedRepositoryIds?: ReadonlySet<string> | 'all';
 } {
-  const [source, exclusions = ''] = value.split('|exclude=');
+  const [source, selection = ''] = value.split('|');
+  const [kind, repositoryIds = ''] = selection.split('=');
+  const ids = new Set(
+    repositoryIds
+      .split(',')
+      .map(id => id.trim())
+      .filter(Boolean)
+  );
   return {
     source,
-    excludedRepositoryIds: new Set(
-      exclusions
-        .split(',')
-        .map(id => id.trim())
-        .filter(Boolean)
-    ),
+    excludedRepositoryIds: kind === 'exclude' ? ids : new Set(),
+    ...(kind === 'include' ? { selectedRepositoryIds: ids } : {}),
+    ...(kind === 'exclude' ? { selectedRepositoryIds: 'all' as const } : {}),
   };
 }
 

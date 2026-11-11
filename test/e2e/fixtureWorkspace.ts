@@ -142,7 +142,11 @@ function resolveFixtureRoot(): string {
 }
 
 /*** Provides overlapping owner discovery with stable repository identities for browser acceptance only. */
-function discoverFixtureAsync(ownerSource: string, excluded: ReadonlySet<string>) {
+function discoverFixtureAsync(
+  ownerSource: string,
+  excluded: ReadonlySet<string>,
+  selected?: ReadonlySet<string> | 'all'
+) {
   const owners = ownerSource
     .split(',')
     .map(owner => owner.trim().replace(/^@/u, ''))
@@ -155,7 +159,11 @@ function discoverFixtureAsync(ownerSource: string, excluded: ReadonlySet<string>
       )
     )
   );
-  const selectedRepositories = discovered.filter(repository => !excluded.has(repository.id));
+  const selectedRepositories = discovered.filter(
+    repository =>
+      !excluded.has(repository.id) &&
+      (selected === 'all' || (selected !== undefined && selected.has(repository.id)))
+  );
   return Promise.resolve({ repositories: discovered, selectedRepositories });
 }
 

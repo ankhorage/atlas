@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@zora/button';
-import { Card } from '@zora/card';
 import React from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
@@ -81,21 +80,22 @@ function RepositoryLoadFailures({
   const failures = statuses?.filter(status => status.status !== 'successful') ?? [];
   if (failures.length === 0) return null;
   return (
-    <section aria-label="Repository loading status" role="status" style={{ padding: 12 }}>
+    <section aria-label="Repository loading status" role="status" style={{ padding: 8 }}>
       {failures.map(({ description, repository, status }) => (
-        <Card
-          compact
+        <div
           key={repository.id}
-          description={description}
-          title={`${repository.owner}/${repository.name}: ${status}`}
-          tone="outline"
+          style={{ alignItems: 'center', display: 'flex', gap: 8, paddingBlock: 4 }}
         >
+          <span>
+            {repository.owner}/{repository.name}: {status}
+            {description === undefined ? '' : ` — ${description}`}
+          </span>
           {status === 'failed' && onRetry !== undefined ? (
             <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
               Retry
             </Button>
           ) : null}
-        </Card>
+        </div>
       ))}
     </section>
   );
@@ -114,7 +114,7 @@ function WorkspaceError({ message }: { readonly message: string }) {
         padding: 24,
       }}
     >
-      <Card compact description={message} title="Unable to load project" tone="outline" />
+      <span>Unable to load project: {message}</span>
     </div>
   );
 }
