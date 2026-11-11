@@ -70,7 +70,11 @@ jobs:
 
       - name: Build package
         env:
-          GITHUB_TOKEN: ${{ steps.release-token.outputs.token }}
+          # Ankh resolves GH_TOKEN before GITHUB_TOKEN while materializing ZORA.
+          # Public organization discovery requires the workflow token, not the
+          # repository-scoped App token retained for release writes.
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           ATLAS_PROJECT_PATH: ${{ github.workspace }}
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build ? 0 : 1)"; then
@@ -169,7 +173,10 @@ jobs:
       - name: Verify standalone packed install
         if: steps.release.outputs.versioned == 'true'
         env:
-          GITHUB_TOKEN: ${{ steps.release-token.outputs.token }}
+          # Keep Ankh's preferred GH_TOKEN and fallback GITHUB_TOKEN aligned for
+          # public provider discovery during the versioned, fresh install build.
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
           ATLAS_PROJECT_PATH: ${{ github.workspace }}
         run: |
           set -euo pipefail
@@ -331,6 +338,11 @@ jobs:
 
       - name: Publish unpublished packages
         if: hashFiles('.changeset/config.json') != ''
+        env:
+          # The APM fallback builds the package before publishing, so it has the
+          # same public provider-discovery boundary as the other release builds.
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           if ! node -e "const p=require('./package.json'); process.exit(p.ankh?.apm === undefined ? 1 : 0)"; then
             package_name="$(node -p "require('./package.json').name")"
