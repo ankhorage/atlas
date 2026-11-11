@@ -209,7 +209,7 @@ function readSource(currentSource: string | undefined): { readonly owner: string
     if (url.hostname !== 'github.com') return { owner: value };
     return { owner: url.pathname.split('/').find(Boolean) ?? '' };
   } catch {
-    return { owner: value };
+    return { owner: value.split('/').find(Boolean) ?? value };
   }
 }
 

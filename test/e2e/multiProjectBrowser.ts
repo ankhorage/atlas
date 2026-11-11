@@ -418,6 +418,17 @@ const scenarios: readonly Scenario[] = [
       await page.waitForURL(openedUrl => openedUrl.searchParams.get('source') === 'owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByText('No repository has been materialized yet.', { exact: false }).waitFor();
+      await openWorkspaceAsync(page, 'owner-a/catalog');
+      await page.getByText('catalog', { exact: true }).waitFor();
+      assert(
+        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
+        'Shorthand repository owner was not normalized.'
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        await page.getByLabel('owner-a/catalog').isChecked(),
+        'Shorthand repository was not selected.'
+      );
       await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
       await page.getByText('catalog', { exact: true }).waitFor();
       assert(

@@ -90,33 +90,40 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     );
   });
 
-  it('keeps a direct GitHub URL selected in its owner discovery inventory', async () => {
+  it('keeps direct repository sources selected in their discovery inventory', async () => {
     const catalog = repository('owner-a-catalog', 'owner-a', 'catalog');
-    const materialized: string[] = [];
-    const result = await loadWorkspaceProjectSourceAsync(
-      catalog.url,
-      async () => ({ edges: [], nodes: [] }),
-      async source => {
-        if (source.kind !== 'github') throw new Error('Fixture only materializes GitHub sources.');
-        materialized.push(source.url);
-        return {
-          source,
-          rootPath: resolve('examples/java/my-app'),
-          projectName: 'catalog',
-          cleanupAsync: async () => {},
-        };
-      },
-      async source => {
-        assert.equal(source, catalog.url);
-        return { repositories: [catalog], selectedRepositories: [catalog] };
-      },
-      undefined,
-      resolveRevision
-    );
+    const loadDirectRepositoryAsync = async (sourceValue: string) => {
+      const materialized: string[] = [];
+      const result = await loadWorkspaceProjectSourceAsync(
+        sourceValue,
+        async () => ({ edges: [], nodes: [] }),
+        async source => {
+          if (source.kind !== 'github')
+            throw new Error('Fixture only materializes GitHub sources.');
+          materialized.push(source.url);
+          return {
+            source,
+            rootPath: resolve('examples/java/my-app'),
+            projectName: 'catalog',
+            cleanupAsync: async () => {},
+          };
+        },
+        async source => {
+          assert.equal(source, sourceValue);
+          return { repositories: [catalog], selectedRepositories: [catalog] };
+        },
+        undefined,
+        resolveRevision
+      );
+      return { materialized, result };
+    };
 
-    assert.equal(result.workspace.ok, true);
-    assert.deepEqual(materialized, [catalog.url]);
-    assert.deepEqual(result.repositories, [{ ...catalog, selected: true }]);
+    for (const sourceValue of ['owner-a/catalog', catalog.url]) {
+      const { materialized, result } = await loadDirectRepositoryAsync(sourceValue);
+      assert.equal(result.workspace.ok, true);
+      assert.deepEqual(materialized, [catalog.url]);
+      assert.deepEqual(result.repositories, [{ ...catalog, selected: true }]);
+    }
   });
 
   it('materializes only repository ids selected from the server-discovered owner inventory', async () => {
@@ -185,25 +192,29 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     }
   });
 
-  it('keeps a rejected action as workspace state after GitHub materialization', async () => {
+  it('keeps GitHub discovery errors distinct from workspace analysis', async () => {
     const result = await loadWorkspaceProjectSourceAsync(
       'ankhorage/atlas',
       async () => {
-        throw new Error('Dependency analysis failed.');
+        throw new Error('The action must not run.');
       },
-      async source => ({
-        source,
-        rootPath: resolve('examples/java/my-app'),
-        projectName: 'atlas',
-        cleanupAsync: async () => {},
-      })
+      async () => {
+        throw new Error('Materialization must not run.');
+      },
+      async () => {
+        throw new Error('Unable to discover GitHub repository.');
+      }
     );
 
-    assert.deepEqual(result.workspace, { ok: false, error: 'Dependency analysis failed.' });
-    assert.equal(result.projectName, 'atlas');
+    assert.deepEqual(result.workspace, {
+      ok: false,
+      error: 'Unable to discover GitHub repository.',
+    });
+    assert.equal(result.projectName, '{unknown}');
   });
 
-  it('keeps GitHub materialization errors distinct from action errors', async () => {
+  it('keeps GitHub materialization failure as a sanitized repository status', async () => {
+    const atlas = repository('ankhorage-atlas', 'ankhorage', 'atlas');
     const result = await loadWorkspaceProjectSourceAsync(
       'ankhorage/atlas',
       async () => {
@@ -211,13 +222,23 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
       },
       async () => {
         throw new Error('Unable to materialize GitHub repository.');
-      }
+      },
+      async () => ({ repositories: [atlas], selectedRepositories: [atlas] }),
+      undefined,
+      resolveRevision
     );
 
     assert.deepEqual(result.workspace, {
       ok: false,
-      error: 'Unable to materialize GitHub repository.',
+      error: 'No selected GitHub repositories could be analyzed.',
     });
+    assert.deepEqual(result.repositoryStatuses, [
+      {
+        description: 'Repository materialization failed.',
+        repository: { id: 'ankhorage-atlas', name: 'atlas', owner: 'ankhorage' },
+        status: 'failed',
+      },
+    ]);
   });
 
   it('keeps a successful repository workspace visible with a sanitized failed-repository status', async () => {

@@ -5,13 +5,8 @@ import {
   resolveGitHubRepositoryRevisionAsync,
 } from '@ankhorage/repository/github';
 import { toErrorMessage } from '@ankhorage/utility/error';
-import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 
-import { parseProjectSource } from '@/features/project-source/application/use-cases/parseProjectSource';
-import {
-  discoverWorkspaceGitHubSourcesAsync,
-  isGitHubRepositorySource,
-} from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
+import { discoverWorkspaceGitHubSourcesAsync } from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import {
   createWorkspaceRepositoryRuntime,
@@ -68,13 +63,6 @@ export async function loadWorkspaceProjectSourceAsync(
   }
 
   try {
-    if (isShorthandGitHubRepositorySource(startupSource.source))
-      return await loadSingleGitHubWorkspaceAsync(
-        startupSource.source,
-        loadDependencyGraphAsync,
-        materializeAsync,
-        signal
-      );
     return await loadGitHubWorkspaceAsync(
       startupSource.source,
       loadDependencyGraphAsync,
@@ -93,28 +81,6 @@ export async function loadWorkspaceProjectSourceAsync(
         error: toErrorMessage(error, 'Unable to load GitHub repository.'),
       },
     };
-  }
-}
-
-/*** Preserve shorthand repository loading while full URLs retain the owner picker selection. */
-async function loadSingleGitHubWorkspaceAsync(
-  sourceValue: string,
-  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
-  materializeAsync: (source: ProjectSource, signal?: AbortSignal) => Promise<ResolvedProjectSource>,
-  signal?: AbortSignal
-): Promise<WorkspaceProjectSourceResult> {
-  const source = parseProjectSource(normalizeGitHubRepositoryUrl(sourceValue));
-  if (source.kind !== 'github')
-    throw new Error('The browser source field accepts GitHub repository URLs only.');
-  const resolved = await materializeAsync(source, signal);
-  try {
-    return {
-      currentSource: source.url,
-      projectName: resolved.projectName,
-      workspace: await loadWorkspaceAsync(resolved.rootPath, loadDependencyGraphAsync),
-    };
-  } finally {
-    await resolved.cleanupAsync();
   }
 }
 
@@ -205,20 +171,6 @@ function resolveGitHubRevisionAsync(
   signal?: AbortSignal
 ): Promise<GitHubRepositoryRevisionResolutionResult> {
   return resolveGitHubRepositoryRevisionAsync({ url, signal });
-}
-
-/*** Distinguish full GitHub URLs, which retain owner discovery state, from shorthand repository sources. */
-function isGitHubRepositoryUrl(source: string): boolean {
-  try {
-    return new URL(source).hostname === 'github.com';
-  } catch {
-    return false;
-  }
-}
-
-/*** Preserve direct shorthand behavior while full URLs retain owner discovery state. */
-function isShorthandGitHubRepositorySource(source: string): boolean {
-  return isGitHubRepositorySource(source) && !isGitHubRepositoryUrl(source);
 }
 
 /*** Keep the default cache process-local; another server instance transparently starts a fresh runtime. */

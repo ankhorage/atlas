@@ -2,7 +2,6 @@ import {
   discoverGitHubRepositoriesAsync,
   type GitHubRepositoryDiscoveryRepository,
 } from '@ankhorage/repository/github';
-import { normalizeGitHubRepositoryUrl } from '@ankhorage/utility/url';
 
 /*** Discover the repositories represented by owner or repository sources without materializing them. */
 export async function discoverWorkspaceGitHubSourcesAsync(
@@ -55,16 +54,6 @@ function dedupeRepositories(
   return [...new Map(repositories.map(repository => [repository.id, repository])).values()].sort(
     (left, right) => left.owner.localeCompare(right.owner) || left.name.localeCompare(right.name)
   );
-}
-
-/*** Distinguish canonical repository URLs from owner inputs accepted by Repository discovery. */
-export function isGitHubRepositorySource(source: string): boolean {
-  try {
-    normalizeGitHubRepositoryUrl(source);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 export interface WorkspaceGitHubDiscovery {

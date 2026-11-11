@@ -147,7 +147,10 @@ function discoverFixtureAsync(
   excluded: ReadonlySet<string>,
   selected?: ReadonlySet<string> | 'all'
 ) {
-  const directRepository = repositories.find(repository => repository.url === ownerSource);
+  const directRepository = repositories.find(
+    repository =>
+      repository.url === ownerSource || `${repository.owner}/${repository.name}` === ownerSource
+  );
   const owners = ownerSource
     .split(',')
     .map(owner => owner.trim().replace(/^@/u, ''))
