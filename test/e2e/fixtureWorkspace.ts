@@ -147,6 +147,7 @@ function discoverFixtureAsync(
   excluded: ReadonlySet<string>,
   selected?: ReadonlySet<string> | 'all'
 ) {
+  const directRepository = repositories.find(repository => repository.url === ownerSource);
   const owners = ownerSource
     .split(',')
     .map(owner => owner.trim().replace(/^@/u, ''))
@@ -159,12 +160,18 @@ function discoverFixtureAsync(
       )
     )
   );
-  const selectedRepositories = discovered.filter(
+  const discoveredRepositories = directRepository === undefined ? discovered : [directRepository];
+  const selectedRepositories = discoveredRepositories.filter(
     repository =>
       !excluded.has(repository.id) &&
-      (selected === 'all' || (selected !== undefined && selected.has(repository.id)))
+      (selected === 'all' ||
+        (selected !== undefined && selected.has(repository.id)) ||
+        repository.id === directRepository?.id)
   );
-  return Promise.resolve({ repositories: discovered, selectedRepositories });
+  return Promise.resolve({
+    repositories: discoveredRepositories,
+    selectedRepositories,
+  });
 }
 
 /*** Retains one canonical record when two owners expose the same repository through discovery. */

@@ -10,7 +10,6 @@ import React, { type ChangeEvent } from 'react';
 
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
 import { t } from '@/i18n/i18n';
-import type { DependencyFilterKind } from '@/types/settings';
 
 const LAYOUT_OPTIONS: readonly LayoutOptions['name'][] = [
   'breadthfirst',
@@ -18,12 +17,6 @@ const LAYOUT_OPTIONS: readonly LayoutOptions['name'][] = [
   'concentric',
   'elk',
   'grid',
-];
-const DEPENDENCY_KINDS: readonly DependencyFilterKind[] = [
-  'dependency',
-  'devDependency',
-  'peerDependency',
-  'optionalDependency',
 ];
 
 /*** Renders persistent graph controls from generated ZORA form and layout elements. */
@@ -44,9 +37,7 @@ function FilterSettings() {
     showCompoundNodes,
     showVendorPackages,
     dependencyPackagePrefix,
-    enabledDependencyKinds,
     setDependencyPackagePrefix,
-    toggleDependencyKind,
     toggleShowCompoundNodes,
     toggleShowVendorPackages,
   } = useSettings();
@@ -58,10 +49,6 @@ function FilterSettings() {
         placeholder={t('settings.packagePrefix')}
         value={dependencyPackagePrefix}
         onChangeText={setDependencyPackagePrefix}
-      />
-      <DependencyKindSettings
-        enabledKinds={enabledDependencyKinds}
-        onToggle={toggleDependencyKind}
       />
       <Switch
         accessibilityLabel={t('settings.showVendorPackages')}
@@ -85,23 +72,6 @@ function FilterSettings() {
       </Switch>
     </SettingsSection>
   );
-}
-
-/*** Renders independent controls for the canonical dependency declaration kinds. */
-function DependencyKindSettings({ enabledKinds, onToggle }: DependencyKindSettingsProps) {
-  return DEPENDENCY_KINDS.map(kind => (
-    <Switch
-      accessibilityLabel={t(`settings.${kind}`)}
-      checked={enabledKinds.has(kind)}
-      key={kind}
-      onCheckedChange={(checked: boolean) => {
-        if (checked !== enabledKinds.has(kind)) onToggle(kind);
-      }}
-      testID={`switch-${kind}`}
-    >
-      {t(`settings.${kind}`)}
-    </Switch>
-  ));
 }
 
 /*** Renders the visible subpackage-depth control. */
@@ -203,11 +173,6 @@ function SettingsSlider({ ariaLabel, max, min, onValueChange, step, value }: Set
 interface SettingsSectionProps {
   readonly children: React.ReactNode;
   readonly title: React.ReactNode;
-}
-
-interface DependencyKindSettingsProps {
-  readonly enabledKinds: ReadonlySet<DependencyFilterKind>;
-  readonly onToggle: (kind: DependencyFilterKind) => void;
 }
 
 interface SettingsSliderProps {

@@ -90,6 +90,35 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     );
   });
 
+  it('keeps a direct GitHub URL selected in its owner discovery inventory', async () => {
+    const catalog = repository('owner-a-catalog', 'owner-a', 'catalog');
+    const materialized: string[] = [];
+    const result = await loadWorkspaceProjectSourceAsync(
+      catalog.url,
+      async () => ({ edges: [], nodes: [] }),
+      async source => {
+        if (source.kind !== 'github') throw new Error('Fixture only materializes GitHub sources.');
+        materialized.push(source.url);
+        return {
+          source,
+          rootPath: resolve('examples/java/my-app'),
+          projectName: 'catalog',
+          cleanupAsync: async () => {},
+        };
+      },
+      async source => {
+        assert.equal(source, catalog.url);
+        return { repositories: [catalog], selectedRepositories: [catalog] };
+      },
+      undefined,
+      resolveRevision
+    );
+
+    assert.equal(result.workspace.ok, true);
+    assert.deepEqual(materialized, [catalog.url]);
+    assert.deepEqual(result.repositories, [{ ...catalog, selected: true }]);
+  });
+
   it('materializes only repository ids selected from the server-discovered owner inventory', async () => {
     const repositories = [
       repository('owner-a-catalog', 'owner-a', 'catalog'),

@@ -44,7 +44,7 @@ export function retryWorkspaceRepositoryAsync(
   return defaultWorkspaceRepositoryRuntime.retryAsync(runtimeId, repositoryId, signal);
 }
 
-/*** Load the configured local project or one GitHub URL supplied by the browser query. */
+/*** Load the configured local project or discover GitHub sources supplied by the browser query. */
 export async function loadWorkspaceProjectSourceAsync(
   sourceValue: string | undefined,
   loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
@@ -68,14 +68,13 @@ export async function loadWorkspaceProjectSourceAsync(
   }
 
   try {
-    if (isGitHubRepositorySource(startupSource.source)) {
+    if (isShorthandGitHubRepositorySource(startupSource.source))
       return await loadSingleGitHubWorkspaceAsync(
         startupSource.source,
         loadDependencyGraphAsync,
         materializeAsync,
         signal
       );
-    }
     return await loadGitHubWorkspaceAsync(
       startupSource.source,
       loadDependencyGraphAsync,
@@ -97,7 +96,7 @@ export async function loadWorkspaceProjectSourceAsync(
   }
 }
 
-/*** Preserve direct repository opening without an unnecessary GitHub discovery request. */
+/*** Preserve shorthand repository loading while full URLs retain the owner picker selection. */
 async function loadSingleGitHubWorkspaceAsync(
   sourceValue: string,
   loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
@@ -133,10 +132,7 @@ async function loadGitHubWorkspaceAsync(
     parseGitHubWorkspaceSource(sourceValue);
   const discovery = await discoverAsync(source, excludedRepositoryIds, selectedRepositoryIds);
   const repositories = toRepositoryOptions(discovery);
-  if (
-    selectedRepositoryIds === undefined ||
-    (selectedRepositoryIds !== 'all' && selectedRepositoryIds.size === 0)
-  )
+  if (discovery.selectedRepositories.length === 0)
     return {
       currentSource: source,
       projectName: 'Choose GitHub repositories',
@@ -209,6 +205,20 @@ function resolveGitHubRevisionAsync(
   signal?: AbortSignal
 ): Promise<GitHubRepositoryRevisionResolutionResult> {
   return resolveGitHubRepositoryRevisionAsync({ url, signal });
+}
+
+/*** Distinguish full GitHub URLs, which retain owner discovery state, from shorthand repository sources. */
+function isGitHubRepositoryUrl(source: string): boolean {
+  try {
+    return new URL(source).hostname === 'github.com';
+  } catch {
+    return false;
+  }
+}
+
+/*** Preserve direct shorthand behavior while full URLs retain owner discovery state. */
+function isShorthandGitHubRepositorySource(source: string): boolean {
+  return isGitHubRepositorySource(source) && !isGitHubRepositoryUrl(source);
 }
 
 /*** Keep the default cache process-local; another server instance transparently starts a fresh runtime. */

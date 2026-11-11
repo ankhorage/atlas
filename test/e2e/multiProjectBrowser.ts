@@ -411,13 +411,24 @@ async function assertTopmostControlAsync(control: Locator, name: string): Promis
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
-    'Discovers owner and GitHub URL source forms.',
+    'Discovers an entered owner and normalizes a pasted repository URL.',
     async page => {
-      await page.goto(`${url}/?source=owner-a`, { waitUntil: 'networkidle' });
+      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.getByLabel('GitHub owner').fill('owner-a');
+      await page.waitForURL(openedUrl => openedUrl.searchParams.get('source') === 'owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByText('No repository has been materialized yet.', { exact: false }).waitFor();
       await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
       await page.getByText('catalog', { exact: true }).waitFor();
+      assert(
+        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
+        'URL owner was not normalized.'
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        await page.getByLabel('owner-a/catalog').isChecked(),
+        'URL repository was not selected.'
+      );
       return [];
     }
   ),
@@ -559,13 +570,12 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
-    'dependency-kind-filter',
-    'Toggles runtime, dev, peer, and optional declarations.',
+    'dependency-kind-controls-absent',
+    'Keeps dependency evidence without dependency-kind UI controls.',
     async page => {
       await openWorkspaceAsync(page);
-      for (const label of dependencyKinds) await page.getByLabel(label).click();
       for (const label of dependencyKinds)
-        assert(!(await page.getByLabel(label).isChecked()), `${label} remained enabled.`);
+        assert((await page.getByLabel(label).count()) === 0, `${label} control is still visible.`);
       return [];
     }
   ),
@@ -673,7 +683,12 @@ const scenarios: readonly Scenario[] = [
     'Retries only the failed repository while retaining graph state and successful projects.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByText(/^owner-b\/failed: failed/u).waitFor();
+      const failureDetails = page.getByRole('status');
+      const failure = failureDetails.getByText(/^owner-b\/failed: failed/u);
+      await failure.waitFor({ state: 'attached' });
+      assert(!(await failure.isVisible()), 'Failed repository details were not collapsed.');
+      await failureDetails.locator('summary').click();
+      await failure.waitFor();
       await page.getByText('owner-a', { exact: true }).waitFor();
       await page.getByText('owner-b', { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Expand' }).first().click();
@@ -688,7 +703,7 @@ const scenarios: readonly Scenario[] = [
       });
       await page.getByRole('button', { name: 'Retry' }).click();
       await retryRequest;
-      await page.getByText(/^owner-b\/failed: failed/u).waitFor({ state: 'hidden' });
+      await failure.waitFor({ state: 'hidden' });
       assert(page.url() === location, 'Retry reloaded or navigated the page.');
       assert(
         (await page.getByText('catalog', { exact: true }).count()) === selectedCatalogs,

@@ -2,7 +2,7 @@
 import { Button } from '@zora/button';
 import { TextInput } from '@zora/text-input';
 import { View } from '@zora/view';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
@@ -20,8 +20,8 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
       style={{ flexWrap: 'wrap', maxWidth: 720, position: 'relative', zIndex: 1 }}
     >
       <TextInput
-        accessibilityLabel="GitHub owner or repository"
-        placeholder="ankhorage, @ankhorage, or GitHub URL"
+        accessibilityLabel="GitHub owner"
+        placeholder="ankhorage"
         size="s"
         value={sourceForm.source}
         onChangeText={sourceForm.setSource}
@@ -40,6 +40,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         }
         onSelectionChange={sourceForm.setSelectedIds}
       />
+      <RepositoryCopyButton sourceForm={sourceForm} />
       <Button size="s" variant="outline" onPress={sourceForm.openSource}>
         Open
       </Button>
@@ -50,6 +51,26 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         source={sourceForm.source}
       />
     </View>
+  );
+}
+
+/*** Copies the canonical URLs of the staged repository selection. */
+function RepositoryCopyButton({
+  sourceForm,
+}: {
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+}) {
+  return (
+    <Button
+      accessibilityLabel="Copy repository links"
+      disabled={sourceForm.selectedRepositories.length === 0}
+      leadingIcon={{ name: 'copy-outline' }}
+      size="s"
+      variant="ghost"
+      onPress={sourceForm.copyRepositoryLinks}
+    >
+      Copy
+    </Button>
   );
 }
 
@@ -71,9 +92,12 @@ function useVisibleRepositories(
 
 /*** Keeps staged source edits isolated until an explicit workspace refresh is requested. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
-  const [source, setSource] = useState(readSource(props.currentSource));
+  const initial = readSource(props.currentSource);
+  const [source, setSource] = useState(initial.owner);
   const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(props.repositories));
   const [search, setSearch] = useState('');
+  const selectedRepositories =
+    props.repositories?.filter(repository => selectedIds.has(repository.id)) ?? [];
   const openSource = () => {
     const params = new URLSearchParams();
     const normalizedSource = source.trim();
@@ -82,7 +106,28 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
       params.set('repositories', [...selectedIds].toSorted().join(','));
     window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
   };
-  return { openSource, search, selectedIds, setSearch, setSelectedIds, setSource, source };
+  const copyRepositoryLinks = () =>
+    void navigator.clipboard.writeText(
+      selectedRepositories.map(repository => repository.url).join('\n')
+    );
+  useEffect(() => {
+    if (source.trim() === '' || source.trim() === initial.owner) return;
+    const timer = window.setTimeout(() => {
+      window.location.assign(`/?${new URLSearchParams({ source: source.trim() }).toString()}`);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [initial.owner, source]);
+  return {
+    copyRepositoryLinks,
+    openSource,
+    search,
+    selectedIds,
+    selectedRepositories,
+    setSearch,
+    setSelectedIds,
+    setSource,
+    source,
+  };
 }
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
@@ -157,8 +202,15 @@ function createSelectedRepositoryIds(
 }
 
 /*** Remove query-only workspace selection state before displaying the editable source. */
-function readSource(currentSource: string | undefined): string {
-  return currentSource?.split('|')[0] ?? '';
+function readSource(currentSource: string | undefined): { readonly owner: string } {
+  const value = currentSource?.split('|')[0]?.trim() ?? '';
+  try {
+    const url = new URL(value);
+    if (url.hostname !== 'github.com') return { owner: value };
+    return { owner: url.pathname.split('/').find(Boolean) ?? '' };
+  } catch {
+    return { owner: value };
+  }
 }
 
 interface ProjectSourceFormProps {
