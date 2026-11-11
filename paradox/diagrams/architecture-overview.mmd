@@ -243,6 +243,9 @@ graph TD
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts["src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts"]
   package__ankhorage_atlas -.-> module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts --> module__ankh_zora_web_runtime_ZoraProvider_d_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts["src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"]
+  package__ankhorage_atlas -.-> module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts --> module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts["src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts"]
   package__ankhorage_atlas -.-> module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts["src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts"]
@@ -253,6 +256,7 @@ graph TD
   package__ankhorage_atlas -.-> module_src_features_graph_view_adapters_inbound_cytoscape_style_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --> module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --> module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --> module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --> module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --> module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts["src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"]
@@ -818,14 +822,21 @@ graph TD
   package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_next_config_ts
   module_test_e2e_offlineWorkspace_ts["test/e2e/offlineWorkspace.ts"]
   package__ankhorage_atlas -.-> module_test_e2e_offlineWorkspace_ts
+  module_test_e2e_offlineWorkspace_ts --> module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts["test/e2e/productionCompoundCanvas.ts"]
+  package__ankhorage_atlas -.-> module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts --> module__ankh_zora_web_components_graph_view_index_d_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts["test/fixtures/typescript/compound-selection/src/features/feature.ts"]
   package__ankhorage_atlas -.-> module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --> module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --> module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts["test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts"]
   package__ankhorage_atlas -.-> module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts["test/fixtures/typescript/compound-selection/src/index.ts"]
   package__ankhorage_atlas -.-> module_test_fixtures_typescript_compound_selection_src_index_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts --> module_test_fixtures_typescript_compound_selection_src_features_feature_ts
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts["test/fixtures/typescript/compound-selection/support/auxiliary.ts"]
+  package__ankhorage_atlas -.-> module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts["test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts"]
   package__ankhorage_atlas -.-> module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts["test/fixtures/workspace-multi/owner-a/catalog/src/index.ts"]
@@ -860,6 +871,8 @@ graph TD
   module_test_src_capabilities_spec_ts --> module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_ci_ciPathFilters_spec_ts["test/src/ci/ciPathFilters.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_ci_ciPathFilters_spec_ts
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts["test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"]
+  package__ankhorage_atlas -.-> module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts["test/src/cli/createAtlasRuntimeProvider.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_cli_createAtlasRuntimeProvider_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --> module_package_json

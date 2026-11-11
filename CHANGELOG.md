@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.0
+
+### Minor Changes
+
+- 4dd7e9a: Assign stable, theme-aware colors to selected repositories in multi-project graph workspaces.
+
 ## 0.17.0
 
 ### Minor Changes

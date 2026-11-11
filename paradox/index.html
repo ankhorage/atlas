@@ -339,7 +339,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts">
       src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts
-      <small>1 function</small>
+      <small>3 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/cytoscape/elk/style.ts">
@@ -350,6 +350,11 @@
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts">
       src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts
       <small>1 function</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts">
+      src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts
+      <small>3 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts">
@@ -878,7 +883,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>278</strong><span class="muted">modules</span></div>
+        <div><strong>282</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1215,6 +1220,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>.ankh/zora/web/runtime/ZoraProvider.d.ts</code></p>
     <p><strong>Exports:</strong> <code>getGraphPalette</code>, <code>GraphPalette</code></p>
+  </article><article class="item" data-search="src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts getRepositoryColorStyles">
+    <h3>src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts</code></p>
+    <p><strong>Exports:</strong> <code>getRepositoryColorStyles</code></p>
   </article><article class="item" data-search="src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts getWeightBuckets">
     <h3>src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1230,10 +1240,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>getStyle</code></p>
-  </article><article class="item" data-search="src/features/graph-view/adapters/inbound/cytoscape/style.ts .ankh/zora/web/runtime/ZoraProvider.d.ts src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts src/features/graph-view/utils/createCompoundOpacityIndex.ts getStyle">
+  </article><article class="item" data-search="src/features/graph-view/adapters/inbound/cytoscape/style.ts .ankh/zora/web/runtime/ZoraProvider.d.ts src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts src/features/graph-view/utils/createCompoundOpacityIndex.ts getStyle">
     <h3>src/features/graph-view/adapters/inbound/cytoscape/style.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>.ankh/zora/web/runtime/ZoraProvider.d.ts</code>, <code>src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts</code>, <code>src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts</code>, <code>src/features/graph-view/utils/createCompoundOpacityIndex.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>.ankh/zora/web/runtime/ZoraProvider.d.ts</code>, <code>src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts</code>, <code>src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts</code>, <code>src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts</code>, <code>src/features/graph-view/utils/createCompoundOpacityIndex.ts</code></p>
     <p><strong>Exports:</strong> <code>getStyle</code></p>
   </article><article class="item" data-search="src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts .ankh/zora/web/components/graph-view/index.d.ts src/features/graph-view/domain/getDependencyHighlightClasses.ts src/types/graphInteraction.ts applyGraphInteractionPresentation">
     <h3>src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts</h3>
@@ -1855,15 +1865,20 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>default</code></p>
-  </article><article class="item" data-search="test/e2e/offlineWorkspace.ts">
+  </article><article class="item" data-search="test/e2e/offlineWorkspace.ts test/e2e/productionCompoundCanvas.ts">
     <h3>test/e2e/offlineWorkspace.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Dependencies:</strong> <code>test/e2e/productionCompoundCanvas.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/features/feature.ts test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts feature">
+  </article><article class="item" data-search="test/e2e/productionCompoundCanvas.ts .ankh/zora/web/components/graph-view/index.d.ts assertProductionCompoundCanvasAsync installProductionGraphProbeAsync">
+    <h3>test/e2e/productionCompoundCanvas.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>.ankh/zora/web/components/graph-view/index.d.ts</code></p>
+    <p><strong>Exports:</strong> <code>assertProductionCompoundCanvasAsync</code>, <code>installProductionGraphProbeAsync</code></p>
+  </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/features/feature.ts test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts test/fixtures/typescript/compound-selection/support/auxiliary.ts feature">
     <h3>test/fixtures/typescript/compound-selection/src/features/feature.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts</code>, <code>test/fixtures/typescript/compound-selection/support/auxiliary.ts</code></p>
     <p><strong>Exports:</strong> <code>feature</code></p>
   </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts nestedFeature">
     <h3>test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts</h3>
@@ -1875,6 +1890,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>test/fixtures/typescript/compound-selection/src/features/feature.ts</code></p>
     <p><strong>Exports:</strong> <code>application</code></p>
+  </article><article class="item" data-search="test/fixtures/typescript/compound-selection/support/auxiliary.ts auxiliary">
+    <h3>test/fixtures/typescript/compound-selection/support/auxiliary.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>auxiliary</code></p>
   </article><article class="item" data-search="test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts dashboard">
     <h3>test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts</h3>
     <p class="muted">Referenced module</p>
@@ -1937,6 +1957,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/ci/ciPathFilters.spec.ts">
     <h3>test/src/ci/ciPathFilters.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts">
+    <h3>test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
@@ -2598,6 +2623,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts&quot;]
@@ -2608,6 +2636,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_style_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts[&quot;src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts&quot;]
@@ -3173,14 +3202,21 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_next_config_ts
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_offlineWorkspace_ts
+  module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_index_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts[&quot;test/fixtures/typescript/compound-selection/support/auxiliary.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/catalog/src/index.ts&quot;]
@@ -3215,6 +3251,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_ci_ciPathFilters_spec_ts
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_cli_createAtlasRuntimeProvider_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_package_json
@@ -3767,6 +3805,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts&quot;]
@@ -3777,6 +3818,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_graph_view_adapters_inbound_cytoscape_style_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts[&quot;src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts&quot;]
@@ -4342,14 +4384,21 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_next_config_ts
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_offlineWorkspace_ts
+  module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_index_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts[&quot;test/fixtures/typescript/compound-selection/support/auxiliary.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/catalog/src/index.ts&quot;]
@@ -4384,6 +4433,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_ci_ciPathFilters_spec_ts
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_cli_createAtlasRuntimeProvider_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts --&gt; module_package_json
@@ -4754,6 +4805,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/style.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts&quot;]
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/style.ts&quot;]
@@ -4883,9 +4935,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts[&quot;test/fixtures/typescript/compound-selection/support/auxiliary.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/catalog/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_shared_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/shared/src/index.ts&quot;]
@@ -4899,6 +4953,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -5094,8 +5149,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_constants_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts --&gt; module_src_types_dependencyAnalysis_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
@@ -5411,7 +5468,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_left_index_ts --&gt; module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_right_index_ts
   module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_right_index_ts --&gt; module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_left_index_ts
@@ -5643,6 +5703,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/style.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts&quot;]
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/style.ts&quot;]
@@ -5772,9 +5833,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts[&quot;test/fixtures/typescript/compound-selection/support/auxiliary.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/catalog/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_shared_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/shared/src/index.ts&quot;]
@@ -5788,6 +5851,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -5983,8 +6047,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_constants_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts --&gt; module_src_types_dependencyAnalysis_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module__ankh_zora_web_runtime_ZoraProvider_d_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts
+  module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts
   module_src_features_graph_view_adapters_inbound_cytoscape_style_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_src_features_graph_view_adapters_inbound_react_applyGraphInteractionPresentation_ts --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
@@ -6300,7 +6366,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_productionCompoundCanvas_ts --&gt; module__ankh_zora_web_components_graph_view_index_d_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
+  module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
   module_test_fixtures_typescript_compound_selection_src_index_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_left_index_ts --&gt; module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_right_index_ts
   module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_right_index_ts --&gt; module_test_fixtures_workspace_multi_owner_b_workspace_packages_client_src_left_index_ts
@@ -6534,6 +6603,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/style.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts&quot;]
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/style.ts&quot;]
@@ -6663,9 +6733,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts[&quot;test/fixtures/typescript/compound-selection/support/auxiliary.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/catalog/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_shared_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/shared/src/index.ts&quot;]
@@ -6679,6 +6751,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -6820,6 +6893,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_elk_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/elk/style.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getGraphPalette_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts&quot;]
+  module_src_features_graph_view_adapters_inbound_cytoscape_getRepositoryColorStyles_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_getWeightBuckets_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_layout_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/layout.ts&quot;]
   module_src_features_graph_view_adapters_inbound_cytoscape_grid_style_ts[&quot;src/features/graph-view/adapters/inbound/cytoscape/grid/style.ts&quot;]
@@ -6949,9 +7023,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
+  module_test_fixtures_typescript_compound_selection_support_auxiliary_ts[&quot;test/fixtures/typescript/compound-selection/support/auxiliary.ts&quot;]
   module_test_fixtures_typescript_nested_workspace_packages_dashboard_src_index_ts[&quot;test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_catalog_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/catalog/src/index.ts&quot;]
   module_test_fixtures_workspace_multi_owner_a_shared_src_index_ts[&quot;test/fixtures/workspace-multi/owner-a/shared/src/index.ts&quot;]
@@ -6965,6 +7041,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
   module_test_src_cli_parseAtlasCliArgs_spec_ts[&quot;test/src/cli/parseAtlasCliArgs.spec.ts&quot;]
@@ -7855,6 +7932,21 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts:6:1</code></p>
     <p>Converts projected package facts into Cytoscape classes without reclassifying owner data.</p>
     
+  </article><article class="item" data-search="repositoryColorClass src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts Maps an immutable repository identity onto a stable ZORA palette slot.&#10;&#10;Hashing each ID independently keeps existing repositories visually stable when sources are&#10;reordered, filtered, retried, or added. Seven semantic roles make collisions uncommon in the&#10;intended multi-project workspace size; a collision remains legible through the repository root&#10;label instead of causing unrelated repositories to reshuffle.">
+    <h3>repositoryColorClass</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts:25:1</code></p>
+    <p>Maps an immutable repository identity onto a stable ZORA palette slot.
+
+Hashing each ID independently keeps existing repositories visually stable when sources are
+reordered, filtered, retried, or added. Seven semantic roles make collisions uncommon in the
+intended multi-project workspace size; a collision remains legible through the repository root
+label instead of causing unrelated repositories to reshuffle.</p>
+    
+  </article><article class="item" data-search="hashRepositoryId src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts Produces one deterministic unsigned hash without deriving identity from a display label.">
+    <h3>hashRepositoryId</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts:31:1</code></p>
+    <p>Produces one deterministic unsigned hash without deriving identity from a display label.</p>
+    
   </article>
     </section>
   </section><section id="view-src-features-graph-view-adapters-inbound-cytoscape-elk-style-ts" class="view" data-view="src/features/graph-view/adapters/inbound/cytoscape/elk/style.ts" hidden>
@@ -7872,8 +7964,34 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
       <h2>src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts</h2>
       <article class="item" data-search="getGraphPalette src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts Maps the active ZORA theme semantics into Atlas graph presentation roles.">
     <h3>getGraphPalette</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts:25:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts:32:1</code></p>
     <p>Maps the active ZORA theme semantics into Atlas graph presentation roles.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-graph-view-adapters-inbound-cytoscape-getrepositorycolorstyles-ts" class="view" data-view="src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts" hidden>
+    <section class="panel">
+      <h2>src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts</h2>
+      <article class="item" data-search="getRepositoryColorStyles src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts Builds paint-only repository identity styles from the active ZORA semantic palette.">
+    <h3>getRepositoryColorStyles</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts:6:1</code></p>
+    <p>Builds paint-only repository identity styles from the active ZORA semantic palette.</p>
+    
+  </article><article class="item" data-search="getRepositoryLeafStyles src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts Paints first-party leaf nodes from their prepared immutable repository identity.&#10;&#10;Vendor nodes never receive a repository class. Hover, selected, and audit rules are emitted&#10;later, so transient interaction and audit evidence remain the stronger signals.">
+    <h3>getRepositoryLeafStyles</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts:19:1</code></p>
+    <p>Paints first-party leaf nodes from their prepared immutable repository identity.
+
+Vendor nodes never receive a repository class. Hover, selected, and audit rules are emitted
+later, so transient interaction and audit evidence remain the stronger signals.</p>
+    
+  </article><article class="item" data-search="getRepositoryCompoundStyles src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts Preserves selected and audit compound priority while retaining repository identity at rest.&#10;&#10;These declarations change paint only. Padding, border widths, labels, and geometry remain&#10;owned by the existing compound styles so repository identity cannot trigger graph re-layout.">
+    <h3>getRepositoryCompoundStyles</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts:36:1</code></p>
+    <p>Preserves selected and audit compound priority while retaining repository identity at rest.
+
+These declarations change paint only. Padding, border widths, labels, and geometry remain
+owned by the existing compound styles so repository identity cannot trigger graph re-layout.</p>
     
   </article>
     </section>
@@ -7917,17 +8035,17 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
       <h2>src/features/graph-view/adapters/inbound/cytoscape/style.ts</h2>
       <article class="item" data-search="getStyle src/features/graph-view/adapters/inbound/cytoscape/style.ts Builds the shared Cytoscape styles for the active theme.">
     <h3>getStyle</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:12:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:13:1</code></p>
     <p>Builds the shared Cytoscape styles for the active theme.</p>
     
   </article><article class="item" data-search="getNodeInteractionStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Shows leaf neighborhoods without changing layout geometry or dimming compound descendants.">
     <h3>getNodeInteractionStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:35:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:39:1</code></p>
     <p>Shows leaf neighborhoods without changing layout geometry or dimming compound descendants.</p>
     
   </article><article class="item" data-search="getNodeBaseStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Maps prepared node presentation data without per-element style callbacks.&#10;Preserve data(label): createGraphViewModel prepares labels outside Cytoscape style recalculation.&#10;ZORA owns measured label width. Keep height independent of the previous rendered height, otherwise repeated&#10;style updates can change geometry and trigger further layout work. The style regression tests&#10;cover stable dimensions across theme changes and updates to prepared label data.">
     <h3>getNodeBaseStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:57:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:61:1</code></p>
     <p>Maps prepared node presentation data without per-element style callbacks.
 Preserve data(label): createGraphViewModel prepares labels outside Cytoscape style recalculation.
 ZORA owns measured label width. Keep height independent of the previous rendered height, otherwise repeated
@@ -7936,28 +8054,28 @@ cover stable dimensions across theme changes and updates to prepared label data.
     
   </article><article class="item" data-search="getNodeStateStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Preserves selected-node and audit-cycle presentation.&#10;Audit overlays retain their existing geometry and remain separate from transient interactions.">
     <h3>getNodeStateStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:94:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:98:1</code></p>
     <p>Preserves selected-node and audit-cycle presentation.
 Audit overlays retain their existing geometry and remain separate from transient interactions.</p>
     
   </article><article class="item" data-search="getCompoundStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Shows softly tinted compound boundaries with bounded, prepared nested-depth opacity.">
     <h3>getCompoundStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:129:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:133:1</code></p>
     <p>Shows softly tinted compound boundaries with bounded, prepared nested-depth opacity.</p>
     
   </article><article class="item" data-search="getWorkspaceRootStyle src/features/graph-view/adapters/inbound/cytoscape/style.ts Paints owner-declared workspace roots with the active accent semantic.">
     <h3>getWorkspaceRootStyle</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:180:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:184:1</code></p>
     <p>Paints owner-declared workspace roots with the active accent semantic.</p>
     
   </article><article class="item" data-search="getCompoundOpacityStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Emits one numeric paint rule per visible depth, including depths created by detached endpoints.">
     <h3>getCompoundOpacityStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:195:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:199:1</code></p>
     <p>Emits one numeric paint rule per visible depth, including depths created by detached endpoints.</p>
     
   </article><article class="item" data-search="getEdgeBaseStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Keeps ordinary directed edges opaque to avoid the extra rendering cost of translucent arrows.&#10;Hushed edges are an intentional interaction state, not the base rendering policy. Retain arrows&#10;and loop-capable routing: cheaper edge styles must not silently remove dependency direction or&#10;lifted self-loops. Measure and discuss those visual tradeoffs before changing this baseline.">
     <h3>getEdgeBaseStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:219:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:223:1</code></p>
     <p>Keeps ordinary directed edges opaque to avoid the extra rendering cost of translucent arrows.
 Hushed edges are an intentional interaction state, not the base rendering policy. Retain arrows
 and loop-capable routing: cheaper edge styles must not silently remove dependency direction or
@@ -7965,12 +8083,12 @@ lifted self-loops. Measure and discuss those visual tradeoffs before changing th
     
   </article><article class="item" data-search="getEdgeWeightStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Applies the existing aggregate dependency-weight buckets.">
     <h3>getEdgeWeightStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:258:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:262:1</code></p>
     <p>Applies the existing aggregate dependency-weight buckets.</p>
     
   </article><article class="item" data-search="getCycleEdgeStyles src/features/graph-view/adapters/inbound/cytoscape/style.ts Shows audit steps above compound content only for active cycle edges.">
     <h3>getCycleEdgeStyles</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:290:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/cytoscape/style.ts:294:1</code></p>
     <p>Shows audit steps above compound content only for active cycle edges.</p>
     
   </article>

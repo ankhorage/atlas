@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.17.0",
+      "value": "v0.18.0",
       "color": "cb3837"
     },
     {
@@ -732,6 +732,16 @@
       ]
     },
     {
+      "path": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts"
+      ],
+      "exports": [
+        "getRepositoryColorStyles"
+      ]
+    },
+    {
       "path": "src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts",
       "isEntrypoint": false,
       "dependencies": [],
@@ -761,6 +771,7 @@
       "dependencies": [
         ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
+        "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts",
         "src/features/graph-view/utils/createCompoundOpacityIndex.ts"
       ],
@@ -2218,14 +2229,28 @@
     {
       "path": "test/e2e/offlineWorkspace.ts",
       "isEntrypoint": false,
-      "dependencies": [],
+      "dependencies": [
+        "test/e2e/productionCompoundCanvas.ts"
+      ],
       "exports": []
+    },
+    {
+      "path": "test/e2e/productionCompoundCanvas.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        ".ankh/zora/web/components/graph-view/index.d.ts"
+      ],
+      "exports": [
+        "assertProductionCompoundCanvasAsync",
+        "installProductionGraphProbeAsync"
+      ]
     },
     {
       "path": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts"
+        "test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts",
+        "test/fixtures/typescript/compound-selection/support/auxiliary.ts"
       ],
       "exports": [
         "feature"
@@ -2247,6 +2272,14 @@
       ],
       "exports": [
         "application"
+      ]
+    },
+    {
+      "path": "test/fixtures/typescript/compound-selection/support/auxiliary.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "auxiliary"
       ]
     },
     {
@@ -2354,6 +2387,12 @@
     },
     {
       "path": "test/src/ci/ciPathFilters.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    },
+    {
+      "path": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
@@ -4393,6 +4432,28 @@
       }
     },
     {
+      "name": "repositoryColorClass",
+      "description": "Maps an immutable repository identity onto a stable ZORA palette slot.\n\nHashing each ID independently keeps existing repositories visually stable when sources are\nreordered, filtered, retried, or added. Seven semantic roles make collisions uncommon in the\nintended multi-project workspace size; a collision remains legible through the repository root\nlabel instead of causing unrelated repositories to reshuffle.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "name": "hashRepositoryId",
+      "description": "Produces one deterministic unsigned hash without deriving identity from a display label.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
       "name": "getStyle",
       "description": "Returns Cytoscape style overrides for this layout.",
       "see": [],
@@ -4410,7 +4471,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
-        "line": 25,
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "name": "getRepositoryColorStyles",
+      "description": "Builds paint-only repository identity styles from the active ZORA semantic palette.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "name": "getRepositoryLeafStyles",
+      "description": "Paints first-party leaf nodes from their prepared immutable repository identity.\n\nVendor nodes never receive a repository class. Hover, selected, and audit rules are emitted\nlater, so transient interaction and audit evidence remain the stronger signals.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "name": "getRepositoryCompoundStyles",
+      "description": "Preserves selected and audit compound priority while retaining repository identity at rest.\n\nThese declarations change paint only. Padding, border widths, labels, and geometry remain\nowned by the existing compound styles so repository identity cannot trigger graph re-layout.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
+        "line": 36,
         "column": 1
       }
     },
@@ -4476,7 +4570,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 12,
+        "line": 13,
         "column": 1
       }
     },
@@ -4487,7 +4581,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 35,
+        "line": 39,
         "column": 1
       }
     },
@@ -4498,7 +4592,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 57,
+        "line": 61,
         "column": 1
       }
     },
@@ -4509,7 +4603,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 94,
+        "line": 98,
         "column": 1
       }
     },
@@ -4520,7 +4614,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 129,
+        "line": 133,
         "column": 1
       }
     },
@@ -4531,7 +4625,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 180,
+        "line": 184,
         "column": 1
       }
     },
@@ -4542,7 +4636,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 195,
+        "line": 199,
         "column": 1
       }
     },
@@ -4553,7 +4647,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 219,
+        "line": 223,
         "column": 1
       }
     },
@@ -4564,7 +4658,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 258,
+        "line": 262,
         "column": 1
       }
     },
@@ -4575,7 +4669,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 290,
+        "line": 294,
         "column": 1
       }
     },
@@ -9554,6 +9648,16 @@
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
+        "fromPath": "test/e2e/offlineWorkspace.ts",
+        "toPath": "test/e2e/productionCompoundCanvas.ts",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromPath": "test/e2e/productionCompoundCanvas.ts",
+        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
         "fromPath": "test/src/capabilities.spec.ts",
         "toPath": "src/capabilities/index.ts",
         "sourcePath": "test/src/capabilities.spec.ts"
@@ -11454,6 +11558,11 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts"
       },
       {
+        "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
+        "toPath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
+      },
+      {
         "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
         "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts"
@@ -11461,6 +11570,11 @@
       {
         "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
         "toPath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts"
+      },
+      {
+        "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
+        "toPath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts"
       },
       {
@@ -12292,6 +12406,11 @@
         "fromPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts"
+      },
+      {
+        "fromPath": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
+        "toPath": "test/fixtures/typescript/compound-selection/support/auxiliary.ts",
+        "sourcePath": "test/fixtures/typescript/compound-selection/src/features/feature.ts"
       },
       {
         "fromPath": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
@@ -13540,6 +13659,12 @@
       },
       {
         "fromSymbol": "test/e2e/offlineWorkspace.ts",
+        "toSymbol": "installProductionGraphProbeAsync",
+        "callExpression": "installProductionGraphProbeAsync",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/offlineWorkspace.ts",
         "toSymbol": "observeOfflineRuntime",
         "callExpression": "observeOfflineRuntime",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
@@ -13582,8 +13707,8 @@
       },
       {
         "fromSymbol": "assertWorkspace",
-        "toSymbol": "assertCompoundNodesEnabled",
-        "callExpression": "assertCompoundNodesEnabled",
+        "toSymbol": "assertProductionCompoundCanvasAsync",
+        "callExpression": "assertProductionCompoundCanvasAsync",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
@@ -13626,12 +13751,6 @@
         "fromSymbol": "assertOfflineSettingsInteractions",
         "toSymbol": "selectLayout",
         "callExpression": "selectLayout",
-        "sourcePath": "test/e2e/offlineWorkspace.ts"
-      },
-      {
-        "fromSymbol": "assertCompoundNodesEnabled",
-        "toSymbol": "isSwitchChecked",
-        "callExpression": "isSwitchChecked",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
@@ -13717,6 +13836,186 @@
         "toSymbol": "readRules",
         "callExpression": "readRules",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
+        "toSymbol": "measureNodes",
+        "callExpression": "probe.controller?.measureNodes",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
+        "toSymbol": "getViewport",
+        "callExpression": "probe.controller?.getViewport",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "capture",
+        "toSymbol": "measureNodes",
+        "callExpression": "probe.controller.measureNodes",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "capture",
+        "toSymbol": "getViewport",
+        "callExpression": "probe.controller.getViewport",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "requireBreadcrumbsAsync",
+        "callExpression": "requireBreadcrumbsAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "waitForInitialSettledGraphLayoutAsync",
+        "callExpression": "waitForInitialSettledGraphLayoutAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "clickMeasuredNodeAsync",
+        "callExpression": "clickMeasuredNodeAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "readCompoundNavigationEvidenceAsync",
+        "callExpression": "readCompoundNavigationEvidenceAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "saveEvidenceAsync",
+        "callExpression": "saveEvidenceAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "isSwitchEnabledAsync",
+        "callExpression": "isSwitchEnabledAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "readGraphLayoutCountAsync",
+        "callExpression": "readGraphLayoutCountAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "waitForSettledGraphLayoutAsync",
+        "callExpression": "waitForSettledGraphLayoutAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "readRenderedNodeAsync",
+        "callExpression": "readRenderedNodeAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "readBreadcrumbsAsync",
+        "callExpression": "readBreadcrumbsAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "readPublicViewportAsync",
+        "callExpression": "readPublicViewportAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "assertProductionCompoundCanvasAsync",
+        "toSymbol": "assertSame",
+        "callExpression": "assertSame",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "clickMeasuredNodeAsync",
+        "toSymbol": "readRenderedNodeAsync",
+        "callExpression": "readRenderedNodeAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
+        "toSymbol": "measureNodes",
+        "callExpression": "probe?.controller?.measureNodes",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "measure",
+        "toSymbol": "measureNodes",
+        "callExpression": "probe.controller?.measureNodes",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "measure",
+        "toSymbol": "getViewport",
+        "callExpression": "probe.controller?.getViewport",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
+        "toSymbol": "measure",
+        "callExpression": "measure",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "waitForInitialSettledGraphLayoutAsync",
+        "toSymbol": "readRenderedNodeAsync",
+        "callExpression": "readRenderedNodeAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "measure",
+        "toSymbol": "getViewport",
+        "callExpression": "controller.getViewport",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "measure",
+        "toSymbol": "measureNodes",
+        "callExpression": "controller.measureNodes",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
+        "toSymbol": "getViewport",
+        "callExpression": "probe?.controller?.getViewport",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "requireBreadcrumbsAsync",
+        "toSymbol": "readBreadcrumbsAsync",
+        "callExpression": "readBreadcrumbsAsync",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "requireBreadcrumbsAsync",
+        "toSymbol": "assertSame",
+        "callExpression": "assertSame",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "saveEvidenceAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
+      },
+      {
+        "fromSymbol": "saveEvidenceAsync",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
       },
       {
         "fromSymbol": "test/src/capabilities.spec.ts",
@@ -13873,6 +14172,42 @@
         "toSymbol": "readFile",
         "callExpression": "readFile",
         "sourcePath": "test/src/ci/ciPathFilters.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
+        "toSymbol": "getReleaseStep",
+        "callExpression": "getReleaseStep",
+        "sourcePath": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
+        "toSymbol": "getEnvironmentValue",
+        "callExpression": "getEnvironmentValue",
+        "sourcePath": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"
       },
       {
         "fromSymbol": "test/src/cli/createAtlasRuntimeProvider.spec.ts",
@@ -14094,6 +14429,30 @@
         "fromSymbol": "test/src/layouts/style.spec.ts",
         "toSymbol": "expect",
         "callExpression": "expect",
+        "sourcePath": "test/src/layouts/style.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/layouts/style.spec.ts",
+        "toSymbol": "rgb",
+        "callExpression": "rgb",
+        "sourcePath": "test/src/layouts/style.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/layouts/style.spec.ts",
+        "toSymbol": "contrastRatio",
+        "callExpression": "contrastRatio",
+        "sourcePath": "test/src/layouts/style.spec.ts"
+      },
+      {
+        "fromSymbol": "createTheme",
+        "toSymbol": "repositoryRoles",
+        "callExpression": "repositoryRoles",
+        "sourcePath": "test/src/layouts/style.spec.ts"
+      },
+      {
+        "fromSymbol": "contrastRatio",
+        "toSymbol": "luminance",
+        "callExpression": "luminance",
         "sourcePath": "test/src/layouts/style.spec.ts"
       },
       {
@@ -16566,6 +16925,54 @@
         "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
         "toSymbol": "expect",
         "callExpression": "expect",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
+        "toSymbol": "repositoryGraph",
+        "callExpression": "repositoryGraph",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
+        "toSymbol": "normalizeClasses",
+        "callExpression": "normalizeClasses",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
+        "toSymbol": "findRepositoryColorCollision",
+        "callExpression": "findRepositoryColorCollision",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
+        "toSymbol": "repositoryClasses",
+        "callExpression": "repositoryClasses",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
+        "toSymbol": "repositoryNode",
+        "callExpression": "repositoryNode",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "repositoryClasses",
+        "toSymbol": "createPackageGraphElements",
+        "callExpression": "createPackageGraphElements",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "findRepositoryColorCollision",
+        "toSymbol": "repositoryClasses",
+        "callExpression": "repositoryClasses",
+        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
+      },
+      {
+        "fromSymbol": "findRepositoryColorCollision",
+        "toSymbol": "repositoryGraph",
+        "callExpression": "repositoryGraph",
         "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
       },
       {
@@ -20139,6 +20546,30 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
       },
       {
+        "fromSymbol": "nodeClasses",
+        "toSymbol": "repositoryColorClass",
+        "callExpression": "repositoryColorClass",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
+      },
+      {
+        "fromSymbol": "repositoryColorClass",
+        "toSymbol": "hashRepositoryId",
+        "callExpression": "hashRepositoryId",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
+      },
+      {
+        "fromSymbol": "getRepositoryColorStyles",
+        "toSymbol": "getRepositoryCompoundStyles",
+        "callExpression": "getRepositoryCompoundStyles",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
+      },
+      {
+        "fromSymbol": "getRepositoryColorStyles",
+        "toSymbol": "getRepositoryLeafStyles",
+        "callExpression": "getRepositoryLeafStyles",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
+      },
+      {
         "fromSymbol": "getWeightBuckets",
         "toSymbol": "getMaxEdgeWeight",
         "callExpression": "getMaxEdgeWeight",
@@ -20160,6 +20591,12 @@
         "fromSymbol": "getStyle",
         "toSymbol": "getGraphPalette",
         "callExpression": "getGraphPalette",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts"
+      },
+      {
+        "fromSymbol": "getStyle",
+        "toSymbol": "getRepositoryColorStyles",
+        "callExpression": "getRepositoryColorStyles",
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts"
       },
       {
