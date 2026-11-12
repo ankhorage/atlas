@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.2
+
+### Patch Changes
+
+- dcef085: Restore explicit GitHub repository selection before multi-repository materialization.
+
 ## 0.18.1
 
 ### Patch Changes

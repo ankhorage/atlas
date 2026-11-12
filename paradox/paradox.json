@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.18.1",
+      "value": "v0.18.2",
       "color": "cb3837"
     },
     {
@@ -1277,7 +1277,6 @@
       "dependencies": [],
       "exports": [
         "discoverWorkspaceGitHubSourcesAsync",
-        "isGitHubRepositorySource",
         "WorkspaceGitHubDiscovery"
       ]
     },
@@ -1440,8 +1439,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/settings/adapters/inbound/react/useSettings.ts",
-        "src/i18n/i18n.ts",
-        "src/types/settings.ts"
+        "src/i18n/i18n.ts"
       ],
       "exports": [
         "SettingsPanel"
@@ -1581,6 +1579,18 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "src/types/projectTree.ts"
+      ],
+      "exports": [
+        "WorkspaceHeader"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
       "isEntrypoint": false,
       "dependencies": [
@@ -1621,13 +1631,12 @@
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
-        "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "src/types/audit.ts",
-        "src/types/projectTree.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
@@ -1837,7 +1846,6 @@
       "path": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/project-source/application/use-cases/parseProjectSource.ts",
         "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
@@ -5599,7 +5607,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/utils/projectVisibleGraph.ts",
-        "line": 145,
+        "line": 155,
         "column": 1
       }
     },
@@ -6622,7 +6630,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 8,
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "name": "selectedIdsFromDiscovery",
+      "description": "Preserve direct repository choices while owner discovery waits for an explicit selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
+        "line": 37,
         "column": 1
       }
     },
@@ -6633,18 +6652,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 37,
-        "column": 1
-      }
-    },
-    {
-      "name": "isGitHubRepositorySource",
-      "description": "Distinguish canonical repository URLs from owner inputs accepted by Repository discovery.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 46,
+        "line": 51,
         "column": 1
       }
     },
@@ -7084,7 +7092,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 30,
+        "line": 23,
         "column": 1
       }
     },
@@ -7095,18 +7103,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 42,
-        "column": 1
-      }
-    },
-    {
-      "name": "DependencyKindSettings",
-      "description": "Renders independent controls for the canonical dependency declaration kinds.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 91,
+        "line": 35,
         "column": 1
       }
     },
@@ -7117,7 +7114,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 108,
+        "line": 78,
         "column": 1
       }
     },
@@ -7128,7 +7125,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 126,
+        "line": 96,
         "column": 1
       }
     },
@@ -7139,7 +7136,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 130,
+        "line": 100,
         "column": 9
       }
     },
@@ -7150,7 +7147,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 147,
+        "line": 117,
         "column": 1
       }
     },
@@ -7161,7 +7158,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 165,
+        "line": 135,
         "column": 1
       }
     },
@@ -7172,7 +7169,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 177,
+        "line": 147,
         "column": 1
       }
     },
@@ -7183,7 +7180,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 181,
+        "line": 151,
         "column": 9
       }
     },
@@ -7293,7 +7290,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 31,
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "name": "withRepositorySelection",
+      "description": "Keep repository ids in an explicit query field while the server validates them against discovery.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "line": 39,
         "column": 1
       }
     },
@@ -7397,13 +7405,35 @@
       }
     },
     {
+      "name": "RepositoryCopyButton",
+      "description": "Copies the canonical URLs of the staged repository selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "line": 58,
+        "column": 1
+      }
+    },
+    {
+      "name": "useVisibleRepositories",
+      "description": "Filters the server-discovered repository inventory without changing staged selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "line": 78,
+        "column": 1
+      }
+    },
+    {
       "name": "useProjectSourceForm",
       "description": "Keeps staged source edits isolated until an explicit workspace refresh is requested.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 64,
+        "line": 94,
         "column": 1
       }
     },
@@ -7414,7 +7444,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 68,
+        "line": 101,
+        "column": 9
+      }
+    },
+    {
+      "name": "copyRepositoryLinks",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "line": 109,
         "column": 9
       }
     },
@@ -7425,7 +7466,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 79,
+        "line": 134,
         "column": 1
       }
     },
@@ -7436,7 +7477,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 118,
+        "line": 173,
         "column": 1
       }
     },
@@ -7447,7 +7488,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 133,
+        "line": 188,
         "column": 1
       }
     },
@@ -7458,18 +7499,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 141,
-        "column": 1
-      }
-    },
-    {
-      "name": "serializeSource",
-      "description": "Preserve repository exclusions in the existing source query field.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 150,
+        "line": 196,
         "column": 1
       }
     },
@@ -7480,7 +7510,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 163,
+        "line": 205,
         "column": 1
       }
     },
@@ -7826,13 +7856,57 @@
       }
     },
     {
+      "name": "WorkspaceHeader",
+      "description": "Renders workspace breadcrumbs, source selection, and theme action.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "name": "createBreadcrumbItems",
+      "description": "Creates package breadcrumbs from a stable Home root to the active package path.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
+      "name": "findRepositoryBreadcrumbs",
+      "description": "Present virtual owner and repository labels without leaking technical graph identities.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "line": 73,
+        "column": 1
+      }
+    },
+    {
+      "name": "normalizeGraphPackage",
+      "description": "Normalizes navigation paths to the package identity representation used by the graph view.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "line": 105,
+        "column": 1
+      }
+    },
+    {
       "name": "WorkspacePanels",
       "description": "Connect sidebar inspection controls to the one graph view without duplicating navigation state.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 17,
+        "line": 16,
         "column": 1
       }
     },
@@ -7843,7 +7917,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 50,
+        "line": 49,
         "column": 1
       }
     },
@@ -7854,7 +7928,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 74,
+        "line": 73,
         "column": 1
       }
     },
@@ -7865,7 +7939,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 105,
+        "line": 112,
         "column": 1
       }
     },
@@ -7953,7 +8027,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 23,
+        "line": 19,
         "column": 1
       }
     },
@@ -7964,18 +8038,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 72,
-        "column": 1
-      }
-    },
-    {
-      "name": "WorkspaceHeader",
-      "description": "Renders workspace breadcrumbs, source selector, and theme action.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 83,
+        "line": 71,
         "column": 1
       }
     },
@@ -7986,7 +8049,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 126,
+        "line": 82,
+        "column": 1
+      }
+    },
+    {
+      "name": "RepositorySelectionNotice",
+      "description": "Explain the discover-before-open state without representing it as a repository failure.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 134,
         "column": 1
       }
     },
@@ -7997,7 +8071,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 173,
+        "line": 152,
         "column": 1
       }
     },
@@ -8008,7 +8082,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 199,
+        "line": 178,
         "column": 1
       }
     },
@@ -8019,7 +8093,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 216,
+        "line": 195,
         "column": 1
       }
     },
@@ -8030,40 +8104,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 228,
-        "column": 1
-      }
-    },
-    {
-      "name": "createBreadcrumbItems",
-      "description": "Creates package breadcrumbs from a stable Home root to the active package path.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 236,
-        "column": 1
-      }
-    },
-    {
-      "name": "findRepositoryBreadcrumbs",
-      "description": "Present virtual owner and repository labels without leaking technical graph identities.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 252,
-        "column": 1
-      }
-    },
-    {
-      "name": "normalizeGraphPackage",
-      "description": "Normalizes navigation paths to the package identity representation used by the graph view.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 284,
+        "line": 207,
         "column": 1
       }
     },
@@ -9141,29 +9182,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 38,
+        "line": 34,
         "column": 1
       }
     },
     {
       "name": "loadWorkspaceProjectSourceAsync",
-      "description": "Load the configured local project or one GitHub URL supplied by the browser query.",
+      "description": "Load the configured local project or discover GitHub sources supplied by the browser query.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 47,
-        "column": 1
-      }
-    },
-    {
-      "name": "loadSingleGitHubWorkspaceAsync",
-      "description": "Preserve direct repository opening without an unnecessary GitHub discovery request.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 100,
+        "line": 43,
         "column": 1
       }
     },
@@ -9174,7 +9204,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 122,
+        "line": 88,
         "column": 1
       }
     },
@@ -9185,7 +9215,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 148,
+        "line": 124,
         "column": 1
       }
     },
@@ -9196,7 +9226,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 158,
+        "line": 134,
         "column": 1
       }
     },
@@ -9207,7 +9237,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 188,
+        "line": 169,
         "column": 1
       }
     },
@@ -10169,11 +10199,6 @@
         "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "toPath": "src/features/project-source/application/use-cases/parseProjectSource.ts",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
@@ -11631,11 +11656,6 @@
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": "src/types/settings.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
         "fromPath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
         "toPath": "src/features/settings/adapters/inbound/react/SettingsContext.ts",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
@@ -11771,6 +11791,21 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toPath": "src/types/projectTree.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
@@ -11867,17 +11902,17 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -11893,11 +11928,6 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/types/audit.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/types/projectTree.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -13070,14 +13100,14 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "assertTopmostControlAsync",
-        "callExpression": "assertTopmostControlAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "assert",
-        "callExpression": "assert",
+        "toSymbol": "assertTopmostControlAsync",
+        "callExpression": "assertTopmostControlAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -14887,9 +14917,9 @@
         "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       },
       {
-        "fromSymbol": "isGitHubRepositorySource",
-        "toSymbol": "normalizeGitHubRepositoryUrl",
-        "callExpression": "normalizeGitHubRepositoryUrl",
+        "fromSymbol": "discoverWorkspaceGitHubSourcesAsync",
+        "toSymbol": "selectedIdsFromDiscovery",
+        "callExpression": "selectedIdsFromDiscovery",
         "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       },
       {
@@ -15350,18 +15380,6 @@
       },
       {
         "fromSymbol": "loadWorkspaceProjectSourceAsync",
-        "toSymbol": "isGitHubRepositorySource",
-        "callExpression": "isGitHubRepositorySource",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadWorkspaceProjectSourceAsync",
-        "toSymbol": "loadSingleGitHubWorkspaceAsync",
-        "callExpression": "loadSingleGitHubWorkspaceAsync",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadWorkspaceProjectSourceAsync",
         "toSymbol": "loadGitHubWorkspaceAsync",
         "callExpression": "loadGitHubWorkspaceAsync",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
@@ -15370,36 +15388,6 @@
         "fromSymbol": "loadWorkspaceProjectSourceAsync",
         "toSymbol": "toErrorMessage",
         "callExpression": "toErrorMessage",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadSingleGitHubWorkspaceAsync",
-        "toSymbol": "parseProjectSource",
-        "callExpression": "parseProjectSource",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadSingleGitHubWorkspaceAsync",
-        "toSymbol": "normalizeGitHubRepositoryUrl",
-        "callExpression": "normalizeGitHubRepositoryUrl",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadSingleGitHubWorkspaceAsync",
-        "toSymbol": "materializeAsync",
-        "callExpression": "materializeAsync",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadSingleGitHubWorkspaceAsync",
-        "toSymbol": "loadWorkspaceAsync",
-        "callExpression": "loadWorkspaceAsync",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadSingleGitHubWorkspaceAsync",
-        "toSymbol": "cleanupAsync",
-        "callExpression": "resolved.cleanupAsync",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
@@ -15416,6 +15404,12 @@
       },
       {
         "fromSymbol": "loadGitHubWorkspaceAsync",
+        "toSymbol": "toRepositoryOptions",
+        "callExpression": "toRepositoryOptions",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadGitHubWorkspaceAsync",
         "toSymbol": "createWorkspaceRepositoryRuntime",
         "callExpression": "createWorkspaceRepositoryRuntime",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
@@ -15424,12 +15418,6 @@
         "fromSymbol": "loadGitHubWorkspaceAsync",
         "toSymbol": "loadAsync",
         "callExpression": "workspaceRuntime.loadAsync",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
-      },
-      {
-        "fromSymbol": "loadGitHubWorkspaceAsync",
-        "toSymbol": "toRepositoryOptions",
-        "callExpression": "toRepositoryOptions",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
@@ -17806,6 +17794,18 @@
         "fromSymbol": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
         "toSymbol": "loadWorkspaceProjectSourceAsync",
         "callExpression": "loadWorkspaceProjectSourceAsync",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "loadDirectRepositoryAsync",
+        "toSymbol": "loadWorkspaceProjectSourceAsync",
+        "callExpression": "loadWorkspaceProjectSourceAsync",
+        "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts",
+        "toSymbol": "loadDirectRepositoryAsync",
+        "callExpression": "loadDirectRepositoryAsync",
         "sourcePath": "test/src/features/workspace/loadWorkspaceProjectSourceAsync.spec.ts"
       },
       {
@@ -21433,18 +21433,6 @@
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
-        "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toSymbol": "t",
-        "callExpression": "t",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
-        "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toSymbol": "onToggle",
-        "callExpression": "onToggle",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
         "fromSymbol": "SubPackageDepthSettings",
         "toSymbol": "useSettings",
         "callExpression": "useSettings",
@@ -21470,6 +21458,12 @@
       },
       {
         "fromSymbol": "LayoutSettings",
+        "toSymbol": "t",
+        "callExpression": "t",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
+      },
+      {
+        "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
         "toSymbol": "t",
         "callExpression": "t",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
@@ -21590,6 +21584,12 @@
       },
       {
         "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "withRepositorySelection",
+        "callExpression": "withRepositorySelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
         "toSymbol": "readSearchParam",
         "callExpression": "readSearchParam",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
@@ -21650,8 +21650,8 @@
       },
       {
         "fromSymbol": "ProjectSourceForm",
-        "toSymbol": "useMemo",
-        "callExpression": "useMemo",
+        "toSymbol": "useVisibleRepositories",
+        "callExpression": "useVisibleRepositories",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
@@ -21661,9 +21661,9 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
-        "fromSymbol": "useProjectSourceForm",
-        "toSymbol": "useState",
-        "callExpression": "useState",
+        "fromSymbol": "useVisibleRepositories",
+        "toSymbol": "useMemo",
+        "callExpression": "useMemo",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
@@ -21674,14 +21674,20 @@
       },
       {
         "fromSymbol": "useProjectSourceForm",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "useProjectSourceForm",
         "toSymbol": "createSelectedRepositoryIds",
         "callExpression": "createSelectedRepositoryIds",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
-        "fromSymbol": "openSource",
-        "toSymbol": "serializeSource",
-        "callExpression": "serializeSource",
+        "fromSymbol": "useProjectSourceForm",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
@@ -22099,6 +22105,42 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
+        "fromSymbol": "WorkspaceHeader",
+        "toSymbol": "useZoraTheme",
+        "callExpression": "useZoraTheme",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toSymbol": "setMode",
+        "callExpression": "setMode",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceHeader",
+        "toSymbol": "createBreadcrumbItems",
+        "callExpression": "createBreadcrumbItems",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toSymbol": "onNavigate",
+        "callExpression": "props.onNavigate",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "createBreadcrumbItems",
+        "toSymbol": "findRepositoryBreadcrumbs",
+        "callExpression": "findRepositoryBreadcrumbs",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "createBreadcrumbItems",
+        "toSymbol": "normalizeGraphPackage",
+        "callExpression": "normalizeGraphPackage",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "toSymbol": "change",
         "callExpression": "props.cycleInspection.change",
@@ -22189,30 +22231,6 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
-        "fromSymbol": "WorkspaceHeader",
-        "toSymbol": "useZoraTheme",
-        "callExpression": "useZoraTheme",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toSymbol": "setMode",
-        "callExpression": "setMode",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "WorkspaceHeader",
-        "toSymbol": "createBreadcrumbItems",
-        "callExpression": "createBreadcrumbItems",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toSymbol": "onNavigate",
-        "callExpression": "props.onNavigate",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
         "fromSymbol": "WorkspaceBody",
         "toSymbol": "useZoraTheme",
         "callExpression": "useZoraTheme",
@@ -22252,18 +22270,6 @@
         "fromSymbol": "useWorkspaceCycleSelection",
         "toSymbol": "resolveWorkspaceProjectIdentity",
         "callExpression": "resolveWorkspaceProjectIdentity",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "createBreadcrumbItems",
-        "toSymbol": "findRepositoryBreadcrumbs",
-        "callExpression": "findRepositoryBreadcrumbs",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "createBreadcrumbItems",
-        "toSymbol": "normalizeGraphPackage",
-        "callExpression": "normalizeGraphPackage",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
