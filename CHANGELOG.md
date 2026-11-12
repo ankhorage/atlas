@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.1
+
+### Patch Changes
+
+- 7d1c237: Migrate the web application to published ZORA web package imports.
+
 ## 0.18.0
 
 ### Minor Changes
