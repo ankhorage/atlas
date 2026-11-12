@@ -23,7 +23,7 @@ describe('[canonical dependency package projection]', () => {
     const graph = projectDependencyGraph(createOwnerGraph());
 
     expect(graph.nodes.map(node => node.id).sort()).toEqual([
-      '@zora/list',
+      '@ankhorage/zora',
       'react',
       'src',
       'src.features',
@@ -48,7 +48,9 @@ describe('[canonical dependency package projection]', () => {
     expect(workspaceRoot?.isWorkspaceRoot).toBe(true);
     expect(graph.nodes.find(node => node.id === 'react')?.data.classification).toBe('vendor');
     expect(graph.nodes.find(node => node.id === 'react')?.data.isIntrinsic).toBeUndefined();
-    expect(graph.nodes.find(node => node.id === '@zora/list')?.data.classification).toBe('unknown');
+    expect(graph.nodes.find(node => node.id === '@ankhorage/zora')?.data.classification).toBe(
+      'vendor'
+    );
 
     const vendor = graph.edges.find(
       edge => edge.source === 'src.features' && edge.target === 'react'
@@ -56,9 +58,18 @@ describe('[canonical dependency package projection]', () => {
     const intrinsic = graph.edges.find(
       edge => edge.source === 'src.features' && edge.target === 'src.shared'
     );
+    const zora = graph.edges.find(
+      edge => edge.source === 'src.features' && edge.target === '@ankhorage/zora'
+    );
 
     expect(vendor?.data.weight).toBe(2);
     expect(vendor?.data.evidence.map(item => item.specifier)).toEqual(['react', 'react']);
+    expect(zora?.data.weight).toBe(3);
+    expect(zora?.data.evidence.map(item => item.specifier)).toEqual([
+      '@ankhorage/zora/web/list',
+      '@ankhorage/zora/web/graph-view',
+      '@ankhorage/zora/web/runtime',
+    ]);
     expect(intrinsic?.data.weight).toBe(1);
     expect(intrinsic?.data.evidence[0]?.classification).toBe('intrinsic');
   });
@@ -189,13 +200,13 @@ function createOwnerGraph(): DependencyGraph {
         },
       },
       {
-        id: 'unknown:@zora/list',
+        id: 'vendor:@ankhorage/zora',
         data: {
           kind: 'package',
-          classification: 'unknown',
+          classification: 'vendor',
           focus: false,
-          label: '@zora/list',
-          packageName: '@zora/list',
+          label: '@ankhorage/zora',
+          packageName: '@ankhorage/zora',
         },
       },
     ],
@@ -223,6 +234,21 @@ function createOwnerGraph(): DependencyGraph {
           analyzerId: 'typescript',
           weight: 1,
           evidence: [dependencyEvidence('src/features/one.ts', '../shared/value', 'intrinsic')],
+        },
+      },
+      {
+        id: 'features->zora',
+        source: 'package:current:.#src.features',
+        target: 'vendor:@ankhorage/zora',
+        data: {
+          kind: 'import',
+          analyzerId: 'typescript',
+          weight: 3,
+          evidence: [
+            dependencyEvidence('src/features/list.ts', '@ankhorage/zora/web/list', 'vendor'),
+            dependencyEvidence('src/features/graph.ts', '@ankhorage/zora/web/graph-view', 'vendor'),
+            dependencyEvidence('src/features/theme.ts', '@ankhorage/zora/web/runtime', 'vendor'),
+          ],
         },
       },
     ],

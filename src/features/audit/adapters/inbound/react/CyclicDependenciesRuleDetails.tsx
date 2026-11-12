@@ -1,10 +1,10 @@
 'use client';
-import { Badge } from '@zora/badge';
-import { ListItem } from '@zora/list';
-import { Switch } from '@zora/switch';
-import { Text } from '@zora/text';
-import { View } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { Badge } from '@ankhorage/zora/web/badge';
+import { ListItem } from '@ankhorage/zora/web/list';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { Switch } from '@ankhorage/zora/web/switch';
+import { Text } from '@ankhorage/zora/web/text';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 import { createCycleThemeColors } from '@/features/audit/utils/createCycleThemeColors';

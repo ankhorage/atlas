@@ -1,7 +1,7 @@
 'use client';
-import { Button } from '@zora/button';
-import { TextInput } from '@zora/text-input';
-import { View } from '@zora/view';
+import { Button } from '@ankhorage/zora/web/button';
+import { TextInput } from '@ankhorage/zora/web/text-input';
+import { View } from '@ankhorage/zora/web/view';
 import { useMemo, useState } from 'react';
 
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';

@@ -1,4 +1,4 @@
-import type { GraphViewEdge, GraphViewNode } from '@zora/graph-view';
+import type { GraphViewEdge, GraphViewNode } from '@ankhorage/zora/web/graph-view';
 import type { ElementsDefinition } from 'cytoscape';
 
 import { createCompoundOpacityIndex } from '@/features/graph-view/utils/createCompoundOpacityIndex';

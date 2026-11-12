@@ -6,7 +6,7 @@ import {
   type GraphViewController,
   type GraphViewMeasurement,
   type GraphViewViewport,
-} from '@zora/graph-view';
+} from '@ankhorage/zora/web/graph-view';
 import type { Page } from 'playwright-core';
 
 interface BrowserGraphProbe {

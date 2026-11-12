@@ -1,4 +1,4 @@
-import type { GraphViewController, GraphViewMeasurement } from '@zora/graph-view';
+import type { GraphViewController, GraphViewMeasurement } from '@ankhorage/zora/web/graph-view';
 import {
   type Dispatch,
   type SetStateAction,

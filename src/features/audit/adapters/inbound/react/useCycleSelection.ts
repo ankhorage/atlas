@@ -1,6 +1,6 @@
 'use client';
 import { isRecord } from '@ankhorage/utility/object';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { useLocalStorage } from 'ankh-hooks/store';
 import { useCallback, useMemo } from 'react';
 

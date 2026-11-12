@@ -1,5 +1,5 @@
 import { describe, expect, it, render } from '@artiphishle/testosterone';
-import { ZoraProvider } from '@zora/ZoraProvider';
+import { ZoraProvider } from '@ankhorage/zora/web/runtime';
 import React, { act, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 

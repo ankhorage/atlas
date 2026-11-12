@@ -1,11 +1,11 @@
 'use client';
 import type { SelectionIntent } from '@ankhorage/utility/selection';
-import { Badge } from '@zora/badge';
-import { ScrollView } from '@zora/scroll-view';
-import { Surface } from '@zora/surface';
-import { Tab, TabList, TabPanel, Tabs } from '@zora/tabs';
-import { View } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { Badge } from '@ankhorage/zora/web/badge';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { ScrollView } from '@ankhorage/zora/web/scroll-view';
+import { Surface } from '@ankhorage/zora/web/surface';
+import { Tab, TabList, TabPanel, Tabs } from '@ankhorage/zora/web/tabs';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';

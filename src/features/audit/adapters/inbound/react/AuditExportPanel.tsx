@@ -1,6 +1,6 @@
 'use client';
-import { Button } from '@zora/button';
-import { View } from '@zora/view';
+import { Button } from '@ankhorage/zora/web/button';
+import { View } from '@ankhorage/zora/web/view';
 
 /*** Renders audit-export actions with generated ZORA buttons. */
 export function AuditExportPanel({ actions, source }: AuditExportPanelProps) {

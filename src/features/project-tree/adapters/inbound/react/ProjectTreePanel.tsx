@@ -1,9 +1,9 @@
 'use client';
 import type { SelectionIntent } from '@ankhorage/utility/selection';
-import { Icon } from '@zora/icon';
-import { Text } from '@zora/text';
-import { type TreeItemNode, TreeView } from '@zora/tree-view';
-import { View } from '@zora/view';
+import { Icon } from '@ankhorage/zora/web/icon';
+import { Text } from '@ankhorage/zora/web/text';
+import { type TreeItemNode, TreeView } from '@ankhorage/zora/web/tree-view';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 import { useProjectTreeExpansion } from '@/features/project-tree/adapters/inbound/react/useProjectTreeExpansion';

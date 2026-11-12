@@ -1,5 +1,5 @@
 import { describe, expect, it, render } from '@artiphishle/testosterone';
-import { ZoraProvider } from '@zora/ZoraProvider';
+import { ZoraProvider } from '@ankhorage/zora/web/runtime';
 import React from 'react';
 
 import { AuditRuleList } from '@/features/audit/adapters/inbound/react/AuditRuleList';
