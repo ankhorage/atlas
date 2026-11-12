@@ -1,6 +1,6 @@
 import { access, readFile, readdir } from 'node:fs/promises';
 import { createRequire } from 'node:module';
-import { dirname, resolve } from 'node:path';
+import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 
 import type { GraphViewController } from '@ankhorage/zora/web/graph-view';
 import { GraphView } from '@ankhorage/zora/web/graph-view';
@@ -32,6 +32,7 @@ describe('[canonical ZORA package acceptance]', () => {
     };
     const declaredVersion = atlasManifest.dependencies?.[packageName];
     const lockfile = await readFile(resolve(root, 'bun.lock'), 'utf8');
+    const packageRoot = dirname(packageManifestPath);
 
     assert.equal(packageManifest.name, packageName);
     assert.equal(typeof declaredVersion, 'string');
@@ -40,8 +41,11 @@ describe('[canonical ZORA package acceptance]', () => {
 
     for (const specifier of packageSpecifiers) {
       const resolvedModulePath = require.resolve(specifier);
+      const packageRelativeModulePath = relative(packageRoot, resolvedModulePath);
 
-      assert.equal(resolvedModulePath.includes('/node_modules/@ankhorage/zora/'), true);
+      assert.equal(packageRelativeModulePath === '..', false);
+      assert.equal(packageRelativeModulePath.startsWith(`..${sep}`), false);
+      assert.equal(isAbsolute(packageRelativeModulePath), false);
       await access(resolvedModulePath.replace(/\.js$/u, '.d.ts'));
     }
 
