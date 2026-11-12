@@ -1,7 +1,7 @@
 'use client';
 import type { RuleFinding } from '@ankhorage/rules';
-import { Text } from '@zora/text';
-import { View } from '@zora/view';
+import { Text } from '@ankhorage/zora/web/text';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 import { CyclicDependenciesRuleDetails } from '@/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails';

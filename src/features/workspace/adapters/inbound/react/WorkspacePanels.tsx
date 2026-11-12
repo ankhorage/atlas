@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@zora/button';
-import { Card } from '@zora/card';
+import { Button } from '@ankhorage/zora/web/button';
+import { Card } from '@ankhorage/zora/web/card';
 import React from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';

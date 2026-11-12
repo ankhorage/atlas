@@ -1,5 +1,5 @@
-import type { GraphViewStyleRule } from '@zora/graph-view';
-import type { ZoraRuntimeTheme } from '@zora/ZoraProvider';
+import type { GraphViewStyleRule } from '@ankhorage/zora/web/graph-view';
+import type { ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import type { ElementsDefinition, LayoutOptions, StylesheetJson } from 'cytoscape';
 
 import { getStyle as getBreadthfirstStyle } from '@/features/graph-view/adapters/inbound/cytoscape/breadthfirst/style';

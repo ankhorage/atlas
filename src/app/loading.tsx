@@ -1,6 +1,6 @@
 'use client';
-import { ActivityIndicator } from '@zora/activity-indicator';
-import { View } from '@zora/view';
+import { ActivityIndicator } from '@ankhorage/zora/web/activity-indicator';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 /*** Keeps the initial loading indicator compact while the project snapshot loads. */

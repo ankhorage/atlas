@@ -20,9 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "app/*": ["./app/*"],
-      "@zora/ZoraProvider": ["./.ankh/zora/web/runtime/ZoraProvider"],
-      "@zora/*": ["./.ankh/zora/web/components/*"]
+      "app/*": ["./app/*"]
     },
     "incremental": true
   },

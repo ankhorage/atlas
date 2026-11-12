@@ -12,7 +12,6 @@ describe('[CI expensive acceptance path filters]', () => {
     for (const path of [
       "'.github/workflows/**'",
       "'ankh.config.json'",
-      "'zora.web.json'",
       "'next.config.*'",
       "'tsconfig*.json'",
       "'package.json'",

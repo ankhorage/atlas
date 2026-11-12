@@ -1,6 +1,6 @@
 'use client';
-import { Button } from '@zora/button';
-import { View } from '@zora/view';
+import { Button } from '@ankhorage/zora/web/button';
+import { View } from '@ankhorage/zora/web/view';
 import { useEffect, useRef, useState } from 'react';
 
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';

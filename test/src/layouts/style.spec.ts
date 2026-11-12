@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@artiphishle/testosterone';
 
-import type { ZoraRuntimeTheme } from '@zora/ZoraProvider';
+import type { ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import cytoscape, { type ElementsDefinition } from 'cytoscape';
 
 import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/react/createGraphViewModel';

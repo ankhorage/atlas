@@ -1,11 +1,10 @@
 import { resolve } from 'node:path';
+
 import type { NextConfig } from 'next';
 
 const root = resolve(__dirname, '../../..');
 const aliases = {
   '@': resolve(root, 'src'),
-  '@zora/ZoraProvider': resolve(root, '.ankh/zora/web/runtime/ZoraProvider'),
-  '@zora/*': resolve(root, '.ankh/zora/web/components/*'),
 };
 
 const nextConfig: NextConfig = {

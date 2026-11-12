@@ -3,7 +3,7 @@ import {
   type GraphViewController,
   type GraphViewEdge,
   type GraphViewNode,
-} from '@zora/graph-view';
+} from '@ankhorage/zora/web/graph-view';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 

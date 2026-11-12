@@ -70,7 +70,6 @@ jobs:
 
       - name: Build package
         env:
-          # Ankh resolves GH_TOKEN before GITHUB_TOKEN while materializing ZORA.
           # Public organization discovery requires the workflow token, not the
           # repository-scoped App token retained for release writes.
           GH_TOKEN: ${{ github.token }}

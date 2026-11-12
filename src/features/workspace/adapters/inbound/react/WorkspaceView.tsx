@@ -1,9 +1,9 @@
 'use client';
-import { AppHeader } from '@zora/app-header';
-import { Breadcrumbs } from '@zora/breadcrumbs';
-import { Button } from '@zora/button';
-import { AppShell, View } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { AppHeader } from '@ankhorage/zora/web/app-header';
+import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
+import { Button } from '@ankhorage/zora/web/button';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { AppShell, View } from '@ankhorage/zora/web/view';
 import { useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';

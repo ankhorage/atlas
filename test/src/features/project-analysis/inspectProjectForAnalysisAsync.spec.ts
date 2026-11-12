@@ -82,20 +82,6 @@ it('reports incomplete inspections rather than treating partial evidence as comp
   }
 });
 
-it('ignores the generated ZORA runtime directory during project inspection', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'atlas-detector-'));
-  try {
-    await writeFile(join(root, 'main.ts'), '');
-    await mkdir(join(root, '.ankh/zora'), { recursive: true });
-    await symlink(root, join(root, '.ankh/zora/web'));
-
-    const result = selectParserLanguage((await inspectProjectForAnalysisAsync(root)).detection);
-    assert.equal(result.language, Language.TypeScript);
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
 it('normalizes an unavailable inspection root to a project path error', async () => {
   const root = await mkdtemp(join(tmpdir(), 'atlas-missing-'));
   await rm(root, { recursive: true, force: true });
