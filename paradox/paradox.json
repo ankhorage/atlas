@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.18.0",
+      "value": "v0.18.1",
       "color": "cb3837"
     },
     {
@@ -175,10 +175,7 @@
     {
       "path": "src/app/loading.tsx",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/components/activity-indicator/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "default"
       ]
@@ -379,8 +376,6 @@
       "path": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/types/audit.ts"
       ],
       "exports": [
@@ -390,10 +385,7 @@
     {
       "path": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "AuditExportActions",
         "AuditExportPanel"
@@ -403,8 +395,6 @@
       "path": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
         "src/types/audit.ts",
         "src/types/auditVisualization.ts"
@@ -430,11 +420,6 @@
       "path": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/accordion/index.d.ts",
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/card/index.d.ts",
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/i18n/i18n.ts",
         "src/types/audit.ts",
         "src/types/auditVisualization.ts"
@@ -447,12 +432,6 @@
       "path": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/badge/index.d.ts",
-        ".ankh/zora/web/components/list/index.d.ts",
-        ".ankh/zora/web/components/switch/index.d.ts",
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/utils/createCycleThemeColors.ts",
         "src/features/audit/utils/cycleVisualization.ts",
         "src/i18n/i18n.ts",
@@ -467,7 +446,6 @@
       "path": "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/application/use-cases/resolveSelectedCycleIds.ts",
         "src/features/audit/utils/createCycleThemeColors.ts",
         "src/features/audit/utils/cycleVisualization.ts",
@@ -573,9 +551,7 @@
     {
       "path": "src/features/audit/utils/createCycleThemeColors.ts",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "createCycleThemeColors"
       ]
@@ -723,9 +699,7 @@
     {
       "path": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "getGraphPalette",
         "GraphPalette"
@@ -769,7 +743,6 @@
       "path": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/getWeightBuckets.ts",
@@ -783,7 +756,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
         "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
         "src/types/graphInteraction.ts"
       ],
@@ -795,7 +767,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
         "src/features/graph-view/utils/createCompoundOpacityIndex.ts",
         "src/features/graph-view/utils/readNodeDefinitionId.ts",
         "src/types/auditVisualization.ts"
@@ -808,8 +779,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/breadthfirst/style.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/circle/style.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/concentric/style.ts",
@@ -825,8 +794,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/constants.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
         "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
@@ -847,13 +814,7 @@
     {
       "path": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/graph-view/index.d.ts",
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "GraphZoomControls"
       ]
@@ -874,7 +835,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
         "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
         "src/features/graph-view/domain/reduceGraphInteraction.ts",
         "src/types/graphInteraction.ts"
@@ -899,7 +859,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
         "src/features/audit/utils/getAdaptiveCycleLayoutSpacing.ts",
         "src/types/auditVisualization.ts"
       ],
@@ -1339,10 +1298,6 @@
       "path": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/icon/index.d.ts",
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/tree-view/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "src/features/project-tree/utils/findProjectTreeNode.ts",
         "src/types/projectTree.ts"
@@ -1450,10 +1405,6 @@
       "path": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/tree-view/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
         "src/features/rule-explorer/domain/projectRuleDag.ts"
       ],
@@ -1488,12 +1439,6 @@
       "path": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/select/index.d.ts",
-        ".ankh/zora/web/components/switch/index.d.ts",
-        ".ankh/zora/web/components/text-input/index.d.ts",
-        ".ankh/zora/web/components/text/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/settings/adapters/inbound/react/useSettings.ts",
         "src/i18n/i18n.ts",
         "src/types/settings.ts"
@@ -1535,9 +1480,7 @@
     {
       "path": "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "ZoraRuntimeProvider"
       ]
@@ -1579,9 +1522,6 @@
       "path": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/text-input/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
@@ -1616,8 +1556,6 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/features/settings/adapters/inbound/react/useSettings.ts",
         "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts",
         "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts",
@@ -1633,8 +1571,6 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/activity-indicator/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
         "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
         "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
         "src/types/auditVisualization.ts",
@@ -1648,8 +1584,6 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/card/index.d.ts",
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
@@ -1667,12 +1601,6 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/badge/index.d.ts",
-        ".ankh/zora/web/components/scroll-view/index.d.ts",
-        ".ankh/zora/web/components/surface/index.d.ts",
-        ".ankh/zora/web/components/tabs/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx",
         "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
@@ -1690,11 +1618,6 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/app-header/index.d.ts",
-        ".ankh/zora/web/components/breadcrumbs/index.d.ts",
-        ".ankh/zora/web/components/button/index.d.ts",
-        ".ankh/zora/web/components/view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
@@ -2163,7 +2086,6 @@
       "path": "test/e2e/compoundSelectionHarness.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
         "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"
       ],
       "exports": []
@@ -2237,9 +2159,7 @@
     {
       "path": "test/e2e/productionCompoundCanvas.ts",
       "isEntrypoint": false,
-      "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts"
-      ],
+      "dependencies": [],
       "exports": [
         "assertProductionCompoundCanvasAsync",
         "installProductionGraphProbeAsync"
@@ -2386,6 +2306,12 @@
       "exports": []
     },
     {
+      "path": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
+    },
+    {
       "path": "test/src/ci/ciPathFilters.spec.ts",
       "isEntrypoint": false,
       "dependencies": [],
@@ -2437,7 +2363,6 @@
       "path": "test/src/features/audit/AuditRuleList.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
         "src/types/audit.ts"
       ],
@@ -2447,7 +2372,6 @@
       "path": "test/src/features/audit/AuditRulePanel.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
         "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx",
         "src/types/audit.ts"
@@ -2458,7 +2382,6 @@
       "path": "test/src/features/audit/CycleInspector.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
       ],
       "exports": []
@@ -2467,7 +2390,6 @@
       "path": "test/src/features/audit/cycleInteraction.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
         "src/features/audit/utils/cycleVisualization.ts",
         "src/types/auditVisualization.ts"
@@ -2674,8 +2596,6 @@
       "path": "test/src/features/graph-view/graphViewport.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/components/graph-view/index.d.ts",
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
         "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
         "src/types/auditVisualization.ts"
@@ -2969,7 +2889,6 @@
       "path": "test/src/features/workspace/WorkspaceSidebar.spec.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
         "src/types/audit.ts"
@@ -3003,7 +2922,6 @@
       "path": "test/src/layouts/style.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
-        ".ankh/zora/web/runtime/ZoraProvider.d.ts",
         "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
         "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts"
       ],
@@ -4845,7 +4763,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 42,
+        "line": 46,
         "column": 1
       }
     },
@@ -4856,7 +4774,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 91,
+        "line": 95,
         "column": 1
       }
     },
@@ -4867,7 +4785,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 113,
+        "line": 117,
         "column": 1
       }
     },
@@ -4878,7 +4796,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 132,
+        "line": 136,
         "column": 1
       }
     },
@@ -4889,7 +4807,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 143,
+        "line": 147,
         "column": 1
       }
     },
@@ -4900,7 +4818,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 172,
+        "line": 176,
         "column": 1
       }
     },
@@ -4911,7 +4829,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 215,
+        "line": 219,
         "column": 1
       }
     },
@@ -4922,7 +4840,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 234,
+        "line": 238,
         "column": 1
       }
     },
@@ -4933,7 +4851,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 247,
+        "line": 251,
         "column": 1
       }
     },
@@ -4988,7 +4906,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
-        "line": 14,
+        "line": 18,
         "column": 1
       }
     },
@@ -4999,7 +4917,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
-        "line": 39,
+        "line": 43,
         "column": 9
       }
     },
@@ -9393,16 +9311,6 @@
         "sourcePath": "src/app/layout.tsx"
       },
       {
-        "fromPath": "src/app/loading.tsx",
-        "toPath": ".ankh/zora/web/components/activity-indicator/index.d.ts",
-        "sourcePath": "src/app/loading.tsx"
-      },
-      {
-        "fromPath": "src/app/loading.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/app/loading.tsx"
-      },
-      {
         "fromPath": "src/app/page.tsx",
         "toPath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
         "sourcePath": "src/app/page.tsx"
@@ -9624,11 +9532,6 @@
       },
       {
         "fromPath": "test/e2e/compoundSelectionHarness.tsx",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
-      },
-      {
-        "fromPath": "test/e2e/compoundSelectionHarness.tsx",
         "toPath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
         "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
       },
@@ -9651,11 +9554,6 @@
         "fromPath": "test/e2e/offlineWorkspace.ts",
         "toPath": "test/e2e/productionCompoundCanvas.ts",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
-      },
-      {
-        "fromPath": "test/e2e/productionCompoundCanvas.ts",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
       },
       {
         "fromPath": "test/src/capabilities.spec.ts",
@@ -9784,11 +9682,6 @@
       },
       {
         "fromPath": "test/src/layouts/style.spec.ts",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/layouts/style.spec.ts"
-      },
-      {
-        "fromPath": "test/src/layouts/style.spec.ts",
         "toPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
         "sourcePath": "test/src/layouts/style.spec.ts"
       },
@@ -9851,11 +9744,6 @@
         "fromPath": "src/features/audit/domain/resolveAuditConfiguration.ts",
         "toPath": "src/types/audit.ts",
         "sourcePath": "src/features/audit/domain/resolveAuditConfiguration.ts"
-      },
-      {
-        "fromPath": "src/features/audit/utils/createCycleThemeColors.ts",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/audit/utils/createCycleThemeColors.ts"
       },
       {
         "fromPath": "src/features/audit/utils/cycleVisualization.ts",
@@ -10349,11 +10237,6 @@
       },
       {
         "fromPath": "test/src/features/audit/AuditRuleList.spec.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/features/audit/AuditRuleList.spec.tsx"
-      },
-      {
-        "fromPath": "test/src/features/audit/AuditRuleList.spec.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
         "sourcePath": "test/src/features/audit/AuditRuleList.spec.tsx"
       },
@@ -10361,11 +10244,6 @@
         "fromPath": "test/src/features/audit/AuditRuleList.spec.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "test/src/features/audit/AuditRuleList.spec.tsx"
-      },
-      {
-        "fromPath": "test/src/features/audit/AuditRulePanel.spec.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/features/audit/AuditRulePanel.spec.tsx"
       },
       {
         "fromPath": "test/src/features/audit/AuditRulePanel.spec.tsx",
@@ -10384,18 +10262,8 @@
       },
       {
         "fromPath": "test/src/features/audit/CycleInspector.spec.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/features/audit/CycleInspector.spec.tsx"
-      },
-      {
-        "fromPath": "test/src/features/audit/CycleInspector.spec.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
         "sourcePath": "test/src/features/audit/CycleInspector.spec.tsx"
-      },
-      {
-        "fromPath": "test/src/features/audit/cycleInteraction.spec.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/features/audit/cycleInteraction.spec.tsx"
       },
       {
         "fromPath": "test/src/features/audit/cycleInteraction.spec.tsx",
@@ -10621,16 +10489,6 @@
         "fromPath": "test/src/features/graph-view/graphInteractions.spec.ts",
         "toPath": "src/types/graphInteraction.ts",
         "sourcePath": "test/src/features/graph-view/graphInteractions.spec.ts"
-      },
-      {
-        "fromPath": "test/src/features/graph-view/graphViewport.spec.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/features/graph-view/graphViewport.spec.tsx"
-      },
-      {
-        "fromPath": "test/src/features/graph-view/graphViewport.spec.tsx",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "test/src/features/graph-view/graphViewport.spec.tsx"
       },
       {
         "fromPath": "test/src/features/graph-view/graphViewport.spec.tsx",
@@ -10951,11 +10809,6 @@
         "fromPath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
         "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
-      },
-      {
-        "fromPath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx"
       },
       {
         "fromPath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx",
@@ -11319,38 +11172,8 @@
       },
       {
         "fromPath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx"
       },
       {
         "fromPath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
@@ -11389,31 +11212,6 @@
       },
       {
         "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "toPath": ".ankh/zora/web/components/accordion/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "toPath": ".ankh/zora/web/components/card/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
         "toPath": "src/i18n/i18n.ts",
         "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
       },
@@ -11426,36 +11224,6 @@
         "fromPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
         "toPath": "src/types/auditVisualization.ts",
         "sourcePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toPath": ".ankh/zora/web/components/badge/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toPath": ".ankh/zora/web/components/list/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toPath": ".ankh/zora/web/components/switch/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
       },
       {
         "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
@@ -11481,11 +11249,6 @@
         "fromPath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
         "toPath": "src/types/auditVisualization.ts",
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromPath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts"
       },
       {
         "fromPath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
@@ -11553,19 +11316,9 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
       },
       {
-        "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts"
-      },
-      {
         "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
         "toPath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
@@ -11589,11 +11342,6 @@
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
         "toPath": "src/features/graph-view/domain/getDependencyHighlightClasses.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"
       },
@@ -11601,11 +11349,6 @@
         "fromPath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
         "toPath": "src/types/graphInteraction.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
@@ -11621,16 +11364,6 @@
         "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
         "toPath": "src/types/auditVisualization.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts",
@@ -11661,16 +11394,6 @@
         "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts",
         "toPath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/createGraphViewStyles.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
@@ -11733,31 +11456,6 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
-      },
-      {
         "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphFocus.ts",
         "toPath": "src/features/audit/utils/cycleVisualization.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphFocus.ts"
@@ -11771,11 +11469,6 @@
         "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphFocus.ts",
         "toPath": "src/types/auditVisualization.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphFocus.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphInteractions.ts",
@@ -11806,11 +11499,6 @@
         "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphProjection.ts",
         "toPath": "src/types/settings.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphProjection.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
@@ -11889,26 +11577,6 @@
       },
       {
         "fromPath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toPath": ".ankh/zora/web/components/icon/index.d.ts",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromPath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromPath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toPath": ".ankh/zora/web/components/tree-view/index.d.ts",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromPath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
-      },
-      {
-        "fromPath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
         "toPath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
       },
@@ -11939,26 +11607,6 @@
       },
       {
         "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "toPath": ".ankh/zora/web/components/graph-view/index.d.ts",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
-      },
-      {
-        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
-      },
-      {
-        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "toPath": ".ankh/zora/web/components/tree-view/index.d.ts",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
-      },
-      {
-        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
-      },
-      {
-        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
         "toPath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
         "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
@@ -11971,36 +11619,6 @@
         "fromPath": "src/features/settings/adapters/inbound/react/SettingsContext.ts",
         "toPath": "src/types/settings.ts",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsContext.ts"
-      },
-      {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": ".ankh/zora/web/components/select/index.d.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": ".ankh/zora/web/components/switch/index.d.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": ".ankh/zora/web/components/text/index.d.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": ".ankh/zora/web/components/text-input/index.d.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
-      },
-      {
-        "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
         "fromPath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
@@ -12038,11 +11656,6 @@
         "sourcePath": "src/features/settings/adapters/inbound/react/useSettings.ts"
       },
       {
-        "fromPath": "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx"
-      },
-      {
         "fromPath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
         "toPath": "src/app/actions/audit.actions.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
@@ -12071,21 +11684,6 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "toPath": ".ankh/zora/web/components/text-input/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
@@ -12124,16 +11722,6 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "toPath": "src/features/settings/adapters/inbound/react/useSettings.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
@@ -12164,16 +11752,6 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
-        "toPath": ".ankh/zora/web/components/activity-indicator/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx"
       },
@@ -12191,16 +11769,6 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
         "toPath": "src/types/dependencyAnalysis.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "toPath": ".ankh/zora/web/components/card/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
@@ -12244,36 +11812,6 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "toPath": ".ankh/zora/web/components/badge/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "toPath": ".ankh/zora/web/components/scroll-view/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "toPath": ".ankh/zora/web/components/surface/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "toPath": ".ankh/zora/web/components/tabs/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
       },
@@ -12311,31 +11849,6 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
         "toPath": "src/types/projectTree.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": ".ankh/zora/web/components/app-header/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": ".ankh/zora/web/components/breadcrumbs/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": ".ankh/zora/web/components/button/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": ".ankh/zora/web/components/view/index.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": ".ankh/zora/web/runtime/ZoraProvider.d.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
@@ -13059,18 +12572,6 @@
       },
       {
         "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
-        "toSymbol": "getViewport",
-        "callExpression": "controller.getViewport",
-        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
-      },
-      {
-        "fromSymbol": "CompoundSelectionHarness",
-        "toSymbol": "getViewport",
-        "callExpression": "controllerRef.current?.getViewport",
-        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
-      },
-      {
-        "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
         "toSymbol": "setShowCompoundNodes",
         "callExpression": "setShowCompoundNodes",
         "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
@@ -13121,12 +12622,6 @@
         "fromSymbol": "test/e2e/compoundSelectionHarness.tsx",
         "toSymbol": "createRoot",
         "callExpression": "createRoot",
-        "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
-      },
-      {
-        "fromSymbol": "readMeasurement",
-        "toSymbol": "measureNodes",
-        "callExpression": "controller.measureNodes",
         "sourcePath": "test/e2e/compoundSelectionHarness.tsx"
       },
       {
@@ -13838,30 +13333,6 @@
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
-        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
-        "toSymbol": "measureNodes",
-        "callExpression": "probe.controller?.measureNodes",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
-        "toSymbol": "getViewport",
-        "callExpression": "probe.controller?.getViewport",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "capture",
-        "toSymbol": "measureNodes",
-        "callExpression": "probe.controller.measureNodes",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "capture",
-        "toSymbol": "getViewport",
-        "callExpression": "probe.controller.getViewport",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
         "fromSymbol": "assertProductionCompoundCanvasAsync",
         "toSymbol": "requireBreadcrumbsAsync",
         "callExpression": "requireBreadcrumbsAsync",
@@ -13941,24 +13412,6 @@
       },
       {
         "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
-        "toSymbol": "measureNodes",
-        "callExpression": "probe?.controller?.measureNodes",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "measure",
-        "toSymbol": "measureNodes",
-        "callExpression": "probe.controller?.measureNodes",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "measure",
-        "toSymbol": "getViewport",
-        "callExpression": "probe.controller?.getViewport",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
         "toSymbol": "measure",
         "callExpression": "measure",
         "sourcePath": "test/e2e/productionCompoundCanvas.ts"
@@ -13973,24 +13426,6 @@
         "fromSymbol": "waitForInitialSettledGraphLayoutAsync",
         "toSymbol": "readRenderedNodeAsync",
         "callExpression": "readRenderedNodeAsync",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "measure",
-        "toSymbol": "getViewport",
-        "callExpression": "controller.getViewport",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "measure",
-        "toSymbol": "measureNodes",
-        "callExpression": "controller.measureNodes",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/productionCompoundCanvas.ts",
-        "toSymbol": "getViewport",
-        "callExpression": "probe?.controller?.getViewport",
         "sourcePath": "test/e2e/productionCompoundCanvas.ts"
       },
       {
@@ -14148,6 +13583,78 @@
         "toSymbol": "resolve",
         "callExpression": "resolve",
         "sourcePath": "test/e2e/next-fixture-app/next.config.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "createRequire",
+        "callExpression": "createRequire",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "dirname",
+        "callExpression": "dirname",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "relative",
+        "callExpression": "relative",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "isAbsolute",
+        "callExpression": "isAbsolute",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "access",
+        "callExpression": "access",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "readSourceFiles",
+        "callExpression": "readSourceFiles",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts",
+        "toSymbol": "readSourceFilesInDirectory",
+        "callExpression": "readSourceFilesInDirectory",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
+      },
+      {
+        "fromSymbol": "readSourceFilesInDirectory",
+        "toSymbol": "readdir",
+        "callExpression": "readdir",
+        "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
       },
       {
         "fromSymbol": "test/src/ci/ciPathFilters.spec.ts",
@@ -20990,12 +20497,6 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
       },
       {
-        "fromSymbol": "handleSliderChange",
-        "toSymbol": "setZoom",
-        "callExpression": "controller.setZoom",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx"
-      },
-      {
         "fromSymbol": "useGraphFocus",
         "toSymbol": "useEffect",
         "callExpression": "useEffect",
@@ -21207,12 +20708,6 @@
       },
       {
         "fromSymbol": "handleSettledCycleFocus",
-        "toSymbol": "fit",
-        "callExpression": "input.controller.fit",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "handleSettledCycleFocus",
         "toSymbol": "focusActiveCycle",
         "callExpression": "focusActiveCycle",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
@@ -21221,12 +20716,6 @@
         "fromSymbol": "focusActiveCycle",
         "toSymbol": "fitGraphWithOptimizedSpacing",
         "callExpression": "fitGraphWithOptimizedSpacing",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "focusActiveCycle",
-        "toSymbol": "measureNodes",
-        "callExpression": "input.controller.measureNodes",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
@@ -21249,26 +20738,8 @@
       },
       {
         "fromSymbol": "fitGraphWithOptimizedSpacing",
-        "toSymbol": "fit",
-        "callExpression": "controller.fit",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "fitGraphWithOptimizedSpacing",
         "toSymbol": "synchronizeGraphViewport",
         "callExpression": "synchronizeGraphViewport",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "synchronizeGraphViewport",
-        "toSymbol": "getViewport",
-        "callExpression": "controller.getViewport",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "synchronizeGraphViewport",
-        "toSymbol": "getZoomRange",
-        "callExpression": "controller.getZoomRange",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {

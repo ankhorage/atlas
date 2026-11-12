@@ -1,8 +1,12 @@
 'use client';
 
 import type { SelectionIntent } from '@ankhorage/utility/selection';
-import { GraphView, type GraphViewElementEvent, type GraphViewLayoutName } from '@zora/graph-view';
-import { useZoraTheme, type ZoraRuntimeTheme } from '@zora/ZoraProvider';
+import {
+  GraphView,
+  type GraphViewElementEvent,
+  type GraphViewLayoutName,
+} from '@ankhorage/zora/web/graph-view';
+import { useZoraTheme, type ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
 import React, { useEffect, useMemo } from 'react';
 

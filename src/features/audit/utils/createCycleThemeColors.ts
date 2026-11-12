@@ -1,4 +1,4 @@
-import type { ZoraRuntimeTheme } from '@zora/ZoraProvider';
+import type { ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 
 /*** Resolves stable cycle highlight colors exclusively from active ZORA danger semantics. */
 export function createCycleThemeColors(theme: ZoraRuntimeTheme): readonly string[] {

@@ -1,9 +1,9 @@
 'use client';
-import { AppHeader } from '@zora/app-header';
-import { Breadcrumbs } from '@zora/breadcrumbs';
-import { Button } from '@zora/button';
-import { View } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { AppHeader } from '@ankhorage/zora/web/app-header';
+import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
+import { Button } from '@ankhorage/zora/web/button';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { View } from '@ankhorage/zora/web/view';
 
 import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';

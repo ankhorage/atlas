@@ -26,5 +26,5 @@ export default createKnipConfig({
   ],
   ignoreBinaries: ['mvn', 'gradle'],
   // These packages are resolved by supported published dynamic providers, not static imports.
-  ignoreDependencies: ['@ankhorage/infra-local', '@ankhorage/infra-minikube', '@ankhorage/zora'],
+  ignoreDependencies: ['@ankhorage/infra-local', '@ankhorage/infra-minikube'],
 });

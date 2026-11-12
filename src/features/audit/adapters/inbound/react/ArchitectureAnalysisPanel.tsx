@@ -1,6 +1,6 @@
 'use client';
-import { Text } from '@zora/text';
-import { View } from '@zora/view';
+import { Text } from '@ankhorage/zora/web/text';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 import type { Audit } from '@/types/audit';

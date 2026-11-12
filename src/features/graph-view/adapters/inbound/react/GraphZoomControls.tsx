@@ -1,9 +1,9 @@
 'use client';
-import { IconButton } from '@zora/button';
-import type { GraphViewController } from '@zora/graph-view';
-import { Text } from '@zora/text';
-import { View } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { IconButton } from '@ankhorage/zora/web/button';
+import type { GraphViewController } from '@ankhorage/zora/web/graph-view';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { Text } from '@ankhorage/zora/web/text';
+import { View } from '@ankhorage/zora/web/view';
 import React, { type ChangeEvent } from 'react';
 
 interface GraphZoomControlsProps {

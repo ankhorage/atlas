@@ -19,8 +19,8 @@ describe('[scoped vendor compounds]', () => {
     expect(nodes.get('@ankhorage/zora')?.data.label).toBe('zora');
     expect(nodes.get('@ankhorage/devtools')?.data.parent).toBe('vendor-scope:@ankhorage');
     expect(nodes.get('@single/only')?.data.parent).toBeUndefined();
-    expect(nodes.has('vendor-scope:@zora')).toBe(false);
-    expect(nodes.get('@zora/list')?.data.parent).toBeUndefined();
+    expect(nodes.has('vendor-scope:@fixture-alias')).toBe(false);
+    expect(nodes.get('@fixture-alias/list')?.data.parent).toBeUndefined();
 
     const zoraEdge = result.elements.edges.find(edge => edge.data.target === '@ankhorage/zora');
     expect(zoraEdge?.data.source).toBe('src.feature');
@@ -100,7 +100,7 @@ function createElements(): ElementsDefinition {
       },
       {
         data: {
-          id: '@zora/list',
+          id: '@fixture-alias/list',
           classification: 'unknown',
           isIntrinsic: false,
         },
@@ -108,7 +108,7 @@ function createElements(): ElementsDefinition {
       },
       {
         data: {
-          id: '@zora/tree-view',
+          id: '@fixture-alias/tree-view',
           classification: 'unknown',
           isIntrinsic: false,
         },
@@ -142,9 +142,9 @@ function createElements(): ElementsDefinition {
       },
       {
         data: {
-          id: 'unknown-zora',
+          id: 'unknown-alias',
           source: 'src.feature',
-          target: '@zora/list',
+          target: '@fixture-alias/list',
           weight: 5,
         },
       },

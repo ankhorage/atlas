@@ -1,4 +1,4 @@
-import type { GraphViewEdge, GraphViewNode } from '@zora/graph-view';
+import type { GraphViewEdge, GraphViewNode } from '@ankhorage/zora/web/graph-view';
 
 import { getDependencyHighlightClasses } from '@/features/graph-view/domain/getDependencyHighlightClasses';
 import type { GraphInteractionState } from '@/types/graphInteraction';

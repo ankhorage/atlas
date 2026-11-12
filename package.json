@@ -26,7 +26,7 @@
     "bun": ">=1.2.18",
     "npm": ">=10.9.2"
   },
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
   "repository": {
     "type": "git",
@@ -45,10 +45,10 @@
     "codebase"
   ],
   "scripts": {
-    "dev": "bun run zora:materialize && next dev",
-    "build": "bun run zora:materialize && bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build",
+    "dev": "next dev",
+    "build": "bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build",
     "start": "next start",
-    "lint": "bun run zora:materialize && ankhorage-eslint . --max-warnings=0",
+    "lint": "ankhorage-eslint . --max-warnings=0",
     "format:check": "ankhorage-prettier --check .",
     "format:write": "ankhorage-prettier --write \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml,mjs,cjs,html,css,scss,mdx}\"",
     "test": "bun run test:unit && bun run test:maven && bun run test:gradle",
@@ -56,9 +56,9 @@
     "test:rule-explorer": "bun test test/src/features/audit/*.spec.ts",
     "test:cov": "testosterone --coverage",
     "test:cov:html": "testosterone --coverage",
-    "lint:fix": "bun run zora:materialize && ankhorage-eslint . --fix --max-warnings=0",
+    "lint:fix": "ankhorage-eslint . --fix --max-warnings=0",
     "format": "ankhorage-prettier --write .",
-    "knip:check": "bun run zora:materialize && ankhorage-knip",
+    "knip:check": "ankhorage-knip",
     "changeset": "ankhorage-changeset",
     "changeset:status": "ankhorage-changeset status --since=origin/main",
     "version-packages": "ankhorage-changeset version",
@@ -73,8 +73,7 @@
     "infra:up": "bun src/cli/runAtlasInfraLifecycleAsync.ts up",
     "infra:status": "bun src/cli/runAtlasInfraLifecycleAsync.ts status",
     "image:build": "docker build --tag atlas-web:local .",
-    "zora:materialize": "bunx @ankhorage/ankh@0.13.4 zora sync --web",
-    "offline:bundle": "bun run zora:materialize && bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts",
+    "offline:bundle": "bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts",
     "docs": "paradox",
     "typecheck": "bun x tsc --noEmit -p tsconfig.json"
   },
@@ -94,7 +93,7 @@
     "@ankhorage/rules": "^0.5.1",
     "@ankhorage/rules-architecture": "^0.8.0",
     "@ankhorage/utility": "^1.9.85",
-    "@ankhorage/zora": "26.0.1",
+    "@ankhorage/zora": "27.0.0",
     "@artiphishle/testosterone": "^0.3.11",
     "ankh-hooks": "^1.5.2",
     "cytoscape": "^3.34.3",

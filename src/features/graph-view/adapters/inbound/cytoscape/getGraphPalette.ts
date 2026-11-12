@@ -1,4 +1,4 @@
-import type { ZoraRuntimeTheme } from '@zora/ZoraProvider';
+import type { ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 
 export interface GraphPalette {
   readonly canvasBg: string;

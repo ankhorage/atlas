@@ -1,7 +1,7 @@
 'use client';
 
 import type { ThemeConfig } from '@ankhorage/contracts';
-import { ZoraProvider } from '@zora/ZoraProvider';
+import { ZoraProvider } from '@ankhorage/zora/web/runtime';
 
 /*** Installs the single ZORA theme runtime for the Atlas application. */
 export function ZoraRuntimeProvider({ children, initialMode, themeConfig }: ZoraRuntimeProps) {

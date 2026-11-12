@@ -1,6 +1,6 @@
 'use client';
-import { AppShell } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { AppShell } from '@ankhorage/zora/web/view';
 import { useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';

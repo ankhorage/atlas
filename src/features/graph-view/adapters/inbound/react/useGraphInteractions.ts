@@ -1,6 +1,10 @@
 'use client';
 
-import type { GraphViewEdge, GraphViewElementEvent, GraphViewNode } from '@zora/graph-view';
+import type {
+  GraphViewEdge,
+  GraphViewElementEvent,
+  GraphViewNode,
+} from '@ankhorage/zora/web/graph-view';
 import { useMemo, useState } from 'react';
 
 import { applyGraphInteractionPresentation } from '@/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation';

@@ -7,9 +7,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["src/*"],
-      "@zora/ZoraProvider": [".ankh/zora/web/runtime/ZoraProvider"],
-      "@zora/*": [".ankh/zora/web/components/*"]
+      "@/*": ["src/*"]
     },
     "target": "es2022",
     "lib": ["dom", "dom.iterable", "esnext"],

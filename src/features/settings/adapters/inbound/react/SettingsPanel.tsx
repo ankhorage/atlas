@@ -1,10 +1,10 @@
 'use client';
-import { Select } from '@zora/select';
-import { Switch } from '@zora/switch';
-import { Text } from '@zora/text';
-import { TextInput } from '@zora/text-input';
-import { View } from '@zora/view';
-import { useZoraTheme } from '@zora/ZoraProvider';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
+import { Select } from '@ankhorage/zora/web/select';
+import { Switch } from '@ankhorage/zora/web/switch';
+import { Text } from '@ankhorage/zora/web/text';
+import { TextInput } from '@ankhorage/zora/web/text-input';
+import { View } from '@ankhorage/zora/web/view';
 import type { LayoutOptions } from 'cytoscape';
 import React, { type ChangeEvent } from 'react';
 

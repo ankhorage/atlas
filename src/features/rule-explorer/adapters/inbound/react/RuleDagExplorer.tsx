@@ -1,10 +1,10 @@
 'use client';
 
 import type { RuleEvaluationPlanFacet, RuleEvaluationResult } from '@ankhorage/rules';
-import { GraphView, type GraphViewNode } from '@zora/graph-view';
-import { Text } from '@zora/text';
-import { type TreeItemNode, TreeView } from '@zora/tree-view';
-import { View } from '@zora/view';
+import { GraphView, type GraphViewNode } from '@ankhorage/zora/web/graph-view';
+import { Text } from '@ankhorage/zora/web/text';
+import { type TreeItemNode, TreeView } from '@ankhorage/zora/web/tree-view';
+import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
 import { createRuleDagElements } from '@/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements';
