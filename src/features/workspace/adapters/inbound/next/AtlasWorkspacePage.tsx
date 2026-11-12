@@ -8,7 +8,9 @@ import type { WorkspaceProjectSourceResult } from '@/features/workspace/composit
 export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasWorkspacePageProps) {
   await connection();
   const params = await searchParams;
-  const result = await loadWorkspace(readSearchParam(params.source));
+  const result = await loadWorkspace(
+    withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories))
+  );
 
   return (
     <WorkspaceView
@@ -21,6 +23,7 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
       repositories={result.repositories}
       repositoryStatuses={result.repositoryStatuses}
       runtimeId={result.runtimeId}
+      selectionRequired={result.selectionRequired}
       workspaceScope={readSearchParam(params.workspace)}
       workspace={result.workspace}
     />
@@ -32,10 +35,20 @@ function readSearchParam(value: string | readonly string[] | undefined): string 
   return typeof value === 'string' ? value : undefined;
 }
 
+/*** Keep repository ids in an explicit query field while the server validates them against discovery. */
+function withRepositorySelection(
+  source: string | undefined,
+  repositories: string | undefined
+): string | undefined {
+  if (source === undefined || repositories === undefined || source.includes('|')) return source;
+  return `${source}|include=${repositories}`;
+}
+
 interface AtlasWorkspacePageProps {
   readonly loadWorkspace: (source: string | undefined) => Promise<WorkspaceProjectSourceResult>;
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
+    readonly repositories?: string | readonly string[];
     readonly workspace?: string | readonly string[];
   }>;
 }

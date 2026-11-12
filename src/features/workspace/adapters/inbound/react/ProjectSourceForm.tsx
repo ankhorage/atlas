@@ -2,7 +2,7 @@
 import { Button } from '@ankhorage/zora/web/button';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
@@ -10,15 +10,7 @@ import type { WorkspaceRepositoryOption } from '@/features/workspace/composition
 /*** Edits a GitHub source and stages repository inclusion before one explicit workspace refresh. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
-  const visibleRepositories = useMemo(
-    () =>
-      props.repositories?.filter(repository =>
-        `${repository.owner}/${repository.name}`
-          .toLocaleLowerCase()
-          .includes(sourceForm.search.toLocaleLowerCase())
-      ) ?? [],
-    [props.repositories, sourceForm.search]
-  );
+  const visibleRepositories = useVisibleRepositories(props.repositories, sourceForm.search);
 
   return (
     <View
@@ -28,8 +20,8 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
       style={{ flexWrap: 'wrap', maxWidth: 720, position: 'relative', zIndex: 1 }}
     >
       <TextInput
-        accessibilityLabel="GitHub owner or repository"
-        placeholder="ankhorage, @ankhorage, or GitHub URL"
+        accessibilityLabel="GitHub owner"
+        placeholder="ankhorage"
         size="s"
         value={sourceForm.source}
         onChangeText={sourceForm.setSource}
@@ -40,6 +32,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         search={sourceForm.search}
         selectedIds={sourceForm.selectedIds}
         totalCount={props.repositories?.length ?? 0}
+        initiallyOpen={props.selectionRequired}
         onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
         onSearchChange={sourceForm.setSearch}
         onSelectAll={() =>
@@ -47,6 +40,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         }
         onSelectionChange={sourceForm.setSelectedIds}
       />
+      <RepositoryCopyButton sourceForm={sourceForm} />
       <Button size="s" variant="outline" onPress={sourceForm.openSource}>
         Open
       </Button>
@@ -60,25 +54,86 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   );
 }
 
+/*** Copies the canonical URLs of the staged repository selection. */
+function RepositoryCopyButton({
+  sourceForm,
+}: {
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+}) {
+  return (
+    <Button
+      accessibilityLabel="Copy repository links"
+      disabled={sourceForm.selectedRepositories.length === 0}
+      leadingIcon={{ name: 'copy-outline' }}
+      size="s"
+      variant="ghost"
+      onPress={sourceForm.copyRepositoryLinks}
+    >
+      Copy
+    </Button>
+  );
+}
+
+/*** Filters the server-discovered repository inventory without changing staged selection. */
+function useVisibleRepositories(
+  repositories: readonly WorkspaceRepositoryOption[] | undefined,
+  search: string
+): readonly WorkspaceRepositoryOption[] {
+  return useMemo(
+    () =>
+      repositories?.filter(repository =>
+        `${repository.owner}/${repository.name}`
+          .toLocaleLowerCase()
+          .includes(search.toLocaleLowerCase())
+      ) ?? [],
+    [repositories, search]
+  );
+}
+
 /*** Keeps staged source edits isolated until an explicit workspace refresh is requested. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
-  const [source, setSource] = useState(readSource(props.currentSource));
+  const initial = readSource(props.currentSource);
+  const [source, setSource] = useState(initial.owner);
   const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(props.repositories));
   const [search, setSearch] = useState('');
+  const selectedRepositories =
+    props.repositories?.filter(repository => selectedIds.has(repository.id)) ?? [];
   const openSource = () => {
     const params = new URLSearchParams();
     const normalizedSource = source.trim();
-    if (normalizedSource !== '')
-      params.set('source', serializeSource(normalizedSource, props.repositories, selectedIds));
+    if (normalizedSource !== '') params.set('source', normalizedSource);
+    if (props.repositories !== undefined)
+      params.set('repositories', [...selectedIds].toSorted().join(','));
     window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
   };
-  return { openSource, search, selectedIds, setSearch, setSelectedIds, setSource, source };
+  const copyRepositoryLinks = () =>
+    void navigator.clipboard.writeText(
+      selectedRepositories.map(repository => repository.url).join('\n')
+    );
+  useEffect(() => {
+    if (source.trim() === '' || source.trim() === initial.owner) return;
+    const timer = window.setTimeout(() => {
+      window.location.assign(`/?${new URLSearchParams({ source: source.trim() }).toString()}`);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [initial.owner, source]);
+  return {
+    copyRepositoryLinks,
+    openSource,
+    search,
+    selectedIds,
+    selectedRepositories,
+    setSearch,
+    setSelectedIds,
+    setSource,
+    source,
+  };
 }
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
 function RepositoryPicker(props: RepositoryPickerProps) {
   return (
-    <details>
+    <details open={props.initiallyOpen}>
       <summary aria-label="Choose repositories">
         Repositories ({props.selectedIds.size}/{props.totalCount})
       </summary>
@@ -146,28 +201,23 @@ function createSelectedRepositoryIds(
   );
 }
 
-/*** Preserve repository exclusions in the existing source query field. */
-function serializeSource(
-  source: string,
-  repositories: readonly WorkspaceRepositoryOption[] | undefined,
-  selectedIds: ReadonlySet<string>
-): string {
-  const excluded =
-    repositories
-      ?.filter(repository => !selectedIds.has(repository.id))
-      .map(repository => repository.id) ?? [];
-  return excluded.length === 0 ? source : `${source}|exclude=${excluded.join(',')}`;
-}
-
 /*** Remove query-only workspace selection state before displaying the editable source. */
-function readSource(currentSource: string | undefined): string {
-  return currentSource?.split('|exclude=')[0] ?? '';
+function readSource(currentSource: string | undefined): { readonly owner: string } {
+  const value = currentSource?.split('|')[0]?.trim() ?? '';
+  try {
+    const url = new URL(value);
+    if (url.hostname !== 'github.com') return { owner: value };
+    return { owner: url.pathname.split('/').find(Boolean) ?? '' };
+  } catch {
+    return { owner: value.split('/').find(Boolean) ?? value };
+  }
 }
 
 interface ProjectSourceFormProps {
   readonly activeWorkspaceId?: string;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly selectionRequired?: boolean;
 }
 
 interface RepositoryPickerProps {
@@ -175,6 +225,7 @@ interface RepositoryPickerProps {
   readonly search: string;
   readonly selectedIds: ReadonlySet<string>;
   readonly totalCount: number;
+  readonly initiallyOpen?: boolean;
   readonly onDeselectAll: () => void;
   readonly onSearchChange: (search: string) => void;
   readonly onSelectAll: () => void;

@@ -371,8 +371,13 @@ async function writeReportAsync(status: 'passed' | 'failed'): Promise<void> {
 }
 
 /*** Opens the real fixture application only after its GraphView has announced a settled canvas. */
-async function openWorkspaceAsync(page: Page, source = 'owner-a%2Cowner-b'): Promise<void> {
-  await page.goto(`${url}/?source=${source}`, { waitUntil: 'networkidle' });
+async function openWorkspaceAsync(
+  page: Page,
+  source = 'owner-a%2Cowner-b',
+  repositoryIds = source === 'owner-a%2Cowner-b' ? fixtureRepositoryIds : undefined
+): Promise<void> {
+  const repositories = repositoryIds === undefined ? '' : `&repositories=${repositoryIds}`;
+  await page.goto(`${url}/?source=${source}${repositories}`, { waitUntil: 'networkidle' });
   await page.getByRole('application', { name: 'Graph' }).waitFor();
 }
 
@@ -406,12 +411,35 @@ async function assertTopmostControlAsync(control: Locator, name: string): Promis
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
-    'Discovers owner and GitHub URL source forms.',
+    'Discovers an entered owner and normalizes a pasted repository URL.',
     async page => {
-      await openWorkspaceAsync(page, 'owner-a');
-      await page.getByText('owner-a', { exact: true }).waitFor();
+      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.getByLabel('GitHub owner').fill('owner-a');
+      await page.waitForURL(openedUrl => openedUrl.searchParams.get('source') === 'owner-a');
+      await page.getByLabel('Choose repositories').waitFor();
+      await page.getByText('No repository has been materialized yet.', { exact: false }).waitFor();
+      await openWorkspaceAsync(page, 'owner-a/catalog');
+      await page.getByText('catalog', { exact: true }).waitFor();
+      assert(
+        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
+        'Shorthand repository owner was not normalized.'
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        await page.getByLabel('owner-a/catalog').isChecked(),
+        'Shorthand repository was not selected.'
+      );
       await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
       await page.getByText('catalog', { exact: true }).waitFor();
+      assert(
+        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
+        'URL owner was not normalized.'
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        await page.getByLabel('owner-a/catalog').isChecked(),
+        'URL repository was not selected.'
+      );
       return [];
     }
   ),
@@ -441,13 +469,18 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('owner-a/catalog').uncheck();
       assert(page.url() === before, 'Selection navigated before Open.');
       await page.getByRole('button', { name: 'Open' }).click();
-      await page.waitForURL(openedUrl => {
-        const source = openedUrl.searchParams.get('source');
-        return source === 'owner-a,owner-b|exclude=owner-a-catalog';
-      });
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-a,owner-b' &&
+          openedUrl.searchParams.get('repositories') ===
+            fixtureRepositoryIds
+              .filter(id => id !== 'owner-a-catalog')
+              .toSorted()
+              .join(',')
+      );
       const openedSource = new URL(page.url()).searchParams.get('source');
       assert(
-        openedSource === 'owner-a,owner-b|exclude=owner-a-catalog',
+        openedSource === 'owner-a,owner-b',
         `Open navigated to an unexpected source: ${String(openedSource)}`
       );
       await page.getByLabel('Choose repositories').click();
@@ -548,13 +581,12 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
-    'dependency-kind-filter',
-    'Toggles runtime, dev, peer, and optional declarations.',
+    'dependency-kind-controls-absent',
+    'Keeps dependency evidence without dependency-kind UI controls.',
     async page => {
       await openWorkspaceAsync(page);
-      for (const label of dependencyKinds) await page.getByLabel(label).click();
       for (const label of dependencyKinds)
-        assert(!(await page.getByLabel(label).isChecked()), `${label} remained enabled.`);
+        assert((await page.getByLabel(label).count()) === 0, `${label} control is still visible.`);
       return [];
     }
   ),
@@ -662,7 +694,12 @@ const scenarios: readonly Scenario[] = [
     'Retries only the failed repository while retaining graph state and successful projects.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByText('owner-b/failed: failed', { exact: true }).waitFor();
+      const failureDetails = page.getByRole('status');
+      const failure = failureDetails.getByText(/^owner-b\/failed: failed/u);
+      await failure.waitFor({ state: 'attached' });
+      assert(!(await failure.isVisible()), 'Failed repository details were not collapsed.');
+      await failureDetails.locator('summary').click();
+      await failure.waitFor();
       await page.getByText('owner-a', { exact: true }).waitFor();
       await page.getByText('owner-b', { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Expand' }).first().click();
@@ -677,7 +714,7 @@ const scenarios: readonly Scenario[] = [
       });
       await page.getByRole('button', { name: 'Retry' }).click();
       await retryRequest;
-      await page.getByText('owner-b/failed: failed', { exact: true }).waitFor({ state: 'hidden' });
+      await failure.waitFor({ state: 'hidden' });
       assert(page.url() === location, 'Retry reloaded or navigated the page.');
       assert(
         (await page.getByText('catalog', { exact: true }).count()) === selectedCatalogs,
@@ -732,6 +769,13 @@ const dependencyKinds = [
   'Dev dependencies',
   'Peer dependencies',
   'Optional dependencies',
+] as const;
+const fixtureRepositoryIds = [
+  'owner-a-catalog',
+  'owner-a-shared',
+  'owner-b-workspace',
+  'owner-b-disconnected',
+  'owner-b-failed',
 ] as const;
 
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */

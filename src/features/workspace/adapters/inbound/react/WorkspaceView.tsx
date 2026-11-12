@@ -1,21 +1,17 @@
 'use client';
-import { AppHeader } from '@ankhorage/zora/web/app-header';
-import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
-import { Button } from '@ankhorage/zora/web/button';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
-import { AppShell, View } from '@ankhorage/zora/web/view';
+import { AppShell } from '@ankhorage/zora/web/view';
 import { useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
-import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
+import { WorkspaceHeader } from '@/features/workspace/adapters/inbound/react/WorkspaceHeader';
 import { WorkspacePanels } from '@/features/workspace/adapters/inbound/react/WorkspacePanels';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { Audit } from '@/types/audit';
-import type { ProjectTreeNode } from '@/types/projectTree';
 import type { WorkspaceLoadResult } from '@/types/workspace';
 import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
@@ -28,6 +24,7 @@ export function WorkspaceView({
   repositories,
   repositoryStatuses,
   runtimeId,
+  selectionRequired,
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
@@ -48,6 +45,7 @@ export function WorkspaceView({
             projectName={projectName}
             projectTree={navigation.projectTree}
             repositories={repositories}
+            selectionRequired={selectionRequired}
             workspaceScope={workspaceScope}
             onNavigate={navigation.navigateToPackage}
           />
@@ -60,6 +58,7 @@ export function WorkspaceView({
           offline={offline}
           projectName={projectName}
           repositoryStatuses={liveWorkspace.repositoryStatuses}
+          selectionRequired={selectionRequired}
           workspace={liveWorkspace.workspace}
           onRetry={onRetry}
         />
@@ -79,49 +78,6 @@ function useWorkspaceRepositoryRetry(
     retryRepositoryAsync(liveWorkspace.runtimeId, repositoryId, latestRetry, setLiveWorkspace);
 }
 
-/*** Renders workspace breadcrumbs, source selector, and theme action. */
-function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { mode, setMode } = useZoraTheme();
-
-  return (
-    <AppHeader
-      inverted
-      style={{ position: 'relative', zIndex: 4 }}
-      actions={
-        <View align="center" direction="row" gap="s">
-          {props.offline ? (
-            <span aria-label="Offline snapshot">Offline snapshot</span>
-          ) : (
-            <ProjectSourceForm
-              activeWorkspaceId={props.workspaceScope}
-              currentSource={props.currentSource}
-              repositories={props.repositories}
-            />
-          )}
-          <Button
-            leadingIcon={{ name: mode === 'dark' ? 'sunny-outline' : 'moon-outline' }}
-            size="s"
-            variant="outline"
-            onPress={() => setMode(mode === 'dark' ? 'light' : 'dark')}
-          >
-            {mode === 'dark' ? 'Light' : 'Dark'}
-          </Button>
-        </View>
-      }
-      safeAreaTop={false}
-      subtitle={
-        <Breadcrumbs
-          compact
-          items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
-          separator="›"
-          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
-        />
-      }
-      title={props.projectName}
-    />
-  );
-}
-
 /*** Renders workspace tools, graph content, cycle inspection, and persistent load errors. */
 function WorkspaceBody({
   auditExportActions,
@@ -130,6 +86,7 @@ function WorkspaceBody({
   offline,
   projectName,
   repositoryStatuses,
+  selectionRequired,
   workspace,
   onRetry,
 }: WorkspaceBodyProps) {
@@ -153,19 +110,41 @@ function WorkspaceBody({
         zIndex: 0,
       }}
     >
-      <WorkspacePanels
-        auditExportActions={auditExportActions}
-        currentSource={currentSource}
-        cycleInspection={cycleInspection}
-        cycleSelection={cycleSelection}
-        evaluation={auditEvaluation}
-        navigation={navigation}
-        offline={offline}
-        projectError={projectError}
-        repositoryStatuses={repositoryStatuses}
-        onRetry={onRetry}
-      />
+      {selectionRequired ? (
+        <RepositorySelectionNotice />
+      ) : (
+        <WorkspacePanels
+          auditExportActions={auditExportActions}
+          currentSource={currentSource}
+          cycleInspection={cycleInspection}
+          cycleSelection={cycleSelection}
+          evaluation={auditEvaluation}
+          navigation={navigation}
+          offline={offline}
+          projectError={projectError}
+          repositoryStatuses={repositoryStatuses}
+          onRetry={onRetry}
+        />
+      )}
     </main>
+  );
+}
+
+/*** Explain the discover-before-open state without representing it as a repository failure. */
+function RepositorySelectionNotice() {
+  return (
+    <div
+      role="status"
+      style={{
+        alignItems: 'center',
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        padding: 24,
+      }}
+    >
+      Select the repositories to inspect, then choose Open. No repository has been materialized yet.
+    </div>
   );
 }
 
@@ -232,59 +211,6 @@ function resolveWorkspaceProjectIdentity(
   return workspace.ok ? workspace.value.projectIdentity : projectName;
 }
 
-/*** Creates package breadcrumbs from a stable Home root to the active package path. */
-function createBreadcrumbItems(
-  currentPackage: string,
-  projectTree: readonly ProjectTreeNode[]
-): readonly BreadcrumbItem[] {
-  const repositoryCrumbs = findRepositoryBreadcrumbs(currentPackage, projectTree);
-  if (repositoryCrumbs !== null) return repositoryCrumbs;
-  const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
-  const packageItems = packageSegments.map((label, index) => ({
-    id: packageSegments.slice(0, index + 1).join('.'),
-    label,
-  }));
-
-  return [{ id: '', label: 'Home', icon: { name: 'home-outline' } }, ...packageItems];
-}
-
-/*** Present virtual owner and repository labels without leaking technical graph identities. */
-function findRepositoryBreadcrumbs(
-  currentPackage: string,
-  projectTree: readonly ProjectTreeNode[]
-): readonly BreadcrumbItem[] | null {
-  const match = projectTree
-    .flatMap(owner => (owner.children ?? []).map(repository => ({ owner, repository })))
-    .find(
-      ({ repository }) =>
-        repository.kind === 'virtual' &&
-        repository.graphPackage !== '' &&
-        (currentPackage === repository.graphPackage ||
-          currentPackage.startsWith(`${repository.graphPackage}.`))
-    );
-  if (match === undefined) return null;
-
-  const remainder = currentPackage
-    .slice(match.repository.graphPackage.length)
-    .replace(/^\./, '')
-    .split('.')
-    .filter(segment => segment && segment !== 'module' && segment !== 'package');
-  return [
-    { id: '', label: 'Home', icon: { name: 'home-outline' } },
-    { id: '', label: match.owner.label },
-    { id: match.repository.graphPackage, label: match.repository.label },
-    ...remainder.map((label, index) => ({
-      id: `${match.repository.graphPackage}.${remainder.slice(0, index + 1).join('.')}`,
-      label,
-    })),
-  ];
-}
-
-/*** Normalizes navigation paths to the package identity representation used by the graph view. */
-function normalizeGraphPackage(path: string): string {
-  return path.replaceAll('/', '.').replace(/^\.+|\.+$/g, '');
-}
-
 interface WorkspaceViewProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
@@ -292,6 +218,7 @@ interface WorkspaceViewProps {
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly selectionRequired?: boolean;
   readonly runtimeId?: string;
   readonly workspaceScope?: string;
   readonly workspace: WorkspaceLoadResult;
@@ -304,17 +231,6 @@ interface LiveWorkspace {
   readonly workspace: WorkspaceLoadResult;
 }
 
-interface WorkspaceHeaderProps {
-  readonly currentPackage: string;
-  readonly currentSource?: string;
-  readonly offline?: boolean;
-  readonly projectName: string;
-  readonly projectTree: readonly ProjectTreeNode[];
-  readonly repositories?: readonly WorkspaceRepositoryOption[];
-  readonly workspaceScope?: string;
-  readonly onNavigate: (path: string) => void;
-}
-
 interface WorkspaceBodyProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
@@ -322,12 +238,7 @@ interface WorkspaceBodyProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly selectionRequired?: boolean;
   readonly workspace: WorkspaceLoadResult;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
-}
-
-interface BreadcrumbItem {
-  readonly id: string;
-  readonly label: string;
-  readonly icon?: { readonly name: string };
 }
