@@ -94,6 +94,7 @@
     "@ankhorage/repository": "^0.8.0",
     "@ankhorage/rules": "^0.5.1",
     "@ankhorage/rules-architecture": "^0.8.0",
+    "@ankhorage/surface": "^9.4.18",
     "@ankhorage/utility": "^1.9.85",
     "@ankhorage/zora": "27.0.0",
     "@artiphishle/testosterone": "^0.3.11",

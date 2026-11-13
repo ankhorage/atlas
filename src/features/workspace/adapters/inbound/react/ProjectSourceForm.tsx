@@ -1,4 +1,5 @@
 'use client';
+import { Popover } from '@ankhorage/surface';
 import { Button } from '@ankhorage/zora/web/button';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
@@ -133,22 +134,21 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
 /*** Renders one searchable multi-select rather than a header action for every repository. */
 function RepositoryPicker(props: RepositoryPickerProps) {
   return (
-    <details open={props.initiallyOpen}>
-      <summary aria-label="Choose repositories">
-        Repositories ({props.selectedIds.size}/{props.totalCount})
-      </summary>
-      <div
-        style={{
-          background: 'var(--zora-surface-default, white)',
-          border: '1px solid currentColor',
-          maxHeight: 360,
-          minWidth: 280,
-          overflowY: 'auto',
-          padding: 8,
-          position: 'absolute',
-          zIndex: 2,
-        }}
-      >
+    <Popover
+      defaultOpen={props.initiallyOpen}
+      placement="bottom-start"
+      anchor={({ toggle }) => (
+        <Button
+          accessibilityLabel="Choose repositories"
+          size="s"
+          variant="outline"
+          onPress={toggle}
+        >
+          Repositories ({props.selectedIds.size}/{props.totalCount})
+        </Button>
+      )}
+    >
+      <div style={REPOSITORY_PICKER_STYLE}>
         <input
           aria-label="Search repositories"
           placeholder="Search repositories"
@@ -165,7 +165,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
         </View>
         <RepositoryChoices {...props} />
       </div>
-    </details>
+    </Popover>
   );
 }
 
@@ -231,3 +231,12 @@ interface RepositoryPickerProps {
   readonly onSelectAll: () => void;
   readonly onSelectionChange: (ids: Set<string>) => void;
 }
+
+const REPOSITORY_PICKER_STYLE = {
+  background: 'var(--zora-surface-default, white)',
+  border: '1px solid currentColor',
+  maxHeight: 360,
+  minWidth: 280,
+  overflowY: 'auto',
+  padding: 8,
+} as const;

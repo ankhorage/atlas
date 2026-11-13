@@ -1,5 +1,7 @@
 'use client';
+import { Popover } from '@ankhorage/surface';
 import { Button } from '@ankhorage/zora/web/button';
+import { Surface } from '@ankhorage/zora/web/surface';
 import { View } from '@ankhorage/zora/web/view';
 import { useEffect, useRef, useState } from 'react';
 
@@ -79,9 +81,15 @@ function useWorkspaceSettingsRestore(
 /*** Keeps the compact workspace popover purely presentational. */
 function WorkspaceMenu(props: WorkspaceMenuProps) {
   return (
-    <details>
-      <summary aria-label="Manage workspaces">Workspace</summary>
-      <div style={MENU_STYLE}>
+    <Popover
+      placement="bottom-start"
+      anchor={({ toggle }) => (
+        <Button accessibilityLabel="Manage workspaces" size="s" variant="outline" onPress={toggle}>
+          Workspace
+        </Button>
+      )}
+    >
+      <Surface style={{ border: '1px solid currentColor', padding: 8 }}>
         <label>
           Saved workspace{' '}
           <select
@@ -101,8 +109,8 @@ function WorkspaceMenu(props: WorkspaceMenuProps) {
         </label>
         {props.isDirty ? <span aria-live="polite">Unsaved changes</span> : null}
         <WorkspaceActions {...props} />
-      </div>
-    </details>
+      </Surface>
+    </Popover>
   );
 }
 
@@ -253,7 +261,6 @@ function applyWorkspaceSettings(
     if (settings.enabledDependencyKinds.has(kind) !== enabled.has(kind))
       settings.toggleDependencyKind(kind);
 }
-
 /*** Apply only layouts supported by the current GraphView runtime. */
 function setWorkspaceLayout(settings: ReturnType<typeof useSettings>, layout: string): void {
   if (
@@ -265,7 +272,6 @@ function setWorkspaceLayout(settings: ReturnType<typeof useSettings>, layout: st
   )
     settings.setCytoscapeLayout(layout);
 }
-
 /*** Encode one settings dependency kind into the portable workspace contract. */
 function toWorkspaceDependencyKind(
   kind: DependencyFilterKind
@@ -278,7 +284,6 @@ function toWorkspaceDependencyKind(
         ? 'peer'
         : 'optional';
 }
-
 /*** Decode one portable dependency kind into the settings adapter vocabulary. */
 function fromWorkspaceDependencyKind(
   kind: WorkspacePresentationSettings['dependencyKinds'][number]
@@ -291,7 +296,6 @@ function fromWorkspaceDependencyKind(
         ? 'peerDependency'
         : 'optionalDependency';
 }
-
 /*** Navigate through the canonical server source loader using the workspace's persisted selection. */
 function openWorkspace(workspace: WorkspaceDefinition): void {
   const source = workspace.sources
@@ -304,7 +308,6 @@ function openWorkspace(workspace: WorkspaceDefinition): void {
   if (excluded.length > 0) params.set('source', `${source}|exclude=${excluded.join(',')}`);
   window.location.assign(`/?${params.toString()}`);
 }
-
 interface WorkspaceControlsProps {
   readonly activeWorkspaceId?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
@@ -327,10 +330,3 @@ const ALL_DEPENDENCY_KINDS: readonly DependencyFilterKind[] = [
   'peerDependency',
   'optionalDependency',
 ];
-const MENU_STYLE = {
-  background: 'var(--zora-surface-default, white)',
-  border: '1px solid currentColor',
-  padding: 8,
-  position: 'absolute' as const,
-  zIndex: 2,
-};
