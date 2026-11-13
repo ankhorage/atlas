@@ -18,7 +18,6 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
   return (
     <AppHeader
       inverted
-      style={{ position: 'relative', zIndex: 4 }}
       actions={
         <View align="center" direction="row" gap="s">
           {props.offline ? (

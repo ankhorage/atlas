@@ -69,8 +69,21 @@ function WorkspaceShell({
   onRetry,
 }: WorkspaceShellProps) {
   return (
-    <AppShell
-      header={
+    <>
+      <AppShell header={<div aria-hidden style={{ height: 56 }} />}>
+        <WorkspaceBody
+          currentSource={currentSource}
+          auditExportActions={auditExportActions}
+          navigation={navigation}
+          offline={offline}
+          projectName={projectName}
+          repositoryStatuses={liveWorkspace.repositoryStatuses}
+          selectionRequired={selectionRequired}
+          workspace={liveWorkspace.workspace}
+          onRetry={onRetry}
+        />
+      </AppShell>
+      <div style={{ left: 0, position: 'fixed', right: 0, top: 0, zIndex: 10 }}>
         <WorkspaceHeader
           currentPackage={navigation.currentPackage}
           currentSource={currentSource}
@@ -83,20 +96,8 @@ function WorkspaceShell({
           workspaceScope={workspaceScope}
           onNavigate={navigation.navigateToPackage}
         />
-      }
-    >
-      <WorkspaceBody
-        currentSource={currentSource}
-        auditExportActions={auditExportActions}
-        navigation={navigation}
-        offline={offline}
-        projectName={projectName}
-        repositoryStatuses={liveWorkspace.repositoryStatuses}
-        selectionRequired={selectionRequired}
-        workspace={liveWorkspace.workspace}
-        onRetry={onRetry}
-      />
-    </AppShell>
+      </div>
+    </>
   );
 }
 
