@@ -16,6 +16,7 @@ export async function createGitHubAuthAdapterAsync(
     const persistence = await loadGitHubAuthPersistenceAsync(configuration.persistenceModule);
     return {
       adapter: createGitHubAuthAdapter({
+        authorizationMode: 'oauth-app',
         authorizationAttempts: persistence.createAuthorizationAttemptStore(sessionId),
         clientId: configuration.clientId,
         clientSecret: configuration.clientSecret,

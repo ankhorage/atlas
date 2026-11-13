@@ -1,3 +1,5 @@
+import type { GitHubRepositoryAuthentication } from '@ankhorage/repository/github';
+
 export type ProjectSource =
   | { readonly kind: 'filesystem'; readonly path: string }
   | { readonly kind: 'github'; readonly url: string; readonly revision?: string };
@@ -20,7 +22,8 @@ interface GitHubProjectMaterialization {
 export interface GitHubProjectMaterializer {
   readonly materializeAsync: (
     source: Extract<ProjectSource, { readonly kind: 'github' }>,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    authentication?: GitHubRepositoryAuthentication
   ) => Promise<GitHubProjectMaterialization>;
 }
 

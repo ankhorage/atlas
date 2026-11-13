@@ -5,10 +5,11 @@ import type { GitHubProjectMaterializer } from '@/types/projectSource';
 /*** Adapt the repository package's GitHub materialization capability to Atlas project sources. */
 export function createGitHubProjectMaterializer(): GitHubProjectMaterializer {
   return {
-    materializeAsync: async (source, signal) => {
+    materializeAsync: async (source, signal, authentication = 'anonymous') => {
       const result = await materializeGitHubRepositoryAsync({
         url: source.url,
         ...(source.revision === undefined ? {} : { ref: source.revision }),
+        authentication,
         signal,
       });
       return {

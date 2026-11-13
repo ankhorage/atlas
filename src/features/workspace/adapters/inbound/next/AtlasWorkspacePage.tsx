@@ -1,7 +1,11 @@
 import { connection } from 'next/server';
 
 import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
-import { readGitHubAuthViewAsync } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
+import type { GitHubRepositoryAuthorization } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
+import {
+  readGitHubAuthViewAsync,
+  readGitHubRepositoryAuthenticationAsync,
+} from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { WorkspaceView } from '@/features/workspace/adapters/inbound/react/WorkspaceView';
 import type { WorkspaceProjectSourceResult } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
@@ -9,9 +13,13 @@ import type { WorkspaceProjectSourceResult } from '@/features/workspace/composit
 export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasWorkspacePageProps) {
   await connection();
   const params = await searchParams;
-  const githubAuth = await readGitHubAuthViewAsync();
+  const [githubAuth, repositoryAuthentication] = await Promise.all([
+    readGitHubAuthViewAsync(),
+    readGitHubRepositoryAuthenticationAsync(),
+  ]);
   const result = await loadWorkspace(
-    withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories))
+    withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories)),
+    repositoryAuthentication
   );
 
   return (
@@ -48,7 +56,10 @@ function withRepositorySelection(
 }
 
 interface AtlasWorkspacePageProps {
-  readonly loadWorkspace: (source: string | undefined) => Promise<WorkspaceProjectSourceResult>;
+  readonly loadWorkspace: (
+    source: string | undefined,
+    authorization: GitHubRepositoryAuthorization
+  ) => Promise<WorkspaceProjectSourceResult>;
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
     readonly repositories?: string | readonly string[];

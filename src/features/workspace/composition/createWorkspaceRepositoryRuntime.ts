@@ -6,7 +6,10 @@ import {
   projectDependencyGraphFromProjectAnalysisSnapshots,
 } from '@ankhorage/dependency-graph';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
-import type { GitHubRepositoryDiscoveryRepository } from '@ankhorage/repository/github';
+import type {
+  GitHubRepositoryAuthentication,
+  GitHubRepositoryDiscoveryRepository,
+} from '@ankhorage/repository/github';
 
 import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
 import { selectParserLanguage } from '@/features/project-analysis/application/use-cases/selectParserLanguage';
@@ -37,6 +40,8 @@ export function createWorkspaceRepositoryRuntime(
     async loadAsync(input, signal) {
       const workspace: RuntimeWorkspace = {
         active: false,
+        authentication: input.authentication ?? 'anonymous',
+        authorizationScope: input.authorizationScope ?? 'anonymous',
         entries: new Map(),
         generation: 0,
         repositories: input.repositories,
@@ -89,7 +94,14 @@ async function loadRepositoriesAsync(
     repositories,
     MAX_CONCURRENT_REPOSITORY_OPERATIONS,
     async (repository, operationSignal) =>
-      analyzeRepositoryAsync(repository, cache, dependencies, operationSignal),
+      analyzeRepositoryAsync(
+        repository,
+        workspace.authentication,
+        workspace.authorizationScope,
+        cache,
+        dependencies,
+        operationSignal
+      ),
     signal
   );
   if (workspace.generation !== generation)
@@ -120,26 +132,22 @@ async function loadRepositoriesAsync(
 /*** Resolve one immutable revision and materialize it only when its validated portable snapshot is absent. */
 async function analyzeRepositoryAsync(
   repository: GitHubRepositoryDiscoveryRepository,
+  authentication: GitHubRepositoryAuthentication,
+  authorizationScope: string,
   cache: WorkspaceAnalysisCache<RepositoryAnalysis>,
   dependencies: WorkspaceRepositoryRuntimeDependencies,
   signal?: AbortSignal
 ): Promise<RepositoryAnalysis> {
-  const revision = await dependencies.resolveRevisionAsync(repository.url, signal);
-  const key = {
-    authorization: 'anonymous' as const,
-    provider: 'github' as const,
-    repositoryId: revision.repository.id,
-    revision: revision.revision.commitSha,
-    schemaVersion: ANALYSIS_SCHEMA_VERSION,
-  };
+  const revision = await dependencies.resolveRevisionAsync(repository.url, authentication, signal);
+  const key = workspaceAnalysisCacheKey(revision, authorizationScope);
   const cached = cache.getAnalysis(key);
   if (cached !== undefined) return cached;
-
   const source = parseProjectSource(repository.url);
   if (source.kind !== 'github') throw new Error('Workspace repositories must be GitHub sources.');
   const resolved = await (dependencies.materializeAsync ?? loadProjectSourceAsync)(
     { ...source, revision: revision.revision.commitSha },
-    signal
+    signal,
+    authentication
   );
   try {
     const inspection = await (dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)(
@@ -166,6 +174,20 @@ async function analyzeRepositoryAsync(
   } finally {
     await resolved.cleanupAsync();
   }
+}
+
+/*** Scope immutable analyses to the GitHub identity that was authorized to read them. */
+function workspaceAnalysisCacheKey(
+  revision: Awaited<ReturnType<WorkspaceRepositoryRuntimeDependencies['resolveRevisionAsync']>>,
+  authorization: string
+) {
+  return {
+    authorization,
+    provider: 'github' as const,
+    repositoryId: revision.repository.id,
+    revision: revision.revision.commitSha,
+    schemaVersion: ANALYSIS_SCHEMA_VERSION,
+  };
 }
 
 /*** Reject overlapping retry work before it can duplicate materialization or produce stale responses. */
@@ -231,6 +253,8 @@ function repositoryStatus(
 
 interface RuntimeWorkspace {
   active: boolean;
+  readonly authentication: GitHubRepositoryAuthentication;
+  readonly authorizationScope: string;
   readonly entries: Map<string, RepositoryAnalysis>;
   generation: number;
   readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
@@ -255,10 +279,12 @@ export interface WorkspaceRepositoryRuntimeDependencies {
   readonly inspectAsync?: (path: string) => Promise<ProjectInspection>;
   readonly materializeAsync?: (
     source: ProjectSource,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    authentication?: GitHubRepositoryAuthentication
   ) => Promise<ResolvedProjectSource>;
   readonly resolveRevisionAsync: (
     url: string,
+    authentication: GitHubRepositoryAuthentication,
     signal?: AbortSignal
   ) => Promise<{
     readonly repository: { readonly id: string };
@@ -267,6 +293,8 @@ export interface WorkspaceRepositoryRuntimeDependencies {
 }
 
 interface WorkspaceRepositoryRuntimeInput {
+  readonly authentication?: GitHubRepositoryAuthentication;
+  readonly authorizationScope?: string;
   readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
   readonly source: string;
 }

@@ -1,11 +1,14 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
 import {
+  type GitHubRepositoryAuthentication,
   type GitHubRepositoryRevisionResolutionResult,
   resolveGitHubRepositoryRevisionAsync,
 } from '@ankhorage/repository/github';
 import { toErrorMessage } from '@ankhorage/utility/error';
 
+import type { GitHubRepositoryAuthorization } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
+import { createGitHubProjectMaterializer } from '@/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer';
 import { discoverWorkspaceGitHubSourcesAsync } from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import {
@@ -50,7 +53,9 @@ export async function loadWorkspaceProjectSourceAsync(
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync = discoverWorkspaceGitHubSourcesAsync,
   signal?: AbortSignal,
   resolveRevisionAsync: GitHubRevisionResolver = resolveGitHubRevisionAsync,
-  runtime?: WorkspaceRepositoryRuntime
+  runtime?: WorkspaceRepositoryRuntime,
+  authentication: GitHubRepositoryAuthentication = 'anonymous',
+  authorizationScope = 'anonymous'
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(sourceValue, process.env.ATLAS_PROJECT_PATH);
 
@@ -70,7 +75,9 @@ export async function loadWorkspaceProjectSourceAsync(
       discoverAsync,
       resolveRevisionAsync,
       runtime,
-      signal
+      signal,
+      authentication,
+      authorizationScope
     );
   } catch (error) {
     return {
@@ -92,11 +99,18 @@ async function loadGitHubWorkspaceAsync(
   discoverAsync: typeof discoverWorkspaceGitHubSourcesAsync,
   resolveRevisionAsync: GitHubRevisionResolver,
   runtime: WorkspaceRepositoryRuntime | undefined,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  authentication: GitHubRepositoryAuthentication = 'anonymous',
+  authorizationScope = 'anonymous'
 ): Promise<WorkspaceProjectSourceResult> {
   const { excludedRepositoryIds, selectedRepositoryIds, source } =
     parseGitHubWorkspaceSource(sourceValue);
-  const discovery = await discoverAsync(source, excludedRepositoryIds, selectedRepositoryIds);
+  const discovery = await discoverAsync(
+    source,
+    excludedRepositoryIds,
+    selectedRepositoryIds,
+    authentication
+  );
   const repositories = toRepositoryOptions(discovery);
   if (discovery.selectedRepositories.length === 0)
     return {
@@ -114,10 +128,34 @@ async function loadGitHubWorkspaceAsync(
       ? defaultWorkspaceRepositoryRuntime
       : createWorkspaceRepositoryRuntime({ materializeAsync, resolveRevisionAsync }));
   const result = await workspaceRuntime.loadAsync(
-    { repositories: discovery.selectedRepositories, source: sourceValue },
+    {
+      authentication,
+      authorizationScope,
+      repositories: discovery.selectedRepositories,
+      source: sourceValue,
+    },
     signal
   );
   return { ...result, repositories };
+}
+
+/*** Load a workspace with the credential resolved at the trusted request boundary. */
+export function loadAuthenticatedWorkspaceProjectSourceAsync(
+  source: string | undefined,
+  loadDependencyGraphAsync: (inspection: ProjectInspection) => Promise<DependencyGraph>,
+  authorization: GitHubRepositoryAuthorization
+): Promise<WorkspaceProjectSourceResult> {
+  return loadWorkspaceProjectSourceAsync(
+    source,
+    loadDependencyGraphAsync,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    authorization.authentication,
+    authorization.cacheScope
+  );
 }
 
 /*** Preserve picker state from discovery while keeping the runtime status model separate. */
@@ -162,18 +200,29 @@ export interface WorkspaceRepositoryOption {
 
 type GitHubRevisionResolver = (
   url: string,
+  authentication: GitHubRepositoryAuthentication,
   signal?: AbortSignal
 ) => Promise<GitHubRepositoryRevisionResolutionResult>;
 
 /*** Resolve a GitHub URL to its immutable revision through the public Repository capability. */
 function resolveGitHubRevisionAsync(
   url: string,
+  authentication: GitHubRepositoryAuthentication,
   signal?: AbortSignal
 ): Promise<GitHubRepositoryRevisionResolutionResult> {
-  return resolveGitHubRepositoryRevisionAsync({ url, signal });
+  return resolveGitHubRepositoryRevisionAsync({ authentication, url, signal });
 }
 
 /*** Keep the default cache process-local; another server instance transparently starts a fresh runtime. */
 const defaultWorkspaceRepositoryRuntime = createWorkspaceRepositoryRuntime({
+  materializeAsync: async (source, signal, authentication = 'anonymous') => {
+    if (source.kind !== 'github') return loadProjectSourceAsync(source, signal);
+    const materialized = await createGitHubProjectMaterializer().materializeAsync(
+      source,
+      signal,
+      authentication
+    );
+    return { ...materialized, source };
+  },
   resolveRevisionAsync: resolveGitHubRevisionAsync,
 });

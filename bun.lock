@@ -8,7 +8,7 @@
         "@ankhorage/ankh": "0.13.4",
         "@ankhorage/api-nextjs": "^0.2.0",
         "@ankhorage/auth": "^0.1.3",
-        "@ankhorage/auth-github": "^0.1.0",
+        "@ankhorage/auth-github": "^0.2.0",
         "@ankhorage/capability": "^0.2.1",
         "@ankhorage/contracts": "^25.0.0",
         "@ankhorage/dependency-graph": "1.4.0",
@@ -18,7 +18,7 @@
         "@ankhorage/infra-local": "^0.3.28",
         "@ankhorage/infra-minikube": "^0.4.129",
         "@ankhorage/project-detector": "^0.3.3",
-        "@ankhorage/repository": "^0.8.0",
+        "@ankhorage/repository": "^0.9.0",
         "@ankhorage/rules": "^0.5.1",
         "@ankhorage/rules-architecture": "^0.8.0",
         "@ankhorage/surface": "^9.4.18",
@@ -61,7 +61,7 @@
 
     "@ankhorage/auth": ["@ankhorage/auth@0.1.3", "", { "dependencies": { "@ankhorage/contracts": "26.0.0" } }, "sha512-2Mt2g2KaFF41XQ/Ovih5KVJb0YiCADaFU80JX9xpGRivNlqN2i2eLfP5IHyvqFFwGYNJ1iNEcB5v/CPuvBK+iw=="],
 
-    "@ankhorage/auth-github": ["@ankhorage/auth-github@0.1.0", "", { "dependencies": { "@ankhorage/auth": "^0.1.3", "@ankhorage/contracts": "^26.4.0" } }, "sha512-4IDRQbVFYZVT2QObu/zG5IHWKGd02w07gf2m1grxEW1KYWLLQh+NOet/2beNFdK/uWbuvzOemhhn0wWz4TWWgg=="],
+    "@ankhorage/auth-github": ["@ankhorage/auth-github@0.2.0", "", { "dependencies": { "@ankhorage/auth": "^0.1.3", "@ankhorage/contracts": "^26.4.0" } }, "sha512-Wrfzi8U1UskT/9sMb4JSxoeKYmDBo7UjEhFpNRk6l7FTr5o1eJAUHXI7e7kkxcPoecWo/xmBjHHpXA72nn4pVg=="],
 
     "@ankhorage/capability": ["@ankhorage/capability@0.2.1", "", { "dependencies": { "@ankhorage/contracts": "^25.0.0", "@ankhorage/utility": "^1.9.85" } }, "sha512-y/anUm/TwRs5f6YlePgt6kX7PBN/HB7UH6xzicUsXyEr706uu5rSf8TY4QrBikRFoWfVzD1ARsTeKdgfmqd1FQ=="],
 
@@ -97,7 +97,7 @@
 
     "@ankhorage/reader": ["@ankhorage/reader@0.1.2", "", { "dependencies": { "@readium/navigator": "2.11.1", "@readium/shared": "2.6.0", "@zip.js/zip.js": "2.23.0", "pdfjs-dist": "6.4.299" }, "peerDependencies": { "expo": "^57.0.0", "react": "19.2.3", "react-dom": "19.2.3", "react-native": "0.86.x", "react-native-web": "~0.21.3" }, "optionalPeers": ["expo", "react-dom", "react-native", "react-native-web"] }, "sha512-eV5DWGEKmQnXap/2Y2DEeeQ+Rpq5QT8QDEc4J0O1IY5ogw9xyHFGalDVH0IU5mm91UPvg84kkNPTLM3tFr7ypg=="],
 
-    "@ankhorage/repository": ["@ankhorage/repository@0.8.0", "", { "dependencies": { "@ankhorage/ankh": "^0.13.3", "@ankhorage/capability": "^0.2.2", "@ankhorage/contracts": "^26.3.0", "ignore": "^7.0.14" } }, "sha512-LjdAg04Gj58VZwjv0NEBcr+7Wv362RD+hLssryiWEv96A7kQlYTBxFKuznMKQO2ioKpwD2Po2Sw7zvHIUwCKaw=="],
+    "@ankhorage/repository": ["@ankhorage/repository@0.9.0", "", { "dependencies": { "@ankhorage/ankh": "^0.13.3", "@ankhorage/capability": "^0.2.2", "@ankhorage/contracts": "^26.8.0", "ignore": "^7.0.14" } }, "sha512-htZ6JfZRyzuVHYnrT2GoP1uyXxm8MlIm+CG/w+E3GeuAHA0SIhPhZi0ghilrWboCrA2nPogXCaAp8CMxBBJcVQ=="],
 
     "@ankhorage/rules": ["@ankhorage/rules@0.5.1", "", { "dependencies": { "@ankhorage/ankh": "^0.13.1", "@ankhorage/capability": "^0.2.1", "@ankhorage/contracts": "^26.0.0", "@ankhorage/utility": "^1.9.0" }, "bin": { "ankhorage-rules": "dist/cli/standalone.js" } }, "sha512-lG0M+ohBetPcS4VicbmX+oFbEqKdE9eGovBVtpz/dZ/lxWHWUBgxT0PKv1hTusfqv0cth1HwjiRRIanl/dk2rg=="],
 
@@ -1973,7 +1973,7 @@
 
     "@ankhorage/auth/@ankhorage/contracts": ["@ankhorage/contracts@26.0.0", "", { "dependencies": { "@ankhorage/color-theory": "^0.3.1", "@ankhorage/utility": "^1.9.85" } }, "sha512-Kp7Ps1eVKCrUrbKXTqJT0S4p/DzlIeoCvCvacWIj5N3lD1kJw9bWYcFtpbEYazjztVr+qH60oTrFMfxb0pTH9g=="],
 
-    "@ankhorage/auth-github/@ankhorage/contracts": ["@ankhorage/contracts@26.7.0", "", { "dependencies": { "@ankhorage/color-theory": "^0.3.2", "@ankhorage/utility": "^1.10.0" } }, "sha512-Ag1g43cRxzBSm+5jJzYBU5Xm+88QPpHZ7yZ16YAjExrkp+qBW0lk1ck+W8Rf4AkuG1yTahrxfycLWS9VUvfyyg=="],
+    "@ankhorage/auth-github/@ankhorage/contracts": ["@ankhorage/contracts@26.8.0", "", { "dependencies": { "@ankhorage/color-theory": "^0.3.2", "@ankhorage/utility": "^1.10.0" } }, "sha512-ZvJrlTfxTSJQ0oC1kRobVJuIKFP9guLzdbBCxzJMNqtwyGRO1mYpHqRE3Ni3ci+23oewWE9+f9KF6aoRvp5s5Q=="],
 
     "@ankhorage/capability/@ankhorage/utility": ["@ankhorage/utility@1.9.85", "", { "peerDependencies": { "fastify": "^5.12.5" }, "optionalPeers": ["fastify"] }, "sha512-039OnOPntg5EY7BwMR4shCaHOO8N/DgNZOgQxkh/lxtsZbqIlf34bp47ZYh7NoPVibxLDwj8CeMl6m1Pw8y1aQ=="],
 
@@ -2005,11 +2005,9 @@
 
     "@ankhorage/project-detector/@ankhorage/utility": ["@ankhorage/utility@0.8.0", "", {}, "sha512-0ywzdqu1pO+n9yNhbJE5+JD4CeUQ1GEvMGbh8pccr8ieLFlYgTKMFWxH3XUk0Mw6P2ngelQU+PHC+kjJ/xL8Uw=="],
 
-    "@ankhorage/repository/@ankhorage/ankh": ["@ankhorage/ankh@0.13.3", "", { "dependencies": { "@ankhorage/capability": "^0.2.2", "@ankhorage/contracts": "^26.0.0", "yaml": "^2.9.1" }, "bin": { "ankh": "dist/bin.js" } }, "sha512-xCluIzRvMFCfJDldQA9ZZkD69XkpXEQ+REIb6IqbM6Tq41rANoJNisHi8waTyA9nvXvEp0c1sI0AFfi3tna3DQ=="],
-
     "@ankhorage/repository/@ankhorage/capability": ["@ankhorage/capability@0.2.2", "", { "dependencies": { "@ankhorage/contracts": "^26.0.0", "@ankhorage/utility": "^1.9.85" } }, "sha512-n0cR0HJUuejinPL5AJROilHkSLI9EyaS9n3gi2xithx2bk5cTENSKWDNIihMb0N6aVPWrTXHVWTfrCWkkqszVw=="],
 
-    "@ankhorage/repository/@ankhorage/contracts": ["@ankhorage/contracts@26.3.0", "", { "dependencies": { "@ankhorage/color-theory": "^0.3.2", "@ankhorage/utility": "^1.10.0" } }, "sha512-t9bODYFQ/JOQXuwj2SLGb4JWfFbsucSL/Em9nOEpWptypuBkiqhhd+k+g5QcUOJLzpoy+7ythTIUHzgHwGb55w=="],
+    "@ankhorage/repository/@ankhorage/contracts": ["@ankhorage/contracts@26.8.0", "", { "dependencies": { "@ankhorage/color-theory": "^0.3.2", "@ankhorage/utility": "^1.10.0" } }, "sha512-ZvJrlTfxTSJQ0oC1kRobVJuIKFP9guLzdbBCxzJMNqtwyGRO1mYpHqRE3Ni3ci+23oewWE9+f9KF6aoRvp5s5Q=="],
 
     "@ankhorage/rules/@ankhorage/ankh": ["@ankhorage/ankh@0.13.3", "", { "dependencies": { "@ankhorage/capability": "^0.2.2", "@ankhorage/contracts": "^26.0.0", "yaml": "^2.9.1" }, "bin": { "ankh": "dist/bin.js" } }, "sha512-xCluIzRvMFCfJDldQA9ZZkD69XkpXEQ+REIb6IqbM6Tq41rANoJNisHi8waTyA9nvXvEp0c1sI0AFfi3tna3DQ=="],
 
@@ -2387,6 +2385,8 @@
 
     "@ankhorage/kubernetes/@ankhorage/contracts/@ankhorage/color-theory": ["@ankhorage/color-theory@0.3.2", "", { "dependencies": { "culori": "^4.0.2" } }, "sha512-MWbv58Pdvu1SnB9j06F8YqkmRBOAxWtpDAX6DAndm+AQw5QA2BzAcT+HOvBDEmT9ReKPnpwuYWfehmNXxa4jLw=="],
 
+    "@ankhorage/repository/@ankhorage/capability/@ankhorage/contracts": ["@ankhorage/contracts@26.3.0", "", { "dependencies": { "@ankhorage/color-theory": "^0.3.2", "@ankhorage/utility": "^1.10.0" } }, "sha512-t9bODYFQ/JOQXuwj2SLGb4JWfFbsucSL/Em9nOEpWptypuBkiqhhd+k+g5QcUOJLzpoy+7ythTIUHzgHwGb55w=="],
+
     "@ankhorage/repository/@ankhorage/contracts/@ankhorage/color-theory": ["@ankhorage/color-theory@0.3.2", "", { "dependencies": { "culori": "^4.0.2" } }, "sha512-MWbv58Pdvu1SnB9j06F8YqkmRBOAxWtpDAX6DAndm+AQw5QA2BzAcT+HOvBDEmT9ReKPnpwuYWfehmNXxa4jLw=="],
 
     "@ankhorage/rules-architecture/@ankhorage/contracts/@ankhorage/color-theory": ["@ankhorage/color-theory@0.3.2", "", { "dependencies": { "culori": "^4.0.2" } }, "sha512-MWbv58Pdvu1SnB9j06F8YqkmRBOAxWtpDAX6DAndm+AQw5QA2BzAcT+HOvBDEmT9ReKPnpwuYWfehmNXxa4jLw=="],
@@ -2648,6 +2648,8 @@
     "@ankhorage/ankh/@ankhorage/capability/@ankhorage/contracts/@ankhorage/color-theory": ["@ankhorage/color-theory@0.3.2", "", { "dependencies": { "culori": "^4.0.2" } }, "sha512-MWbv58Pdvu1SnB9j06F8YqkmRBOAxWtpDAX6DAndm+AQw5QA2BzAcT+HOvBDEmT9ReKPnpwuYWfehmNXxa4jLw=="],
 
     "@ankhorage/dependency-graph/@ankhorage/api/@ankhorage/contracts/@ankhorage/utility": ["@ankhorage/utility@1.9.85", "", { "peerDependencies": { "fastify": "^5.12.5" }, "optionalPeers": ["fastify"] }, "sha512-039OnOPntg5EY7BwMR4shCaHOO8N/DgNZOgQxkh/lxtsZbqIlf34bp47ZYh7NoPVibxLDwj8CeMl6m1Pw8y1aQ=="],
+
+    "@ankhorage/repository/@ankhorage/capability/@ankhorage/contracts/@ankhorage/color-theory": ["@ankhorage/color-theory@0.3.2", "", { "dependencies": { "culori": "^4.0.2" } }, "sha512-MWbv58Pdvu1SnB9j06F8YqkmRBOAxWtpDAX6DAndm+AQw5QA2BzAcT+HOvBDEmT9ReKPnpwuYWfehmNXxa4jLw=="],
 
     "@ankhorage/runtime/@ankhorage/capability/@ankhorage/contracts/@ankhorage/color-theory": ["@ankhorage/color-theory@0.3.2", "", { "dependencies": { "culori": "^4.0.2" } }, "sha512-MWbv58Pdvu1SnB9j06F8YqkmRBOAxWtpDAX6DAndm+AQw5QA2BzAcT+HOvBDEmT9ReKPnpwuYWfehmNXxa4jLw=="],
 

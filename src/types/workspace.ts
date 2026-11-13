@@ -63,9 +63,9 @@ export interface WorkspacePresentationSettings {
   readonly spacing: number;
 }
 
-/** Immutable identity for a safely reusable public GitHub analysis. */
+/** Immutable identity for a safely reusable GitHub analysis within one authorization scope. */
 export interface WorkspaceAnalysisCacheKey {
-  readonly authorization: 'anonymous';
+  readonly authorization: string;
   readonly provider: 'github';
   readonly repositoryId: string;
   readonly revision: string;

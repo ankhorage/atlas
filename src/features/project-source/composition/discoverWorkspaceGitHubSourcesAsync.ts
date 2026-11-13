@@ -1,5 +1,6 @@
 import {
   discoverGitHubRepositoriesAsync,
+  type GitHubRepositoryAuthentication,
   type GitHubRepositoryDiscoveryRepository,
 } from '@ankhorage/repository/github';
 
@@ -7,7 +8,8 @@ import {
 export async function discoverWorkspaceGitHubSourcesAsync(
   sourceValue: string,
   excludedRepositoryIds: ReadonlySet<string>,
-  selectedRepositoryIds?: ReadonlySet<string> | 'all'
+  selectedRepositoryIds?: ReadonlySet<string> | 'all',
+  authentication: GitHubRepositoryAuthentication = 'anonymous'
 ): Promise<WorkspaceGitHubDiscovery> {
   const sources = sourceValue
     .split(',')
@@ -16,7 +18,7 @@ export async function discoverWorkspaceGitHubSourcesAsync(
   if (sources.length === 0) throw new Error('At least one GitHub owner or repository is required.');
 
   const discoveries = await Promise.all(
-    sources.map(source => discoverGitHubRepositoriesAsync({ authentication: 'anonymous', source }))
+    sources.map(source => discoverGitHubRepositoriesAsync({ authentication, source }))
   );
   const repositories = dedupeRepositories(discoveries.flatMap(discovery => discovery.repositories));
   const selectedIds =
