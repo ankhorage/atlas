@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
+import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
 import { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
@@ -19,6 +20,7 @@ import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 export function WorkspaceView({
   auditExportActions,
   currentSource,
+  githubAuth = { status: 'anonymous' },
   offline,
   projectName,
   repositories,
@@ -31,39 +33,71 @@ export function WorkspaceView({
   const [liveWorkspace, setLiveWorkspace] = useState({ repositoryStatuses, runtimeId, workspace });
   const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
   const navigation = useWorkspaceNavigation(liveWorkspace.workspace);
-  const settingsScope = workspaceScope ?? resolveWorkspaceProjectIdentity(workspace, projectName);
-
+  const settingsScope =
+    workspaceScope ?? resolveWorkspaceProjectIdentity(liveWorkspace.workspace, projectName);
   return (
     <SettingsProvider workspaceScope={settingsScope}>
-      <AppShell
-        header={<div aria-hidden style={{ height: 56 }} />}
-        overlay={
-          <WorkspaceHeader
-            currentPackage={navigation.currentPackage}
-            currentSource={currentSource}
-            offline={offline}
-            projectName={projectName}
-            projectTree={navigation.projectTree}
-            repositories={repositories}
-            selectionRequired={selectionRequired}
-            workspaceScope={workspaceScope}
-            onNavigate={navigation.navigateToPackage}
-          />
-        }
-      >
-        <WorkspaceBody
+      <WorkspaceShell
+        auditExportActions={auditExportActions}
+        currentSource={currentSource}
+        githubAuth={githubAuth}
+        liveWorkspace={liveWorkspace}
+        navigation={navigation}
+        offline={offline}
+        projectName={projectName}
+        repositories={repositories}
+        selectionRequired={selectionRequired}
+        workspaceScope={workspaceScope}
+        onRetry={onRetry}
+      />
+    </SettingsProvider>
+  );
+}
+
+/*** Compose the persistent shell separately from the stateful workspace boundary. */
+function WorkspaceShell({
+  auditExportActions,
+  currentSource,
+  githubAuth,
+  liveWorkspace,
+  navigation,
+  offline,
+  projectName,
+  repositories,
+  selectionRequired,
+  workspaceScope,
+  onRetry,
+}: WorkspaceShellProps) {
+  return (
+    <AppShell
+      header={<div aria-hidden style={{ height: 56 }} />}
+      overlay={
+        <WorkspaceHeader
+          currentPackage={navigation.currentPackage}
           currentSource={currentSource}
-          auditExportActions={auditExportActions}
-          navigation={navigation}
+          githubAuth={githubAuth}
           offline={offline}
           projectName={projectName}
-          repositoryStatuses={liveWorkspace.repositoryStatuses}
+          projectTree={navigation.projectTree}
+          repositories={repositories}
           selectionRequired={selectionRequired}
-          workspace={liveWorkspace.workspace}
-          onRetry={onRetry}
+          workspaceScope={workspaceScope}
+          onNavigate={navigation.navigateToPackage}
         />
-      </AppShell>
-    </SettingsProvider>
+      }
+    >
+      <WorkspaceBody
+        currentSource={currentSource}
+        auditExportActions={auditExportActions}
+        navigation={navigation}
+        offline={offline}
+        projectName={projectName}
+        repositoryStatuses={liveWorkspace.repositoryStatuses}
+        selectionRequired={selectionRequired}
+        workspace={liveWorkspace.workspace}
+        onRetry={onRetry}
+      />
+    </AppShell>
   );
 }
 
@@ -214,6 +248,7 @@ function resolveWorkspaceProjectIdentity(
 interface WorkspaceViewProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
+  readonly githubAuth?: GitHubAuthView;
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
@@ -223,6 +258,20 @@ interface WorkspaceViewProps {
   readonly workspaceScope?: string;
   readonly workspace: WorkspaceLoadResult;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
+}
+
+interface WorkspaceShellProps {
+  readonly auditExportActions?: AuditExportActions;
+  readonly currentSource?: string;
+  readonly githubAuth: GitHubAuthView;
+  readonly liveWorkspace: LiveWorkspace;
+  readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
+  readonly offline?: boolean;
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
+  readonly projectName: string;
+  readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly selectionRequired?: boolean;
+  readonly workspaceScope?: string;
 }
 
 interface LiveWorkspace {

@@ -1,6 +1,7 @@
 import { connection } from 'next/server';
 
 import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
+import { readGitHubAuthViewAsync } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { WorkspaceView } from '@/features/workspace/adapters/inbound/react/WorkspaceView';
 import type { WorkspaceProjectSourceResult } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
@@ -8,6 +9,7 @@ import type { WorkspaceProjectSourceResult } from '@/features/workspace/composit
 export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasWorkspacePageProps) {
   await connection();
   const params = await searchParams;
+  const githubAuth = await readGitHubAuthViewAsync();
   const result = await loadWorkspace(
     withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories))
   );
@@ -19,6 +21,7 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
         downloadXml: downloadAuditXmlAction,
       }}
       currentSource={result.currentSource}
+      githubAuth={githubAuth}
       projectName={result.projectName}
       repositories={result.repositories}
       repositoryStatuses={result.repositoryStatuses}

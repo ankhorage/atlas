@@ -80,6 +80,8 @@
   "dependencies": {
     "@ankhorage/ankh": "0.13.4",
     "@ankhorage/api-nextjs": "^0.2.0",
+    "@ankhorage/auth": "^0.1.3",
+    "@ankhorage/auth-github": "^0.1.0",
     "@ankhorage/capability": "^0.2.1",
     "@ankhorage/contracts": "^25.0.0",
     "@ankhorage/dependency-graph": "1.4.0",
