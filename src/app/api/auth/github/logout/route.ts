@@ -10,7 +10,7 @@ import { createGitHubAuthAdapterAsync } from '@/features/github-auth/composition
 export async function POST(request: Request): Promise<Response> {
   if (request.headers.get('origin') !== new URL(request.url).origin)
     return NextResponse.json({ error: 'Invalid logout origin.' }, { status: 403 });
-  const response = NextResponse.redirect(new URL('/', request.url));
+  const response = NextResponse.redirect(new URL('/', request.url), 303);
   const sessionId = request.headers
     .get('cookie')
     ?.match(/__Host-atlas-github-session=([^;]+)/u)?.[1];
