@@ -13,6 +13,7 @@ import { discoverWorkspaceGitHubSourcesAsync } from '@/features/project-source/c
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import {
   createWorkspaceRepositoryRuntime,
+  type WorkspaceRepositoryAuthorization,
   type WorkspaceRepositoryRuntime,
 } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
@@ -37,9 +38,15 @@ export interface WorkspaceProjectSourceResult {
 export function retryWorkspaceRepositoryAsync(
   runtimeId: string,
   repositoryId: string,
+  authorization: WorkspaceRepositoryAuthorization,
   signal?: AbortSignal
 ) {
-  return defaultWorkspaceRepositoryRuntime.retryAsync(runtimeId, repositoryId, signal);
+  return defaultWorkspaceRepositoryRuntime.retryAsync(
+    runtimeId,
+    repositoryId,
+    authorization,
+    signal
+  );
 }
 
 /*** Load the configured local project or discover GitHub sources supplied by the browser query. */

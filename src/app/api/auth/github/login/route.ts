@@ -15,8 +15,7 @@ export async function POST(request: Request): Promise<Response> {
   if (!hasTrustedOrigin(request))
     return NextResponse.json({ error: 'Invalid login origin.' }, { status: 403 });
 
-  const form = await request.formData();
-  const wantsPrivateRepositoryAccess = form.get('privateRepositoryAccess') === 'true';
+  const wantsPrivateRepositoryAccess = readPrivateRepositoryAccess(await request.formData());
   const response = NextResponse.redirect(new URL('/', request.url), 303);
   const sessionId = ensureGitHubAuthSessionId(
     request.headers.get('cookie')?.match(/__Host-atlas-github-session=([^;]+)/u)?.[1],
@@ -45,4 +44,18 @@ export async function POST(request: Request): Promise<Response> {
 function hasTrustedOrigin(request: Request): boolean {
   const origin = request.headers.get('origin');
   return origin !== null && origin === new URL(request.url).origin;
+}
+
+/*** Read the opt-in scope field only after validating the platform form boundary. */
+function readPrivateRepositoryAccess(value: unknown): boolean {
+  if (!isFormReader(value)) return false;
+  const selected = value.get('privateRepositoryAccess');
+  return selected === 'true';
+}
+
+/*** Narrow a platform form boundary before reading its named field. */
+function isFormReader(value: unknown): value is { readonly get: (name: string) => unknown } {
+  return (
+    typeof value === 'object' && value !== null && 'get' in value && typeof value.get === 'function'
+  );
 }
