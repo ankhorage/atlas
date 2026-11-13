@@ -69,35 +69,36 @@ function WorkspaceShell({
   onRetry,
 }: WorkspaceShellProps) {
   return (
-    <>
-      <AppShell header={<div aria-hidden style={{ height: 56 }} />}>
-        <WorkspaceBody
-          currentSource={currentSource}
-          auditExportActions={auditExportActions}
-          navigation={navigation}
-          offline={offline}
-          projectName={projectName}
-          repositoryStatuses={liveWorkspace.repositoryStatuses}
-          selectionRequired={selectionRequired}
-          workspace={liveWorkspace.workspace}
-          onRetry={onRetry}
-        />
-      </AppShell>
-      <div style={{ left: 0, position: 'fixed', right: 0, top: 0, zIndex: 10 }}>
-        <WorkspaceHeader
-          currentPackage={navigation.currentPackage}
-          currentSource={currentSource}
-          githubAuth={githubAuth}
-          offline={offline}
-          projectName={projectName}
-          projectTree={navigation.projectTree}
-          repositories={repositories}
-          selectionRequired={selectionRequired}
-          workspaceScope={workspaceScope}
-          onNavigate={navigation.navigateToPackage}
-        />
-      </div>
-    </>
+    <AppShell
+      header={
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <WorkspaceHeader
+            currentPackage={navigation.currentPackage}
+            currentSource={currentSource}
+            githubAuth={githubAuth}
+            offline={offline}
+            projectName={projectName}
+            projectTree={navigation.projectTree}
+            repositories={repositories}
+            selectionRequired={selectionRequired}
+            workspaceScope={workspaceScope}
+            onNavigate={navigation.navigateToPackage}
+          />
+        </div>
+      }
+    >
+      <WorkspaceBody
+        currentSource={currentSource}
+        auditExportActions={auditExportActions}
+        navigation={navigation}
+        offline={offline}
+        projectName={projectName}
+        repositoryStatuses={liveWorkspace.repositoryStatuses}
+        selectionRequired={selectionRequired}
+        workspace={liveWorkspace.workspace}
+        onRetry={onRetry}
+      />
+    </AppShell>
   );
 }
 
