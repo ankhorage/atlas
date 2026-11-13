@@ -70,8 +70,7 @@ function WorkspaceShell({
 }: WorkspaceShellProps) {
   return (
     <AppShell
-      header={<div aria-hidden style={{ height: 56 }} />}
-      overlay={
+      header={
         <WorkspaceHeader
           currentPackage={navigation.currentPackage}
           currentSource={currentSource}
