@@ -1,3 +1,5 @@
+import { resolve } from 'node:path';
+
 import { assert, describe, it } from '@artiphishle/testosterone';
 
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
@@ -17,10 +19,10 @@ describe('[resolveWorkspaceStartupSource]', () => {
     });
   });
 
-  it('loads Atlas itself when neither browser source nor project environment is configured', () => {
+  it('loads the shipped TypeScript example when neither browser source nor project environment is configured', () => {
     assert.deepEqual(resolveWorkspaceStartupSource(undefined, undefined), {
-      kind: 'github',
-      source: 'ankhorage/atlas',
+      kind: 'filesystem',
+      path: resolve(process.cwd(), 'examples/typescript/my-app'),
     });
   });
 });

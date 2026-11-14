@@ -1,0 +1,55 @@
+.content {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+}
+
+.identity {
+  flex: 1 1 192px;
+  min-width: 0;
+}
+
+.actions {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.sourceForm {
+  flex-wrap: wrap;
+  max-width: 720px;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.publicOnly {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .actions {
+    gap: 8px;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .sourceForm {
+    max-width: 100%;
+  }
+}

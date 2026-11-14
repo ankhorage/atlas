@@ -3,6 +3,7 @@ import type { ProjectInspection } from '@ankhorage/project-detector/types';
 import {
   type GitHubRepositoryAuthentication,
   type GitHubRepositoryRevisionResolutionResult,
+  type GitHubRepositoryVisibility,
   resolveGitHubRepositoryRevisionAsync,
 } from '@ankhorage/repository/github';
 import { toErrorMessage } from '@ankhorage/utility/error';
@@ -203,6 +204,7 @@ export interface WorkspaceRepositoryOption {
   readonly owner: string;
   readonly selected: boolean;
   readonly url: string;
+  readonly visibility: GitHubRepositoryVisibility;
 }
 
 type GitHubRevisionResolver = (

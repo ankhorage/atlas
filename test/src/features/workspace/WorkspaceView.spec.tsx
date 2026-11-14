@@ -88,4 +88,37 @@ describe('[WorkspaceView]', () => {
     );
     unmount();
   });
+
+  it('keeps the Public only repository filter unchecked until the user enables it', () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const { unmount } = render(
+      <ZoraRuntimeProvider
+        initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+        themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+      >
+        <WorkspaceView
+          currentSource="ankhorage"
+          projectName="Atlas"
+          repositories={[
+            {
+              id: 'atlas',
+              name: 'atlas',
+              owner: 'ankhorage',
+              selected: true,
+              url: 'https://github.com/ankhorage/atlas',
+              visibility: 'public',
+            },
+          ]}
+          workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+        />
+      </ZoraRuntimeProvider>
+    );
+
+    const publicOnly = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
+    assert.equal(publicOnly?.labels?.[0]?.textContent?.trim(), 'Public only');
+    assert.equal(publicOnly?.checked, false);
+    unmount();
+  });
 });
