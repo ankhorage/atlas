@@ -515,6 +515,67 @@ async function assertMeasuredViewportOccupancyAsync(
   );
 }
 
+/*** Verifies the production workspace consumes the canvas left after its visible 288px sidebar. */
+async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number) {
+  const nodeIds = Array.from(
+    { length: repositoryCount },
+    (_, index) => `repository.viewport-${repositoryCount}-${index}`
+  );
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
+  }, nodeIds);
+  const result = await page.evaluate(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    const measurement = probe?.controller?.measureNodes?.(ids);
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.parentElement;
+    if (
+      measurement === undefined ||
+      measurement === null ||
+      graph === null ||
+      sidebar === null ||
+      sidebar === undefined
+    )
+      return null;
+    const canvas = graph.getBoundingClientRect();
+    const nodes = measurement.nodes.map(node => ({
+      x1: node.position.x - node.size.width / 2,
+      x2: node.position.x + node.size.width / 2,
+      y1: node.position.y - node.size.height / 2,
+      y2: node.position.y + node.size.height / 2,
+    }));
+    return {
+      canvas,
+      sidebar: sidebar.getBoundingClientRect(),
+      viewport: measurement.viewport,
+      x1: Math.min(...nodes.map(node => node.x1)),
+      x2: Math.max(...nodes.map(node => node.x2)),
+      y1: Math.min(...nodes.map(node => node.y1)),
+      y2: Math.max(...nodes.map(node => node.y2)),
+    };
+  }, nodeIds);
+  assert(result !== null, 'Real workspace sidebar or canvas was unavailable.');
+  assert(
+    result.sidebar.width === 288,
+    'Workspace sidebar is not visibly occupying its owned width.'
+  );
+  assert(
+    result.canvas.width === result.viewport.width &&
+      result.canvas.height === result.viewport.height,
+    'ZORA viewport does not match the real workspace canvas.'
+  );
+  assert(
+    result.x1 >= 0 &&
+      result.y1 >= 0 &&
+      result.x2 <= result.viewport.width &&
+      result.y2 <= result.viewport.height,
+    `Real workspace fit leaves ${repositoryCount} repositories offscreen.`
+  );
+}
+
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
@@ -905,6 +966,37 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'workspace-elk-viewport-matrix',
+    'Measures ELK fit in the real workspace shell beside the visible sidebar.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const [repositoryCount, viewport] of [
+        [5, { width: 1440, height: 900 }],
+        [20, { width: 1440, height: 900 }],
+        [87, { width: 1440, height: 900 }],
+        [5, { width: 390, height: 844 }],
+        [20, { width: 390, height: 844 }],
+        [87, { width: 390, height: 844 }],
+      ] as const) {
+        await page.setViewportSize(viewport);
+        const repositories = Array.from(
+          { length: repositoryCount },
+          (_, index) => `viewport-${repositoryCount}-${index}`
+        ).join(',');
+        await page.goto(`${url}/?source=viewport-${repositoryCount}&repositories=${repositories}`, {
+          waitUntil: 'networkidle',
+        });
+        await page.getByTestId('cytoscape-layout').click();
+        await page.getByText('elk', { exact: true }).click();
+        await assertWorkspaceViewportAsync(page, repositoryCount);
+        const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
+        await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
+        artifacts.push(artifact);
+      }
+      return artifacts;
+    }
+  ),
+  scenario(
     'single-project-offline-parity',
     'Retains direct single-project browser behavior with no outbound requests.',
     async page => {
@@ -936,7 +1028,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 22, `Expected exactly 22 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 23, `Expected exactly 23 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
