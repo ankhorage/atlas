@@ -17,7 +17,7 @@ export function classifyWorkspaceRepositoryFailure(error: unknown): WorkspaceRep
         ? {}
         : { retryAfterSeconds: retryAfterSeconds(error) }),
     };
-  if (status === 403 || status === 429) return { category: 'rate-limited' };
+  if (status === 429) return { category: 'rate-limited' };
   if (status !== undefined && status >= 500 && status <= 599) return { category: 'upstream' };
   if (isTimeout(error)) return { category: 'timeout' };
   if (isParsing(error)) return { category: 'parsing' };
@@ -33,7 +33,7 @@ export function workspaceRepositoryFailureDescription(failure: WorkspaceReposito
     cancelled: 'Loading was cancelled.',
     'not-found': 'The repository or requested revision was not found.',
     'primary-rate-limit': 'GitHub rate limiting delayed this repository.',
-    'rate-limited': 'GitHub may be rate limiting this repository. Retry shortly.',
+    'rate-limited': 'This repository is temporarily rate limited. Retry shortly.',
     'secondary-rate-limit': 'GitHub secondary rate limiting delayed this repository.',
     parsing: 'The repository could not be analyzed because its source could not be parsed.',
     'runtime-limit': 'The repository exceeded an Atlas runtime resource limit.',

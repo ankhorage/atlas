@@ -4,6 +4,7 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 
 import type { GitHubRepositoryDiscoveryRepository } from '@ankhorage/repository/github';
 
+import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
 import {
   createWorkspaceRepositoryRuntime,
   WorkspaceRepositoryRuntimeError,
@@ -248,6 +249,113 @@ describe('[workspace repository runtime]', () => {
       ['A']
     );
     assert.equal(repositoryNodes(removed, ['B']).length, 0);
+  });
+
+  it('resumes retained pending repositories through mixed rapid selection changes at 5, 20, and 80 repositories', async () => {
+    for (const total of [5, 20, 80]) {
+      const repositories = Array.from({ length: total }, (_, index) =>
+        repository(`repository-${index}`, 'owner-a', `catalog-${index}`)
+      );
+      const fixtureRepository = repository('fixture', 'owner-a', 'catalog');
+      const added = repository(`repository-${total}`, 'owner-b', `workspace-${total}`);
+      const materializations = new Map<string, number>();
+      const blockedIds = new Set(repositories.slice(1, 5).map(candidate => candidate.id));
+      let activeMaterializations = 0;
+      let maximumActiveMaterializations = 0;
+      let allowReplacement = false;
+      let runtimeId: string | undefined;
+      let inspectionCount = 0;
+      let initialWorkersBlocked: (() => void) | undefined;
+      const initialWorkersAreBlocked = new Promise<void>(resolve => {
+        initialWorkersBlocked = resolve;
+      });
+      const runtime = createWorkspaceRepositoryRuntime({
+        inspectAsync: async path => {
+          const inspection = await inspectProjectForAnalysisAsync(path);
+          const suffix = inspectionCount++;
+          return {
+            ...inspection,
+            packages: inspection.packages.map(project => ({
+              ...project,
+              name: project.name === undefined ? undefined : `${project.name}-${suffix}`,
+            })),
+          };
+        },
+        materializeAsync: async (source, signal) => {
+          if (source.kind !== 'github') throw new Error('Fixture requires GitHub sources.');
+          const current = [...repositories, added].find(candidate => candidate.url === source.url);
+          if (current === undefined) throw new Error('Unknown fixture repository.');
+          materializations.set(current.id, (materializations.get(current.id) ?? 0) + 1);
+          activeMaterializations += 1;
+          maximumActiveMaterializations = Math.max(
+            maximumActiveMaterializations,
+            activeMaterializations
+          );
+          try {
+            if (!allowReplacement && current.id !== repositories[0].id)
+              await new Promise<void>((_resolve, reject) => {
+                if (blockedIds.delete(current.id) && blockedIds.size === 0)
+                  initialWorkersBlocked?.();
+                signal?.addEventListener('abort', () => reject(signal.reason), { once: true });
+              });
+            return resolvedFixture(fixtureRepository, source);
+          } finally {
+            activeMaterializations -= 1;
+          }
+        },
+        resolveRevisionAsync: async url => ({
+          repository: {
+            id: [...repositories, added].find(candidate => candidate.url === url)?.id ?? '',
+          },
+          revision: { commitSha: `${url}-sha` },
+        }),
+      });
+
+      const initial = runtime.loadAsync({
+        repositories,
+        source: 'owner-a',
+        onProgress: result => {
+          runtimeId = result.runtimeId;
+        },
+      });
+      const initialCompletion = initial.catch(() => undefined);
+      await initialWorkersAreBlocked;
+      allowReplacement = true;
+      if (runtimeId === undefined) throw new Error('Initial workspace runtime was not published.');
+      const afterMixedUpdate = await runtime.updateAsync(runtimeId, {
+        addedRepositories: [added],
+        removedRepositoryIds: [repositories[1].id],
+      });
+      await initialCompletion;
+
+      assert.equal(afterMixedUpdate.repositoryStatuses.length, total);
+      assert.deepEqual(
+        afterMixedUpdate.repositoryStatuses.map(status => status.status),
+        Array.from({ length: total }, () => 'successful')
+      );
+      assert.equal(
+        afterMixedUpdate.repositoryStatuses.some(
+          status => status.repository.id === repositories[1].id
+        ),
+        false
+      );
+      assert.equal(materializations.get(repositories[0].id), 1);
+      assert.equal(maximumActiveMaterializations <= 4, true);
+
+      const reselected = await runtime.updateAsync(afterMixedUpdate.runtimeId, {
+        addedRepositories: [repositories[1]],
+        removedRepositoryIds: [added.id],
+      });
+      assert.equal(
+        reselected.repositoryStatuses.every(status => status.status === 'successful'),
+        true
+      );
+      assert.equal(
+        reselected.repositoryStatuses.some(status => status.repository.id === added.id),
+        false
+      );
+      assert.equal(materializations.get(repositories[0].id), 1);
+    }
   });
 
   it('rejects an overlapping retry without replacing the completed graph', async () => {

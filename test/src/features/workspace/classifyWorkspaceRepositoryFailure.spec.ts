@@ -9,7 +9,7 @@ describe('[classifyWorkspaceRepositoryFailure]', () => {
   it('classifies observable provider outcomes without returning provider bodies or local paths', () => {
     const cases = [
       [Object.assign(new Error('token=secret /private/tmp'), { status: 401 }), 'authentication'],
-      [Object.assign(new Error('token=secret /private/tmp'), { status: 403 }), 'rate-limited'],
+      [Object.assign(new Error('token=secret /private/tmp'), { status: 403 }), 'unknown'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 404 }), 'not-found'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 429 }), 'rate-limited'],
       [
@@ -45,11 +45,13 @@ describe('[classifyWorkspaceRepositoryFailure]', () => {
     }
   });
 
-  it('keeps ambiguous 403 and 429 responses neutral and bounds retry metadata', () => {
-    for (const status of [403, 429]) {
-      assert.deepEqual(classifyWorkspaceRepositoryFailure({ retryAfterSeconds: 86_401, status }), {
+  it('keeps an ambiguous 403 neutral and bounds generic rate-limit metadata', () => {
+    assert.deepEqual(classifyWorkspaceRepositoryFailure({ status: 403 }), { category: 'unknown' });
+    assert.deepEqual(
+      classifyWorkspaceRepositoryFailure({ retryAfterSeconds: 86_401, status: 429 }),
+      {
         category: 'rate-limited',
-      });
-    }
+      }
+    );
   });
 });

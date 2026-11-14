@@ -32,6 +32,31 @@ export async function updateWorkspaceRepositoryRuntimeAsync(
       'unavailable',
       'The workspace runtime is no longer available. Reload it to continue.'
     );
+  const repositoriesToLoad = applyWorkspaceSelectionUpdate(workspace, input);
+  if (repositoriesToLoad.length === 0) return publishRemovedWorkspace(workspace, runtimeId, input);
+  return runWorkspaceOperationAsync<WorkspaceRepositoryRuntimeResult>(
+    workspace,
+    operationSignal =>
+      loadWorkspaceRepositoriesAsync(
+        workspace,
+        repositoriesToLoad,
+        runtimeId,
+        cache,
+        dependencies,
+        authorization,
+        operationSignal,
+        input.onProgress
+      ),
+    signal,
+    true
+  );
+}
+
+/*** Cancel obsolete work, remove deselected state, then choose only unfinished selected repositories. */
+function applyWorkspaceSelectionUpdate(
+  workspace: WorkspaceRuntimeState,
+  input: WorkspaceRepositoryRuntimeUpdate
+) {
   const known = new Map(workspace.repositories.map(repository => [repository.id, repository]));
   if (input.removedRepositoryIds.some(repositoryId => !known.has(repositoryId)))
     throw new WorkspaceRepositoryRuntimeError(
@@ -47,24 +72,21 @@ export async function updateWorkspaceRepositoryRuntimeAsync(
     workspace.entries.delete(id);
     workspace.statuses.delete(id);
   }
-  const additions = input.addedRepositories.filter(repository => !removed.has(repository.id));
-  if (additions.length === 0) return publishRemovedWorkspace(workspace, runtimeId, input);
-  return runWorkspaceOperationAsync<WorkspaceRepositoryRuntimeResult>(
-    workspace,
-    operationSignal =>
-      loadWorkspaceRepositoriesAsync(
-        workspace,
-        additions,
-        runtimeId,
-        cache,
-        dependencies,
-        authorization,
-        operationSignal,
-        input.onProgress
-      ),
-    signal,
-    true
-  );
+  return repositoriesRequiringAnalysis(workspace, input.addedRepositories, removed);
+}
+
+/*** Resume retained unfinished work after a selection diff without reloading successful snapshots. */
+function repositoriesRequiringAnalysis(
+  workspace: WorkspaceRuntimeState,
+  additions: WorkspaceRepositoryRuntimeUpdate['addedRepositories'],
+  removed: ReadonlySet<string>
+) {
+  const addedIds = new Set(additions.map(repository => repository.id));
+  const pending = workspace.repositories.filter(repository => {
+    const status = workspace.statuses.get(repository.id)?.status;
+    return !addedIds.has(repository.id) && status === 'loading' && !removed.has(repository.id);
+  });
+  return [...pending, ...additions.filter(repository => !removed.has(repository.id))];
 }
 
 /*** Stop obsolete materialization before publishing a selection that excludes its repository. */
