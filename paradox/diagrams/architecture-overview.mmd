@@ -803,6 +803,12 @@ graph TD
   module_test_e2e_next_fixture_app_app_page_tsx --> module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --> module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --> module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx["test/e2e/next-fixture-app/app/viewport/page.tsx"]
+  package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_app_viewport_page_tsx
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx --> module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx["test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"]
+  package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx --> module_src_features_graph_view_adapters_inbound_react_useGraphViewport_ts
   module_test_e2e_next_fixture_app_next_config_ts["test/e2e/next-fixture-app/next.config.ts"]
   package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_next_config_ts
   module_test_e2e_offlineWorkspace_ts["test/e2e/offlineWorkspace.ts"]
@@ -971,6 +977,9 @@ graph TD
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts["test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts --> module_src_features_github_auth_adapters_inbound_next_createGitHubLogoutRoute_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts["test/src/features/github-auth/githubAuthConfiguration.spec.ts"]
+  package__ankhorage_atlas -.-> module_test_src_features_github_auth_githubAuthConfiguration_spec_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts --> module_src_features_github_auth_application_githubAuthConfiguration_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts["test/src/features/graph-view/createCompoundOpacityIndex.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts --> module_src_features_graph_view_utils_createCompoundOpacityIndex_ts

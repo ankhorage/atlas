@@ -459,7 +459,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/react/useGraphViewport.ts">
       src/features/graph-view/adapters/inbound/react/useGraphViewport.ts
-      <small>13 functions</small>
+      <small>14 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/domain/getDependencyHighlightClasses.ts">
@@ -769,7 +769,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx">
       src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx
-      <small>11 functions</small>
+      <small>12 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts">
@@ -943,7 +943,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>300</strong><span class="muted">modules</span></div>
+        <div><strong>303</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1990,6 +1990,16 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts</code>, <code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx</code>, <code>test/e2e/fixtureWorkspace.ts</code></p>
     <p><strong>Exports:</strong> <code>default</code></p>
+  </article><article class="item" data-search="test/e2e/next-fixture-app/app/viewport/page.tsx test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx default">
+    <h3>test/e2e/next-fixture-app/app/viewport/page.tsx</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx</code></p>
+    <p><strong>Exports:</strong> <code>default</code></p>
+  </article><article class="item" data-search="test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx src/features/graph-view/adapters/inbound/react/useGraphViewport.ts ViewportAcceptanceGraph">
+    <h3>test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts</code></p>
+    <p><strong>Exports:</strong> <code>ViewportAcceptanceGraph</code></p>
   </article><article class="item" data-search="test/e2e/next-fixture-app/next.config.ts default">
     <h3>test/e2e/next-fixture-app/next.config.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2239,6 +2249,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <h3>test/src/features/github-auth/createGitHubLogoutRoute.spec.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/features/github-auth/githubAuthConfiguration.spec.ts src/features/github-auth/application/githubAuthConfiguration.ts">
+    <h3>test/src/features/github-auth/githubAuthConfiguration.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/github-auth/application/githubAuthConfiguration.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/graph-view/createCompoundOpacityIndex.spec.ts src/features/graph-view/utils/createCompoundOpacityIndex.ts">
     <h3>test/src/features/graph-view/createCompoundOpacityIndex.spec.ts</h3>
@@ -3333,6 +3348,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_viewport_page_tsx
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx --&gt; module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphViewport_ts
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_next_config_ts
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
@@ -3501,6 +3522,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubLogoutRoute.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_createGitHubLogoutRoute_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts[&quot;test/src/features/github-auth/githubAuthConfiguration.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_github_auth_githubAuthConfiguration_spec_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts --&gt; module_src_features_github_auth_application_githubAuthConfiguration_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts[&quot;test/src/features/graph-view/createCompoundOpacityIndex.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
@@ -4503,6 +4527,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_viewport_page_tsx
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx --&gt; module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphViewport_ts
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_next_config_ts
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
@@ -4671,6 +4701,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubLogoutRoute.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_createGitHubLogoutRoute_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts[&quot;test/src/features/github-auth/githubAuthConfiguration.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_github_auth_githubAuthConfiguration_spec_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts --&gt; module_src_features_github_auth_application_githubAuthConfiguration_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts[&quot;test/src/features/graph-view/createCompoundOpacityIndex.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
@@ -5073,6 +5106,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
@@ -5123,6 +5158,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubAuthAdapterAsync_spec_ts[&quot;test/src/features/github-auth/createGitHubAuthAdapterAsync.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubCallbackRoute.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubLogoutRoute.spec.ts&quot;]
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts[&quot;test/src/features/github-auth/githubAuthConfiguration.spec.ts&quot;]
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts[&quot;test/src/features/graph-view/createCompoundOpacityIndex.spec.ts&quot;]
   module_test_src_features_graph_view_createGraphViewModel_spec_ts[&quot;test/src/features/graph-view/createGraphViewModel.spec.ts&quot;]
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts[&quot;test/src/features/graph-view/createPackageGraphElements.spec.ts&quot;]
@@ -5569,6 +5605,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx --&gt; module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphViewport_ts
   module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
@@ -5637,6 +5675,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_createGitHubCallbackRoute_ts
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_githubAuthCookies_ts
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_createGitHubLogoutRoute_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts --&gt; module_src_features_github_auth_application_githubAuthConfiguration_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_test_src_features_graph_view_createGraphViewModel_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
@@ -5941,6 +5980,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
@@ -5991,6 +6032,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubAuthAdapterAsync_spec_ts[&quot;test/src/features/github-auth/createGitHubAuthAdapterAsync.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubCallbackRoute.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubLogoutRoute.spec.ts&quot;]
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts[&quot;test/src/features/github-auth/githubAuthConfiguration.spec.ts&quot;]
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts[&quot;test/src/features/graph-view/createCompoundOpacityIndex.spec.ts&quot;]
   module_test_src_features_graph_view_createGraphViewModel_spec_ts[&quot;test/src/features/graph-view/createGraphViewModel.spec.ts&quot;]
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts[&quot;test/src/features/graph-view/createPackageGraphElements.spec.ts&quot;]
@@ -6437,6 +6479,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx --&gt; module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx --&gt; module_src_features_graph_view_adapters_inbound_react_useGraphViewport_ts
   module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
@@ -6505,6 +6549,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_createGitHubCallbackRoute_ts
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_githubAuthCookies_ts
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts --&gt; module_src_features_github_auth_adapters_inbound_next_createGitHubLogoutRoute_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts --&gt; module_src_features_github_auth_application_githubAuthConfiguration_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts --&gt; module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_test_src_features_graph_view_createGraphViewModel_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
@@ -6811,6 +6856,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
@@ -6861,6 +6908,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubAuthAdapterAsync_spec_ts[&quot;test/src/features/github-auth/createGitHubAuthAdapterAsync.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubCallbackRoute.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubLogoutRoute.spec.ts&quot;]
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts[&quot;test/src/features/github-auth/githubAuthConfiguration.spec.ts&quot;]
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts[&quot;test/src/features/graph-view/createCompoundOpacityIndex.spec.ts&quot;]
   module_test_src_features_graph_view_createGraphViewModel_spec_ts[&quot;test/src/features/graph-view/createGraphViewModel.spec.ts&quot;]
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts[&quot;test/src/features/graph-view/createPackageGraphElements.spec.ts&quot;]
@@ -7119,6 +7167,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
@@ -7169,6 +7219,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_github_auth_createGitHubAuthAdapterAsync_spec_ts[&quot;test/src/features/github-auth/createGitHubAuthAdapterAsync.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubCallbackRoute.spec.ts&quot;]
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts[&quot;test/src/features/github-auth/createGitHubLogoutRoute.spec.ts&quot;]
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts[&quot;test/src/features/github-auth/githubAuthConfiguration.spec.ts&quot;]
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts[&quot;test/src/features/graph-view/createCompoundOpacityIndex.spec.ts&quot;]
   module_test_src_features_graph_view_createGraphViewModel_spec_ts[&quot;test/src/features/graph-view/createGraphViewModel.spec.ts&quot;]
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts[&quot;test/src/features/graph-view/createPackageGraphElements.spec.ts&quot;]
@@ -8146,7 +8197,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
       <h2>src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx</h2>
       <article class="item" data-search="GitHubAuthControls src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx Render GitHub account actions in the existing ZORA header without exposing credentials to the client.">
     <h3>GitHubAuthControls</h3>
-    <p class="muted"><code>src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx:8:1</code></p>
+    <p class="muted"><code>src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx:9:1</code></p>
     <p>Render GitHub account actions in the existing ZORA header without exposing credentials to the client.</p>
     
   </article>
@@ -8605,71 +8656,76 @@ cover those behaviors. Do not add a second independently maintained projection s
   </section><section id="view-src-features-graph-view-adapters-inbound-react-usegraphviewport-ts" class="view" data-view="src/features/graph-view/adapters/inbound/react/useGraphViewport.ts" hidden>
     <section class="panel">
       <h2>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts</h2>
-      <article class="item" data-search="useGraphViewport src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Mirrors owner viewport state while delegating settled cycle-focus policy to a focused hook.&#10;Normal layout completion remains passive outside explicit Fit and active-cycle intent.">
+      <article class="item" data-search="useGraphViewport src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Mirrors owner viewport state and fits exactly once after the first settled layout.&#10;Later layouts remain passive so progressive graph updates retain user navigation.">
     <h3>useGraphViewport</h3>
     <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:19:1</code></p>
-    <p>Mirrors owner viewport state while delegating settled cycle-focus policy to a focused hook.
-Normal layout completion remains passive outside explicit Fit and active-cycle intent.</p>
+    <p>Mirrors owner viewport state and fits exactly once after the first settled layout.
+Later layouts remain passive so progressive graph updates retain user navigation.</p>
     
   </article><article class="item" data-search="handleReady src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Captures the controller before synchronizing the initial viewport.">
     <h3>handleReady</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:26:9</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:27:9</code></p>
     <p>Captures the controller before synchronizing the initial viewport.</p>
     
   </article><article class="item" data-search="handleViewportChange src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Reads the controller synchronously, including events before React commits readiness.">
     <h3>handleViewportChange</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:33:9</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:35:9</code></p>
     <p>Reads the controller synchronously, including events before React commits readiness.</p>
     
   </article><article class="item" data-search="fitGraph src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Runs the canonical readable fit and spacing optimization from explicit user intent.">
     <h3>fitGraph</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:39:9</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:41:9</code></p>
     <p>Runs the canonical readable fit and spacing optimization from explicit user intent.</p>
+    
+  </article><article class="item" data-search="hasMeasuredVisibleLayout src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Requires a non-empty, fully measured layout before consuming the one automatic fit.">
+    <h3>hasMeasuredVisibleLayout</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:71:1</code></p>
+    <p>Requires a non-empty, fully measured layout before consuming the one automatic fit.</p>
     
   </article><article class="item" data-search="useCycleViewportFocus src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit.">
     <h3>useCycleViewportFocus</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:57:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:90:1</code></p>
     <p>Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit.</p>
     
   </article><article class="item" data-search="handleLayoutComplete src/features/graph-view/adapters/inbound/react/useGraphViewport.ts ">
     <h3>handleLayoutComplete</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:83:9</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:116:9</code></p>
     <p class="empty">No description available.</p>
     
   </article><article class="item" data-search="synchronizeCycleFocusRefs src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Clears stale refit state when cycle intent changes or is disabled.">
     <h3>synchronizeCycleFocusRefs</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:102:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:135:1</code></p>
     <p>Clears stale refit state when cycle intent changes or is disabled.</p>
     
   </article><article class="item" data-search="handleSettledCycleFocus src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Focuses active cycles only from settled owner geometry, then refits once after adaptive relayout.&#10;Missing cycle evidence is left to projection expansion and never measured as a partial cycle.">
     <h3>handleSettledCycleFocus</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:124:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:157:1</code></p>
     <p>Focuses active cycles only from settled owner geometry, then refits once after adaptive relayout.
 Missing cycle evidence is left to projection expansion and never measured as a partial cycle.</p>
     
   </article><article class="item" data-search="focusActiveCycle src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Fits the whole graph, measures active nodes, and requests only a justified spacing reduction.">
     <h3>focusActiveCycle</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:151:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:184:1</code></p>
     <p>Fits the whole graph, measures active nodes, and requests only a justified spacing reduction.</p>
     
   </article><article class="item" data-search="readCycleLayoutMetrics src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Converts renderer-neutral GraphView measurements into the cycle-spacing policy metrics.">
     <h3>readCycleLayoutMetrics</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:169:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:202:1</code></p>
     <p>Converts renderer-neutral GraphView measurements into the cycle-spacing policy metrics.</p>
     
   </article><article class="item" data-search="createCycleFocusTarget src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Builds a stable active-cycle identity and unique rendered node set.">
     <h3>createCycleFocusTarget</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:208:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:241:1</code></p>
     <p>Builds a stable active-cycle identity and unique rendered node set.</p>
     
   </article><article class="item" data-search="fitGraphWithOptimizedSpacing src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Reuses ZORA&#39;s measured whole-graph optimization for explicit and cycle-focus intent.">
     <h3>fitGraphWithOptimizedSpacing</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:220:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:253:1</code></p>
     <p>Reuses ZORA&#39;s measured whole-graph optimization for explicit and cycle-focus intent.</p>
     
   </article><article class="item" data-search="synchronizeGraphViewport src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Publishes only changed viewport values, including range changes without a zoom event.">
     <h3>synchronizeGraphViewport</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:229:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:262:1</code></p>
     <p>Publishes only changed viewport values, including range changes without a zoom event.</p>
     
   </article>
@@ -10046,57 +10102,62 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx</h2>
       <article class="item" data-search="ProjectSourceForm src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Edits a GitHub source and stages repository inclusion before one explicit workspace refresh.">
     <h3>ProjectSourceForm</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:12:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:14:1</code></p>
     <p>Edits a GitHub source and stages repository inclusion before one explicit workspace refresh.</p>
+    
+  </article><article class="item" data-search="PublicOnlyFilter src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Keeps repository visibility filtering separate from GitHub authorization consent.">
+    <h3>PublicOnlyFilter</h3>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:62:1</code></p>
+    <p>Keeps repository visibility filtering separate from GitHub authorization consent.</p>
     
   </article><article class="item" data-search="RepositoryCopyButton src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Copies the canonical URLs of the staged repository selection.">
     <h3>RepositoryCopyButton</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:59:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:78:1</code></p>
     <p>Copies the canonical URLs of the staged repository selection.</p>
     
   </article><article class="item" data-search="useVisibleRepositories src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Filters the server-discovered repository inventory without changing staged selection.">
     <h3>useVisibleRepositories</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:79:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:98:1</code></p>
     <p>Filters the server-discovered repository inventory without changing staged selection.</p>
     
   </article><article class="item" data-search="useProjectSourceForm src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Keeps staged source edits isolated until an explicit workspace refresh is requested.">
     <h3>useProjectSourceForm</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:95:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:117:1</code></p>
     <p>Keeps staged source edits isolated until an explicit workspace refresh is requested.</p>
     
   </article><article class="item" data-search="openSource src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx ">
     <h3>openSource</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:102:9</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:124:9</code></p>
     <p class="empty">No description available.</p>
     
   </article><article class="item" data-search="copyRepositoryLinks src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx ">
     <h3>copyRepositoryLinks</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:110:9</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:132:9</code></p>
     <p class="empty">No description available.</p>
     
   </article><article class="item" data-search="RepositoryPicker src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Renders one searchable multi-select rather than a header action for every repository.">
     <h3>RepositoryPicker</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:135:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:157:1</code></p>
     <p>Renders one searchable multi-select rather than a header action for every repository.</p>
     
   </article><article class="item" data-search="RepositoryChoices src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Renders the searchable repository checkbox choices.">
     <h3>RepositoryChoices</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:173:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:195:1</code></p>
     <p>Renders the searchable repository checkbox choices.</p>
     
   </article><article class="item" data-search="toggleRepository src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Toggle a repository inclusion without requesting another analysis until Open is pressed.">
     <h3>toggleRepository</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:188:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:210:1</code></p>
     <p>Toggle a repository inclusion without requesting another analysis until Open is pressed.</p>
     
   </article><article class="item" data-search="createSelectedRepositoryIds src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Initialize the browser selection from server-discovered repository state.">
     <h3>createSelectedRepositoryIds</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:196:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:218:1</code></p>
     <p>Initialize the browser selection from server-discovered repository state.</p>
     
   </article><article class="item" data-search="readSource src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx Remove query-only workspace selection state before displaying the editable source.">
     <h3>readSource</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:205:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx:227:1</code></p>
     <p>Remove query-only workspace selection state before displaying the editable source.</p>
     
   </article>
@@ -10281,22 +10342,22 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx</h2>
       <article class="item" data-search="WorkspaceHeader src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx Renders workspace breadcrumbs, source selection, and theme action.">
     <h3>WorkspaceHeader</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:15:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:17:1</code></p>
     <p>Renders workspace breadcrumbs, source selection, and theme action.</p>
     
   </article><article class="item" data-search="createBreadcrumbItems src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx Creates package breadcrumbs from a stable Home root to the active package path.">
     <h3>createBreadcrumbItems</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:59:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:65:1</code></p>
     <p>Creates package breadcrumbs from a stable Home root to the active package path.</p>
     
   </article><article class="item" data-search="findRepositoryBreadcrumbs src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx Present virtual owner and repository labels without leaking technical graph identities.">
     <h3>findRepositoryBreadcrumbs</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:75:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:81:1</code></p>
     <p>Present virtual owner and repository labels without leaking technical graph identities.</p>
     
   </article><article class="item" data-search="normalizeGraphPackage src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx Normalizes navigation paths to the package identity representation used by the graph view.">
     <h3>normalizeGraphPackage</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:107:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx:113:1</code></p>
     <p>Normalizes navigation paths to the package identity representation used by the graph view.</p>
     
   </article>
@@ -11016,37 +11077,37 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts</h2>
       <article class="item" data-search="retryWorkspaceRepositoryAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Retry one failed repository through the process-local runtime that owns its retained snapshots.">
     <h3>retryWorkspaceRepositoryAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:38:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:39:1</code></p>
     <p>Retry one failed repository through the process-local runtime that owns its retained snapshots.</p>
     
   </article><article class="item" data-search="loadWorkspaceProjectSourceAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Load the configured local project or discover GitHub sources supplied by the browser query.">
     <h3>loadWorkspaceProjectSourceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:53:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:54:1</code></p>
     <p>Load the configured local project or discover GitHub sources supplied by the browser query.</p>
     
   </article><article class="item" data-search="loadGitHubWorkspaceAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Delegate multi-project loading to the server-owned revision runtime.">
     <h3>loadGitHubWorkspaceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:102:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:103:1</code></p>
     <p>Delegate multi-project loading to the server-owned revision runtime.</p>
     
   </article><article class="item" data-search="loadAuthenticatedWorkspaceProjectSourceAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Load a workspace with the credential resolved at the trusted request boundary.">
     <h3>loadAuthenticatedWorkspaceProjectSourceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:150:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:151:1</code></p>
     <p>Load a workspace with the credential resolved at the trusted request boundary.</p>
     
   </article><article class="item" data-search="toRepositoryOptions src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Preserve picker state from discovery while keeping the runtime status model separate.">
     <h3>toRepositoryOptions</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:169:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:170:1</code></p>
     <p>Preserve picker state from discovery while keeping the runtime status model separate.</p>
     
   </article><article class="item" data-search="parseGitHubWorkspaceSource src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Decode persisted exclusion identities without changing the established source query format.">
     <h3>parseGitHubWorkspaceSource</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:179:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:180:1</code></p>
     <p>Decode persisted exclusion identities without changing the established source query format.</p>
     
   </article><article class="item" data-search="resolveGitHubRevisionAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Resolve a GitHub URL to its immutable revision through the public Repository capability.">
     <h3>resolveGitHubRevisionAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:215:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:217:1</code></p>
     <p>Resolve a GitHub URL to its immutable revision through the public Repository capability.</p>
     
   </article>
@@ -11071,7 +11132,7 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/composition/resolveWorkspaceStartupSource.ts</h2>
       <article class="item" data-search="resolveWorkspaceStartupSource src/features/workspace/composition/resolveWorkspaceStartupSource.ts Resolve the browser workspace source with query, environment, then Atlas self-hosting precedence.">
     <h3>resolveWorkspaceStartupSource</h3>
-    <p class="muted"><code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts:2:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts:4:1</code></p>
     <p>Resolve the browser workspace source with query, environment, then Atlas self-hosting precedence.</p>
     
   </article>

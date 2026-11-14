@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.2
+
+### Patch Changes
+
+- 9a6cf29: chore: add canonical repository metadata
+
 ## 0.19.1
 
 ### Patch Changes

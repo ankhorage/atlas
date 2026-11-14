@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.19.1",
+      "value": "v0.19.2",
       "color": "cb3837"
     },
     {
@@ -2307,6 +2307,26 @@
       ]
     },
     {
+      "path": "test/e2e/next-fixture-app/app/viewport/page.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"
+      ],
+      "exports": [
+        "default"
+      ]
+    },
+    {
+      "path": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      ],
+      "exports": [
+        "ViewportAcceptanceGraph"
+      ]
+    },
+    {
       "path": "test/e2e/next-fixture-app/next.config.ts",
       "isEntrypoint": false,
       "dependencies": [],
@@ -2738,6 +2758,14 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/github-auth/githubAuthConfiguration.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/application/githubAuthConfiguration.ts"
       ],
       "exports": []
     },
@@ -4756,7 +4784,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
-        "line": 8,
+        "line": 9,
         "column": 1
       }
     },
@@ -5444,7 +5472,7 @@
     },
     {
       "name": "useGraphViewport",
-      "description": "Mirrors owner viewport state while delegating settled cycle-focus policy to a focused hook.\nNormal layout completion remains passive outside explicit Fit and active-cycle intent.",
+      "description": "Mirrors owner viewport state and fits exactly once after the first settled layout.\nLater layouts remain passive so progressive graph updates retain user navigation.",
       "see": [],
       "security": [],
       "sourceLocation": {
@@ -5460,7 +5488,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 26,
+        "line": 27,
         "column": 9
       }
     },
@@ -5471,7 +5499,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 33,
+        "line": 35,
         "column": 9
       }
     },
@@ -5482,8 +5510,19 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 39,
+        "line": 41,
         "column": 9
+      }
+    },
+    {
+      "name": "hasMeasuredVisibleLayout",
+      "description": "Requires a non-empty, fully measured layout before consuming the one automatic fit.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
+        "line": 71,
+        "column": 1
       }
     },
     {
@@ -5493,7 +5532,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 57,
+        "line": 90,
         "column": 1
       }
     },
@@ -5504,7 +5543,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 83,
+        "line": 116,
         "column": 9
       }
     },
@@ -5515,7 +5554,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 102,
+        "line": 135,
         "column": 1
       }
     },
@@ -5526,7 +5565,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 124,
+        "line": 157,
         "column": 1
       }
     },
@@ -5537,7 +5576,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 151,
+        "line": 184,
         "column": 1
       }
     },
@@ -5548,7 +5587,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 169,
+        "line": 202,
         "column": 1
       }
     },
@@ -5559,7 +5598,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 208,
+        "line": 241,
         "column": 1
       }
     },
@@ -5570,7 +5609,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 220,
+        "line": 253,
         "column": 1
       }
     },
@@ -5581,7 +5620,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 229,
+        "line": 262,
         "column": 1
       }
     },
@@ -7902,7 +7941,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 12,
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "name": "PublicOnlyFilter",
+      "description": "Keeps repository visibility filtering separate from GitHub authorization consent.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "line": 62,
         "column": 1
       }
     },
@@ -7913,7 +7963,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 59,
+        "line": 78,
         "column": 1
       }
     },
@@ -7924,7 +7974,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 79,
+        "line": 98,
         "column": 1
       }
     },
@@ -7935,7 +7985,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 95,
+        "line": 117,
         "column": 1
       }
     },
@@ -7946,7 +7996,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 102,
+        "line": 124,
         "column": 9
       }
     },
@@ -7957,7 +8007,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 110,
+        "line": 132,
         "column": 9
       }
     },
@@ -7968,7 +8018,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 135,
+        "line": 157,
         "column": 1
       }
     },
@@ -7979,7 +8029,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 173,
+        "line": 195,
         "column": 1
       }
     },
@@ -7990,7 +8040,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 188,
+        "line": 210,
         "column": 1
       }
     },
@@ -8001,7 +8051,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 196,
+        "line": 218,
         "column": 1
       }
     },
@@ -8012,7 +8062,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 205,
+        "line": 227,
         "column": 1
       }
     },
@@ -8364,7 +8414,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 15,
+        "line": 17,
         "column": 1
       }
     },
@@ -8375,7 +8425,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 59,
+        "line": 65,
         "column": 1
       }
     },
@@ -8386,7 +8436,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 75,
+        "line": 81,
         "column": 1
       }
     },
@@ -8397,7 +8447,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 107,
+        "line": 113,
         "column": 1
       }
     },
@@ -9750,7 +9800,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 38,
+        "line": 39,
         "column": 1
       }
     },
@@ -9761,7 +9811,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 53,
+        "line": 54,
         "column": 1
       }
     },
@@ -9772,7 +9822,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 102,
+        "line": 103,
         "column": 1
       }
     },
@@ -9783,7 +9833,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 150,
+        "line": 151,
         "column": 1
       }
     },
@@ -9794,7 +9844,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 169,
+        "line": 170,
         "column": 1
       }
     },
@@ -9805,7 +9855,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 179,
+        "line": 180,
         "column": 1
       }
     },
@@ -9816,7 +9866,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 215,
+        "line": 217,
         "column": 1
       }
     },
@@ -9849,7 +9899,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
-        "line": 2,
+        "line": 4,
         "column": 1
       }
     },
@@ -11157,6 +11207,11 @@
         "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
       },
       {
+        "fromPath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts",
+        "toPath": "src/features/github-auth/application/githubAuthConfiguration.ts",
+        "sourcePath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
         "toPath": "src/features/graph-view/utils/createCompoundOpacityIndex.ts",
         "sourcePath": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts"
@@ -11825,6 +11880,16 @@
         "fromPath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/viewport/page.tsx",
+        "toPath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx",
+        "sourcePath": "test/e2e/next-fixture-app/app/viewport/page.tsx"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx",
+        "toPath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
+        "sourcePath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"
       },
       {
         "fromPath": "test/fixtures/typescript/compound-selection/src/index.ts",
@@ -13433,6 +13498,18 @@
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
+        "fromSymbol": "test/e2e/fixtureWorkspace.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/fixtureWorkspace.ts",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
         "fromSymbol": "loadFixtureWorkspaceAsync",
         "toSymbol": "createFixtureRuntime",
         "callExpression": "createFixtureRuntime",
@@ -13488,8 +13565,50 @@
       },
       {
         "fromSymbol": "test/e2e/fixtureWorkspace.ts",
+        "toSymbol": "allRepositories",
+        "callExpression": "allRepositories",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/fixtureWorkspace.ts",
+        "toSymbol": "materializeViewportFixtureAsync",
+        "callExpression": "materializeViewportFixtureAsync",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/fixtureWorkspace.ts",
+        "toSymbol": "fixturePath",
+        "callExpression": "fixturePath",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "materializeViewportFixtureAsync",
         "toSymbol": "resolve",
         "callExpression": "resolve",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "materializeViewportFixtureAsync",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "materializeViewportFixtureAsync",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "cleanupAsync",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "resolveFixtureRevisionAsync",
+        "toSymbol": "allRepositories",
+        "callExpression": "allRepositories",
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
@@ -13506,8 +13625,26 @@
       },
       {
         "fromSymbol": "discoverFixtureAsync",
+        "toSymbol": "viewportFixtureRepositories",
+        "callExpression": "viewportFixtureRepositories",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "discoverFixtureAsync",
         "toSymbol": "deduplicateRepositories",
         "callExpression": "deduplicateRepositories",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "fixturePath",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "fixturePath",
+        "toSymbol": "existsSync",
+        "callExpression": "existsSync",
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
@@ -13794,6 +13931,12 @@
       },
       {
         "fromSymbol": "runScenarioAsync",
+        "toSymbol": "installGraphViewportProbeAsync",
+        "callExpression": "installGraphViewportProbeAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "runScenarioAsync",
         "toSymbol": "collectDiagnostics",
         "callExpression": "collectDiagnostics",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -13854,6 +13997,24 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "measureNodes",
+        "callExpression": "probe?.controller?.measureNodes",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertMeasuredViewportOccupancyAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspaceViewportAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "scenario",
         "callExpression": "scenario",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -13880,6 +14041,18 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assertSwitchCheckedAsync",
         "callExpression": "assertSwitchCheckedAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "assertMeasuredViewportOccupancyAsync",
+        "callExpression": "assertMeasuredViewportOccupancyAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "assertWorkspaceViewportAsync",
+        "callExpression": "assertWorkspaceViewportAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16301,6 +16474,12 @@
         "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
       },
       {
+        "fromSymbol": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts"
+      },
+      {
         "fromSymbol": "src/features/workspace/utils/settleBoundedAsync.ts",
         "toSymbol": "getAbortReason",
         "callExpression": "getAbortReason",
@@ -17349,6 +17528,24 @@
         "toSymbol": "logoutRequest",
         "callExpression": "logoutRequest",
         "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/githubAuthConfiguration.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/githubAuthConfiguration.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/githubAuthConfiguration.spec.ts",
+        "toSymbol": "githubAuthorizationScopes",
+        "callExpression": "githubAuthorizationScopes",
+        "sourcePath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
@@ -18824,6 +19021,12 @@
         "fromSymbol": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
         "toSymbol": "resolveWorkspaceStartupSource",
         "callExpression": "resolveWorkspaceStartupSource",
+        "sourcePath": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
         "sourcePath": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts"
       },
       {
@@ -20615,6 +20818,30 @@
         "sourcePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts"
       },
       {
+        "fromSymbol": "ViewportAcceptanceGraph",
+        "toSymbol": "useGraphViewport",
+        "callExpression": "useGraphViewport",
+        "sourcePath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"
+      },
+      {
+        "fromSymbol": "ViewportAcceptanceGraph",
+        "toSymbol": "createRepositoryNodes",
+        "callExpression": "createRepositoryNodes",
+        "sourcePath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"
+      },
+      {
+        "fromSymbol": "ViewportAcceptanceGraph",
+        "toSymbol": "createRepositoryEdges",
+        "callExpression": "createRepositoryEdges",
+        "sourcePath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"
+      },
+      {
+        "fromSymbol": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx",
+        "toSymbol": "handleLayoutComplete",
+        "callExpression": "viewport.handleLayoutComplete",
+        "sourcePath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"
+      },
+      {
         "fromSymbol": "test/src/app/api/audit/getAudit.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -21329,18 +21556,6 @@
         "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
       },
       {
-        "fromSymbol": "GitHubAuthControls",
-        "toSymbol": "useState",
-        "callExpression": "useState",
-        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
-      },
-      {
-        "fromSymbol": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
-        "toSymbol": "setPrivateRepositoryAccess",
-        "callExpression": "setPrivateRepositoryAccess",
-        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
-      },
-      {
         "fromSymbol": "createPackageGraphElements",
         "toSymbol": "toCytoscapeElements",
         "callExpression": "toCytoscapeElements",
@@ -21944,6 +22159,24 @@
         "fromSymbol": "fitGraph",
         "toSymbol": "fitGraphWithOptimizedSpacing",
         "callExpression": "fitGraphWithOptimizedSpacing",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "handleLayoutComplete",
+        "toSymbol": "hasMeasuredVisibleLayout",
+        "callExpression": "hasMeasuredVisibleLayout",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "handleLayoutComplete",
+        "toSymbol": "fitGraphWithOptimizedSpacing",
+        "callExpression": "fitGraphWithOptimizedSpacing",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "handleLayoutComplete",
+        "toSymbol": "handleLayoutComplete",
+        "callExpression": "cycleFocus.handleLayoutComplete",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
@@ -22962,6 +23195,12 @@
       },
       {
         "fromSymbol": "ProjectSourceForm",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "ProjectSourceForm",
         "toSymbol": "useVisibleRepositories",
         "callExpression": "useVisibleRepositories",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
@@ -22970,6 +23209,12 @@
         "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "toSymbol": "setSelectedIds",
         "callExpression": "sourceForm.setSelectedIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "toSymbol": "onChange",
+        "callExpression": "onChange",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
@@ -23423,12 +23668,6 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "toSymbol": "setMode",
-        "callExpression": "setMode",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
-      },
-      {
         "fromSymbol": "WorkspaceHeader",
         "toSymbol": "createBreadcrumbItems",
         "callExpression": "createBreadcrumbItems",
@@ -23438,6 +23677,12 @@
         "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
         "toSymbol": "onNavigate",
         "callExpression": "props.onNavigate",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toSymbol": "setMode",
+        "callExpression": "setMode",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {

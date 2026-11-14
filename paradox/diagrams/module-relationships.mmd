@@ -201,6 +201,8 @@ graph LR
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts["test/e2e/next-fixture-app/app/api/workspace/retry/route.ts"]
   module_test_e2e_next_fixture_app_app_layout_tsx["test/e2e/next-fixture-app/app/layout.tsx"]
   module_test_e2e_next_fixture_app_app_page_tsx["test/e2e/next-fixture-app/app/page.tsx"]
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx["test/e2e/next-fixture-app/app/viewport/page.tsx"]
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx["test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"]
   module_test_e2e_next_fixture_app_next_config_ts["test/e2e/next-fixture-app/next.config.ts"]
   module_test_e2e_offlineWorkspace_ts["test/e2e/offlineWorkspace.ts"]
   module_test_e2e_productionCompoundCanvas_ts["test/e2e/productionCompoundCanvas.ts"]
@@ -251,6 +253,7 @@ graph LR
   module_test_src_features_github_auth_createGitHubAuthAdapterAsync_spec_ts["test/src/features/github-auth/createGitHubAuthAdapterAsync.spec.ts"]
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts["test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"]
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts["test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"]
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts["test/src/features/github-auth/githubAuthConfiguration.spec.ts"]
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts["test/src/features/graph-view/createCompoundOpacityIndex.spec.ts"]
   module_test_src_features_graph_view_createGraphViewModel_spec_ts["test/src/features/graph-view/createGraphViewModel.spec.ts"]
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts["test/src/features/graph-view/createPackageGraphElements.spec.ts"]
@@ -697,6 +700,8 @@ graph LR
   module_test_e2e_next_fixture_app_app_page_tsx --> module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --> module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --> module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_viewport_page_tsx --> module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx
+  module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx --> module_src_features_graph_view_adapters_inbound_react_useGraphViewport_ts
   module_test_e2e_offlineWorkspace_ts --> module_test_e2e_productionCompoundCanvas_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --> module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --> module_test_fixtures_typescript_compound_selection_support_auxiliary_ts
@@ -765,6 +770,7 @@ graph LR
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts --> module_src_features_github_auth_adapters_inbound_next_createGitHubCallbackRoute_ts
   module_test_src_features_github_auth_createGitHubCallbackRoute_spec_ts --> module_src_features_github_auth_adapters_inbound_next_githubAuthCookies_ts
   module_test_src_features_github_auth_createGitHubLogoutRoute_spec_ts --> module_src_features_github_auth_adapters_inbound_next_createGitHubLogoutRoute_ts
+  module_test_src_features_github_auth_githubAuthConfiguration_spec_ts --> module_src_features_github_auth_application_githubAuthConfiguration_ts
   module_test_src_features_graph_view_createCompoundOpacityIndex_spec_ts --> module_src_features_graph_view_utils_createCompoundOpacityIndex_ts
   module_test_src_features_graph_view_createGraphViewModel_spec_ts --> module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
   module_test_src_features_graph_view_createPackageGraphElements_spec_ts --> module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
