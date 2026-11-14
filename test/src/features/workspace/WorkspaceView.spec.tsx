@@ -48,12 +48,13 @@ describe('[WorkspaceView]', () => {
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     });
 
-    assert.equal(
-      container.querySelector('[aria-label="Manage workspaces"]')?.textContent,
-      'Workspace'
+    const workspaceMenu = container.querySelector<HTMLButtonElement>(
+      '[aria-label="Manage workspaces"]'
     );
+    assert.equal(workspaceMenu?.textContent, 'Workspace');
+    await React.act(async () => workspaceMenu?.click());
     assert.equal(
-      container.querySelector<HTMLSelectElement>('[aria-label="Saved workspace"]')?.value,
+      document.querySelector<HTMLSelectElement>('[aria-label="Saved workspace"]')?.value,
       'ankhorage-ecosystem'
     );
     unmount();

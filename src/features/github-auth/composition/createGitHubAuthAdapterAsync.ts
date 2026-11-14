@@ -45,14 +45,7 @@ export async function rotateGitHubAuthSessionAsync(
   const configuration = readGitHubAuthEnvironment();
   if (configuration === null) throw new Error('GitHub sign-in is not configured.');
   const persistence = getGitHubAuthPersistence(configuration);
-  const next = persistence.createSessionStore(nextSessionId);
-  await next.save(session);
-  try {
-    await persistence.createSessionStore(previousSessionId).clear();
-  } catch (error) {
-    await next.clear();
-    throw error;
-  }
+  await persistence.rotateSessionAsync(previousSessionId, nextSessionId, session);
 }
 
 /*** Reuse one bounded server-side connection pool for identical deployment configuration. */

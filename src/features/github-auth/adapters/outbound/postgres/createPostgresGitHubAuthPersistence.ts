@@ -2,7 +2,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:
 
 import type { GitHubAuthorizationAttempt } from '@ankhorage/auth-github';
 import type { AuthSession } from '@ankhorage/contracts/auth';
-import { Pool } from 'pg';
+import { Pool, type PoolClient } from 'pg';
 
 import type { GitHubAuthPersistence } from '@/features/github-auth/ports/githubAuthPersistence';
 
@@ -20,7 +20,54 @@ export function createPostgresGitHubAuthPersistence(
     createAuthorizationAttemptStore: sessionId =>
       createAuthorizationAttemptStore(pool, key, sessionId),
     createSessionStore: sessionId => createSessionStore(pool, key, sessionId),
+    rotateSessionAsync: (previousSessionId, nextSessionId, session) =>
+      rotateSessionAsync(pool, key, previousSessionId, nextSessionId, session),
   };
+}
+
+/*** Atomically replace the adapter-created pre-login session so crashes and database failures never authorize both cookie identifiers. */
+async function rotateSessionAsync(
+  pool: Pool,
+  key: Buffer,
+  previousSessionId: string,
+  nextSessionId: string,
+  session: AuthSession
+): Promise<void> {
+  if (previousSessionId === nextSessionId)
+    throw new Error('GitHub OAuth session rotation requires a new identifier.');
+  const previousSessionHash = hashOpaqueId(previousSessionId);
+  const nextSessionHash = hashOpaqueId(nextSessionId);
+  const payload = encryptPayload(session, key, sessionAad(nextSessionHash));
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const previous = await client.query(
+      'SELECT 1 FROM atlas_oauth.sessions WHERE session_id_hash = $1 FOR UPDATE',
+      [previousSessionHash]
+    );
+    const next = await client.query(
+      'SELECT 1 FROM atlas_oauth.sessions WHERE session_id_hash = $1 FOR UPDATE',
+      [nextSessionHash]
+    );
+    if (previous.rowCount === 0) {
+      if (next.rowCount === 0)
+        throw new Error('GitHub OAuth session rotation source is unavailable.');
+      await client.query('COMMIT');
+      return;
+    }
+    if (next.rowCount !== 0)
+      throw new Error('GitHub OAuth session rotation target already exists.');
+    await saveSessionAsync(client, nextSessionHash, payload, session.expiresAt);
+    await client.query('DELETE FROM atlas_oauth.sessions WHERE session_id_hash = $1', [
+      previousSessionHash,
+    ]);
+    await client.query('COMMIT');
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 function createAuthorizationAttemptStore(pool: Pool, key: Buffer, sessionId: string) {
@@ -86,17 +133,11 @@ function createSessionStore(pool: Pool, key: Buffer, sessionId: string) {
       return decryptPayload<AuthSession>(row.encrypted_payload, key, sessionAad(sessionHash));
     },
     save: async (session: AuthSession): Promise<void> => {
-      const payload = encryptPayload(session, key, sessionAad(sessionHash));
-      await pool.query(
-        `INSERT INTO atlas_oauth.sessions
-          (session_id_hash, encrypted_payload, expires_at, encryption_key_version)
-         VALUES ($1, $2, CASE WHEN $3::bigint IS NULL THEN NULL ELSE to_timestamp($3 / 1000.0) END, 1)
-         ON CONFLICT (session_id_hash) DO UPDATE
-           SET encrypted_payload = EXCLUDED.encrypted_payload,
-               expires_at = EXCLUDED.expires_at,
-               encryption_key_version = EXCLUDED.encryption_key_version,
-               updated_at = now()`,
-        [sessionHash, payload, session.expiresAt ?? null]
+      await saveSessionAsync(
+        pool,
+        sessionHash,
+        encryptPayload(session, key, sessionAad(sessionHash)),
+        session.expiresAt
       );
     },
     clear: async (): Promise<void> => {
@@ -105,6 +146,26 @@ function createSessionStore(pool: Pool, key: Buffer, sessionId: string) {
       ]);
     },
   };
+}
+
+/*** Write an encrypted session through either a pooled query or the rotation transaction. */
+function saveSessionAsync(
+  database: Pool | PoolClient,
+  sessionHash: string,
+  payload: string,
+  expiresAt: number | undefined
+): Promise<unknown> {
+  return database.query(
+    `INSERT INTO atlas_oauth.sessions
+      (session_id_hash, encrypted_payload, expires_at, encryption_key_version)
+     VALUES ($1, $2, CASE WHEN $3::bigint IS NULL THEN NULL ELSE to_timestamp($3 / 1000.0) END, 1)
+     ON CONFLICT (session_id_hash) DO UPDATE
+       SET encrypted_payload = EXCLUDED.encrypted_payload,
+           expires_at = EXCLUDED.expires_at,
+           encryption_key_version = EXCLUDED.encryption_key_version,
+           updated_at = now()`,
+    [sessionHash, payload, expiresAt ?? null]
+  );
 }
 
 /*** Reject malformed deployment secrets before any OAuth record can be read or written. */

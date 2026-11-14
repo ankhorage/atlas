@@ -1,5 +1,5 @@
 'use client';
-import { Popover } from '@ankhorage/surface';
+import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
 import { Surface } from '@ankhorage/zora/web/surface';
 import { View } from '@ankhorage/zora/web/view';

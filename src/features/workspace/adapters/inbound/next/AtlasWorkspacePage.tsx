@@ -18,7 +18,13 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
     readGitHubRepositoryAuthenticationAsync(),
   ]);
   const result = await loadWorkspace(
-    withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories)),
+    withRepositorySelection(
+      authenticatedInventorySource(
+        readSearchParam(params.source),
+        repositoryAuthentication.authentication
+      ),
+      readSearchParam(params.repositories)
+    ),
     repositoryAuthentication
   );
 
@@ -39,6 +45,14 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
       workspace={result.workspace}
     />
   );
+}
+
+/*** Open the current user's inventory after sign-in while anonymous visitors retain public-owner discovery. */
+function authenticatedInventorySource(
+  source: string | undefined,
+  authentication: GitHubRepositoryAuthorization['authentication']
+): string | undefined {
+  return source ?? (authentication === 'anonymous' ? undefined : '@me');
 }
 
 /*** Read one scalar search parameter while ignoring repeated values. */

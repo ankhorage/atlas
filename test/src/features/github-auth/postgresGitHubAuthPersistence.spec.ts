@@ -11,7 +11,7 @@ const testRunId = randomBytes(12).toString('hex');
 
 if (databaseUrl !== undefined) {
   describe('[PostgresGitHubAuthPersistence]', () => {
-    it('encrypts isolated sessions and deletes rotated and logged-out identifiers', async () => {
+    it('atomically rotates adapter-created sessions so prior cookies cannot be replayed', async () => {
       const persistence = createPersistence();
       const first = persistence.createSessionStore('browser-a');
       await first.save(session('access-token-a', 'user-a'));
@@ -22,10 +22,19 @@ if (databaseUrl !== undefined) {
       assert.equal(stored.rows[0]?.encrypted_payload.includes('access-token-a'), false);
       assert.equal((await first.get())?.accessToken, 'access-token-a');
 
+      await persistence.rotateSessionAsync(
+        'browser-a',
+        'browser-a-rotated',
+        session('access-token-a-rotated', 'user-a')
+      );
       const rotated = persistence.createSessionStore('browser-a-rotated');
-      await rotated.save(session('access-token-a-rotated', 'user-a'));
-      await first.clear();
       assert.equal(await first.get(), null);
+      assert.equal((await rotated.get())?.accessToken, 'access-token-a-rotated');
+      await persistence.rotateSessionAsync(
+        'browser-a',
+        'browser-a-rotated',
+        session('access-token-a-rotated', 'user-a')
+      );
       assert.equal((await rotated.get())?.accessToken, 'access-token-a-rotated');
       await rotated.clear();
       assert.equal(await rotated.get(), null);

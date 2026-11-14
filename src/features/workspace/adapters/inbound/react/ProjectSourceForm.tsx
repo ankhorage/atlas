@@ -1,5 +1,5 @@
 'use client';
-import { Popover } from '@ankhorage/surface';
+import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
@@ -22,7 +22,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
     >
       <TextInput
         accessibilityLabel="GitHub owner"
-        placeholder="ankhorage"
+        placeholder="ankhorage or @me"
         size="s"
         value={sourceForm.source}
         onChangeText={sourceForm.setSource}
