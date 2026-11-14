@@ -2,8 +2,8 @@
 import { AppHeader } from '@ankhorage/zora/web/app-header';
 import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
 import { Button } from '@ankhorage/zora/web/button';
+import { Heading } from '@ankhorage/zora/web/heading';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
-import { View } from '@ankhorage/zora/web/view';
 
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { GitHubAuthControls } from '@/features/github-auth/adapters/inbound/react/GitHubAuthControls';
@@ -11,15 +11,31 @@ import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/P
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
+import styles from './WorkspaceHeader.module.css';
+
 /*** Renders workspace breadcrumbs, source selection, and theme action. */
 export function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { mode, setMode } = useZoraTheme();
+  const { mode, setMode, theme } = useZoraTheme();
 
   return (
-    <AppHeader
-      inverted
-      actions={
-        <View align="center" direction="row" gap="s">
+    <AppHeader inverted safeAreaTop={false}>
+      <div className={styles.content}>
+        <div className={styles.identity}>
+          <Heading ellipsizeMode="tail" level={3} numberOfLines={1} size="h5">
+            {props.projectName}
+          </Heading>
+          <Breadcrumbs
+            compact
+            items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
+            separator="›"
+            onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
+          />
+        </div>
+        <div
+          className={styles.actions}
+          data-testid="workspace-header-actions"
+          style={{ color: theme.semantics.content.default }}
+        >
           {props.offline ? (
             <span aria-label="Offline snapshot">Offline snapshot</span>
           ) : (
@@ -39,19 +55,9 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
           >
             {mode === 'dark' ? 'Light' : 'Dark'}
           </Button>
-        </View>
-      }
-      safeAreaTop={false}
-      subtitle={
-        <Breadcrumbs
-          compact
-          items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
-          separator="›"
-          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
-        />
-      }
-      title={props.projectName}
-    />
+        </div>
+      </div>
+    </AppHeader>
   );
 }
 

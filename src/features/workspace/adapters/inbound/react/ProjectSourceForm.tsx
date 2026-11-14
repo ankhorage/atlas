@@ -8,18 +8,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
+import styles from './WorkspaceHeader.module.css';
+
 /*** Edits a GitHub source and stages repository inclusion before one explicit workspace refresh. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
-  const visibleRepositories = useVisibleRepositories(props.repositories, sourceForm.search);
+  const [publicOnly, setPublicOnly] = useState(false);
+  const visibleRepositories = useVisibleRepositories(
+    props.repositories,
+    sourceForm.search,
+    publicOnly
+  );
 
   return (
-    <View
-      align="center"
-      direction="row"
-      gap="xs"
-      style={{ flexWrap: 'wrap', maxWidth: 720, position: 'relative', zIndex: 1 }}
-    >
+    <View align="center" className={styles.sourceForm} direction="row" gap="xs">
       <TextInput
         accessibilityLabel="GitHub owner"
         placeholder="ankhorage or @me"
@@ -41,6 +43,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         }
         onSelectionChange={sourceForm.setSelectedIds}
       />
+      <PublicOnlyFilter checked={publicOnly} onChange={setPublicOnly} />
       <RepositoryCopyButton sourceForm={sourceForm} />
       <Button size="s" variant="outline" onPress={sourceForm.openSource}>
         Open
@@ -52,6 +55,22 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         source={sourceForm.source}
       />
     </View>
+  );
+}
+
+/*** Keeps repository visibility filtering separate from GitHub authorization consent. */
+function PublicOnlyFilter({
+  checked,
+  onChange,
+}: {
+  readonly checked: boolean;
+  readonly onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className={styles.publicOnly}>
+      <input checked={checked} type="checkbox" onChange={event => onChange(event.target.checked)} />
+      Public only
+    </label>
   );
 }
 
@@ -78,16 +97,19 @@ function RepositoryCopyButton({
 /*** Filters the server-discovered repository inventory without changing staged selection. */
 function useVisibleRepositories(
   repositories: readonly WorkspaceRepositoryOption[] | undefined,
-  search: string
+  search: string,
+  publicOnly: boolean
 ): readonly WorkspaceRepositoryOption[] {
   return useMemo(
     () =>
-      repositories?.filter(repository =>
-        `${repository.owner}/${repository.name}`
-          .toLocaleLowerCase()
-          .includes(search.toLocaleLowerCase())
+      repositories?.filter(
+        repository =>
+          (!publicOnly || repository.visibility === 'public') &&
+          `${repository.owner}/${repository.name}`
+            .toLocaleLowerCase()
+            .includes(search.toLocaleLowerCase())
       ) ?? [],
-    [repositories, search]
+    [publicOnly, repositories, search]
   );
 }
 

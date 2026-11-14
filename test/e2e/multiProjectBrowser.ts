@@ -747,6 +747,27 @@ const scenarios: readonly Scenario[] = [
     return [];
   }),
   scenario(
+    'responsive-header',
+    'Keeps the wrapped header controls visible and operable on a mobile viewport.',
+    async page => {
+      await page.setViewportSize({ height: 844, width: 390 });
+      await page.goto(
+        `${url}/?source=owner-a%2Cowner-b&repositories=${fixtureRepositoryIds.join(',')}`,
+        { waitUntil: 'networkidle' }
+      );
+      const actions = page.getByTestId('workspace-header-actions');
+      await actions.waitFor();
+      assert(
+        (await actions.evaluate(element => getComputedStyle(element).flexWrap)) === 'wrap',
+        'Header actions do not wrap on mobile.'
+      );
+      await assertTopmostControlAsync(page.getByRole('button', { name: 'Dark' }), 'Theme control');
+      await page.getByRole('button', { name: 'Dark' }).click();
+      await page.getByRole('button', { name: 'Light' }).waitFor();
+      return [];
+    }
+  ),
+  scenario(
     'settled-selection-viewport',
     'Selects without changing the settled viewport.',
     async page => {
@@ -793,7 +814,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 20, `Expected exactly 20 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 21, `Expected exactly 21 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
