@@ -12,8 +12,10 @@ import {
   WorkspaceRepositoryRuntimeError,
   type WorkspaceRepositoryRuntime,
 } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
+import type { WorkspaceRepositoryProgress } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
 import { loadWorkspaceProjectSourceAsync } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
+import type { WorkspaceSelectionRequest } from '@/types/workspace';
 
 const fixtureRoot = process.env.ATLAS_FIXTURE_ROOT ?? resolveFixtureRoot();
 
@@ -56,6 +58,52 @@ export function retryFixtureWorkspaceRepositoryAsync(runtimeId: string, reposito
       'The fixture workspace runtime is no longer available. Reload it to retry.'
     );
   return runtime.retryAsync(runtimeId, repositoryId);
+}
+
+/*** Discover one synthetic owner inventory without materializing fixture repositories. */
+export async function discoverFixtureWorkspaceInventoryAsync(source: string) {
+  const discovery = await discoverFixtureAsync(source, new Set(), undefined);
+  return { owner: source, repositories: discovery.repositories };
+}
+
+/*** Compose fixture selection streaming through the same runtime boundary used by the browser page. */
+export async function createFixtureWorkspaceSelectionOperationAsync(
+  input: WorkspaceSelectionRequest,
+  request: Request
+) {
+  const runtime =
+    input.runtimeId === undefined ? createFixtureRuntime() : fixtureRuntimeRegistry().runtime;
+  if (runtime === undefined)
+    throw new WorkspaceRepositoryRuntimeError(
+      'unavailable',
+      'The fixture workspace runtime is unavailable.'
+    );
+  fixtureRuntimeRegistry().runtime = runtime;
+  const discovery = await discoverFixtureAsync(input.source, new Set(), undefined);
+  const byId = new Map(discovery.repositories.map(repository => [repository.id, repository]));
+  const addedRepositories = input.addedRepositoryIds.flatMap(id => {
+    const repository = byId.get(id);
+    return repository === undefined ? [] : [repository];
+  });
+  if (addedRepositories.length !== input.addedRepositoryIds.length)
+    throw new WorkspaceRepositoryRuntimeError(
+      'invalid',
+      'The selected fixture repository is unavailable.'
+    );
+  return {
+    runAsync: (onProgress: WorkspaceRepositoryProgress, streamSignal: AbortSignal) =>
+      input.runtimeId === undefined
+        ? runtime.loadAsync(
+            { onProgress, repositories: addedRepositories, source: input.source },
+            AbortSignal.any([request.signal, streamSignal])
+          )
+        : runtime.updateAsync(
+            input.runtimeId,
+            { addedRepositories, onProgress, removedRepositoryIds: input.removedRepositoryIds },
+            undefined,
+            AbortSignal.any([request.signal, streamSignal])
+          ),
+  };
 }
 
 /*** Keep the test fixture focused on manifest dependencies rather than source import scanning. */

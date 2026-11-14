@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
-/*** Fetches only a replacement picker inventory after a debounced owner edit. */
+/*** Fetches only a replacement picker inventory after an owner edit. */
 export function useRepositoryInventory(
   initialOwner: string,
   initialRepositories: readonly WorkspaceRepositoryOption[] | undefined,
@@ -10,28 +10,28 @@ export function useRepositoryInventory(
 ) {
   const [repositories, setRepositories] = useState(initialRepositories ?? []);
   const [inventoryError, setInventoryError] = useState<string | undefined>(undefined);
+  const owner = source.trim();
   useEffect(() => {
-    if (source.trim() === '' || source.trim() === initialOwner) return;
+    if (owner === '' || owner === initialOwner) return;
     const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      void loadRepositoryInventoryAsync(source.trim(), controller.signal)
-        .then(inventory => {
-          setInventoryError(undefined);
-          setRepositories(inventory);
-        })
-        .catch(error => {
-          if (controller.signal.aborted) return;
-          setInventoryError(
-            error instanceof Error ? error.message : 'Unable to load repositories.'
-          );
-        });
-    }, 300);
+    void loadRepositoryInventoryAsync(owner, controller.signal)
+      .then(inventory => {
+        setInventoryError(undefined);
+        setRepositories(inventory);
+      })
+      .catch(error => {
+        if (controller.signal.aborted) return;
+        setInventoryError(error instanceof Error ? error.message : 'Unable to load repositories.');
+      });
     return () => {
       controller.abort();
-      window.clearTimeout(timer);
     };
-  }, [initialOwner, source]);
-  return { inventoryError, repositories };
+  }, [initialOwner, owner]);
+  return {
+    inventoryError: owner === '' || owner === initialOwner ? undefined : inventoryError,
+    repositories:
+      owner === '' || owner === initialOwner ? (initialRepositories ?? []) : repositories,
+  };
 }
 
 /*** Loads only the repository picker inventory for an edited owner. */

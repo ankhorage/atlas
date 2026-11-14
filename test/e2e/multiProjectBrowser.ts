@@ -405,7 +405,9 @@ async function writeReportAsync(status: 'passed' | 'failed'): Promise<void> {
 async function openWorkspaceAsync(
   page: Page,
   source = 'owner-a%2Cowner-b',
-  repositoryIds = source === 'owner-a%2Cowner-b' ? fixtureRepositoryIds : undefined
+  repositoryIds: readonly string[] | undefined = source === 'owner-a%2Cowner-b'
+    ? fixtureRepositoryIds
+    : undefined
 ): Promise<void> {
   const repositories = repositoryIds === undefined ? '' : `&repositories=${repositoryIds}`;
   await page.goto(`${url}/?source=${source}${repositories}`, { waitUntil: 'networkidle' });
@@ -584,14 +586,13 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
-    'Discovers an entered owner and normalizes a pasted repository URL.',
+    'Discovers an entered owner without navigating the existing workspace.',
     async page => {
       await page.goto(url, { waitUntil: 'networkidle' });
       await page.getByLabel('GitHub owner').fill('owner-a');
-      await page.waitForURL(openedUrl => openedUrl.searchParams.get('source') === 'owner-a');
       await page.getByLabel('Choose repositories').waitFor();
-      await page.getByText('No repository has been materialized yet.', { exact: false }).waitFor();
-      await openWorkspaceAsync(page, 'owner-a/catalog');
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').check();
       await page.getByText('catalog', { exact: true }).waitFor();
       assert(
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
@@ -601,17 +602,6 @@ const scenarios: readonly Scenario[] = [
       assert(
         await page.getByLabel('owner-a/catalog').isChecked(),
         'Shorthand repository was not selected.'
-      );
-      await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
-      await page.getByText('catalog', { exact: true }).waitFor();
-      assert(
-        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
-        'URL owner was not normalized.'
-      );
-      await page.getByLabel('Choose repositories').click();
-      assert(
-        await page.getByLabel('owner-a/catalog').isChecked(),
-        'URL repository was not selected.'
       );
       return [];
     }
@@ -633,28 +623,22 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
-    'source-picker-explicit-open',
-    'Stages selection until an explicit Open action.',
+    'source-picker-immediate-selection',
+    'Applies a selection diff immediately without an Open action or document navigation.',
     async page => {
-      await openWorkspaceAsync(page);
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').uncheck();
-      assert(page.url() === before, 'Selection navigated before Open.');
-      await page.getByRole('button', { name: 'Open' }).click();
       await page.waitForURL(
         openedUrl =>
-          openedUrl.searchParams.get('source') === 'owner-a,owner-b' &&
-          openedUrl.searchParams.get('repositories') ===
-            fixtureRepositoryIds
-              .filter(id => id !== 'owner-a-catalog')
-              .toSorted()
-              .join(',')
+          openedUrl.searchParams.get('source') === 'owner-a' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
-      const openedSource = new URL(page.url()).searchParams.get('source');
+      assert(page.url() !== before, 'Selection did not update browser history.');
       assert(
-        openedSource === 'owner-a,owner-b',
-        `Open navigated to an unexpected source: ${String(openedSource)}`
+        (await page.getByRole('button', { name: 'Open' }).count()) === 0,
+        'Open is still visible.'
       );
       await page.getByLabel('Choose repositories').click();
       assert(

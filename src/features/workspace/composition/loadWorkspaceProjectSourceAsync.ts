@@ -214,7 +214,7 @@ async function loadGitHubWorkspaceAsync(
       projectName: 'Choose GitHub repositories',
       repositories,
       selectionRequired: true,
-      workspace: { ok: false, error: 'Choose one or more repositories, then select Open.' },
+      workspace: { ok: false, error: 'Choose one or more repositories to inspect.' },
     };
   const workspaceRuntime =
     runtime ??

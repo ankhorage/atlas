@@ -14,7 +14,7 @@ export function createBrowserWorkspaceSessionStore(storage: Storage): BrowserWor
 }
 
 /*** Represents browser-restorable state without credentials, repository snapshots, or provider data. */
-export interface BrowserWorkspaceSession {
+interface BrowserWorkspaceSession {
   readonly selectedRepositoryIds: readonly string[];
   readonly source: string;
 }

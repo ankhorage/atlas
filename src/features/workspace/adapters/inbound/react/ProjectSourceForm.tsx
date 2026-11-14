@@ -3,11 +3,13 @@ import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession';
+import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
+import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { useRepositoryInventory } from '@/features/workspace/adapters/inbound/react/useRepositoryInventory';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
-import { createBrowserWorkspaceSessionStore } from '@/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 import styles from './WorkspaceHeader.module.css';
@@ -50,10 +52,12 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
       <PublicOnlyFilter checked={publicOnly} onChange={setPublicOnly} />
       <RepositoryCopyButton sourceForm={sourceForm} />
       <WorkspaceControls
-        activeWorkspaceId={props.activeWorkspaceId}
+        activeWorkspaceId={sourceForm.activeWorkspaceId}
         repositories={sourceForm.repositories}
         selectedIds={sourceForm.selectedIds}
         source={sourceForm.source}
+        onDeleteWorkspace={sourceForm.deleteWorkspace}
+        onOpenWorkspace={sourceForm.openWorkspace}
       />
     </View>
   );
@@ -117,63 +121,49 @@ function useVisibleRepositories(
 /*** Keeps inventory discovery independent from selection-driven workspace changes. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
   const initial = readSource(props.currentSource);
-  const [source, setSource] = useState(initial.owner);
-  const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(props.repositories));
-  const [search, setSearch] = useState('');
-  const { inventoryError, repositories } = useRepositoryInventory(
+  const state = useProjectSourceFormState(
     initial.owner,
     props.repositories,
-    source
+    props.activeWorkspaceId
   );
-  const selectedRepositories = repositories.filter(repository => selectedIds.has(repository.id));
-  const copyRepositoryLinks = () =>
-    void navigator.clipboard.writeText(
-      selectedRepositories.map(repository => repository.url).join('\n')
-    );
-  useRestoredWorkspaceSession(setSource, setSelectedIds);
-  const updateSelectedIds = (ids: Set<string>) => {
-    setSelectedIds(ids);
-    createBrowserWorkspaceSessionStore(window.localStorage).save({
-      selectedRepositoryIds: [...ids].toSorted(),
-      source: source.trim(),
-    });
-    props.onSelection({ selectedIds: [...ids].toSorted(), source: source.trim() });
-  };
-  const updateSource = (value: string) => {
-    setSource(value);
-    createBrowserWorkspaceSessionStore(window.localStorage).save({
-      selectedRepositoryIds: [...selectedIds].toSorted(),
-      source: value.trim(),
-    });
-  };
-  return {
-    copyRepositoryLinks,
-    inventoryError,
+  useBrowserWorkspaceSession(state);
+  const { inventoryError, repositories: inventory } = useRepositoryInventory(
+    initial.owner,
+    props.repositories,
+    state.source
+  );
+  const owner = state.source.trim();
+  const repositories =
+    owner === initial.owner
+      ? inventory
+      : inventory.map(repository => ({
+          ...repository,
+          selected: state.selectedIds.has(repository.id),
+        }));
+  const selectedRepositories = repositories.filter(repository =>
+    state.selectedIds.has(repository.id)
+  );
+  const actions = useProjectSourceFormActions({
+    onSelection: props.onSelection,
     repositories,
-    search,
-    selectedIds,
     selectedRepositories,
-    setSearch,
-    setSelectedIds: updateSelectedIds,
-    setSource: updateSource,
-    source,
+    state,
+  });
+  return {
+    activeWorkspaceId: state.activeId,
+    copyRepositoryLinks: actions.copyRepositoryLinks,
+    deleteWorkspace: actions.deleteWorkspace,
+    inventoryError,
+    openWorkspace: actions.openWorkspace,
+    repositories,
+    search: state.search,
+    selectedIds: state.selectedIds,
+    selectedRepositories,
+    setSearch: state.setSearch,
+    setSelectedIds: actions.setSelectedIds,
+    setSource: actions.setSource,
+    source: state.source,
   };
-}
-
-/*** Restores the credential-free active selection after the browser has hydrated. */
-function useRestoredWorkspaceSession(
-  setSource: (source: string) => void,
-  setSelectedIds: (selectedIds: Set<string>) => void
-) {
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      const session = createBrowserWorkspaceSessionStore(window.localStorage).load();
-      if (session === undefined) return;
-      setSource(session.source);
-      setSelectedIds(new Set(session.selectedRepositoryIds));
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [setSelectedIds, setSource]);
 }
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
@@ -229,21 +219,12 @@ function RepositoryChoices(props: RepositoryPickerProps) {
   ));
 }
 
-/*** Toggle a repository inclusion without requesting another analysis until Open is pressed. */
+/*** Toggle a repository inclusion and pass the immediate selection to its workspace owner. */
 function toggleRepository(selectedIds: ReadonlySet<string>, repositoryId: string): Set<string> {
   const next = new Set(selectedIds);
   if (next.has(repositoryId)) next.delete(repositoryId);
   else next.add(repositoryId);
   return next;
-}
-
-/*** Initialize the browser selection from server-discovered repository state. */
-function createSelectedRepositoryIds(
-  repositories: readonly WorkspaceRepositoryOption[] | undefined
-): Set<string> {
-  return new Set(
-    repositories?.filter(repository => repository.selected).map(repository => repository.id)
-  );
 }
 
 /*** Remove query-only workspace selection state before displaying the editable source. */

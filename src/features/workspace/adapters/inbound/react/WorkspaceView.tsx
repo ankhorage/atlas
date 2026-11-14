@@ -35,8 +35,17 @@ export function WorkspaceView({
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
-  const [liveWorkspace, setLiveWorkspace] = useState({ repositoryStatuses, runtimeId, workspace });
-  const selection = useWorkspaceRepositorySelection(liveWorkspace, setLiveWorkspace);
+  const [liveWorkspace, setLiveWorkspace] = useState<LiveWorkspace>({
+    repositoryStatuses,
+    runtimeId,
+    workspace,
+  });
+  const selection = useWorkspaceRepositorySelection(
+    currentSource,
+    selectedRepositoryIds(repositories),
+    liveWorkspace,
+    setLiveWorkspace
+  );
   const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
   const navigation = useWorkspaceNavigation(liveWorkspace.workspace);
   const settingsScope =
@@ -52,7 +61,8 @@ export function WorkspaceView({
         offline={offline}
         projectName={projectName}
         repositories={repositories}
-        selectionRequired={selectionRequired}
+        selectionError={liveWorkspace.error}
+        selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
         workspaceScope={workspaceScope}
         onRetry={onRetry}
         onSelection={selection}
@@ -71,6 +81,7 @@ function WorkspaceShell({
   offline,
   projectName,
   repositories,
+  selectionError,
   selectionRequired,
   workspaceScope,
   onRetry,
@@ -103,11 +114,21 @@ function WorkspaceShell({
         offline={offline}
         projectName={projectName}
         repositoryStatuses={liveWorkspace.repositoryStatuses}
-        selectionRequired={selectionRequired}
+        selectionError={selectionError}
+        selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
         workspace={liveWorkspace.workspace}
         onRetry={onRetry}
       />
     </AppShell>
+  );
+}
+
+/*** Derive the initial server-confirmed selection without persisting a graph or provider payload. */
+function selectedRepositoryIds(
+  repositories: readonly WorkspaceRepositoryOption[] | undefined
+): readonly string[] {
+  return (
+    repositories?.filter(repository => repository.selected).map(repository => repository.id) ?? []
   );
 }
 
@@ -130,13 +151,13 @@ function WorkspaceBody({
   offline,
   projectName,
   repositoryStatuses,
+  selectionError,
   selectionRequired,
   workspace,
   onRetry,
 }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
-  const projectError = workspace.ok ? null : workspace.error;
   const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
   const cycleInspection = useWorkspaceCycleInspection();
 
@@ -165,8 +186,9 @@ function WorkspaceBody({
           evaluation={auditEvaluation}
           navigation={navigation}
           offline={offline}
-          projectError={projectError}
+          projectError={workspace.ok ? null : workspace.error}
           repositoryStatuses={repositoryStatuses}
+          selectionError={selectionError}
           onRetry={onRetry}
         />
       )}
@@ -187,7 +209,7 @@ function RepositorySelectionNotice() {
         padding: 24,
       }}
     >
-      Select the repositories to inspect, then choose Open. No repository has been materialized yet.
+      Select one or more repositories to inspect. No repository has been materialized yet.
     </div>
   );
 }
@@ -281,6 +303,7 @@ interface WorkspaceShellProps {
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly selectionError?: string;
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
 }
@@ -292,6 +315,7 @@ interface WorkspaceBodyProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly selectionError?: string;
   readonly selectionRequired?: boolean;
   readonly workspace: WorkspaceLoadResult;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
