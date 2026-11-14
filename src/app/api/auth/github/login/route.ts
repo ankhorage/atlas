@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import {
-  ensureGitHubAuthSessionId,
-  setGitHubAuthAttemptCookie,
-} from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
+import { setGitHubAuthAttemptCookie } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 import {
   githubAuthConfiguration,
   githubAuthorizationScopes,
@@ -17,11 +14,7 @@ export async function POST(request: Request): Promise<Response> {
 
   const wantsPrivateRepositoryAccess = readPrivateRepositoryAccess(await request.formData());
   const response = NextResponse.redirect(new URL('/', request.url), 303);
-  const sessionId = ensureGitHubAuthSessionId(
-    request.headers.get('cookie')?.match(/__Host-atlas-github-session=([^;]+)/u)?.[1],
-    response.cookies
-  );
-  const auth = await createGitHubAuthAdapterAsync(sessionId);
+  const auth = await createGitHubAuthAdapterAsync();
   if (!auth.available) return NextResponse.json({ error: auth.message }, { status: 503 });
 
   const result = await auth.adapter.startAuthorization({
@@ -35,7 +28,10 @@ export async function POST(request: Request): Promise<Response> {
   const authorizationUrl = new URL(result.data.authorizationUrl);
   if (authorizationUrl.protocol !== 'https:' || authorizationUrl.hostname !== 'github.com')
     return NextResponse.json({ error: 'GitHub authorization could not start.' }, { status: 503 });
-  setGitHubAuthAttemptCookie(result.data.attemptId, response.cookies);
+  const attempt = auth.readAuthorizationAttempt();
+  if (attempt?.attemptId !== result.data.attemptId)
+    return NextResponse.json({ error: 'GitHub authorization could not start.' }, { status: 503 });
+  setGitHubAuthAttemptCookie(attempt, response.cookies);
   response.headers.set('location', authorizationUrl.toString());
   return response;
 }

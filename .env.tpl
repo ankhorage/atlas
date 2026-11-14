@@ -34,9 +34,9 @@ NEXT_PUBLIC_SETTINGS_SUBPACKAGE_DEPTH=1
 ATLAS_GITHUB_OAUTH_CLIENT_ID=
 ATLAS_GITHUB_OAUTH_CLIENT_SECRET=
 
-# Trusted server module that provides durable, encrypted-at-rest, user-isolated OAuth attempt and
-# session storage. It must atomically consume attempts and bind them to the opaque session id.
-ATLAS_GITHUB_AUTH_PERSISTENCE_MODULE=
+# Exactly 32 random bytes encoded with standard Base64. This key encrypts and authenticates short-lived
+# HttpOnly cookies; it must remain stable across Vercel instances and deployments.
+ATLAS_GITHUB_OAUTH_COOKIE_ENCRYPTION_KEY=
 
 # Register exactly this callback in the GitHub OAuth App:
 # https://atlas.ankhorage.com/api/auth/github/callback
