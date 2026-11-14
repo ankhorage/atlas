@@ -16,6 +16,7 @@ CREATE INDEX IF NOT EXISTS authorization_attempts_expiry_idx
 CREATE TABLE IF NOT EXISTS atlas_oauth.sessions (
   session_id_hash text PRIMARY KEY,
   encrypted_payload text NOT NULL,
+  status text NOT NULL CHECK (status IN ('active', 'pending')),
   expires_at timestamptz,
   encryption_key_version integer NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),

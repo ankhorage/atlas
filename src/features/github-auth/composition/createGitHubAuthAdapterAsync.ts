@@ -4,12 +4,14 @@ import type { AuthSession } from '@ankhorage/contracts/auth';
 
 import { createPostgresGitHubAuthPersistence } from '@/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence';
 import { githubAuthConfiguration } from '@/features/github-auth/application/githubAuthConfiguration';
+import type { GitHubAuthSessionWriteState } from '@/features/github-auth/ports/githubAuthPersistence';
 
 let cachedPersistence: CachedGitHubAuthPersistence | undefined;
 
 /*** Compose a request-scoped GitHub adapter only from trusted server configuration and durable storage. */
 export function createGitHubAuthAdapterAsync(
-  sessionId: string
+  sessionId: string,
+  sessionWriteState: GitHubAuthSessionWriteState = 'active'
 ): Promise<GitHubAuthAdapterAvailability> {
   const configuration = readGitHubAuthEnvironment();
   if (configuration === null)
@@ -24,7 +26,7 @@ export function createGitHubAuthAdapterAsync(
         clientId: configuration.clientId,
         clientSecret: configuration.clientSecret,
         redirectUris: [githubAuthConfiguration.callbackUrl],
-        sessions: persistence.createSessionStore(sessionId),
+        sessions: persistence.createSessionStore(sessionId, sessionWriteState),
       }),
       available: true,
     });

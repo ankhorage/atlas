@@ -41,6 +41,25 @@ if (databaseUrl !== undefined) {
       await database.end();
     });
 
+    it('keeps an adapter-created session non-authenticating when rotation rolls back', async () => {
+      const persistence = createPersistence();
+      const original = persistence.createSessionStore('browser-rotation-failure', 'pending');
+      const occupiedTarget = persistence.createSessionStore('browser-rotation-target');
+      await original.save(session('access-token-pending', 'user-pending'));
+      await occupiedTarget.save(session('access-token-target', 'user-target'));
+
+      await assert.rejects(() =>
+        persistence.rotateSessionAsync(
+          'browser-rotation-failure',
+          'browser-rotation-target',
+          session('access-token-pending', 'user-pending')
+        )
+      );
+
+      assert.equal(await persistence.createSessionStore('browser-rotation-failure').get(), null);
+      assert.equal((await occupiedTarget.get())?.accessToken, 'access-token-target');
+    });
+
     it('consumes a browser-bound attempt only once under parallel callbacks and rejects replay', async () => {
       const persistence = createPersistence();
       const store = persistence.createAuthorizationAttemptStore('browser-a');

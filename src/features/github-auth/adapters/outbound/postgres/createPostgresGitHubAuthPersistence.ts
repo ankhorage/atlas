@@ -4,7 +4,10 @@ import type { GitHubAuthorizationAttempt } from '@ankhorage/auth-github';
 import type { AuthSession } from '@ankhorage/contracts/auth';
 import { Pool, type PoolClient } from 'pg';
 
-import type { GitHubAuthPersistence } from '@/features/github-auth/ports/githubAuthPersistence';
+import type {
+  GitHubAuthPersistence,
+  GitHubAuthSessionWriteState,
+} from '@/features/github-auth/ports/githubAuthPersistence';
 
 /*** Create encrypted, server-only PostgreSQL persistence for the GitHub OAuth port. */
 export function createPostgresGitHubAuthPersistence(
@@ -19,7 +22,8 @@ export function createPostgresGitHubAuthPersistence(
   return {
     createAuthorizationAttemptStore: sessionId =>
       createAuthorizationAttemptStore(pool, key, sessionId),
-    createSessionStore: sessionId => createSessionStore(pool, key, sessionId),
+    createSessionStore: (sessionId, writeState = 'active') =>
+      createSessionStore(pool, key, sessionId, writeState),
     rotateSessionAsync: (previousSessionId, nextSessionId, session) =>
       rotateSessionAsync(pool, key, previousSessionId, nextSessionId, session),
   };
@@ -57,7 +61,7 @@ async function rotateSessionAsync(
     }
     if (next.rowCount !== 0)
       throw new Error('GitHub OAuth session rotation target already exists.');
-    await saveSessionAsync(client, nextSessionHash, payload, session.expiresAt);
+    await saveSessionAsync(client, nextSessionHash, payload, session.expiresAt, 'active');
     await client.query('DELETE FROM atlas_oauth.sessions WHERE session_id_hash = $1', [
       previousSessionHash,
     ]);
@@ -109,7 +113,12 @@ function createAuthorizationAttemptStore(pool: Pool, key: Buffer, sessionId: str
   };
 }
 
-function createSessionStore(pool: Pool, key: Buffer, sessionId: string) {
+function createSessionStore(
+  pool: Pool,
+  key: Buffer,
+  sessionId: string,
+  writeState: GitHubAuthSessionWriteState
+) {
   const sessionHash = hashOpaqueId(sessionId);
   return {
     get: async (): Promise<AuthSession | null> => {
@@ -119,7 +128,8 @@ function createSessionStore(pool: Pool, key: Buffer, sessionId: string) {
       }>(
         `SELECT encrypted_payload, expires_at
          FROM atlas_oauth.sessions
-         WHERE session_id_hash = $1`,
+         WHERE session_id_hash = $1
+           AND status = 'active'`,
         [sessionHash]
       );
       if (result.rowCount === 0) return null;
@@ -137,7 +147,8 @@ function createSessionStore(pool: Pool, key: Buffer, sessionId: string) {
         pool,
         sessionHash,
         encryptPayload(session, key, sessionAad(sessionHash)),
-        session.expiresAt
+        session.expiresAt,
+        writeState
       );
     },
     clear: async (): Promise<void> => {
@@ -153,18 +164,20 @@ function saveSessionAsync(
   database: Pool | PoolClient,
   sessionHash: string,
   payload: string,
-  expiresAt: number | undefined
+  expiresAt: number | undefined,
+  status: GitHubAuthSessionWriteState
 ): Promise<unknown> {
   return database.query(
     `INSERT INTO atlas_oauth.sessions
-      (session_id_hash, encrypted_payload, expires_at, encryption_key_version)
-     VALUES ($1, $2, CASE WHEN $3::bigint IS NULL THEN NULL ELSE to_timestamp($3 / 1000.0) END, 1)
+      (session_id_hash, encrypted_payload, status, expires_at, encryption_key_version)
+     VALUES ($1, $2, $3, CASE WHEN $4::bigint IS NULL THEN NULL ELSE to_timestamp($4 / 1000.0) END, 1)
      ON CONFLICT (session_id_hash) DO UPDATE
        SET encrypted_payload = EXCLUDED.encrypted_payload,
+           status = EXCLUDED.status,
            expires_at = EXCLUDED.expires_at,
            encryption_key_version = EXCLUDED.encryption_key_version,
            updated_at = now()`,
-    [sessionHash, payload, expiresAt ?? null]
+    [sessionHash, payload, status, expiresAt ?? null]
   );
 }
 
