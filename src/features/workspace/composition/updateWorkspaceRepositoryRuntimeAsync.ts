@@ -1,0 +1,137 @@
+import type { WorkspaceAnalysisCache } from '@/features/workspace/application/use-cases/createWorkspaceAnalysisCache';
+import {
+  composeWorkspaceRepositoryRuntimeResult,
+  type RepositoryAnalysis,
+  type WorkspaceRepositoryRuntimeResult,
+} from '@/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult';
+import type {
+  WorkspaceRepositoryAuthorization,
+  WorkspaceRepositoryRuntimeDependencies,
+  WorkspaceRepositoryRuntimeUpdate,
+} from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
+import {
+  loadWorkspaceRepositoriesAsync,
+  runWorkspaceOperationAsync,
+  WorkspaceRepositoryRuntimeError,
+} from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
+import type { WorkspaceRuntimeState } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
+
+/*** Apply a selection diff without re-analyzing retained repositories or reviving stale results. */
+export async function updateWorkspaceRepositoryRuntimeAsync(
+  workspaces: Map<string, WorkspaceRuntimeState>,
+  cache: WorkspaceAnalysisCache<RepositoryAnalysis>,
+  dependencies: WorkspaceRepositoryRuntimeDependencies,
+  runtimeId: string,
+  input: WorkspaceRepositoryRuntimeUpdate,
+  authorization: WorkspaceRepositoryAuthorization,
+  signal?: AbortSignal
+): Promise<WorkspaceRepositoryRuntimeResult> {
+  const workspace = workspaces.get(runtimeId);
+  if (workspace === undefined)
+    throw new WorkspaceRepositoryRuntimeError(
+      'unavailable',
+      'The workspace runtime is no longer available. Reload it to continue.'
+    );
+  const repositoriesToLoad = applyWorkspaceSelectionUpdate(workspace, input);
+  if (repositoriesToLoad.length === 0) return publishRemovedWorkspace(workspace, runtimeId, input);
+  return runWorkspaceOperationAsync<WorkspaceRepositoryRuntimeResult>(
+    workspace,
+    operationSignal =>
+      loadWorkspaceRepositoriesAsync(
+        workspace,
+        repositoriesToLoad,
+        runtimeId,
+        cache,
+        dependencies,
+        authorization,
+        operationSignal,
+        input.onProgress
+      ),
+    signal,
+    true
+  );
+}
+
+/*** Cancel obsolete work, remove deselected state, then choose only unfinished selected repositories. */
+function applyWorkspaceSelectionUpdate(
+  workspace: WorkspaceRuntimeState,
+  input: WorkspaceRepositoryRuntimeUpdate
+) {
+  const known = new Map(workspace.repositories.map(repository => [repository.id, repository]));
+  if (input.removedRepositoryIds.some(repositoryId => !known.has(repositoryId)))
+    throw new WorkspaceRepositoryRuntimeError(
+      'invalid',
+      'The requested repository is not part of this workspace.'
+    );
+  for (const repository of input.addedRepositories) known.set(repository.id, repository);
+  const removed = new Set(input.removedRepositoryIds);
+  workspace.generation += 1;
+  cancelWorkspaceOperation(workspace);
+  workspace.repositories = [...known.values()].filter(repository => !removed.has(repository.id));
+  for (const id of removed) {
+    workspace.entries.delete(id);
+    workspace.statuses.delete(id);
+  }
+  return repositoriesRequiringAnalysis(workspace, input.addedRepositories, removed);
+}
+
+/*** Resume retained unfinished work after a selection diff without reloading successful snapshots. */
+function repositoriesRequiringAnalysis(
+  workspace: WorkspaceRuntimeState,
+  additions: WorkspaceRepositoryRuntimeUpdate['addedRepositories'],
+  removed: ReadonlySet<string>
+) {
+  const addedIds = new Set(additions.map(repository => repository.id));
+  const pending = workspace.repositories.filter(repository => {
+    const status = workspace.statuses.get(repository.id)?.status;
+    return !addedIds.has(repository.id) && status === 'loading' && !removed.has(repository.id);
+  });
+  return [...pending, ...additions.filter(repository => !removed.has(repository.id))];
+}
+
+/*** Stop obsolete materialization before publishing a selection that excludes its repository. */
+function cancelWorkspaceOperation(workspace: WorkspaceRuntimeState): void {
+  workspace.abortController?.abort(
+    new DOMException('A selection update superseded this workspace operation.', 'AbortError')
+  );
+}
+
+/*** Verify that a retained runtime remains bound to this request's source and authorization scope. */
+export function validateWorkspaceRepositoryRuntime(
+  workspaces: ReadonlyMap<string, WorkspaceRuntimeState>,
+  runtimeId: string,
+  source: string,
+  authorization: WorkspaceRepositoryAuthorization
+): void {
+  const workspace = workspaces.get(runtimeId);
+  if (workspace === undefined)
+    throw new WorkspaceRepositoryRuntimeError(
+      'unavailable',
+      'The workspace runtime is no longer available. Reload it to continue.'
+    );
+  if (
+    workspace.source !== source ||
+    workspace.authorizationScope !== authorization.authorizationScope
+  )
+    throw new WorkspaceRepositoryRuntimeError(
+      'invalid',
+      'The workspace runtime is not available for this source and account.'
+    );
+}
+
+/*** Publish a removal-only update without starting a redundant materialization operation. */
+async function publishRemovedWorkspace(
+  workspace: WorkspaceRuntimeState,
+  runtimeId: string,
+  input: WorkspaceRepositoryRuntimeUpdate
+) {
+  const result = composeWorkspaceRepositoryRuntimeResult({
+    entries: workspace.entries,
+    repositories: workspace.repositories,
+    runtimeId,
+    source: workspace.source,
+    statuses: workspace.statuses,
+  });
+  await input.onProgress?.(result);
+  return result;
+}

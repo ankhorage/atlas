@@ -1,3 +1,5 @@
+import type { GitHubRepositoryVisibility } from '@ankhorage/repository/github';
+
 import type { Audit } from '@/types/audit';
 import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 import type { ProjectTreeNode } from '@/types/projectTree';
@@ -22,10 +24,50 @@ export type WorkspaceLoadResult =
 
 /*** Describes the transient outcome of loading one selected repository without changing its saved definition. */
 export interface WorkspaceRepositoryLoadStatus {
+  readonly failure?: WorkspaceRepositoryFailure;
   readonly description?: string;
   readonly repository: WorkspaceRepositoryIdentity;
   readonly status: 'cancelled' | 'failed' | 'loading' | 'successful';
 }
+
+/*** A credential-free repository record returned by authorized workspace inventory discovery. */
+export interface WorkspaceRepositoryInventoryOption {
+  readonly id: string;
+  readonly name: string;
+  readonly owner: string;
+  readonly url: string;
+  readonly visibility: GitHubRepositoryVisibility;
+}
+
+/*** The browser-to-server diff for one progressively analyzed workspace selection. */
+export interface WorkspaceSelectionRequest {
+  readonly addedRepositoryIds: readonly string[];
+  readonly generation: number;
+  readonly removedRepositoryIds: readonly string[];
+  readonly runtimeId?: string;
+  readonly source: string;
+}
+
+/*** A bounded, provider-safe explanation that may cross the workspace transport boundary. */
+export interface WorkspaceRepositoryFailure {
+  readonly category: WorkspaceRepositoryFailureCategory;
+  readonly retryAfterSeconds?: number;
+}
+
+/*** Classifies observable repository failures without exposing provider bodies, credentials, or paths. */
+export type WorkspaceRepositoryFailureCategory =
+  | 'authentication'
+  | 'authorization'
+  | 'cancelled'
+  | 'not-found'
+  | 'primary-rate-limit'
+  | 'rate-limited'
+  | 'secondary-rate-limit'
+  | 'parsing'
+  | 'runtime-limit'
+  | 'timeout'
+  | 'unknown'
+  | 'upstream';
 
 /*** Keeps repository presentation identity independent from checkout paths and provider response details. */
 interface WorkspaceRepositoryIdentity {
