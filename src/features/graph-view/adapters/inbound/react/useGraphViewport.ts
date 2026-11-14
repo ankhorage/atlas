@@ -13,18 +13,20 @@ import { getAdaptiveCycleLayoutSpacing } from '@/features/audit/utils/getAdaptiv
 import type { CycleHighlight } from '@/types/auditVisualization';
 
 /***
- * Mirrors owner viewport state while delegating settled cycle-focus policy to a focused hook.
- * Normal layout completion remains passive outside explicit Fit and active-cycle intent.
+ * Mirrors owner viewport state and fits exactly once after the first settled layout.
+ * Later layouts remain passive so progressive graph updates retain user navigation.
  */
 export function useGraphViewport(input: UseGraphViewportInput) {
   const [controller, setController] = useState<GraphViewController | null>(null);
   const controllerRef = useRef<GraphViewController | null>(null);
+  const initialFitControllerRef = useRef<GraphViewController | null>(null);
   const [viewport, setViewport] = useState({ zoom: 1, min: 0.5, max: 2 });
   const cycleFocus = useCycleViewportFocus(input, setViewport);
 
   /*** Captures the controller before synchronizing the initial viewport. */
   const handleReady = (nextController: GraphViewController) => {
     controllerRef.current = nextController;
+    initialFitControllerRef.current = null;
     setController(nextController);
     synchronizeGraphViewport(nextController, setViewport);
   };
@@ -45,7 +47,16 @@ export function useGraphViewport(input: UseGraphViewportInput) {
   return {
     controller,
     fitGraph,
-    handleLayoutComplete: cycleFocus.handleLayoutComplete,
+    handleLayoutComplete: (
+      nextController: GraphViewController,
+      visibleNodeIds: readonly string[]
+    ) => {
+      if (initialFitControllerRef.current !== nextController) {
+        initialFitControllerRef.current = nextController;
+        fitGraphWithOptimizedSpacing(nextController, setViewport);
+      }
+      cycleFocus.handleLayoutComplete(nextController, visibleNodeIds);
+    },
     handleReady,
     handleSpacingFactorChange: cycleFocus.handleSpacingFactorChange,
     handleViewportChange,

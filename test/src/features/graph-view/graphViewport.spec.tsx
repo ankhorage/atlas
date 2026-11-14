@@ -92,30 +92,30 @@ describe('[graph viewport controls]', () => {
 
       await click('#ready');
       await click('#incomplete');
-      expect(fits).toEqual([]);
+      expect(fits).toEqual([{ optimizeSpacing: true }]);
       expect(spacingChanges).toEqual([]);
 
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }]);
+      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }]);
       expect(spacingChanges).toEqual([0.4]);
       expect(host.container.querySelector('#spacing')?.textContent).toBe('0.4');
 
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, undefined]);
+      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }, undefined]);
 
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, undefined]);
+      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }, undefined]);
 
       await click('#disable');
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, undefined]);
+      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }, undefined]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
     }
   });
 
-  it('keeps normal layout completion passive and explicit Fit canonical', async () => {
+  it('fits the first settled layout and preserves later user navigation', async () => {
     const state = { zoom: 1, min: 0.5, max: 8 };
     const fits: (GraphViewFitOptions | undefined)[] = [];
     const controller: GraphViewController = {
@@ -177,7 +177,7 @@ describe('[graph viewport controls]', () => {
       await click('#ready');
       await click('#settled');
       await click('#settled');
-      expect(fits).toEqual([]);
+      expect(fits).toEqual([{ optimizeSpacing: true }]);
 
       state.zoom = 5;
       await click('#zoom-event');
@@ -188,10 +188,10 @@ describe('[graph viewport controls]', () => {
       await click('#settled');
       expect(slider().max).toBe('3');
       expect(slider().value).toBe('1');
-      expect(fits).toEqual([]);
+      expect(fits).toEqual([{ optimizeSpacing: true }]);
 
       await click('button[aria-label="Fit graph and optimize spacing for readability"]');
-      expect(fits).toEqual([{ optimizeSpacing: true }]);
+      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
