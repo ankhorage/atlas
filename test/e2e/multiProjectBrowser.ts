@@ -13,6 +13,7 @@ const fixtureApplication = resolve('test/e2e/next-fixture-app');
 const fixtureBuildDirectory = resolve(fixtureApplication, 'build');
 const fixtureServerMetadataPath = resolve(evidenceDirectory, 'fixture-server.json');
 const command = process.platform === 'win32' ? 'bunx.cmd' : 'bunx';
+const fixtureEnvironment = { ...process.env, NEXT_PUBLIC_SETTINGS_LAYOUT: 'elk' };
 
 type Status = 'passed' | 'failed' | 'blocked' | 'unexecuted';
 type Result = {
@@ -108,7 +109,9 @@ async function buildFixtureAsync(): Promise<void> {
     const output = await runProcessAsync(
       command,
       ['next', 'build', fixtureApplication, '--webpack'],
-      process.cwd()
+      process.cwd(),
+      [0],
+      fixtureEnvironment
     );
     await writeFile(resolve(evidenceDirectory, 'fixture-build.log'), output);
   } catch (error) {
@@ -130,6 +133,7 @@ async function startFixtureServerAsync(): Promise<void> {
   const fixtureServer = spawn(command, ['next', 'start', '--port', String(port)], {
     cwd: fixtureApplication,
     detached: process.platform !== 'win32',
+    env: fixtureEnvironment,
     stdio: 'pipe',
   });
   server = fixtureServer;
@@ -207,10 +211,11 @@ function runProcessAsync(
   executable: string,
   arguments_: readonly string[],
   cwd: string,
-  acceptedExitCodes: readonly number[] = [0]
+  acceptedExitCodes: readonly number[] = [0],
+  environment: NodeJS.ProcessEnv = process.env
 ): Promise<string> {
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(executable, arguments_, { cwd, stdio: 'pipe' });
+    const child = spawn(executable, arguments_, { cwd, env: environment, stdio: 'pipe' });
     const output: string[] = [];
     child.stdout.on('data', chunk => output.push(String(chunk)));
     child.stderr.on('data', chunk => output.push(String(chunk)));
@@ -986,8 +991,10 @@ const scenarios: readonly Scenario[] = [
         await page.goto(`${url}/?source=viewport-${repositoryCount}&repositories=${repositories}`, {
           waitUntil: 'networkidle',
         });
-        await page.getByTestId('cytoscape-layout-trigger').click();
-        await page.getByTestId('cytoscape-layout-option-elk').click();
+        await page
+          .getByTestId('cytoscape-layout-trigger')
+          .getByText('Elk: Layered', { exact: true })
+          .waitFor();
         await assertWorkspaceViewportAsync(page, repositoryCount);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
