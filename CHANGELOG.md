@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.1
+
+### Patch Changes
+
+- 2488aa7: Replace PostgreSQL-backed GitHub OAuth storage with encrypted, short-lived host-only cookies.
+
 ## 0.19.0
 
 ### Minor Changes
