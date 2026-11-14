@@ -38,6 +38,14 @@ ATLAS_GITHUB_OAUTH_CLIENT_SECRET=
 # session storage. It must atomically consume attempts and bind them to the opaque session id.
 ATLAS_GITHUB_AUTH_PERSISTENCE_MODULE=
 
+# Server-only PostgreSQL connection URL for the restricted Atlas OAuth role. Use a TLS URL with
+# verified server identity; never expose it as NEXT_PUBLIC_*.
+ATLAS_OAUTH_DATABASE_URL=
+
+# Server-only standard-Base64 encoding of exactly 32 random bytes used for OAuth record encryption.
+# Generate and retain it in the deployment secret store; never expose it as NEXT_PUBLIC_*.
+ATLAS_OAUTH_ENCRYPTION_KEY=
+
 # Register exactly this callback in the GitHub OAuth App:
 # https://atlas.ankhorage.com/api/auth/github/callback
 # Private repository inventory requires explicit user consent to the GitHub `repo` scope; it also

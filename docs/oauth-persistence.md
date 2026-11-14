@@ -1,15 +1,15 @@
 # OAuth persistence deployment
 
-Atlas uses a dedicated Supabase project named `atlas-prod` in `eu-central-2`. Apply
-`database/migrations/001_atlas_oauth.sql` through the deployment migration pipeline before
-enabling OAuth. The migration creates private `atlas_oauth` tables and removes `PUBLIC`, `anon`,
-and `authenticated` access; do not expose this schema in Supabase's Data API.
+Atlas requires an existing PostgreSQL database. Apply
+`database/migrations/001_atlas_oauth.sql` through the database provider's deployment migration
+pipeline before enabling OAuth. The migration creates private `atlas_oauth` tables and revokes
+unintended access; do not expose this schema through any public database API.
 
 Create a dedicated login role with only `USAGE` on `atlas_oauth` and `SELECT`, `INSERT`, `UPDATE`,
 and `DELETE` on its two tables. Store its TLS connection string in the actual Atlas hosting secret
-store as `ATLAS_OAUTH_DATABASE_URL`. The server process must use the Supabase transaction pooler
-or a direct/session-pooler connection with a publicly trusted server certificate. Never provide
-this value or a Supabase service-role key to the browser.
+store as `ATLAS_OAUTH_DATABASE_URL`. Use a PostgreSQL URL that verifies the database server's
+public CA and hostname (for example, `sslmode=verify-full` where supported by the provider). Never
+provide this value or any database credential to the browser.
 
 Set these server-only secrets in the existing Atlas deployment's secret store:
 
