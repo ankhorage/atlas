@@ -7,8 +7,13 @@ import type { AuditExportActions } from '@/features/audit/adapters/inbound/react
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
+import type { WorkspaceSelectionEventDetail } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
+import {
+  type LiveWorkspace,
+  useWorkspaceRepositorySelection,
+} from '@/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection';
 import { WorkspaceHeader } from '@/features/workspace/adapters/inbound/react/WorkspaceHeader';
 import { WorkspacePanels } from '@/features/workspace/adapters/inbound/react/WorkspacePanels';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
@@ -31,6 +36,7 @@ export function WorkspaceView({
   workspace,
 }: WorkspaceViewProps) {
   const [liveWorkspace, setLiveWorkspace] = useState({ repositoryStatuses, runtimeId, workspace });
+  const selection = useWorkspaceRepositorySelection(liveWorkspace, setLiveWorkspace);
   const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
   const navigation = useWorkspaceNavigation(liveWorkspace.workspace);
   const settingsScope =
@@ -49,6 +55,7 @@ export function WorkspaceView({
         selectionRequired={selectionRequired}
         workspaceScope={workspaceScope}
         onRetry={onRetry}
+        onSelection={selection}
       />
     </SettingsProvider>
   );
@@ -67,6 +74,7 @@ function WorkspaceShell({
   selectionRequired,
   workspaceScope,
   onRetry,
+  onSelection,
 }: WorkspaceShellProps) {
   return (
     <AppShell
@@ -83,6 +91,7 @@ function WorkspaceShell({
             selectionRequired={selectionRequired}
             workspaceScope={workspaceScope}
             onNavigate={navigation.navigateToPackage}
+            onSelection={onSelection}
           />
         </div>
       }
@@ -269,16 +278,11 @@ interface WorkspaceShellProps {
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
+  readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
-}
-
-interface LiveWorkspace {
-  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
-  readonly runtimeId: string | undefined;
-  readonly workspace: WorkspaceLoadResult;
 }
 
 interface WorkspaceBodyProps {

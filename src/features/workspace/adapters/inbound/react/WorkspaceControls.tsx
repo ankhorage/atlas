@@ -215,7 +215,7 @@ function deleteWorkspace(
   setDefinitions(
     createBrowserWorkspaceStore(window.localStorage).apply({ kind: 'delete', id: current.id })
   );
-  window.location.assign('/');
+  window.history.replaceState(null, '', '/');
 }
 
 /*** Resolve one selection event through the saved-definition collection. */
@@ -306,7 +306,7 @@ function openWorkspace(workspace: WorkspaceDefinition): void {
   );
   const params = new URLSearchParams({ source, workspace: workspace.id });
   if (excluded.length > 0) params.set('source', `${source}|exclude=${excluded.join(',')}`);
-  window.location.assign(`/?${params.toString()}`);
+  window.history.pushState(null, '', `/?${params.toString()}`);
 }
 interface WorkspaceControlsProps {
   readonly activeWorkspaceId?: string;

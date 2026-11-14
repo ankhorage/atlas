@@ -7,6 +7,7 @@ import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { GitHubAuthControls } from '@/features/github-auth/adapters/inbound/react/GitHubAuthControls';
+import type { WorkspaceSelectionEventDetail } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { ProjectTreeNode } from '@/types/projectTree';
@@ -44,6 +45,7 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
               currentSource={props.currentSource}
               repositories={props.repositories}
               selectionRequired={props.selectionRequired}
+              onSelection={props.onSelection}
             />
           )}
           {props.offline ? null : <GitHubAuthControls auth={props.githubAuth} />}
@@ -125,6 +127,7 @@ interface WorkspaceHeaderProps {
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
   readonly onNavigate: (path: string) => void;
+  readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
 }
 
 interface BreadcrumbItem {
