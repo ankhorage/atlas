@@ -41,6 +41,7 @@ export async function updateWorkspaceRepositoryRuntimeAsync(
   for (const repository of input.addedRepositories) known.set(repository.id, repository);
   const removed = new Set(input.removedRepositoryIds);
   workspace.generation += 1;
+  cancelWorkspaceOperation(workspace);
   workspace.repositories = [...known.values()].filter(repository => !removed.has(repository.id));
   for (const id of removed) {
     workspace.entries.delete(id);
@@ -63,6 +64,13 @@ export async function updateWorkspaceRepositoryRuntimeAsync(
       ),
     signal,
     true
+  );
+}
+
+/*** Stop obsolete materialization before publishing a selection that excludes its repository. */
+function cancelWorkspaceOperation(workspace: WorkspaceRuntimeState): void {
+  workspace.abortController?.abort(
+    new DOMException('A selection update superseded this workspace operation.', 'AbortError')
   );
 }
 

@@ -92,7 +92,7 @@ export async function createWorkspaceSelectionOperationAsync(
   );
   if (input.runtimeId === undefined)
     return {
-      runAsync: (onProgress: WorkspaceRepositoryProgress) =>
+      runAsync: (onProgress: WorkspaceRepositoryProgress, streamSignal: AbortSignal) =>
         defaultWorkspaceRepositoryRuntime.loadAsync(
           {
             authentication: authorization.authentication,
@@ -101,13 +101,13 @@ export async function createWorkspaceSelectionOperationAsync(
             repositories,
             source: input.source,
           },
-          signal
+          signal === undefined ? streamSignal : AbortSignal.any([signal, streamSignal])
         ),
     };
   const { runtimeId } = input;
   defaultWorkspaceRepositoryRuntime.validateAsync(runtimeId, input.source, authorization);
   return {
-    runAsync: (onProgress: WorkspaceRepositoryProgress) =>
+    runAsync: (onProgress: WorkspaceRepositoryProgress, streamSignal: AbortSignal) =>
       defaultWorkspaceRepositoryRuntime.updateAsync(
         runtimeId,
         {
@@ -116,7 +116,7 @@ export async function createWorkspaceSelectionOperationAsync(
           removedRepositoryIds: input.removedRepositoryIds,
         },
         authorization,
-        signal
+        signal === undefined ? streamSignal : AbortSignal.any([signal, streamSignal])
       ),
   };
 }

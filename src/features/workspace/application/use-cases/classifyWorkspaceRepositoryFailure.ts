@@ -8,15 +8,16 @@ export function classifyWorkspaceRepositoryFailure(error: unknown): WorkspaceRep
   if (isAbort(error)) return { category: 'cancelled' };
   const status = statusCode(error);
   if (status === 401) return { category: 'authentication' };
-  if (status === 403) return { category: 'authorization' };
   if (status === 404) return { category: 'not-found' };
-  if (status === 429)
+  const rateLimitKind = rateLimitKindFrom(error);
+  if (rateLimitKind !== undefined)
     return {
-      category: isSecondaryRateLimit(error) ? 'secondary-rate-limit' : 'primary-rate-limit',
+      category: rateLimitKind,
       ...(retryAfterSeconds(error) === undefined
         ? {}
         : { retryAfterSeconds: retryAfterSeconds(error) }),
     };
+  if (status === 403 || status === 429) return { category: 'rate-limited' };
   if (status !== undefined && status >= 500 && status <= 599) return { category: 'upstream' };
   if (isTimeout(error)) return { category: 'timeout' };
   if (isParsing(error)) return { category: 'parsing' };
@@ -32,6 +33,7 @@ export function workspaceRepositoryFailureDescription(failure: WorkspaceReposito
     cancelled: 'Loading was cancelled.',
     'not-found': 'The repository or requested revision was not found.',
     'primary-rate-limit': 'GitHub rate limiting delayed this repository.',
+    'rate-limited': 'GitHub may be rate limiting this repository. Retry shortly.',
     'secondary-rate-limit': 'GitHub secondary rate limiting delayed this repository.',
     parsing: 'The repository could not be analyzed because its source could not be parsed.',
     'runtime-limit': 'The repository exceeded an Atlas runtime resource limit.',
@@ -60,14 +62,16 @@ function statusCode(error: unknown): number | undefined {
   return typeof status === 'number' && Number.isInteger(status) ? status : undefined;
 }
 
-/*** Treat an explicit secondary-rate-limit marker as evidence; otherwise leave the 429 primary. */
-function isSecondaryRateLimit(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'rateLimitKind' in error &&
-    error.rateLimitKind === 'secondary'
-  );
+/*** Accept only an adapter-provided, bounded rate-limit kind rather than inferring it from HTTP status. */
+function rateLimitKindFrom(
+  error: unknown
+): 'primary-rate-limit' | 'secondary-rate-limit' | undefined {
+  if (typeof error !== 'object' || error === null || !('rateLimitKind' in error)) return undefined;
+  return error.rateLimitKind === 'primary'
+    ? 'primary-rate-limit'
+    : error.rateLimitKind === 'secondary'
+      ? 'secondary-rate-limit'
+      : undefined;
 }
 
 /*** Extract a bounded Retry-After value only when an adapter exposed it numerically. */

@@ -9,10 +9,15 @@ describe('[classifyWorkspaceRepositoryFailure]', () => {
   it('classifies observable provider outcomes without returning provider bodies or local paths', () => {
     const cases = [
       [Object.assign(new Error('token=secret /private/tmp'), { status: 401 }), 'authentication'],
-      [Object.assign(new Error('token=secret /private/tmp'), { status: 403 }), 'authorization'],
+      [Object.assign(new Error('token=secret /private/tmp'), { status: 403 }), 'rate-limited'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 404 }), 'not-found'],
+      [Object.assign(new Error('token=secret /private/tmp'), { status: 429 }), 'rate-limited'],
       [
-        Object.assign(new Error('token=secret /private/tmp'), { status: 429 }),
+        Object.assign(new Error('token=secret /private/tmp'), {
+          rateLimitKind: 'primary',
+          retryAfterSeconds: 86_400,
+          status: 403,
+        }),
         'primary-rate-limit',
       ],
       [
@@ -37,6 +42,14 @@ describe('[classifyWorkspaceRepositoryFailure]', () => {
       assert.equal(failure.category, category);
       assert.equal(workspaceRepositoryFailureDescription(failure).includes('secret'), false);
       assert.equal(workspaceRepositoryFailureDescription(failure).includes('/private'), false);
+    }
+  });
+
+  it('keeps ambiguous 403 and 429 responses neutral and bounds retry metadata', () => {
+    for (const status of [403, 429]) {
+      assert.deepEqual(classifyWorkspaceRepositoryFailure({ retryAfterSeconds: 86_401, status }), {
+        category: 'rate-limited',
+      });
     }
   });
 });

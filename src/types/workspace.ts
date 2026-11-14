@@ -61,6 +61,7 @@ export type WorkspaceRepositoryFailureCategory =
   | 'cancelled'
   | 'not-found'
   | 'primary-rate-limit'
+  | 'rate-limited'
   | 'secondary-rate-limit'
   | 'parsing'
   | 'runtime-limit'

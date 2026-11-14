@@ -200,6 +200,56 @@ describe('[workspace repository runtime]', () => {
     assert.equal(updates.length, 1);
   });
 
+  it('cancels a pending analysis when a removal-only update supersedes it', async () => {
+    const repositories = [
+      repository('A', 'owner-a', 'catalog'),
+      repository('B', 'owner-a', 'shared'),
+    ];
+    let allowB = false;
+    let cancellationObserved = false;
+    let signalBegan: (() => void) | undefined;
+    const bBegan = new Promise<void>(resolve => {
+      signalBegan = resolve;
+    });
+    const runtime = createWorkspaceRepositoryRuntime({
+      materializeAsync: async (source, signal) => {
+        if (source.kind !== 'github') throw new Error('Fixture requires GitHub sources.');
+        const current = repositories.find(candidate => candidate.url === source.url);
+        if (current === undefined) throw new Error('Unknown fixture repository.');
+        if (current.id === 'B' && !allowB) throw new Error('B is unavailable.');
+        if (current.id === 'B')
+          return new Promise((_, reject) => {
+            signalBegan?.();
+            signal?.addEventListener('abort', () => {
+              cancellationObserved = true;
+              reject(signal.reason);
+            });
+          });
+        return resolvedFixture(current, source);
+      },
+      resolveRevisionAsync: async url => ({
+        repository: { id: repositories.find(candidate => candidate.url === url)?.id ?? '' },
+        revision: { commitSha: `${url}-sha` },
+      }),
+    });
+    const initial = await runtime.loadAsync({ repositories, source: 'owner-a' });
+    allowB = true;
+    const retry = runtime.retryAsync(initial.runtimeId, 'B');
+    await bBegan;
+    const removed = await runtime.updateAsync(initial.runtimeId, {
+      addedRepositories: [],
+      removedRepositoryIds: ['B'],
+    });
+    await retry.catch(() => undefined);
+
+    assert.equal(cancellationObserved, true);
+    assert.deepEqual(
+      removed.repositoryStatuses.map(status => status.repository.id),
+      ['A']
+    );
+    assert.equal(repositoryNodes(removed, ['B']).length, 0);
+  });
+
   it('rejects an overlapping retry without replacing the completed graph', async () => {
     const repositories = [
       repository('A', 'owner-a', 'catalog'),
