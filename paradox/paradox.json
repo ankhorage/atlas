@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.18.2",
+      "value": "v0.19.0",
       "color": "cb3837"
     },
     {
@@ -142,6 +142,40 @@
       ]
     },
     {
+      "path": "src/app/api/auth/github/callback/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      ],
+      "exports": [
+        "GET"
+      ]
+    },
+    {
+      "path": "src/app/api/auth/github/login/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "src/features/github-auth/application/githubAuthConfiguration.ts",
+        "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      ],
+      "exports": [
+        "POST"
+      ]
+    },
+    {
+      "path": "src/app/api/auth/github/logout/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      ],
+      "exports": [
+        "POST"
+      ]
+    },
+    {
       "path": "src/app/api/dependency-graph/route.ts",
       "isEntrypoint": false,
       "dependencies": [],
@@ -153,6 +187,7 @@
       "path": "src/app/api/workspace/retry/route.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
@@ -185,6 +220,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
@@ -606,6 +642,104 @@
       ],
       "exports": [
         "projectDependencyGraph"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      ],
+      "exports": [
+        "createGitHubCallbackRoute"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      ],
+      "exports": [
+        "createGitHubLogoutRoute"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "clearGitHubAuthAttemptCookie",
+        "clearGitHubAuthSessionCookie",
+        "ensureGitHubAuthSessionId",
+        "githubAuthCookieNames",
+        "setGitHubAuthAttemptCookie"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      ],
+      "exports": [
+        "GitHubAuthView",
+        "GitHubRepositoryAuthorization",
+        "readGitHubAuthViewAsync",
+        "readGitHubRepositoryAuthenticationAsync"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      ],
+      "exports": [
+        "GitHubAuthControls"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/ports/githubAuthPersistence.ts"
+      ],
+      "exports": [
+        "createPostgresGitHubAuthPersistence"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/application/githubAuthConfiguration.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "githubAuthConfiguration",
+        "githubAuthorizationScopes"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "src/features/github-auth/application/githubAuthConfiguration.ts",
+        "src/features/github-auth/ports/githubAuthPersistence.ts"
+      ],
+      "exports": [
+        "createGitHubAuthAdapterAsync",
+        "GitHubAuthAdapterAvailability",
+        "rotateGitHubAuthSessionAsync"
+      ]
+    },
+    {
+      "path": "src/features/github-auth/ports/githubAuthPersistence.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "GitHubAuthPersistence",
+        "GitHubAuthSessionWriteState"
       ]
     },
     {
@@ -1488,6 +1622,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/app/actions/audit.actions.ts",
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
@@ -1582,6 +1717,8 @@
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
         "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "src/types/projectTree.ts"
@@ -1630,6 +1767,7 @@
       "dependencies": [
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
         "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
@@ -1805,15 +1943,25 @@
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
         "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "src/features/workspace/utils/settleBoundedAsync.ts",
-        "src/types/projectSource.ts",
-        "src/types/workspace.ts"
+        "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "src/types/projectSource.ts"
       ],
       "exports": [
         "createWorkspaceRepositoryRuntime",
+        "WorkspaceRepositoryAuthorization",
         "WorkspaceRepositoryRuntime",
         "WorkspaceRepositoryRuntimeDependencies",
         "WorkspaceRepositoryRuntimeError"
+      ]
+    },
+    {
+      "path": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createWorkspaceRepositoryStatus"
       ]
     },
     {
@@ -1846,6 +1994,8 @@
       "path": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
         "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
@@ -1857,10 +2007,25 @@
         "src/utils/parseProjectPath.ts"
       ],
       "exports": [
+        "loadAuthenticatedWorkspaceProjectSourceAsync",
         "loadWorkspaceProjectSourceAsync",
         "retryWorkspaceRepositoryAsync",
         "WorkspaceProjectSourceResult",
         "WorkspaceRepositoryOption"
+      ]
+    },
+    {
+      "path": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
+        "src/features/workspace/utils/settleBoundedAsync.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "loadWorkspaceRepositoryBatchAsync",
+        "WorkspaceRuntimeState"
       ]
     },
     {
@@ -2141,6 +2306,7 @@
       "path": "test/e2e/next-fixture-app/app/page.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
         "test/e2e/fixtureWorkspace.ts"
       ],
@@ -2555,6 +2721,30 @@
       "dependencies": [
         "src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts",
         "src/features/project-analysis/composition/readProjectSnapshotAsync.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
       ],
       "exports": []
     },
@@ -3082,6 +3272,50 @@
       }
     },
     {
+      "name": "POST",
+      "description": "Start a CSRF-protected GitHub OAuth authorization using an opaque browser session.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/auth/github/login/route.ts",
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "name": "hasTrustedOrigin",
+      "description": "Require a same-origin POST before a browser can create an OAuth attempt.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/auth/github/login/route.ts",
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "name": "readPrivateRepositoryAccess",
+      "description": "Read the opt-in scope field only after validating the platform form boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/auth/github/login/route.ts",
+        "line": 50,
+        "column": 1
+      }
+    },
+    {
+      "name": "isFormReader",
+      "description": "Narrow a platform form boundary before reading its named field.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/auth/github/login/route.ts",
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
       "name": "RootLayout",
       "description": "Renders the application root layout under the single ZORA theme runtime.",
       "see": [],
@@ -3110,7 +3344,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/page.tsx",
-        "line": 6,
+        "line": 7,
         "column": 1
       }
     },
@@ -3121,7 +3355,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/page.tsx",
-        "line": 11,
+        "line": 12,
         "column": 1
       }
     },
@@ -4310,6 +4544,325 @@
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
         "line": 136,
+        "column": 1
+      }
+    },
+    {
+      "name": "createGitHubCallbackRoute",
+      "description": "Create the OAuth callback edge so failed session promotion never authenticates the pre-login browser identifier.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "name": "readCookies",
+      "description": "Parse only the two host-owned opaque identifiers; all credential values remain server-side.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "name": "redirectWithOutcome",
+      "description": "Redirect only to Atlas and expose a generic outcome that never reveals provider or token data.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "line": 58,
+        "column": 1
+      }
+    },
+    {
+      "name": "createGitHubLogoutRoute",
+      "description": "Create a same-origin logout route that only clears browser credentials after the server confirms session invalidation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "name": "readSessionId",
+      "description": "Read the host-only opaque session cookie without accepting similarly named cookies.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "name": "ensureGitHubAuthSessionId",
+      "description": "Issue one opaque server-session identifier with production-safe browser attributes.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "name": "setGitHubAuthAttemptCookie",
+      "description": "Bind the one-time OAuth attempt to the browser session without exposing provider state in URLs.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearGitHubAuthAttemptCookie",
+      "description": "Remove transient authorization state after a callback, whether it succeeded or failed.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearGitHubAuthSessionCookie",
+      "description": "Remove the opaque local session after the adapter revokes its stored credentials.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "name": "cookieOptions",
+      "description": "Use host-only, HTTPS, HttpOnly, SameSite cookies; no token ever enters browser-readable storage.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubAuthViewAsync",
+      "description": "Read only client-safe GitHub account presentation data from the request-scoped server session.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubRepositoryAuthenticationAsync",
+      "description": "Resolve a GitHub credential exclusively from the current server session for repository operations.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "name": "GitHubAuthControls",
+      "description": "Render GitHub account actions in the existing ZORA header without exposing credentials to the client.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "createPostgresGitHubAuthPersistence",
+      "description": "Create encrypted, server-only PostgreSQL persistence for the GitHub OAuth port.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "name": "rotateSessionAsync",
+      "description": "Atomically replace the adapter-created pre-login session so crashes and database failures never authorize both cookie identifiers.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "name": "createAuthorizationAttemptStore",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 77,
+        "column": 1
+      }
+    },
+    {
+      "name": "createSessionStore",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 116,
+        "column": 1
+      }
+    },
+    {
+      "name": "saveSessionAsync",
+      "description": "Write an encrypted session through either a pooled query or the rotation transaction.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 163,
+        "column": 1
+      }
+    },
+    {
+      "name": "readEncryptionKey",
+      "description": "Reject malformed deployment secrets before any OAuth record can be read or written.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 185,
+        "column": 1
+      }
+    },
+    {
+      "name": "hashOpaqueId",
+      "description": "Hash browser-controlled opaque identifiers before durable storage.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 193,
+        "column": 1
+      }
+    },
+    {
+      "name": "encryptPayload",
+      "description": "Encrypt one JSON payload with independent authenticated encryption material.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 198,
+        "column": 1
+      }
+    },
+    {
+      "name": "decryptPayload",
+      "description": "Decrypt only an authenticated record bound to its storage role and opaque session identifier.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 207,
+        "column": 1
+      }
+    },
+    {
+      "name": "authorizationAttemptAad",
+      "description": "Bind authorization attempts to their record purpose and their originating browser session.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 222,
+        "column": 1
+      }
+    },
+    {
+      "name": "sessionAad",
+      "description": "Bind sessions to their record purpose and their opaque browser identifier.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "line": 227,
+        "column": 1
+      }
+    },
+    {
+      "name": "githubAuthorizationScopes",
+      "description": "Select only the scopes the person explicitly consented to for this authorization attempt.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/application/githubAuthConfiguration.ts",
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "name": "createGitHubAuthAdapterAsync",
+      "description": "Compose a request-scoped GitHub adapter only from trusted server configuration and durable storage.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "name": "rotateGitHubAuthSessionAsync",
+      "description": "Rotate the opaque browser identifier after successful authorization so the pre-login session cannot authorize later requests.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "name": "getGitHubAuthPersistence",
+      "description": "Reuse one bounded server-side connection pool for identical deployment configuration.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "line": 54,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubAuthEnvironment",
+      "description": "Read secrets only on the server and reject partial OAuth configuration rather than degrading to shared credentials.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "line": 69,
         "column": 1
       }
     },
@@ -6630,7 +7183,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 7,
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "name": "discoverGitHubSourceAsync",
+      "description": "Resolve the explicit authenticated inventory token without permitting it to select environment credentials.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
+        "line": 40,
         "column": 1
       }
     },
@@ -6641,7 +7205,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 37,
+        "line": 54,
         "column": 1
       }
     },
@@ -6652,7 +7216,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 51,
+        "line": 68,
         "column": 1
       }
     },
@@ -7279,7 +7843,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 8,
+        "line": 13,
+        "column": 1
+      }
+    },
+    {
+      "name": "authenticatedInventorySource",
+      "description": "Open the current user's inventory after sign-in while anonymous visitors retain public-owner discovery.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "line": 51,
         "column": 1
       }
     },
@@ -7290,7 +7865,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 34,
+        "line": 59,
         "column": 1
       }
     },
@@ -7301,7 +7876,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 39,
+        "line": 64,
         "column": 1
       }
     },
@@ -7400,7 +7975,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 11,
+        "line": 12,
         "column": 1
       }
     },
@@ -7411,7 +7986,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 58,
+        "line": 59,
         "column": 1
       }
     },
@@ -7422,7 +7997,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 78,
+        "line": 79,
         "column": 1
       }
     },
@@ -7433,7 +8008,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 94,
+        "line": 95,
         "column": 1
       }
     },
@@ -7444,7 +8019,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 101,
+        "line": 102,
         "column": 9
       }
     },
@@ -7455,7 +8030,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 109,
+        "line": 110,
         "column": 9
       }
     },
@@ -7466,7 +8041,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 134,
+        "line": 135,
         "column": 1
       }
     },
@@ -7664,7 +8239,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 14,
+        "line": 16,
         "column": 1
       }
     },
@@ -7675,7 +8250,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 34,
+        "line": 36,
         "column": 1
       }
     },
@@ -7686,7 +8261,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 51,
+        "line": 53,
         "column": 1
       }
     },
@@ -7697,7 +8272,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 63,
+        "line": 65,
         "column": 1
       }
     },
@@ -7708,7 +8283,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 80,
+        "line": 82,
         "column": 1
       }
     },
@@ -7719,7 +8294,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 110,
+        "line": 118,
         "column": 1
       }
     },
@@ -7730,7 +8305,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 140,
+        "line": 148,
         "column": 1
       }
     },
@@ -7741,7 +8316,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 167,
+        "line": 175,
         "column": 1
       }
     },
@@ -7752,7 +8327,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 181,
+        "line": 189,
         "column": 1
       }
     },
@@ -7763,7 +8338,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 200,
+        "line": 208,
         "column": 1
       }
     },
@@ -7774,7 +8349,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 214,
+        "line": 222,
         "column": 1
       }
     },
@@ -7785,7 +8360,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 224,
+        "line": 232,
         "column": 1
       }
     },
@@ -7796,7 +8371,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 239,
+        "line": 247,
         "column": 1
       }
     },
@@ -7807,7 +8382,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 258,
+        "line": 265,
         "column": 1
       }
     },
@@ -7818,7 +8393,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 270,
+        "line": 276,
         "column": 1
       }
     },
@@ -7829,7 +8404,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 283,
+        "line": 288,
         "column": 1
       }
     },
@@ -7840,7 +8415,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 296,
+        "line": 300,
         "column": 1
       }
     },
@@ -7862,7 +8437,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 13,
+        "line": 15,
         "column": 1
       }
     },
@@ -7873,7 +8448,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 57,
+        "line": 59,
         "column": 1
       }
     },
@@ -7884,7 +8459,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 73,
+        "line": 75,
         "column": 1
       }
     },
@@ -7895,7 +8470,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 105,
+        "line": 107,
         "column": 1
       }
     },
@@ -8027,7 +8602,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 19,
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "name": "WorkspaceShell",
+      "description": "Compose the persistent shell separately from the stateful workspace boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 58,
         "column": 1
       }
     },
@@ -8038,7 +8624,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 71,
+        "line": 106,
         "column": 1
       }
     },
@@ -8049,7 +8635,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 82,
+        "line": 117,
         "column": 1
       }
     },
@@ -8060,7 +8646,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 134,
+        "line": 169,
         "column": 1
       }
     },
@@ -8071,7 +8657,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 152,
+        "line": 187,
         "column": 1
       }
     },
@@ -8082,7 +8668,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 178,
+        "line": 213,
         "column": 1
       }
     },
@@ -8093,7 +8679,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 195,
+        "line": 230,
         "column": 1
       }
     },
@@ -8104,7 +8690,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 207,
+        "line": 242,
         "column": 1
       }
     },
@@ -9083,7 +9669,62 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 30,
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "name": "createWorkspaceRuntimeActions",
+      "description": "Bind non-secret retained workspace state to request-scoped operations.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "line": 42,
+        "column": 1
+      }
+    },
+    {
+      "name": "loadWorkspaceRuntimeAsync",
+      "description": "Start one workspace analysis without retaining its request credential.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "line": 64,
+        "column": 1
+      }
+    },
+    {
+      "name": "retryWorkspaceRuntimeAsync",
+      "description": "Retry a retained repository with authorization supplied for this request only.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "line": 88,
+        "column": 1
+      }
+    },
+    {
+      "name": "runtimeWorkspace",
+      "description": "Create the ephemeral non-secret state retained for one workspace runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "line": 125,
+        "column": 1
+      }
+    },
+    {
+      "name": "workspaceRepositoryAuthorization",
+      "description": "Resolve request authorization without retaining a credential in the runtime workspace.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "line": 137,
         "column": 1
       }
     },
@@ -9094,7 +9735,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 78,
+        "line": 147,
         "column": 1
       }
     },
@@ -9105,7 +9746,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 121,
+        "line": 174,
+        "column": 1
+      }
+    },
+    {
+      "name": "workspaceAnalysisCacheKey",
+      "description": "Scope immutable analyses to the GitHub identity that was authorized to read them.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "line": 221,
         "column": 1
       }
     },
@@ -9116,7 +9768,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 172,
+        "line": 235,
         "column": 1
       }
     },
@@ -9127,29 +9779,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 191,
+        "line": 254,
         "column": 1
       }
     },
     {
-      "name": "isCancellation",
-      "description": "Recognize deliberate aborts separately from repository failures.",
+      "name": "createWorkspaceRepositoryStatus",
+      "description": "Build a credential-free runtime status record for one repository operation.",
       "see": [],
       "security": [],
       "sourceLocation": {
-        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 207,
-        "column": 1
-      }
-    },
-    {
-      "name": "repositoryStatus",
-      "description": "Keep transient runtime status free from provider errors, credentials, and materialization paths.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 214,
+        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
+        "line": 6,
         "column": 1
       }
     },
@@ -9182,7 +9823,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 34,
+        "line": 38,
         "column": 1
       }
     },
@@ -9193,7 +9834,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 43,
+        "line": 53,
         "column": 1
       }
     },
@@ -9204,7 +9845,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 88,
+        "line": 102,
+        "column": 1
+      }
+    },
+    {
+      "name": "loadAuthenticatedWorkspaceProjectSourceAsync",
+      "description": "Load a workspace with the credential resolved at the trusted request boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "line": 150,
         "column": 1
       }
     },
@@ -9215,7 +9867,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 124,
+        "line": 169,
         "column": 1
       }
     },
@@ -9226,7 +9878,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 134,
+        "line": 179,
         "column": 1
       }
     },
@@ -9237,7 +9889,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 169,
+        "line": 215,
+        "column": 1
+      }
+    },
+    {
+      "name": "loadWorkspaceRepositoryBatchAsync",
+      "description": "Load one bounded batch and retain only credential-free workspace analysis results.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "name": "isCancellation",
+      "description": "Keep deliberate cancellation distinct from a failed repository materialization.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "line": 66,
         "column": 1
       }
     },
@@ -9343,6 +10017,11 @@
       {
         "fromPath": "src/app/page.tsx",
         "toPath": "src/features/dependency-analysis/adapters/outbound/api/requestDependencyGraphAsync.ts",
+        "sourcePath": "src/app/page.tsx"
+      },
+      {
+        "fromPath": "src/app/page.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "sourcePath": "src/app/page.tsx"
       },
       {
@@ -9786,6 +10465,21 @@
         "sourcePath": "src/features/audit/utils/cycleVisualization.ts"
       },
       {
+        "fromPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "toPath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "toPath": "src/features/github-auth/application/githubAuthConfiguration.ts",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "toPath": "src/features/github-auth/ports/githubAuthPersistence.ts",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
         "fromPath": "src/features/graph-view/domain/reduceGraphInteraction.ts",
         "toPath": "src/types/graphInteraction.ts",
         "sourcePath": "src/features/graph-view/domain/reduceGraphInteraction.ts"
@@ -10147,7 +10841,7 @@
       },
       {
         "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toPath": "src/features/workspace/utils/settleBoundedAsync.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
@@ -10156,9 +10850,9 @@
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
-        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
         "toPath": "src/types/workspace.ts",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts"
       },
       {
         "fromPath": "src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts",
@@ -10199,6 +10893,16 @@
         "fromPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "toPath": "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
@@ -10246,6 +10950,26 @@
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "toPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "toPath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "toPath": "src/features/workspace/utils/settleBoundedAsync.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
         "fromPath": "test/e2e/next-fixture-app/app/layout.tsx",
         "toPath": "src/app/layout.tsx",
         "sourcePath": "test/e2e/next-fixture-app/app/layout.tsx"
@@ -10253,6 +10977,11 @@
       {
         "fromPath": "test/e2e/next-fixture-app/app/page.tsx",
         "toPath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "sourcePath": "test/e2e/next-fixture-app/app/page.tsx"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/page.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "sourcePath": "test/e2e/next-fixture-app/app/page.tsx"
       },
       {
@@ -10479,6 +11208,21 @@
         "fromPath": "test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts",
         "toPath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
         "sourcePath": "test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toPath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
       },
       {
         "fromPath": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
@@ -10922,6 +11666,11 @@
       },
       {
         "fromPath": "src/app/api/workspace/retry/route.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/app/api/workspace/retry/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/workspace/retry/route.ts",
         "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "sourcePath": "src/app/api/workspace/retry/route.ts"
       },
@@ -11196,6 +11945,41 @@
         "sourcePath": "test/src/features/settings/utils/readSettingsEnvironment.spec.ts"
       },
       {
+        "fromPath": "src/app/api/auth/github/callback/route.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "sourcePath": "src/app/api/auth/github/callback/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/auth/github/callback/route.ts",
+        "toPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "sourcePath": "src/app/api/auth/github/callback/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/auth/github/login/route.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/auth/github/login/route.ts",
+        "toPath": "src/features/github-auth/application/githubAuthConfiguration.ts",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/auth/github/login/route.ts",
+        "toPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/auth/github/logout/route.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "sourcePath": "src/app/api/auth/github/logout/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/auth/github/logout/route.ts",
+        "toPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "sourcePath": "src/app/api/auth/github/logout/route.ts"
+      },
+      {
         "fromPath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx"
@@ -11309,6 +12093,36 @@
         "fromPath": "src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts",
         "toPath": "src/types/projectFiles.ts",
         "sourcePath": "src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "toPath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromPath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromPath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts",
+        "toPath": "src/features/github-auth/ports/githubAuthPersistence.ts",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/constants.ts",
@@ -11682,6 +12496,11 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
@@ -11792,6 +12611,16 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
@@ -11893,6 +12722,11 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -12002,8 +12836,8 @@
       },
       {
         "fromSymbol": "loadWorkspace",
-        "toSymbol": "loadWorkspaceProjectSourceAsync",
-        "callExpression": "loadWorkspaceProjectSourceAsync",
+        "toSymbol": "loadAuthenticatedWorkspaceProjectSourceAsync",
+        "callExpression": "loadAuthenticatedWorkspaceProjectSourceAsync",
         "sourcePath": "src/app/page.tsx"
       },
       {
@@ -14161,6 +14995,60 @@
         "sourcePath": "src/features/audit/utils/cycleVisualization.ts"
       },
       {
+        "fromSymbol": "createGitHubAuthAdapterAsync",
+        "toSymbol": "readGitHubAuthEnvironment",
+        "callExpression": "readGitHubAuthEnvironment",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "createGitHubAuthAdapterAsync",
+        "toSymbol": "getGitHubAuthPersistence",
+        "callExpression": "getGitHubAuthPersistence",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "createGitHubAuthAdapterAsync",
+        "toSymbol": "createGitHubAuthAdapter",
+        "callExpression": "createGitHubAuthAdapter",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "createGitHubAuthAdapterAsync",
+        "toSymbol": "createAuthorizationAttemptStore",
+        "callExpression": "persistence.createAuthorizationAttemptStore",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "createGitHubAuthAdapterAsync",
+        "toSymbol": "createSessionStore",
+        "callExpression": "persistence.createSessionStore",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "rotateGitHubAuthSessionAsync",
+        "toSymbol": "readGitHubAuthEnvironment",
+        "callExpression": "readGitHubAuthEnvironment",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "rotateGitHubAuthSessionAsync",
+        "toSymbol": "getGitHubAuthPersistence",
+        "callExpression": "getGitHubAuthPersistence",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "rotateGitHubAuthSessionAsync",
+        "toSymbol": "rotateSessionAsync",
+        "callExpression": "persistence.rotateSessionAsync",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
+        "fromSymbol": "getGitHubAuthPersistence",
+        "toSymbol": "createPostgresGitHubAuthPersistence",
+        "callExpression": "createPostgresGitHubAuthPersistence",
+        "sourcePath": "src/features/github-auth/composition/createGitHubAuthAdapterAsync.ts"
+      },
+      {
         "fromSymbol": "getDependencyHighlightClasses",
         "toSymbol": "getChildrenByParent",
         "callExpression": "getChildrenByParent",
@@ -14906,8 +15794,8 @@
       },
       {
         "fromSymbol": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "toSymbol": "discoverGitHubRepositoriesAsync",
-        "callExpression": "discoverGitHubRepositoriesAsync",
+        "toSymbol": "discoverGitHubSourceAsync",
+        "callExpression": "discoverGitHubSourceAsync",
         "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       },
       {
@@ -14920,6 +15808,18 @@
         "fromSymbol": "discoverWorkspaceGitHubSourcesAsync",
         "toSymbol": "selectedIdsFromDiscovery",
         "callExpression": "selectedIdsFromDiscovery",
+        "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
+      },
+      {
+        "fromSymbol": "discoverGitHubSourceAsync",
+        "toSymbol": "discoverGitHubRepositoriesAsync",
+        "callExpression": "discoverGitHubRepositoriesAsync",
+        "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
+      },
+      {
+        "fromSymbol": "discoverGitHubSourceAsync",
+        "toSymbol": "discoverGitHubAuthenticatedUserRepositoriesAsync",
+        "callExpression": "discoverGitHubAuthenticatedUserRepositoriesAsync",
         "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       },
       {
@@ -15163,19 +16063,43 @@
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
+        "fromSymbol": "createWorkspaceRepositoryRuntime",
+        "toSymbol": "createWorkspaceRuntimeActions",
+        "callExpression": "createWorkspaceRuntimeActions",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
         "fromSymbol": "loadAsync",
+        "toSymbol": "loadWorkspaceRuntimeAsync",
+        "callExpression": "loadWorkspaceRuntimeAsync",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromSymbol": "retryAsync",
+        "toSymbol": "retryWorkspaceRuntimeAsync",
+        "callExpression": "retryWorkspaceRuntimeAsync",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRuntimeAsync",
+        "toSymbol": "runtimeWorkspace",
+        "callExpression": "runtimeWorkspace",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRuntimeAsync",
         "toSymbol": "randomUUID",
         "callExpression": "randomUUID",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
-        "fromSymbol": "loadAsync",
+        "fromSymbol": "loadWorkspaceRuntimeAsync",
         "toSymbol": "retainWorkspace",
         "callExpression": "retainWorkspace",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
-        "fromSymbol": "loadAsync",
+        "fromSymbol": "loadWorkspaceRuntimeAsync",
         "toSymbol": "runWorkspaceOperationAsync",
         "callExpression": "runWorkspaceOperationAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
@@ -15187,15 +16111,21 @@
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
-        "fromSymbol": "retryAsync",
+        "fromSymbol": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "toSymbol": "workspaceRepositoryAuthorization",
+        "callExpression": "workspaceRepositoryAuthorization",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromSymbol": "retryWorkspaceRuntimeAsync",
         "toSymbol": "runWorkspaceOperationAsync",
         "callExpression": "runWorkspaceOperationAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
         "fromSymbol": "loadRepositoriesAsync",
-        "toSymbol": "settleBoundedAsync",
-        "callExpression": "settleBoundedAsync",
+        "toSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "callExpression": "loadWorkspaceRepositoryBatchAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
@@ -15205,27 +16135,15 @@
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
-        "fromSymbol": "loadRepositoriesAsync",
-        "toSymbol": "repositoryStatus",
-        "callExpression": "repositoryStatus",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "loadRepositoriesAsync",
-        "toSymbol": "isCancellation",
-        "callExpression": "isCancellation",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "loadRepositoriesAsync",
-        "toSymbol": "composeWorkspaceRepositoryRuntimeResult",
-        "callExpression": "composeWorkspaceRepositoryRuntimeResult",
+        "fromSymbol": "analyzeRepositoryAsync",
+        "toSymbol": "resolveRevisionAsync",
+        "callExpression": "dependencies.resolveRevisionAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
         "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "resolveRevisionAsync",
-        "callExpression": "dependencies.resolveRevisionAsync",
+        "toSymbol": "workspaceAnalysisCacheKey",
+        "callExpression": "workspaceAnalysisCacheKey",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
@@ -15242,7 +16160,7 @@
       },
       {
         "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "loadProjectSourceAsync",
+        "toSymbol": "__type",
         "callExpression": "(dependencies.materializeAsync ?? loadProjectSourceAsync)",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
@@ -15421,6 +16339,12 @@
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
+        "fromSymbol": "loadAuthenticatedWorkspaceProjectSourceAsync",
+        "toSymbol": "loadWorkspaceProjectSourceAsync",
+        "callExpression": "loadWorkspaceProjectSourceAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
         "fromSymbol": "resolveGitHubRevisionAsync",
         "toSymbol": "resolveGitHubRepositoryRevisionAsync",
         "callExpression": "resolveGitHubRepositoryRevisionAsync",
@@ -15433,6 +16357,48 @@
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
+        "fromSymbol": "materializeAsync",
+        "toSymbol": "loadProjectSourceAsync",
+        "callExpression": "loadProjectSourceAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeAsync",
+        "toSymbol": "materializeAsync",
+        "callExpression": "createGitHubProjectMaterializer().materializeAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "materializeAsync",
+        "toSymbol": "createGitHubProjectMaterializer",
+        "callExpression": "createGitHubProjectMaterializer",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "settleBoundedAsync",
+        "callExpression": "settleBoundedAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "createWorkspaceRepositoryStatus",
+        "callExpression": "createWorkspaceRepositoryStatus",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "isCancellation",
+        "callExpression": "isCancellation",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "composeWorkspaceRepositoryRuntimeResult",
+        "callExpression": "composeWorkspaceRepositoryRuntimeResult",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
         "fromSymbol": "src/features/workspace/utils/settleBoundedAsync.ts",
         "toSymbol": "getAbortReason",
         "callExpression": "getAbortReason",
@@ -15443,6 +16409,12 @@
         "toSymbol": "operation",
         "callExpression": "operation",
         "sourcePath": "src/features/workspace/utils/settleBoundedAsync.ts"
+      },
+      {
+        "fromSymbol": "loadFixtureWorkspace",
+        "toSymbol": "loadFixtureWorkspaceAsync",
+        "callExpression": "loadFixtureWorkspaceAsync",
+        "sourcePath": "test/e2e/next-fixture-app/app/page.tsx"
       },
       {
         "fromSymbol": "test/src/features/audit/AuditRuleList.spec.tsx",
@@ -16349,6 +17321,192 @@
         "toSymbol": "rm",
         "callExpression": "rm",
         "sourcePath": "test/src/features/dependency-analysis/typescriptDependencyGraph.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toSymbol": "createGitHubCallbackRoute",
+        "callExpression": "createGitHubCallbackRoute",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toSymbol": "GET",
+        "callExpression": "GET",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toSymbol": "callbackRequest",
+        "callExpression": "callbackRequest",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+        "toSymbol": "createGitHubLogoutRoute",
+        "callExpression": "createGitHubLogoutRoute",
+        "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+        "toSymbol": "POST",
+        "callExpression": "POST",
+        "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts",
+        "toSymbol": "logoutRequest",
+        "callExpression": "logoutRequest",
+        "sourcePath": "test/src/features/github-auth/createGitHubLogoutRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "randomBytes",
+        "callExpression": "randomBytes",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createPersistence",
+        "callExpression": "createPersistence",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createSessionStore",
+        "callExpression": "persistence.createSessionStore",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "session",
+        "callExpression": "session",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createDatabasePool",
+        "callExpression": "createDatabasePool",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "rotateSessionAsync",
+        "callExpression": "persistence.rotateSessionAsync",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createAuthorizationAttemptStore",
+        "callExpression": "persistence.createAuthorizationAttemptStore",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "attempt",
+        "callExpression": "attempt",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createAuthorizationAttemptStore",
+        "callExpression": "persistence\n          .createAuthorizationAttemptStore",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createSessionStore",
+        "callExpression": "firstProcess.createSessionStore",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createSessionStore",
+        "callExpression": "restartedProcess.createSessionStore",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createHash",
+        "callExpression": "createHash",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createPostgresGitHubAuthPersistence",
+        "callExpression": "createPostgresGitHubAuthPersistence",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "requiredDatabaseUrl",
+        "callExpression": "requiredDatabaseUrl",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts",
+        "toSymbol": "createSessionStore",
+        "callExpression": "unavailable.createSessionStore",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "createPersistence",
+        "toSymbol": "createPostgresGitHubAuthPersistence",
+        "callExpression": "createPostgresGitHubAuthPersistence",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "createPersistence",
+        "toSymbol": "requiredDatabaseUrl",
+        "callExpression": "requiredDatabaseUrl",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "createDatabasePool",
+        "toSymbol": "requiredDatabaseUrl",
+        "callExpression": "requiredDatabaseUrl",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
+      },
+      {
+        "fromSymbol": "attempt",
+        "toSymbol": "randomBytes",
+        "callExpression": "randomBytes",
+        "sourcePath": "test/src/features/github-auth/postgresGitHubAuthPersistence.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
@@ -18463,6 +19621,18 @@
         "sourcePath": "src/app/api/workspace/retry/route.ts"
       },
       {
+        "fromSymbol": "src/app/api/workspace/retry/route.ts",
+        "toSymbol": "readGitHubRepositoryAuthenticationAsync",
+        "callExpression": "readGitHubRepositoryAuthenticationAsync",
+        "sourcePath": "src/app/api/workspace/retry/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/retry/route.ts",
+        "toSymbol": "retryWorkspaceRepositoryAsync",
+        "callExpression": "retryWorkspaceRepositoryAsync",
+        "sourcePath": "src/app/api/workspace/retry/route.ts"
+      },
+      {
         "fromSymbol": "createAuditFromSnapshot",
         "toSymbol": "resolveAuditConfiguration",
         "callExpression": "resolveAuditConfiguration",
@@ -19783,6 +20953,78 @@
         "sourcePath": "test/src/features/settings/utils/readSettingsEnvironment.spec.ts"
       },
       {
+        "fromSymbol": "src/app/api/auth/github/callback/route.ts",
+        "toSymbol": "createGitHubCallbackRoute",
+        "callExpression": "createGitHubCallbackRoute",
+        "sourcePath": "src/app/api/auth/github/callback/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/auth/github/callback/route.ts",
+        "toSymbol": "createGitHubAuthAdapterAsync",
+        "callExpression": "createGitHubAuthAdapterAsync",
+        "sourcePath": "src/app/api/auth/github/callback/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "hasTrustedOrigin",
+        "callExpression": "hasTrustedOrigin",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "readPrivateRepositoryAccess",
+        "callExpression": "readPrivateRepositoryAccess",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "ensureGitHubAuthSessionId",
+        "callExpression": "ensureGitHubAuthSessionId",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "createGitHubAuthAdapterAsync",
+        "callExpression": "createGitHubAuthAdapterAsync",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "githubAuthorizationScopes",
+        "callExpression": "githubAuthorizationScopes",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "setGitHubAuthAttemptCookie",
+        "callExpression": "setGitHubAuthAttemptCookie",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "readPrivateRepositoryAccess",
+        "toSymbol": "isFormReader",
+        "callExpression": "isFormReader",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "readPrivateRepositoryAccess",
+        "toSymbol": "get",
+        "callExpression": "value.get",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/auth/github/logout/route.ts",
+        "toSymbol": "createGitHubLogoutRoute",
+        "callExpression": "createGitHubLogoutRoute",
+        "sourcePath": "src/app/api/auth/github/logout/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/auth/github/logout/route.ts",
+        "toSymbol": "createGitHubAuthAdapterAsync",
+        "callExpression": "createGitHubAuthAdapterAsync",
+        "sourcePath": "src/app/api/auth/github/logout/route.ts"
+      },
+      {
         "fromSymbol": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
         "toSymbol": "formatPercent",
         "callExpression": "formatPercent",
@@ -20045,6 +21287,282 @@
         "toSymbol": "readFile",
         "callExpression": "readFile",
         "sourcePath": "src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "readCookies",
+        "callExpression": "readCookies",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "clearGitHubAuthAttemptCookie",
+        "callExpression": "clearGitHubAuthAttemptCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "redirectWithOutcome",
+        "callExpression": "redirectWithOutcome",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "completeAuthorizationAsync",
+        "callExpression": "completeAuthorizationAsync",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "ensureGitHubAuthSessionId",
+        "callExpression": "ensureGitHubAuthSessionId",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "rotateSessionAsync",
+        "callExpression": "rotateSessionAsync",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "clearGitHubAuthSessionCookie",
+        "callExpression": "clearGitHubAuthSessionCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "readSessionId",
+        "callExpression": "readSessionId",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "signOutAsync",
+        "callExpression": "signOutAsync",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "clearGitHubAuthAttemptCookie",
+        "callExpression": "clearGitHubAuthAttemptCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "clearGitHubAuthSessionCookie",
+        "callExpression": "clearGitHubAuthSessionCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "ensureGitHubAuthSessionId",
+        "toSymbol": "randomUUID",
+        "callExpression": "randomUUID",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "ensureGitHubAuthSessionId",
+        "toSymbol": "cookieOptions",
+        "callExpression": "cookieOptions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "setGitHubAuthAttemptCookie",
+        "toSymbol": "cookieOptions",
+        "callExpression": "cookieOptions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "readGitHubAuthViewAsync",
+        "toSymbol": "cookies",
+        "callExpression": "cookies",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromSymbol": "readGitHubAuthViewAsync",
+        "toSymbol": "createGitHubAuthAdapterAsync",
+        "callExpression": "createGitHubAuthAdapterAsync",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromSymbol": "readGitHubRepositoryAuthenticationAsync",
+        "toSymbol": "cookies",
+        "callExpression": "cookies",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromSymbol": "readGitHubRepositoryAuthenticationAsync",
+        "toSymbol": "createGitHubAuthAdapterAsync",
+        "callExpression": "createGitHubAuthAdapterAsync",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromSymbol": "GitHubAuthControls",
+        "toSymbol": "useRef",
+        "callExpression": "useRef",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromSymbol": "GitHubAuthControls",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "toSymbol": "setPrivateRepositoryAccess",
+        "callExpression": "setPrivateRepositoryAccess",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromSymbol": "createPostgresGitHubAuthPersistence",
+        "toSymbol": "readEncryptionKey",
+        "callExpression": "readEncryptionKey",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "createAuthorizationAttemptStore",
+        "toSymbol": "createAuthorizationAttemptStore",
+        "callExpression": "createAuthorizationAttemptStore",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "createSessionStore",
+        "toSymbol": "createSessionStore",
+        "callExpression": "createSessionStore",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "rotateSessionAsync",
+        "toSymbol": "rotateSessionAsync",
+        "callExpression": "rotateSessionAsync",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "rotateSessionAsync",
+        "toSymbol": "hashOpaqueId",
+        "callExpression": "hashOpaqueId",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "rotateSessionAsync",
+        "toSymbol": "encryptPayload",
+        "callExpression": "encryptPayload",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "rotateSessionAsync",
+        "toSymbol": "sessionAad",
+        "callExpression": "sessionAad",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "rotateSessionAsync",
+        "toSymbol": "saveSessionAsync",
+        "callExpression": "saveSessionAsync",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "createAuthorizationAttemptStore",
+        "toSymbol": "hashOpaqueId",
+        "callExpression": "hashOpaqueId",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "create",
+        "toSymbol": "hashOpaqueId",
+        "callExpression": "hashOpaqueId",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "create",
+        "toSymbol": "encryptPayload",
+        "callExpression": "encryptPayload",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "create",
+        "toSymbol": "authorizationAttemptAad",
+        "callExpression": "authorizationAttemptAad",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "consume",
+        "toSymbol": "hashOpaqueId",
+        "callExpression": "hashOpaqueId",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "consume",
+        "toSymbol": "decryptPayload",
+        "callExpression": "decryptPayload",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "consume",
+        "toSymbol": "authorizationAttemptAad",
+        "callExpression": "authorizationAttemptAad",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "createSessionStore",
+        "toSymbol": "hashOpaqueId",
+        "callExpression": "hashOpaqueId",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "get",
+        "toSymbol": "decryptPayload",
+        "callExpression": "decryptPayload",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "get",
+        "toSymbol": "sessionAad",
+        "callExpression": "sessionAad",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "save",
+        "toSymbol": "saveSessionAsync",
+        "callExpression": "saveSessionAsync",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "save",
+        "toSymbol": "encryptPayload",
+        "callExpression": "encryptPayload",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "save",
+        "toSymbol": "sessionAad",
+        "callExpression": "sessionAad",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "hashOpaqueId",
+        "toSymbol": "createHash",
+        "callExpression": "createHash",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "encryptPayload",
+        "toSymbol": "randomBytes",
+        "callExpression": "randomBytes",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "encryptPayload",
+        "toSymbol": "createCipheriv",
+        "callExpression": "createCipheriv",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
+      },
+      {
+        "fromSymbol": "decryptPayload",
+        "toSymbol": "createDecipheriv",
+        "callExpression": "createDecipheriv",
+        "sourcePath": "src/features/github-auth/adapters/outbound/postgres/createPostgresGitHubAuthPersistence.ts"
       },
       {
         "fromSymbol": "createPackageGraphElements",
@@ -21578,6 +23096,18 @@
       },
       {
         "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "readGitHubAuthViewAsync",
+        "callExpression": "readGitHubAuthViewAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "readGitHubRepositoryAuthenticationAsync",
+        "callExpression": "readGitHubRepositoryAuthenticationAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
         "toSymbol": "loadWorkspace",
         "callExpression": "loadWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
@@ -21586,6 +23116,12 @@
         "fromSymbol": "AtlasWorkspacePage",
         "toSymbol": "withRepositorySelection",
         "callExpression": "withRepositorySelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "authenticatedInventorySource",
+        "callExpression": "authenticatedInventorySource",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {

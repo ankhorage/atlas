@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.0
+
+### Minor Changes
+
+- 65a104f: Prepare server-side GitHub OAuth sign-in with secure opaque sessions and ZORA account controls.
+
 ## 0.18.2
 
 ### Patch Changes
