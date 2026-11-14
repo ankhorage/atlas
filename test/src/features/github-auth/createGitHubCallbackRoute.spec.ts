@@ -2,7 +2,12 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 import { NextResponse } from 'next/server';
 
 import { createGitHubCallbackRoute } from '@/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute';
-import { setGitHubAuthAttemptCookie } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
+import {
+  readGitHubAuthAttempt,
+  readGitHubAuthSession,
+  setGitHubAuthAttemptCookie,
+  setGitHubAuthSessionCookie,
+} from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 
 process.env.ATLAS_GITHUB_OAUTH_COOKIE_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
 
@@ -27,6 +32,26 @@ describe('[GitHub callback route]', () => {
     assert.equal(cookies.includes('test-token'), false);
     assert.equal(cookies.includes('__Host-atlas-github-attempt=;'), true);
   });
+
+  it('rejects tampered cookie ciphertext', () => {
+    const cookie = sessionCookie({ expiresAt: Date.now() + 60_000 });
+    const tampered = `${cookie.slice(0, -1)}${cookie.endsWith('a') ? 'b' : 'a'}`;
+
+    assert.equal(readGitHubAuthSession(tampered), undefined);
+  });
+
+  it('rejects expired attempt and session cookies even when the cookie header is retained', () => {
+    assert.equal(readGitHubAuthAttempt(attemptCookie(Date.now() - 1)), undefined);
+    assert.equal(readGitHubAuthSession(sessionCookie({ expiresAt: Date.now() - 1 })), undefined);
+  });
+
+  it('rejects an encrypted cookie sealed for the wrong purpose', () => {
+    const attempt = attemptCookie(Date.now() + 60_000);
+    const sessionName = '__Host-atlas-github-session=';
+    const wrongPurpose = `${sessionName}${attempt.slice(attempt.indexOf('=') + 1)}`;
+
+    assert.equal(readGitHubAuthSession(wrongPurpose), undefined);
+  });
 });
 
 /*** Create a browser-bound encrypted attempt cookie for the callback edge. */
@@ -45,4 +70,33 @@ function callbackRequest(): Request {
   return new Request('https://atlas.test/api/auth/github/callback?code=code-a&state=state-a', {
     headers: { cookie },
   });
+}
+
+/*** Issue an encrypted attempt cookie with a caller-defined expiry for cookie-security tests. */
+function attemptCookie(expiresAt: number): string {
+  const response = NextResponse.next();
+  setGitHubAuthAttemptCookie(
+    {
+      attemptId: 'attempt-a',
+      expiresAt,
+      redirectUri: 'https://atlas.test/api/auth/github/callback',
+      state: 'state-a',
+    },
+    response.cookies
+  );
+  return response.headers.getSetCookie()[0]?.split(';')[0] ?? '';
+}
+
+/*** Issue an encrypted session cookie with a caller-defined expiry for cookie-security tests. */
+function sessionCookie(session: { readonly expiresAt: number }): string {
+  const response = NextResponse.next();
+  setGitHubAuthSessionCookie(
+    {
+      accessToken: 'test-token',
+      expiresAt: session.expiresAt,
+      user: { id: 'user-a', username: 'user-a' },
+    },
+    response.cookies
+  );
+  return response.headers.getSetCookie()[0]?.split(';')[0] ?? '';
 }

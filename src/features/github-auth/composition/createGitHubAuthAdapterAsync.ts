@@ -3,6 +3,7 @@ import { createGitHubAuthAdapter, type GitHubAuthorizationAttempt } from '@ankho
 import type { AuthSession } from '@ankhorage/contracts/auth';
 
 import { createGitHubAuthCookieStores } from '@/features/github-auth/adapters/inbound/next/createGitHubAuthCookieStores';
+import { hasGitHubAuthCookieEncryptionKey } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 import { githubAuthConfiguration } from '@/features/github-auth/application/githubAuthConfiguration';
 
 /*** Compose the released GitHub adapter against request-scoped encrypted-cookie values. */
@@ -12,6 +13,11 @@ export function createGitHubAuthAdapterAsync(
   const configuration = readGitHubAuthEnvironment();
   if (configuration === null)
     return Promise.resolve({ available: false, message: 'GitHub sign-in is not configured.' });
+  if (!hasGitHubAuthCookieEncryptionKey())
+    return Promise.resolve({
+      available: false,
+      message: 'GitHub sign-in is temporarily unavailable.',
+    });
 
   try {
     const stores = createGitHubAuthCookieStores(input);

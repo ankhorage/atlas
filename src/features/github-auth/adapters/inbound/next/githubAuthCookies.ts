@@ -49,7 +49,9 @@ function cookieOptions() {
 /*** Decode a verified session only in a server route or server component. */
 export function readGitHubAuthSession(cookieHeader: string | null): AuthSession | undefined {
   const session = readCookie(cookieHeader, githubAuthCookieNames.session);
-  return session === undefined ? undefined : openCookieValue<AuthSession>(session, 'session');
+  const opened =
+    session === undefined ? undefined : openCookieValue<AuthSession>(session, 'session');
+  return opened === undefined || isExpired(opened.expiresAt) ? undefined : opened;
 }
 
 /*** Decode a verified authorization attempt only for the OAuth callback. */
@@ -57,9 +59,21 @@ export function readGitHubAuthAttempt(
   cookieHeader: string | null
 ): GitHubAuthorizationAttempt | undefined {
   const attempt = readCookie(cookieHeader, githubAuthCookieNames.attempt);
-  return attempt === undefined
-    ? undefined
-    : openCookieValue<GitHubAuthorizationAttempt>(attempt, 'attempt');
+  const opened =
+    attempt === undefined
+      ? undefined
+      : openCookieValue<GitHubAuthorizationAttempt>(attempt, 'attempt');
+  return opened === undefined || isExpired(opened.expiresAt) ? undefined : opened;
+}
+
+/*** Report whether the deployment has a valid cookie key without exposing or deriving its value. */
+export function hasGitHubAuthCookieEncryptionKey(): boolean {
+  try {
+    readEncryptionKey();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /*** Encrypt and authenticate cookie content with the deployment-owned 256-bit key. */
@@ -101,6 +115,11 @@ function readEncryptionKey(): Buffer {
   if (key.length !== 32 || key.toString('base64') !== value)
     throw new Error('ATLAS_GITHUB_OAUTH_COOKIE_ENCRYPTION_KEY must be 32 Base64-encoded bytes.');
   return key;
+}
+
+/*** Reject locally expired sealed values even if a browser or attacker retains their cookie. */
+function isExpired(expiresAt: number | undefined): boolean {
+  return expiresAt === undefined || !Number.isFinite(expiresAt) || expiresAt <= Date.now();
 }
 
 /*** Read only an exact host-owned cookie name. */
