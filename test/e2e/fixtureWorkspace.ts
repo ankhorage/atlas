@@ -1,4 +1,6 @@
 import { existsSync } from 'node:fs';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
@@ -22,6 +24,12 @@ const repositories = [
   repository('owner-b-disconnected', 'owner-b', 'disconnected'),
   repository('owner-b-failed', 'owner-b', 'failed'),
 ] as const;
+const viewportRepositories = [5, 20, 87].flatMap(count =>
+  Array.from({ length: count }, (_, index) =>
+    repository(`viewport-${count}-${index}`, 'viewport', `repository-${index}`)
+  )
+);
+const viewportFixtureRoot = resolve(tmpdir(), `atlas-workspace-viewport-${process.pid}`);
 const fixtureRuntimeRegistryKey = '__atlasFixtureWorkspaceRuntime__';
 
 /*** Loads fixture repositories through the production discovery and multi-project analysis pipeline. */
@@ -71,21 +79,51 @@ function createFixtureRuntime(): WorkspaceRepositoryRuntime {
 /*** Materialize exact synthetic revisions while making repository D recover on its targeted retry. */
 function createFixtureMaterializer() {
   const attempts = new Map<string, number>();
-  return (source: ProjectSource): Promise<ResolvedProjectSource> => {
-    if (source.kind !== 'github')
-      return Promise.reject(new Error('Fixture requires GitHub repository sources.'));
-    const repository = repositories.find(item => item.url === source.url);
-    if (repository === undefined) return Promise.reject(new Error('Unknown fixture repository.'));
+  return async (source: ProjectSource): Promise<ResolvedProjectSource> => {
+    if (source.kind !== 'github') throw new Error('Fixture requires GitHub repository sources.');
+    const repository = allRepositories().find(item => item.url === source.url);
+    if (repository === undefined) throw new Error('Unknown fixture repository.');
     const attempt = (attempts.get(repository.id) ?? 0) + 1;
     attempts.set(repository.id, attempt);
     if (repository.id === 'owner-b-failed' && attempt === 1)
-      return Promise.reject(new Error('Fixture materialization failed.'));
-    return Promise.resolve({
+      throw new Error('Fixture materialization failed.');
+    if (repository.id.startsWith('viewport-'))
+      return materializeViewportFixtureAsync(repository, source);
+    return {
       cleanupAsync: () => Promise.resolve(),
       projectName: repository.name,
-      rootPath: resolve(fixtureRoot, repository.owner, repository.name),
+      rootPath: fixturePath(repository),
       source,
-    });
+    };
+  };
+}
+
+/*** Materializes a uniquely named temporary package so viewport repositories cannot collide. */
+async function materializeViewportFixtureAsync(
+  repository: { readonly id: string; readonly name: string },
+  source: ProjectSource
+): Promise<ResolvedProjectSource> {
+  const rootPath = resolve(viewportFixtureRoot, repository.id);
+  await mkdir(resolve(rootPath, 'src'), { recursive: true });
+  await Promise.all([
+    writeFile(
+      resolve(rootPath, 'package.json'),
+      JSON.stringify({ name: `@fixture/${repository.id}`, version: '1.0.0' })
+    ),
+    writeFile(
+      resolve(rootPath, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: { module: 'ESNext', moduleResolution: 'bundler' },
+        include: ['src'],
+      })
+    ),
+    writeFile(resolve(rootPath, 'src/index.ts'), 'export {};\n'),
+  ]);
+  return {
+    cleanupAsync: () => rm(rootPath, { force: true, recursive: true }),
+    projectName: repository.name,
+    rootPath,
+    source,
   };
 }
 
@@ -93,7 +131,7 @@ function createFixtureMaterializer() {
 function resolveFixtureRevisionAsync(
   url: string
 ): Promise<GitHubRepositoryRevisionResolutionResult> {
-  const repository = repositories.find(item => item.url === url);
+  const repository = allRepositories().find(item => item.url === url);
   if (repository === undefined) return Promise.reject(new Error('Unknown fixture repository.'));
   return Promise.resolve({
     repository: {
@@ -147,7 +185,9 @@ function discoverFixtureAsync(
   excluded: ReadonlySet<string>,
   selected?: ReadonlySet<string> | 'all'
 ) {
-  const directRepository = repositories.find(
+  const viewportSelection = viewportFixtureRepositories(ownerSource);
+  const availableRepositories = viewportSelection ?? repositories;
+  const directRepository = availableRepositories.find(
     repository =>
       repository.url === ownerSource || `${repository.owner}/${repository.name}` === ownerSource
   );
@@ -157,13 +197,14 @@ function discoverFixtureAsync(
     .filter(Boolean);
   const discovered = deduplicateRepositories(
     owners.flatMap(owner =>
-      repositories.filter(
+      availableRepositories.filter(
         repository =>
           repository.owner === owner || (owner === 'owner-b' && repository.id === 'owner-a-shared')
       )
     )
   );
-  const discoveredRepositories = directRepository === undefined ? discovered : [directRepository];
+  const discoveredRepositories =
+    viewportSelection ?? (directRepository === undefined ? discovered : [directRepository]);
   const selectedRepositories = discoveredRepositories.filter(
     repository =>
       !excluded.has(repository.id) &&
@@ -175,6 +216,25 @@ function discoverFixtureAsync(
     repositories: discoveredRepositories,
     selectedRepositories,
   });
+}
+
+/*** Returns one deterministic selected-repository scale only for viewport acceptance. */
+function viewportFixtureRepositories(source: string) {
+  const match = /^viewport-(5|20|87)$/u.exec(source.trim());
+  return match === null
+    ? undefined
+    : viewportRepositories.filter(repository => repository.id.startsWith(`viewport-${match[1]}-`));
+}
+
+/*** Reuses a real package fixture while each repository retains its canonical identity. */
+function fixturePath(repository: { readonly owner: string; readonly name: string }): string {
+  const path = resolve(fixtureRoot, repository.owner, repository.name);
+  return existsSync(path) ? path : resolve(fixtureRoot, 'owner-a', 'catalog');
+}
+
+/*** Makes test-only scale records materializable without exposing them to ordinary fixture owners. */
+function allRepositories() {
+  return [...repositories, ...viewportRepositories];
 }
 
 /*** Retains one canonical record when two owners expose the same repository through discovery. */

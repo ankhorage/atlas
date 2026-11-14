@@ -13,17 +13,19 @@ import { getAdaptiveCycleLayoutSpacing } from '@/features/audit/utils/getAdaptiv
 import type { CycleHighlight } from '@/types/auditVisualization';
 
 /***
- * Mirrors owner viewport state while delegating settled cycle-focus policy to a focused hook.
- * Normal layout completion remains passive outside explicit Fit and active-cycle intent.
+ * Mirrors owner viewport state and fits exactly once after the first settled layout.
+ * Later layouts remain passive so progressive graph updates retain user navigation.
  */
 export function useGraphViewport(input: UseGraphViewportInput) {
   const [controller, setController] = useState<GraphViewController | null>(null);
   const controllerRef = useRef<GraphViewController | null>(null);
+  const initialFitControllerRef = useRef<GraphViewController | null>(null);
   const [viewport, setViewport] = useState({ zoom: 1, min: 0.5, max: 2 });
   const cycleFocus = useCycleViewportFocus(input, setViewport);
 
   /*** Captures the controller before synchronizing the initial viewport. */
   const handleReady = (nextController: GraphViewController) => {
+    if (controllerRef.current !== nextController) initialFitControllerRef.current = null;
     controllerRef.current = nextController;
     setController(nextController);
     synchronizeGraphViewport(nextController, setViewport);
@@ -45,12 +47,43 @@ export function useGraphViewport(input: UseGraphViewportInput) {
   return {
     controller,
     fitGraph,
-    handleLayoutComplete: cycleFocus.handleLayoutComplete,
+    handleLayoutComplete: (
+      nextController: GraphViewController,
+      visibleNodeIds: readonly string[]
+    ) => {
+      if (
+        initialFitControllerRef.current !== nextController &&
+        hasMeasuredVisibleLayout(nextController, visibleNodeIds)
+      ) {
+        initialFitControllerRef.current = nextController;
+        fitGraphWithOptimizedSpacing(nextController, setViewport);
+      }
+      cycleFocus.handleLayoutComplete(nextController, visibleNodeIds);
+    },
     handleReady,
     handleSpacingFactorChange: cycleFocus.handleSpacingFactorChange,
     handleViewportChange,
     ...viewport,
   };
+}
+
+/*** Requires a non-empty, fully measured layout before consuming the one automatic fit. */
+function hasMeasuredVisibleLayout(
+  controller: GraphViewController,
+  visibleNodeIds: readonly string[]
+): boolean {
+  const uniqueVisibleNodeIds = [...new Set(visibleNodeIds)];
+  if (uniqueVisibleNodeIds.length === 0) return false;
+
+  const measurement = controller.measureNodes?.(uniqueVisibleNodeIds);
+  return (
+    measurement !== null &&
+    measurement !== undefined &&
+    measurement.viewport.width > 0 &&
+    measurement.viewport.height > 0 &&
+    measurement.nodes.length === uniqueVisibleNodeIds.length &&
+    measurement.nodes.every(node => node.size.width > 0 && node.size.height > 0)
+  );
 }
 
 /*** Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit. */

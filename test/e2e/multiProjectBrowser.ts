@@ -13,6 +13,7 @@ const fixtureApplication = resolve('test/e2e/next-fixture-app');
 const fixtureBuildDirectory = resolve(fixtureApplication, 'build');
 const fixtureServerMetadataPath = resolve(evidenceDirectory, 'fixture-server.json');
 const command = process.platform === 'win32' ? 'bunx.cmd' : 'bunx';
+const fixtureEnvironment = { ...process.env, NEXT_PUBLIC_SETTINGS_LAYOUT: 'elk' };
 
 type Status = 'passed' | 'failed' | 'blocked' | 'unexecuted';
 type Result = {
@@ -30,6 +31,19 @@ type Scenario = {
   readonly description: string;
   readonly id: string;
   readonly run: (page: Page) => Promise<readonly string[]>;
+};
+type GraphViewportProbe = {
+  controller: {
+    readonly measureNodes?: (nodeIds: readonly string[]) => {
+      readonly nodes: readonly {
+        readonly id: string;
+        readonly position: { readonly x: number; readonly y: number };
+        readonly size: { readonly width: number; readonly height: number };
+      }[];
+      readonly viewport: { readonly width: number; readonly height: number };
+    } | null;
+  } | null;
+  layoutCount: number;
 };
 type FixtureServerMetadata = {
   readonly pid: number;
@@ -95,7 +109,9 @@ async function buildFixtureAsync(): Promise<void> {
     const output = await runProcessAsync(
       command,
       ['next', 'build', fixtureApplication, '--webpack'],
-      process.cwd()
+      process.cwd(),
+      [0],
+      fixtureEnvironment
     );
     await writeFile(resolve(evidenceDirectory, 'fixture-build.log'), output);
   } catch (error) {
@@ -117,6 +133,7 @@ async function startFixtureServerAsync(): Promise<void> {
   const fixtureServer = spawn(command, ['next', 'start', '--port', String(port)], {
     cwd: fixtureApplication,
     detached: process.platform !== 'win32',
+    env: fixtureEnvironment,
     stdio: 'pipe',
   });
   server = fixtureServer;
@@ -194,10 +211,11 @@ function runProcessAsync(
   executable: string,
   arguments_: readonly string[],
   cwd: string,
-  acceptedExitCodes: readonly number[] = [0]
+  acceptedExitCodes: readonly number[] = [0],
+  environment: NodeJS.ProcessEnv = process.env
 ): Promise<string> {
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(executable, arguments_, { cwd, stdio: 'pipe' });
+    const child = spawn(executable, arguments_, { cwd, env: environment, stdio: 'pipe' });
     const output: string[] = [];
     child.stdout.on('data', chunk => output.push(String(chunk)));
     child.stderr.on('data', chunk => output.push(String(chunk)));
@@ -292,6 +310,7 @@ async function runScenarioAsync(browser: Browser, scenario: Scenario): Promise<R
   try {
     context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const page = await context.newPage();
+    await installGraphViewportProbeAsync(page);
     Object.assign(diagnostics, collectDiagnostics(page));
     artifacts = await scenario.run(page);
     assert(
@@ -418,6 +437,148 @@ async function assertTopmostControlAsync(control: Locator, name: string): Promis
     return target !== null && (target === element || element.contains(target));
   });
   assert(receivesPointerEvents, `${name} is obstructed by another layer.`);
+}
+
+/*** Captures the released controller event instead of reaching through GraphView's renderer internals. */
+async function installGraphViewportProbeAsync(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const target = window as typeof window & { __atlasViewportProbe?: GraphViewportProbe };
+    target.__atlasViewportProbe = { controller: null, layoutCount: 0 };
+    document.addEventListener('zora-graph-view-layout-complete', event => {
+      const detail = event instanceof CustomEvent ? event.detail : null;
+      if (typeof detail !== 'object' || detail === null || !('controller' in detail)) return;
+      target.__atlasViewportProbe = {
+        controller: detail.controller as GraphViewportProbe['controller'],
+        layoutCount: (target.__atlasViewportProbe?.layoutCount ?? 0) + 1,
+      };
+    });
+  });
+}
+
+/*** Proves public node geometry occupies the actual graph canvas after the one measured initial fit. */
+async function assertMeasuredViewportOccupancyAsync(
+  page: Page,
+  repositoryCount: number
+): Promise<void> {
+  const nodeIds = Array.from({ length: repositoryCount }, (_, index) => `repository-${index}`);
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    const measurement = probe?.controller?.measureNodes?.(ids);
+    return (
+      probe !== undefined &&
+      probe.layoutCount > 0 &&
+      measurement !== null &&
+      measurement !== undefined &&
+      measurement.viewport.width > 0 &&
+      measurement.viewport.height > 0 &&
+      measurement.nodes.length === ids.length &&
+      measurement.nodes.every(node => node.size.width > 0 && node.size.height > 0)
+    );
+  }, nodeIds);
+  const occupancy = await page.evaluate(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    const measurement = probe?.controller?.measureNodes?.(ids);
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const bounds = graph?.getBoundingClientRect();
+    if (measurement === null || measurement === undefined || bounds === undefined) return null;
+    const x1 = Math.min(...measurement.nodes.map(node => node.position.x - node.size.width / 2));
+    const x2 = Math.max(...measurement.nodes.map(node => node.position.x + node.size.width / 2));
+    const y1 = Math.min(...measurement.nodes.map(node => node.position.y - node.size.height / 2));
+    const y2 = Math.max(...measurement.nodes.map(node => node.position.y + node.size.height / 2));
+    return {
+      canvas: { height: bounds.height, width: bounds.width },
+      coverage: {
+        height: (y2 - y1) / measurement.viewport.height,
+        width: (x2 - x1) / measurement.viewport.width,
+      },
+      nodeBounds: { x1, x2, y1, y2 },
+      viewport: measurement.viewport,
+    };
+  }, nodeIds);
+  assert(occupancy !== null, 'Graph viewport occupancy could not be measured.');
+  assert(
+    occupancy.canvas.width > 0 && occupancy.canvas.height > 0,
+    `Graph canvas has no visible area for ${repositoryCount} repositories.`
+  );
+  assert(
+    occupancy.viewport.width === occupancy.canvas.width &&
+      occupancy.viewport.height === occupancy.canvas.height,
+    `Controller viewport does not match graph canvas for ${repositoryCount} repositories.`
+  );
+  assert(
+    occupancy.nodeBounds.x1 >= 0 &&
+      occupancy.nodeBounds.y1 >= 0 &&
+      occupancy.nodeBounds.x2 <= occupancy.viewport.width &&
+      occupancy.nodeBounds.y2 <= occupancy.viewport.height,
+    `Initial fit leaves repository nodes outside the visible canvas for ${repositoryCount} repositories.`
+  );
+  assert(
+    Math.max(occupancy.coverage.width, occupancy.coverage.height) >= 0.6,
+    `Initial fit underuses the graph canvas for ${repositoryCount} repositories: ${JSON.stringify(occupancy.coverage)}.`
+  );
+}
+
+/*** Verifies the production workspace consumes the canvas left after its visible 288px sidebar. */
+async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number) {
+  const nodeIds = Array.from(
+    { length: repositoryCount },
+    (_, index) => `repository.viewport-${repositoryCount}-${index}`
+  );
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
+  }, nodeIds);
+  const result = await page.evaluate(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    const measurement = probe?.controller?.measureNodes?.(ids);
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
+    if (
+      measurement === undefined ||
+      measurement === null ||
+      graph === null ||
+      sidebar === null ||
+      sidebar === undefined
+    )
+      return null;
+    const canvas = graph.getBoundingClientRect();
+    const nodes = measurement.nodes.map(node => ({
+      x1: node.position.x - node.size.width / 2,
+      x2: node.position.x + node.size.width / 2,
+      y1: node.position.y - node.size.height / 2,
+      y2: node.position.y + node.size.height / 2,
+    }));
+    return {
+      canvas,
+      sidebar: sidebar.getBoundingClientRect(),
+      viewport: measurement.viewport,
+      x1: Math.min(...nodes.map(node => node.x1)),
+      x2: Math.max(...nodes.map(node => node.x2)),
+      y1: Math.min(...nodes.map(node => node.y1)),
+      y2: Math.max(...nodes.map(node => node.y2)),
+    };
+  }, nodeIds);
+  assert(result !== null, 'Real workspace sidebar or canvas was unavailable.');
+  assert(
+    result.sidebar.width === 288,
+    'Workspace sidebar is not visibly occupying its owned width.'
+  );
+  assert(
+    result.canvas.width === result.viewport.width &&
+      result.canvas.height === result.viewport.height,
+    'ZORA viewport does not match the real workspace canvas.'
+  );
+  assert(
+    result.x1 >= 0 &&
+      result.y1 >= 0 &&
+      result.x2 <= result.viewport.width &&
+      result.y2 <= result.viewport.height,
+    `Real workspace fit leaves ${repositoryCount} repositories offscreen.`
+  );
 }
 
 const scenarios: readonly Scenario[] = [
@@ -783,6 +944,66 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'viewport-fit-matrix',
+    'Uses the measured initial fit for 5, 20, and 87 repository graphs on desktop and mobile.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const [repositoryCount, viewport] of [
+        [5, { width: 1440, height: 900 }],
+        [20, { width: 1440, height: 900 }],
+        [87, { width: 1440, height: 900 }],
+        [5, { width: 390, height: 844 }],
+        [20, { width: 390, height: 844 }],
+        [87, { width: 390, height: 844 }],
+      ] as const) {
+        await page.setViewportSize(viewport);
+        await page.goto(`${url}/viewport?repositories=${repositoryCount}`, {
+          waitUntil: 'networkidle',
+        });
+        await assertMeasuredViewportOccupancyAsync(page, repositoryCount);
+        const artifact = `viewport-${repositoryCount}-${viewport.width}.png`;
+        await page.getByRole('application', { name: 'Graph' }).screenshot({
+          path: resolve(evidenceDirectory, artifact),
+        });
+        artifacts.push(artifact);
+      }
+      return artifacts;
+    }
+  ),
+  scenario(
+    'workspace-elk-viewport-matrix',
+    'Measures ELK fit in the real workspace shell beside the visible sidebar.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const [repositoryCount, viewport] of [
+        [5, { width: 1440, height: 900 }],
+        [20, { width: 1440, height: 900 }],
+        [87, { width: 1440, height: 900 }],
+        [5, { width: 390, height: 844 }],
+        [20, { width: 390, height: 844 }],
+        [87, { width: 390, height: 844 }],
+      ] as const) {
+        await page.setViewportSize(viewport);
+        const repositories = Array.from(
+          { length: repositoryCount },
+          (_, index) => `viewport-${repositoryCount}-${index}`
+        ).join(',');
+        await page.goto(`${url}/?source=viewport-${repositoryCount}&repositories=${repositories}`, {
+          waitUntil: 'networkidle',
+        });
+        await page
+          .getByTestId('cytoscape-layout-trigger')
+          .getByText('Elk: Layered', { exact: true })
+          .waitFor();
+        await assertWorkspaceViewportAsync(page, repositoryCount);
+        const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
+        await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
+        artifacts.push(artifact);
+      }
+      return artifacts;
+    }
+  ),
+  scenario(
     'single-project-offline-parity',
     'Retains direct single-project browser behavior with no outbound requests.',
     async page => {
@@ -814,7 +1035,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 21, `Expected exactly 21 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 23, `Expected exactly 23 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
