@@ -2,9 +2,14 @@ import { NextResponse } from 'next/server';
 
 import {
   clearGitHubAuthAttemptCookie,
+  clearGitHubAuthSessionCookie,
+  ensureGitHubAuthSessionId,
   githubAuthCookieNames,
 } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
-import { createGitHubAuthAdapterAsync } from '@/features/github-auth/composition/createGitHubAuthAdapterAsync';
+import {
+  createGitHubAuthAdapterAsync,
+  rotateGitHubAuthSessionAsync,
+} from '@/features/github-auth/composition/createGitHubAuthAdapterAsync';
 
 /*** Complete the exact registered GitHub callback with a one-use, browser-bound OAuth attempt. */
 export async function GET(request: Request): Promise<Response> {
@@ -20,11 +25,20 @@ export async function GET(request: Request): Promise<Response> {
     attemptId: cookies.attemptId,
     response: { type: 'callback', url: request.url },
   });
-  return redirectWithOutcome(
-    response,
-    request.url,
-    result.ok ? 'signed-in' : result.status === 'cancelled' ? 'cancelled' : 'failed'
-  );
+  if (!result.ok)
+    return redirectWithOutcome(
+      response,
+      request.url,
+      result.status === 'cancelled' ? 'cancelled' : 'failed'
+    );
+  const rotatedSessionId = ensureGitHubAuthSessionId(undefined, response.cookies);
+  try {
+    await rotateGitHubAuthSessionAsync(cookies.sessionId, rotatedSessionId, result.session);
+    return redirectWithOutcome(response, request.url, 'signed-in');
+  } catch {
+    clearGitHubAuthSessionCookie(response.cookies);
+    return redirectWithOutcome(response, request.url, 'failed');
+  }
 }
 
 /*** Parse only the two host-owned opaque identifiers; all credential values remain server-side. */
