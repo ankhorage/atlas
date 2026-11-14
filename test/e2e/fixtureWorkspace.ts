@@ -1,4 +1,6 @@
 import { existsSync } from 'node:fs';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
@@ -27,6 +29,7 @@ const viewportRepositories = [5, 20, 87].flatMap(count =>
     repository(`viewport-${count}-${index}`, 'viewport', `repository-${index}`)
   )
 );
+const viewportFixtureRoot = resolve(tmpdir(), `atlas-workspace-viewport-${process.pid}`);
 const fixtureRuntimeRegistryKey = '__atlasFixtureWorkspaceRuntime__';
 
 /*** Loads fixture repositories through the production discovery and multi-project analysis pipeline. */
@@ -76,21 +79,41 @@ function createFixtureRuntime(): WorkspaceRepositoryRuntime {
 /*** Materialize exact synthetic revisions while making repository D recover on its targeted retry. */
 function createFixtureMaterializer() {
   const attempts = new Map<string, number>();
-  return (source: ProjectSource): Promise<ResolvedProjectSource> => {
-    if (source.kind !== 'github')
-      return Promise.reject(new Error('Fixture requires GitHub repository sources.'));
+  return async (source: ProjectSource): Promise<ResolvedProjectSource> => {
+    if (source.kind !== 'github') throw new Error('Fixture requires GitHub repository sources.');
     const repository = allRepositories().find(item => item.url === source.url);
-    if (repository === undefined) return Promise.reject(new Error('Unknown fixture repository.'));
+    if (repository === undefined) throw new Error('Unknown fixture repository.');
     const attempt = (attempts.get(repository.id) ?? 0) + 1;
     attempts.set(repository.id, attempt);
     if (repository.id === 'owner-b-failed' && attempt === 1)
-      return Promise.reject(new Error('Fixture materialization failed.'));
-    return Promise.resolve({
+      throw new Error('Fixture materialization failed.');
+    if (repository.id.startsWith('viewport-'))
+      return materializeViewportFixtureAsync(repository, source);
+    return {
       cleanupAsync: () => Promise.resolve(),
       projectName: repository.name,
       rootPath: fixturePath(repository),
       source,
-    });
+    };
+  };
+}
+
+/*** Materializes a uniquely named temporary package so viewport repositories cannot collide. */
+async function materializeViewportFixtureAsync(
+  repository: { readonly id: string; readonly name: string },
+  source: ProjectSource
+): Promise<ResolvedProjectSource> {
+  const rootPath = resolve(viewportFixtureRoot, repository.id);
+  await mkdir(rootPath, { recursive: true });
+  await writeFile(
+    resolve(rootPath, 'package.json'),
+    JSON.stringify({ name: `@fixture/${repository.id}`, version: '1.0.0' })
+  );
+  return {
+    cleanupAsync: () => rm(rootPath, { force: true, recursive: true }),
+    projectName: repository.name,
+    rootPath,
+    source,
   };
 }
 
