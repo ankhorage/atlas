@@ -251,7 +251,8 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     });
     assert.deepEqual(result.repositoryStatuses, [
       {
-        description: 'Repository materialization failed.',
+        description: 'The repository could not be analyzed. Retry to obtain a fresh diagnostic.',
+        failure: { category: 'unknown' },
         repository: { id: 'ankhorage-atlas', name: 'atlas', owner: 'ankhorage' },
         status: 'failed',
       },
@@ -313,7 +314,8 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     assert.equal(result.workspace.ok, true);
     assert.deepEqual(result.repositoryStatuses, [
       {
-        description: 'Repository materialization failed.',
+        description: 'The repository could not be analyzed. Retry to obtain a fresh diagnostic.',
+        failure: { category: 'unknown' },
         repository: { id: 'repository-broken', name: 'broken', owner: 'another-owner' },
         status: 'failed',
       },

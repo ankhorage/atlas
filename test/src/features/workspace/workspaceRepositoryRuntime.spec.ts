@@ -18,6 +18,7 @@ describe('[workspace repository runtime]', () => {
       repository('D', 'owner-b', 'disconnected'),
     ];
     const materializations = new Map<string, number>();
+    const progress: (readonly string[])[] = [];
     let failD = true;
     const runtime = createWorkspaceRepositoryRuntime({
       materializeAsync: async source => {
@@ -43,7 +44,15 @@ describe('[workspace repository runtime]', () => {
       },
     });
 
-    const initial = await runtime.loadAsync({ repositories, source: 'owner-a,owner-b' });
+    const initial = await runtime.loadAsync({
+      repositories,
+      source: 'owner-a,owner-b',
+      onProgress: result => {
+        progress.push(
+          result.repositoryStatuses.map(status => `${status.repository.id}:${status.status}`)
+        );
+      },
+    });
     assert.equal(initial.workspace.ok, true);
     if (!initial.workspace.ok) return;
     assert.deepEqual(
@@ -63,6 +72,16 @@ describe('[workspace repository runtime]', () => {
       ['C', 1],
       ['D', 1],
     ]);
+    assert.deepEqual(progress[0], ['A:loading', 'B:loading', 'C:loading', 'D:loading']);
+    assert.equal(progress.length, 5);
+    assert.equal(
+      progress.slice(1, -1).some(update => update.some(status => status.endsWith(':successful'))),
+      true
+    );
+    assert.deepEqual(
+      progress.at(-1),
+      initial.repositoryStatuses.map(status => `${status.repository.id}:${status.status}`)
+    );
 
     const failedAgain = await runtime.retryAsync(initial.runtimeId, 'D');
     assert.equal(
@@ -131,6 +150,54 @@ describe('[workspace repository runtime]', () => {
     releaseMaterialization?.();
     const loaded = await loading;
     await assert.rejects(runtime.retryAsync(loaded.runtimeId, 'A'), /Only failed repositories/);
+  });
+
+  it('removes deselected graph data immediately and reuses the immutable revision snapshot on reselect', async () => {
+    const repositories = [
+      repository('A', 'owner-a', 'catalog'),
+      repository('B', 'owner-a', 'shared'),
+    ];
+    const materializations = new Map<string, number>();
+    const runtime = createWorkspaceRepositoryRuntime({
+      materializeAsync: async source => {
+        if (source.kind !== 'github') throw new Error('Fixture requires GitHub sources.');
+        const repository = repositories.find(candidate => candidate.url === source.url);
+        if (repository === undefined) throw new Error('Unknown fixture repository.');
+        materializations.set(repository.id, (materializations.get(repository.id) ?? 0) + 1);
+        return resolvedFixture(repository, source);
+      },
+      resolveRevisionAsync: async url => ({
+        repository: { id: repositories.find(candidate => candidate.url === url)?.id ?? '' },
+        revision: { commitSha: `${url}-sha` },
+      }),
+    });
+    const initial = await runtime.loadAsync({ repositories, source: 'owner-a' });
+    const updates: string[][] = [];
+    const removed = await runtime.updateAsync(initial.runtimeId, {
+      addedRepositories: [],
+      removedRepositoryIds: ['A'],
+      onProgress: result => {
+        updates.push(repositoryNodes(result, ['A', 'B']).map(node => node.data.repositoryId ?? ''));
+      },
+    });
+    assert.deepEqual(
+      repositoryNodes(removed, ['A']).map(node => node.data.repositoryId),
+      []
+    );
+    assert.deepEqual([...materializations.entries()].toSorted(), [
+      ['A', 1],
+      ['B', 1],
+    ]);
+    const reselected = await runtime.updateAsync(removed.runtimeId, {
+      addedRepositories: [repositories[0]],
+      removedRepositoryIds: [],
+    });
+    assert.equal(repositoryNodes(reselected, ['A']).length > 0, true);
+    assert.deepEqual([...materializations.entries()].toSorted(), [
+      ['A', 1],
+      ['B', 1],
+    ]);
+    assert.equal(updates.length, 1);
   });
 
   it('rejects an overlapping retry without replacing the completed graph', async () => {

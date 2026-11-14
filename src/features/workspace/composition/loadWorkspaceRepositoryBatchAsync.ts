@@ -11,12 +11,17 @@ import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
 export interface WorkspaceRuntimeState {
   active: boolean;
+  abortController?: AbortController;
   readonly entries: Map<string, RepositoryAnalysis>;
   generation: number;
-  readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
+  repositories: readonly GitHubRepositoryDiscoveryRepository[];
   readonly source: string;
   readonly statuses: Map<string, WorkspaceRepositoryLoadStatus>;
 }
+
+export type WorkspaceRepositoryProgress = (
+  result: WorkspaceRepositoryRuntimeResult
+) => void | Promise<void>;
 
 /*** Load one bounded batch and retain only credential-free workspace analysis results. */
 export async function loadWorkspaceRepositoryBatchAsync(
@@ -27,16 +32,16 @@ export async function loadWorkspaceRepositoryBatchAsync(
     repository: GitHubRepositoryDiscoveryRepository,
     signal?: AbortSignal
   ) => Promise<RepositoryAnalysis>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onProgress?: WorkspaceRepositoryProgress
 ): Promise<WorkspaceRepositoryRuntimeResult> {
   const generation = workspace.generation + 1;
   workspace.generation = generation;
-  const outcomes = await settleBoundedAsync(repositories, 4, analyzeAsync, signal);
-  if (workspace.generation !== generation)
-    throw new DOMException('A newer workspace operation superseded this one.', 'AbortError');
-  for (const [index, outcome] of outcomes.entries()) {
-    const repository = repositories.at(index);
-    if (repository === undefined) continue;
+  for (const repository of repositories)
+    workspace.statuses.set(repository.id, createWorkspaceRepositoryStatus(repository, 'loading'));
+  await publishWorkspaceProgress(workspace, runtimeId, generation, onProgress);
+  await settleBoundedAsync(repositories, 4, analyzeAsync, signal, async (repository, outcome) => {
+    if (workspace.generation !== generation) return;
     if (outcome.status === 'fulfilled') {
       workspace.entries.set(repository.id, outcome.value);
       workspace.statuses.set(
@@ -48,11 +53,15 @@ export async function loadWorkspaceRepositoryBatchAsync(
         repository.id,
         createWorkspaceRepositoryStatus(
           repository,
-          isCancellation(outcome.reason) ? 'cancelled' : 'failed'
+          isCancellation(outcome.reason) ? 'cancelled' : 'failed',
+          outcome.reason
         )
       );
     }
-  }
+    await publishWorkspaceProgress(workspace, runtimeId, generation, onProgress);
+  });
+  if (workspace.generation !== generation)
+    throw new DOMException('A newer workspace operation superseded this one.', 'AbortError');
   return composeWorkspaceRepositoryRuntimeResult({
     entries: workspace.entries,
     repositories: workspace.repositories,
@@ -60,6 +69,25 @@ export async function loadWorkspaceRepositoryBatchAsync(
     source: workspace.source,
     statuses: workspace.statuses,
   });
+}
+
+/*** Publish a complete credential-free snapshot after each observable repository state transition. */
+async function publishWorkspaceProgress(
+  workspace: WorkspaceRuntimeState,
+  runtimeId: string,
+  generation: number,
+  onProgress: WorkspaceRepositoryProgress | undefined
+): Promise<void> {
+  if (workspace.generation !== generation) return;
+  await onProgress?.(
+    composeWorkspaceRepositoryRuntimeResult({
+      entries: workspace.entries,
+      repositories: workspace.repositories,
+      runtimeId,
+      source: workspace.source,
+      statuses: workspace.statuses,
+    })
+  );
 }
 
 /*** Keep deliberate cancellation distinct from a failed repository materialization. */

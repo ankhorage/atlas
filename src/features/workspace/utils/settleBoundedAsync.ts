@@ -3,7 +3,8 @@ export async function settleBoundedAsync<Input, Output>(
   inputs: readonly Input[],
   concurrency: number,
   operation: (input: Input, signal: AbortSignal | undefined) => Promise<Output>,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onSettled?: (input: Input, outcome: PromiseSettledResult<Output>) => void | Promise<void>
 ): Promise<readonly PromiseSettledResult<Output>[]> {
   if (!Number.isSafeInteger(concurrency) || concurrency < 1)
     throw new Error('Concurrency must be a positive integer.');
@@ -18,19 +19,25 @@ export async function settleBoundedAsync<Input, Output>(
         const next = queue.shift();
         if (next === undefined) return outcomes;
         if (signal?.aborted) {
-          outcomes.push({
-            index: next.index,
-            outcome: { status: 'rejected', reason: getAbortReason(signal) },
-          });
+          const outcome: PromiseSettledResult<Output> = {
+            status: 'rejected',
+            reason: getAbortReason(signal),
+          };
+          outcomes.push({ index: next.index, outcome });
+          await onSettled?.(next.input, outcome);
           continue;
         }
         try {
-          outcomes.push({
-            index: next.index,
-            outcome: { status: 'fulfilled', value: await operation(next.input, signal) },
-          });
+          const outcome: PromiseSettledResult<Output> = {
+            status: 'fulfilled',
+            value: await operation(next.input, signal),
+          };
+          outcomes.push({ index: next.index, outcome });
+          await onSettled?.(next.input, outcome);
         } catch (reason) {
-          outcomes.push({ index: next.index, outcome: { status: 'rejected', reason } });
+          const outcome: PromiseSettledResult<Output> = { status: 'rejected', reason };
+          outcomes.push({ index: next.index, outcome });
+          await onSettled?.(next.input, outcome);
         }
       }
     })

@@ -1,31 +1,26 @@
 import { randomUUID } from 'node:crypto';
 
-import {
-  createProjectAnalysisSnapshotAsync,
-  createSourceGraphFromProjectAnalysisSnapshots,
-  projectDependencyGraphFromProjectAnalysisSnapshots,
-} from '@ankhorage/dependency-graph';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
 import type {
   GitHubRepositoryAuthentication,
   GitHubRepositoryDiscoveryRepository,
 } from '@ankhorage/repository/github';
 
-import { inspectProjectForAnalysisAsync } from '@/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync';
-import { selectParserLanguage } from '@/features/project-analysis/application/use-cases/selectParserLanguage';
-import { createProjectFileTreeAsync } from '@/features/project-analysis/composition/createProjectFileTreeAsync';
-import { parseProjectSource } from '@/features/project-source/application/use-cases/parseProjectSource';
-import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import {
   createWorkspaceAnalysisCache,
   type WorkspaceAnalysisCache,
 } from '@/features/workspace/application/use-cases/createWorkspaceAnalysisCache';
+import { analyzeWorkspaceRepositoryAsync } from '@/features/workspace/composition/analyzeWorkspaceRepositoryAsync';
 import type {
   RepositoryAnalysis,
   WorkspaceRepositoryRuntimeResult,
 } from '@/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult';
-import type { WorkspaceRuntimeState } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
+import type {
+  WorkspaceRepositoryProgress,
+  WorkspaceRuntimeState,
+} from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
 import { loadWorkspaceRepositoryBatchAsync } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
+import { updateWorkspaceRepositoryRuntimeAsync } from '@/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 
 /*** Own process-local GitHub workspace state and revision-keyed portable analysis snapshots. */
@@ -54,7 +49,17 @@ function createWorkspaceRuntimeActions(
         dependencies,
         runtimeId,
         repositoryId,
-        authorization,
+        authorization ?? anonymousAuthorization,
+        signal
+      ),
+    updateAsync: (runtimeId, input, authorization, signal) =>
+      updateWorkspaceRepositoryRuntimeAsync(
+        workspaces,
+        cache,
+        dependencies,
+        runtimeId,
+        input,
+        authorization ?? anonymousAuthorization,
         signal
       ),
   };
@@ -71,16 +76,20 @@ async function loadWorkspaceRuntimeAsync(
   const workspace = runtimeWorkspace(input);
   const runtimeId = randomUUID();
   retainWorkspace(workspaces, runtimeId, workspace);
-  return runWorkspaceOperationAsync(workspace, () =>
-    loadRepositoriesAsync(
-      workspace,
-      input.repositories,
-      runtimeId,
-      cache,
-      dependencies,
-      workspaceRepositoryAuthorization(input),
-      signal
-    )
+  return runWorkspaceOperationAsync(
+    workspace,
+    operationSignal =>
+      loadWorkspaceRepositoriesAsync(
+        workspace,
+        input.repositories,
+        runtimeId,
+        cache,
+        dependencies,
+        workspaceRepositoryAuthorization(input),
+        operationSignal,
+        input.onProgress
+      ),
+    signal
   );
 }
 
@@ -108,16 +117,19 @@ async function retryWorkspaceRuntimeAsync(
     );
   if (workspace.statuses.get(repository.id)?.status === 'successful')
     throw new WorkspaceRepositoryRuntimeError('stale', 'Only failed repositories can be retried.');
-  return runWorkspaceOperationAsync(workspace, () =>
-    loadRepositoriesAsync(
-      workspace,
-      [repository],
-      runtimeId,
-      cache,
-      dependencies,
-      authorization,
-      signal
-    )
+  return runWorkspaceOperationAsync(
+    workspace,
+    operationSignal =>
+      loadWorkspaceRepositoriesAsync(
+        workspace,
+        [repository],
+        runtimeId,
+        cache,
+        dependencies,
+        authorization,
+        operationSignal
+      ),
+    signal
   );
 }
 
@@ -125,6 +137,7 @@ async function retryWorkspaceRuntimeAsync(
 function runtimeWorkspace(input: WorkspaceRepositoryRuntimeInput): WorkspaceRuntimeState {
   return {
     active: false,
+    abortController: undefined,
     entries: new Map(),
     generation: 0,
     repositories: input.repositories,
@@ -144,21 +157,22 @@ function workspaceRepositoryAuthorization(
 }
 
 /*** Analyze only the requested repositories, then recompose the whole workspace from retained snapshots. */
-async function loadRepositoriesAsync(
+export async function loadWorkspaceRepositoriesAsync(
   workspace: WorkspaceRuntimeState,
   repositories: readonly GitHubRepositoryDiscoveryRepository[],
   runtimeId: string,
   cache: WorkspaceAnalysisCache<RepositoryAnalysis>,
   dependencies: WorkspaceRepositoryRuntimeDependencies,
   authorization: WorkspaceRepositoryAuthorization,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  onProgress?: WorkspaceRepositoryProgress
 ): Promise<WorkspaceRepositoryRuntimeResult> {
   return loadWorkspaceRepositoryBatchAsync(
     workspace,
     repositories,
     runtimeId,
     async (repository, operationSignal) =>
-      analyzeRepositoryAsync(
+      analyzeWorkspaceRepositoryAsync(
         repository,
         authorization.authentication,
         authorization.authorizationScope,
@@ -166,87 +180,39 @@ async function loadRepositoriesAsync(
         dependencies,
         operationSignal
       ),
-    signal
-  );
-}
-
-/*** Resolve one immutable revision and materialize it only when its validated portable snapshot is absent. */
-async function analyzeRepositoryAsync(
-  repository: GitHubRepositoryDiscoveryRepository,
-  authentication: GitHubRepositoryAuthentication,
-  authorizationScope: string,
-  cache: WorkspaceAnalysisCache<RepositoryAnalysis>,
-  dependencies: WorkspaceRepositoryRuntimeDependencies,
-  signal?: AbortSignal
-): Promise<RepositoryAnalysis> {
-  const revision = await dependencies.resolveRevisionAsync(repository.url, authentication, signal);
-  const key = workspaceAnalysisCacheKey(revision, authorizationScope);
-  const cached = cache.getAnalysis(key);
-  if (cached !== undefined) return cached;
-  const source = parseProjectSource(repository.url);
-  if (source.kind !== 'github') throw new Error('Workspace repositories must be GitHub sources.');
-  const resolved = await (dependencies.materializeAsync ?? loadProjectSourceAsync)(
-    { ...source, revision: revision.revision.commitSha },
     signal,
-    authentication
+    onProgress
   );
-  try {
-    const inspection = await (dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)(
-      resolved.rootPath
-    );
-    const analysis = await createProjectAnalysisSnapshotAsync({ id: repository.id, inspection });
-    const sourceGraph = createSourceGraphFromProjectAnalysisSnapshots([analysis]);
-    const dependencyGraph = projectDependencyGraphFromProjectAnalysisSnapshots(sourceGraph, [
-      analysis,
-    ]);
-    const language = selectParserLanguage(inspection.detection);
-    const value = {
-      analysis,
-      files: await createProjectFileTreeAsync(
-        inspection,
-        dependencyGraph,
-        language.language,
-        resolved.rootPath
-      ),
-      language,
-    };
-    cache.setAnalysis(key, value);
-    return value;
-  } finally {
-    await resolved.cleanupAsync();
-  }
-}
-
-/*** Scope immutable analyses to the GitHub identity that was authorized to read them. */
-function workspaceAnalysisCacheKey(
-  revision: Awaited<ReturnType<WorkspaceRepositoryRuntimeDependencies['resolveRevisionAsync']>>,
-  authorization: string
-) {
-  return {
-    authorization,
-    provider: 'github' as const,
-    repositoryId: revision.repository.id,
-    revision: revision.revision.commitSha,
-    schemaVersion: ANALYSIS_SCHEMA_VERSION,
-  };
 }
 
 /*** Reject overlapping retry work before it can duplicate materialization or produce stale responses. */
-async function runWorkspaceOperationAsync<Result>(
+export async function runWorkspaceOperationAsync<Result>(
   workspace: WorkspaceRuntimeState,
-  operation: () => Promise<Result>
+  operation: (signal: AbortSignal) => Promise<Result>,
+  signal?: AbortSignal,
+  supersede = false
 ): Promise<Result> {
-  if (workspace.active) {
+  if (workspace.active && !supersede) {
     throw new WorkspaceRepositoryRuntimeError(
       'rate-limited',
       'A workspace operation is already in progress. Try again shortly.'
     );
   }
+  workspace.abortController?.abort(
+    new DOMException('A newer workspace operation superseded this one.', 'AbortError')
+  );
+  const controller = new AbortController();
+  const operationSignal =
+    signal === undefined ? controller.signal : AbortSignal.any([signal, controller.signal]);
   workspace.active = true;
+  workspace.abortController = controller;
   try {
-    return await operation();
+    return await operation(operationSignal);
   } finally {
-    workspace.active = false;
+    if (workspace.abortController === controller) {
+      workspace.active = false;
+      workspace.abortController = undefined;
+    }
   }
 }
 
@@ -277,6 +243,13 @@ export interface WorkspaceRepositoryRuntime {
     authorization?: WorkspaceRepositoryAuthorization,
     signal?: AbortSignal
   ) => Promise<WorkspaceRepositoryRuntimeResult>;
+  /*** Apply the #357 selection diff to this request-local runtime. */
+  readonly updateAsync: (
+    runtimeId: string,
+    input: WorkspaceRepositoryRuntimeUpdate,
+    authorization?: WorkspaceRepositoryAuthorization,
+    signal?: AbortSignal
+  ) => Promise<WorkspaceRepositoryRuntimeResult>;
 }
 
 export interface WorkspaceRepositoryRuntimeDependencies {
@@ -297,16 +270,25 @@ export interface WorkspaceRepositoryRuntimeDependencies {
   }>;
 }
 
-interface WorkspaceRepositoryRuntimeInput {
+export interface WorkspaceRepositoryRuntimeInput {
   readonly authentication?: GitHubRepositoryAuthentication;
   readonly authorizationScope?: string;
   readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
+  /*** Receive credential-free snapshots as individual repositories complete, in completion order. */
+  readonly onProgress?: WorkspaceRepositoryProgress;
   readonly source: string;
 }
 
 export interface WorkspaceRepositoryAuthorization {
   readonly authentication: GitHubRepositoryAuthentication;
   readonly authorizationScope: string;
+}
+
+/*** Trusted selection changes supplied by the navigation owner; repository records remain server-validated. */
+export interface WorkspaceRepositoryRuntimeUpdate {
+  readonly addedRepositories: readonly GitHubRepositoryDiscoveryRepository[];
+  readonly removedRepositoryIds: readonly string[];
+  readonly onProgress?: WorkspaceRepositoryProgress;
 }
 
 const anonymousAuthorization: WorkspaceRepositoryAuthorization = {
@@ -324,5 +306,4 @@ export class WorkspaceRepositoryRuntimeError extends Error {
   }
 }
 
-const ANALYSIS_SCHEMA_VERSION = 1;
 const MAXIMUM_RUNTIME_WORKSPACES = 32;

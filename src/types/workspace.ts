@@ -22,10 +22,31 @@ export type WorkspaceLoadResult =
 
 /*** Describes the transient outcome of loading one selected repository without changing its saved definition. */
 export interface WorkspaceRepositoryLoadStatus {
+  readonly failure?: WorkspaceRepositoryFailure;
   readonly description?: string;
   readonly repository: WorkspaceRepositoryIdentity;
   readonly status: 'cancelled' | 'failed' | 'loading' | 'successful';
 }
+
+/*** A bounded, provider-safe explanation that may cross the workspace transport boundary. */
+export interface WorkspaceRepositoryFailure {
+  readonly category: WorkspaceRepositoryFailureCategory;
+  readonly retryAfterSeconds?: number;
+}
+
+/*** Classifies observable repository failures without exposing provider bodies, credentials, or paths. */
+export type WorkspaceRepositoryFailureCategory =
+  | 'authentication'
+  | 'authorization'
+  | 'cancelled'
+  | 'not-found'
+  | 'primary-rate-limit'
+  | 'secondary-rate-limit'
+  | 'parsing'
+  | 'runtime-limit'
+  | 'timeout'
+  | 'unknown'
+  | 'upstream';
 
 /*** Keeps repository presentation identity independent from checkout paths and provider response details. */
 interface WorkspaceRepositoryIdentity {
