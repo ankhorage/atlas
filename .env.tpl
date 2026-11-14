@@ -34,10 +34,6 @@ NEXT_PUBLIC_SETTINGS_SUBPACKAGE_DEPTH=1
 ATLAS_GITHUB_OAUTH_CLIENT_ID=
 ATLAS_GITHUB_OAUTH_CLIENT_SECRET=
 
-# Trusted server module that provides durable, encrypted-at-rest, user-isolated OAuth attempt and
-# session storage. It must atomically consume attempts and bind them to the opaque session id.
-ATLAS_GITHUB_AUTH_PERSISTENCE_MODULE=
-
 # Server-only PostgreSQL connection URL for the restricted Atlas OAuth role. Use a TLS URL with
 # verified server identity; never expose it as NEXT_PUBLIC_*.
 ATLAS_OAUTH_DATABASE_URL=
