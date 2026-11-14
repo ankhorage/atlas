@@ -11,7 +11,7 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const session = createBrowserWorkspaceSessionStore(window.localStorage).load();
-      if (session?.source.trim() === source.trim()) {
+      if (session !== undefined && consumeWorkspaceAuthRedirectRestore()) {
         setSource(session.source);
         const restoredSelectedIds = new Set(session.selectedRepositoryIds);
         setSelectedIds(restoredSelectedIds);
@@ -23,7 +23,7 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
       setHydrated(true);
     });
     return () => cancelAnimationFrame(frame);
-  }, [onRestoreSelection, setSelectedIds, setSource, source]);
+  }, [onRestoreSelection, setSelectedIds, setSource]);
   useEffect(() => {
     if (!hydrated) return;
     createBrowserWorkspaceSessionStore(window.localStorage).save({
@@ -31,7 +31,31 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
       source: source.trim(),
     });
   }, [hydrated, selectedIds, source]);
+  useEffect(() => {
+    const markAuthRedirect = (event: SubmitEvent) => {
+      const form = event.target;
+      if (!(form instanceof HTMLFormElement)) return;
+      const path = new URL(form.action, window.location.href).pathname;
+      if (path !== '/api/auth/github/login' && path !== '/api/auth/github/logout') return;
+      createBrowserWorkspaceSessionStore(window.localStorage).save({
+        selectedRepositoryIds: [...selectedIds].toSorted(),
+        source: source.trim(),
+      });
+      window.sessionStorage.setItem(WORKSPACE_AUTH_REDIRECT_STORAGE_KEY, '1');
+    };
+    document.addEventListener('submit', markAuthRedirect);
+    return () => document.removeEventListener('submit', markAuthRedirect);
+  }, [selectedIds, source]);
 }
+
+/*** Consume the one-shot browser marker so ordinary page visits never replay prior selections. */
+function consumeWorkspaceAuthRedirectRestore(): boolean {
+  if (window.sessionStorage.getItem(WORKSPACE_AUTH_REDIRECT_STORAGE_KEY) !== '1') return false;
+  window.sessionStorage.removeItem(WORKSPACE_AUTH_REDIRECT_STORAGE_KEY);
+  return true;
+}
+
+const WORKSPACE_AUTH_REDIRECT_STORAGE_KEY = 'atlas.workspace-auth-redirect.v1';
 
 interface BrowserWorkspaceSessionInput {
   readonly onRestoreSelection: (detail: {
