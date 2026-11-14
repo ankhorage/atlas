@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.19.2",
+      "value": "v0.20.0",
       "color": "cb3837"
     },
     {
@@ -185,11 +185,35 @@
       ]
     },
     {
+      "path": "src/app/api/workspace/inventory/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "GET"
+      ]
+    },
+    {
       "path": "src/app/api/workspace/retry/route.ts",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "POST"
+      ]
+    },
+    {
+      "path": "src/app/api/workspace/selection/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
       "exports": [
@@ -1623,6 +1647,29 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createWorkspaceInventoryRoute",
+        "isSelectionSource",
+        "normalizeSelectionSource",
+        "WorkspaceInventoryAsync"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
+      ],
+      "exports": [
+        "createWorkspaceProgressResponse"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -1630,6 +1677,19 @@
       ],
       "exports": [
         "createWorkspaceRetryRoute"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createWorkspaceSelectionRoute"
       ]
     },
     {
@@ -1787,6 +1847,17 @@
       ]
     },
     {
+      "path": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "classifyWorkspaceRepositoryFailure",
+        "workspaceRepositoryFailureDescription"
+      ]
+    },
+    {
       "path": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -1905,6 +1976,23 @@
       ]
     },
     {
+      "path": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
+        "src/features/project-analysis/application/use-cases/selectParserLanguage.ts",
+        "src/features/project-analysis/composition/createProjectFileTreeAsync.ts",
+        "src/features/project-source/application/use-cases/parseProjectSource.ts",
+        "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      ],
+      "exports": [
+        "analyzeWorkspaceRepositoryAsync"
+      ]
+    },
+    {
       "path": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -1928,28 +2016,29 @@
       "path": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
-        "src/features/project-analysis/application/use-cases/selectParserLanguage.ts",
-        "src/features/project-analysis/composition/createProjectFileTreeAsync.ts",
-        "src/features/project-source/application/use-cases/parseProjectSource.ts",
-        "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
         "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
         "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
         "src/types/projectSource.ts"
       ],
       "exports": [
         "createWorkspaceRepositoryRuntime",
+        "loadWorkspaceRepositoriesAsync",
+        "runWorkspaceOperationAsync",
         "WorkspaceRepositoryAuthorization",
         "WorkspaceRepositoryRuntime",
         "WorkspaceRepositoryRuntimeDependencies",
-        "WorkspaceRepositoryRuntimeError"
+        "WorkspaceRepositoryRuntimeError",
+        "WorkspaceRepositoryRuntimeUpdate"
       ]
     },
     {
       "path": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
@@ -1992,6 +2081,7 @@
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "src/features/workspace/composition/loadWorkspaceAsync.ts",
+        "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
         "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
         "src/types/projectSource.ts",
         "src/types/workspace.ts",
@@ -1999,6 +2089,8 @@
         "src/utils/parseProjectPath.ts"
       ],
       "exports": [
+        "createWorkspaceSelectionOperationAsync",
+        "discoverWorkspaceInventoryAsync",
         "loadAuthenticatedWorkspaceProjectSourceAsync",
         "loadWorkspaceProjectSourceAsync",
         "retryWorkspaceRepositoryAsync",
@@ -2017,6 +2109,7 @@
       ],
       "exports": [
         "loadWorkspaceRepositoryBatchAsync",
+        "WorkspaceRepositoryProgress",
         "WorkspaceRuntimeState"
       ]
     },
@@ -2026,6 +2119,20 @@
       "dependencies": [],
       "exports": [
         "resolveWorkspaceStartupSource"
+      ]
+    },
+    {
+      "path": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      ],
+      "exports": [
+        "updateWorkspaceRepositoryRuntimeAsync",
+        "validateWorkspaceRepositoryRuntime"
       ]
     },
     {
@@ -2209,7 +2316,11 @@
         "WorkspaceDefinition",
         "WorkspaceLoadResult",
         "WorkspacePresentationSettings",
+        "WorkspaceRepositoryFailure",
+        "WorkspaceRepositoryFailureCategory",
+        "WorkspaceRepositoryInventoryOption",
         "WorkspaceRepositoryLoadStatus",
+        "WorkspaceSelectionRequest",
         "WorkspaceSnapshot",
         "WorkspaceSource"
       ]
@@ -3021,10 +3132,43 @@
       "exports": []
     },
     {
+      "path": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
+        "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       ],
       "exports": []
@@ -3100,6 +3244,7 @@
       "path": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       ],
       "exports": []
@@ -3333,6 +3478,28 @@
       "sourceLocation": {
         "filePath": "src/app/api/auth/github/login/route.ts",
         "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "name": "toWorkspaceAuthorization",
+      "description": "Translate the auth feature's request-scoped cache scope into the workspace runtime contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/workspace/inventory/route.ts",
+        "line": 14,
+        "column": 1
+      }
+    },
+    {
+      "name": "toWorkspaceAuthorization",
+      "description": "Translate the auth feature's request-scoped cache scope into the workspace runtime contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/workspace/selection/route.ts",
+        "line": 15,
         "column": 1
       }
     },
@@ -7847,6 +8014,94 @@
       }
     },
     {
+      "name": "createWorkspaceInventoryRoute",
+      "description": "Expose only the credential-free repository inventory authorized for one normalized GitHub source.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "name": "isSelectionSource",
+      "description": "Accept only one GitHub owner or the authenticated-user inventory sentinel.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "name": "normalizeSelectionSource",
+      "description": "Canonicalize equivalent owner spellings before they become a runtime scope key.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "line": 26,
+        "column": 1
+      }
+    },
+    {
+      "name": "createWorkspaceProgressResponse",
+      "description": "Stream complete credential-free workspace snapshots over one request-scoped serverless response.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "name": "streamWorkspaceProgressAsync",
+      "description": "Serialize progress in reader demand order and retain a credential-free terminal failure signal.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "line": 31,
+        "column": 1
+      }
+    },
+    {
+      "name": "publish",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "line": 38,
+        "column": 9
+      }
+    },
+    {
+      "name": "toProgressFrame",
+      "description": "Keep every successful NDJSON record to the stable client contract and omit transport-internal fields.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "name": "toTerminalErrorFrame",
+      "description": "Report a bounded stream failure without exposing an upstream error, credential, or filesystem detail.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "line": 61,
+        "column": 1
+      }
+    },
+    {
       "name": "createWorkspaceRetryRoute",
       "description": "Create the HTTP boundary that validates and retries one retained workspace repository.",
       "see": [],
@@ -7887,6 +8142,72 @@
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "name": "createWorkspaceSelectionRoute",
+      "description": "Validate a selection diff before composing its request-scoped streaming operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "line": 12,
+        "column": 1
+      }
+    },
+    {
+      "name": "isSelectionRequest",
+      "description": "Reject URLs, duplicate identifiers, and non-diff initial requests at the untrusted HTTP boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "line": 33,
+        "column": 1
+      }
+    },
+    {
+      "name": "isGeneration",
+      "description": "Bound client generation values so a stale browser request cannot exhaust transport parsing.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "name": "isOpaqueIdentifier",
+      "description": "Keep opaque repository and runtime identities away from paths, URLs, and unbounded input.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "name": "isIdentifierArray",
+      "description": "Guard the discovery validation path against pathological request-array sizes.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "line": 63,
+        "column": 1
+      }
+    },
+    {
+      "name": "selectionFailureResponse",
+      "description": "Return recoverable runtime loss before starting an NDJSON stream.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "line": 73,
         "column": 1
       }
     },
@@ -8691,6 +9012,105 @@
         "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts",
         "line": 10,
         "column": 9
+      }
+    },
+    {
+      "name": "classifyWorkspaceRepositoryFailure",
+      "description": "Convert only observable transport facts into a bounded, browser-safe repository failure.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "name": "workspaceRepositoryFailureDescription",
+      "description": "Return only a prewritten explanation for a classified failure.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 29,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAbort",
+      "description": "Detect intentional cancellation without reading an arbitrary error message.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 51,
+        "column": 1
+      }
+    },
+    {
+      "name": "statusCode",
+      "description": "Read a conventional numeric HTTP status without retaining the response or body.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 58,
+        "column": 1
+      }
+    },
+    {
+      "name": "rateLimitKindFrom",
+      "description": "Accept only an adapter-provided, bounded rate-limit kind rather than inferring it from HTTP status.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 66,
+        "column": 1
+      }
+    },
+    {
+      "name": "retryAfterSeconds",
+      "description": "Extract a bounded Retry-After value only when an adapter exposed it numerically.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 78,
+        "column": 1
+      }
+    },
+    {
+      "name": "isTimeout",
+      "description": "Classify standard timeout names without forwarding their potentially sensitive details.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 91,
+        "column": 1
+      }
+    },
+    {
+      "name": "isParsing",
+      "description": "Classify parser adapters that deliberately expose a stable error class.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 96,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuntimeLimit",
+      "description": "Classify explicit resource-limit error names emitted by serverless and materialization adapters.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 101,
+        "column": 1
       }
     },
     {
@@ -9530,6 +9950,28 @@
       }
     },
     {
+      "name": "analyzeWorkspaceRepositoryAsync",
+      "description": "Resolve, cache, materialize, and analyze one immutable GitHub revision.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "name": "cacheKey",
+      "description": "Scope an immutable analysis to its authorized GitHub identity and resolved revision.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "line": 68,
+        "column": 1
+      }
+    },
+    {
       "name": "composeWorkspaceRepositoryRuntimeResult",
       "description": "Recompose the client-safe workspace view from retained portable repository analyses.",
       "see": [],
@@ -9646,7 +10088,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 32,
+        "line": 30,
         "column": 1
       }
     },
@@ -9657,7 +10099,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 42,
+        "line": 40,
         "column": 1
       }
     },
@@ -9668,7 +10110,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 64,
+        "line": 79,
         "column": 1
       }
     },
@@ -9679,7 +10121,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 88,
+        "line": 107,
         "column": 1
       }
     },
@@ -9690,7 +10132,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 125,
+        "line": 147,
         "column": 1
       }
     },
@@ -9701,40 +10143,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 137,
+        "line": 161,
         "column": 1
       }
     },
     {
-      "name": "loadRepositoriesAsync",
+      "name": "loadWorkspaceRepositoriesAsync",
       "description": "Analyze only the requested repositories, then recompose the whole workspace from retained snapshots.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 147,
-        "column": 1
-      }
-    },
-    {
-      "name": "analyzeRepositoryAsync",
-      "description": "Resolve one immutable revision and materialize it only when its validated portable snapshot is absent.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 174,
-        "column": 1
-      }
-    },
-    {
-      "name": "workspaceAnalysisCacheKey",
-      "description": "Scope immutable analyses to the GitHub identity that was authorized to read them.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 221,
+        "line": 171,
         "column": 1
       }
     },
@@ -9745,7 +10165,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 235,
+        "line": 200,
         "column": 1
       }
     },
@@ -9756,7 +10176,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 254,
+        "line": 231,
         "column": 1
       }
     },
@@ -9767,7 +10187,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
-        "line": 6,
+        "line": 10,
         "column": 1
       }
     },
@@ -9800,7 +10220,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 39,
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "name": "discoverWorkspaceInventoryAsync",
+      "description": "Discover only credential-free repository metadata for a request-scoped GitHub owner inventory.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "line": 61,
+        "column": 1
+      }
+    },
+    {
+      "name": "createWorkspaceSelectionOperationAsync",
+      "description": "Validate a browser selection against current authorized inventory before creating a streaming runtime operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "line": 78,
+        "column": 1
+      }
+    },
+    {
+      "name": "selectedInventoryRepositories",
+      "description": "Resolve opaque browser IDs exclusively from the fresh authorized inventory.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "line": 125,
         "column": 1
       }
     },
@@ -9811,7 +10264,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 54,
+        "line": 142,
         "column": 1
       }
     },
@@ -9822,7 +10275,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 103,
+        "line": 191,
         "column": 1
       }
     },
@@ -9833,7 +10286,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 151,
+        "line": 239,
         "column": 1
       }
     },
@@ -9844,7 +10297,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 170,
+        "line": 258,
         "column": 1
       }
     },
@@ -9855,7 +10308,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 180,
+        "line": 268,
         "column": 1
       }
     },
@@ -9866,7 +10319,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 217,
+        "line": 305,
         "column": 1
       }
     },
@@ -9877,7 +10330,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
-        "line": 22,
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "name": "publishWorkspaceProgress",
+      "description": "Publish a complete credential-free snapshot after each observable repository state transition.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "line": 76,
         "column": 1
       }
     },
@@ -9888,7 +10352,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
-        "line": 66,
+        "line": 95,
         "column": 1
       }
     },
@@ -9900,6 +10364,72 @@
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
         "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "name": "updateWorkspaceRepositoryRuntimeAsync",
+      "description": "Apply a selection diff without re-analyzing retained repositories or reviving stale results.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "name": "applyWorkspaceSelectionUpdate",
+      "description": "Cancel obsolete work, remove deselected state, then choose only unfinished selected repositories.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "name": "repositoriesRequiringAnalysis",
+      "description": "Resume retained unfinished work after a selection diff without reloading successful snapshots.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "line": 79,
+        "column": 1
+      }
+    },
+    {
+      "name": "cancelWorkspaceOperation",
+      "description": "Stop obsolete materialization before publishing a selection that excludes its repository.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "line": 93,
+        "column": 1
+      }
+    },
+    {
+      "name": "validateWorkspaceRepositoryRuntime",
+      "description": "Verify that a retained runtime remains bound to this request's source and authorization scope.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "line": 100,
+        "column": 1
+      }
+    },
+    {
+      "name": "publishRemovedWorkspace",
+      "description": "Publish a removal-only update without starting a redundant materialization operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "line": 123,
         "column": 1
       }
     },
@@ -9921,7 +10451,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/utils/settleBoundedAsync.ts",
-        "line": 45,
+        "line": 52,
         "column": 1
       }
     },
@@ -10742,6 +11272,46 @@
         "sourcePath": "src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts"
       },
       {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/project-analysis/application/use-cases/selectParserLanguage.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/project-analysis/composition/createProjectFileTreeAsync.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/project-source/application/use-cases/parseProjectSource.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
         "fromPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
         "toPath": "src/features/audit/application/use-cases/createAuditFromSnapshot.ts",
         "sourcePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
@@ -10783,32 +11353,12 @@
       },
       {
         "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toPath": "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toPath": "src/features/project-analysis/application/use-cases/selectParserLanguage.ts",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toPath": "src/features/project-analysis/composition/createProjectFileTreeAsync.ts",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toPath": "src/features/project-source/application/use-cases/parseProjectSource.ts",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toPath": "src/features/project-source/composition/loadProjectSourceAsync.ts",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "toPath": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "toPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
@@ -10823,8 +11373,18 @@
       },
       {
         "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "toPath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "toPath": "src/types/projectSource.ts",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
+        "toPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts"
       },
       {
         "fromPath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts",
@@ -10903,6 +11463,11 @@
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "toPath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
@@ -10945,6 +11510,26 @@
         "fromPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "toPath": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "toPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
       },
       {
         "fromPath": "test/e2e/next-fixture-app/app/layout.tsx",
@@ -11462,6 +12047,21 @@
         "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
       },
       {
+        "fromPath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "sourcePath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts",
         "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "sourcePath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts"
@@ -11470,6 +12070,16 @@
         "fromPath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts",
         "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "sourcePath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
       },
       {
         "fromPath": "test/src/features/workspace/loadWorkspaceAsync.spec.ts",
@@ -11563,6 +12173,11 @@
       },
       {
         "fromPath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
+        "toPath": "src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
         "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
       },
@@ -11652,6 +12267,21 @@
         "sourcePath": "test/src/utils/filter/filterVendorPackages.spec.ts"
       },
       {
+        "fromPath": "src/app/api/workspace/inventory/route.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/workspace/inventory/route.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/workspace/inventory/route.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
         "fromPath": "src/app/api/workspace/retry/route.ts",
         "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "sourcePath": "src/app/api/workspace/retry/route.ts"
@@ -11665,6 +12295,21 @@
         "fromPath": "src/app/api/workspace/retry/route.ts",
         "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "sourcePath": "src/app/api/workspace/retry/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/workspace/selection/route.ts",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/workspace/selection/route.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
+      },
+      {
+        "fromPath": "src/app/api/workspace/selection/route.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
       },
       {
         "fromPath": "src/features/audit/application/use-cases/createAuditFromSnapshot.ts",
@@ -11790,6 +12435,11 @@
         "fromPath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts",
         "toPath": "src/types/projectTree.ts",
         "sourcePath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
         "fromPath": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
@@ -12507,9 +13157,39 @@
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "toPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts",
@@ -16036,6 +16716,84 @@
         "sourcePath": "src/features/settings/utils/readSettingsEnvironment.ts"
       },
       {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "resolveRevisionAsync",
+        "callExpression": "dependencies.resolveRevisionAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "cacheKey",
+        "callExpression": "cacheKey",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "getAnalysis",
+        "callExpression": "cache.getAnalysis",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "parseProjectSource",
+        "callExpression": "parseProjectSource",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "__type",
+        "callExpression": "(dependencies.materializeAsync ?? loadProjectSourceAsync)",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "__type",
+        "callExpression": "(dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "createProjectAnalysisSnapshotAsync",
+        "callExpression": "createProjectAnalysisSnapshotAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "projectDependencyGraphFromProjectAnalysisSnapshots",
+        "callExpression": "projectDependencyGraphFromProjectAnalysisSnapshots",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "createSourceGraphFromProjectAnalysisSnapshots",
+        "callExpression": "createSourceGraphFromProjectAnalysisSnapshots",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "selectParserLanguage",
+        "callExpression": "selectParserLanguage",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "createProjectFileTreeAsync",
+        "callExpression": "createProjectFileTreeAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "setAnalysis",
+        "callExpression": "cache.setAnalysis",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "cleanupAsync",
+        "callExpression": "resolved.cleanupAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
         "fromSymbol": "composeWorkspaceRepositoryRuntimeResult",
         "toSymbol": "selectedEntries",
         "callExpression": "selectedEntries",
@@ -16156,6 +16914,18 @@
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
+        "fromSymbol": "updateAsync",
+        "toSymbol": "updateWorkspaceRepositoryRuntimeAsync",
+        "callExpression": "updateWorkspaceRepositoryRuntimeAsync",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromSymbol": "validateAsync",
+        "toSymbol": "validateWorkspaceRepositoryRuntime",
+        "callExpression": "validateWorkspaceRepositoryRuntime",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
         "fromSymbol": "loadWorkspaceRuntimeAsync",
         "toSymbol": "runtimeWorkspace",
         "callExpression": "runtimeWorkspace",
@@ -16181,8 +16951,8 @@
       },
       {
         "fromSymbol": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toSymbol": "loadRepositoriesAsync",
-        "callExpression": "loadRepositoriesAsync",
+        "toSymbol": "loadWorkspaceRepositoriesAsync",
+        "callExpression": "loadWorkspaceRepositoriesAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
@@ -16198,93 +16968,15 @@
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
-        "fromSymbol": "loadRepositoriesAsync",
+        "fromSymbol": "loadWorkspaceRepositoriesAsync",
         "toSymbol": "loadWorkspaceRepositoryBatchAsync",
         "callExpression": "loadWorkspaceRepositoryBatchAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
         "fromSymbol": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "toSymbol": "analyzeRepositoryAsync",
-        "callExpression": "analyzeRepositoryAsync",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "resolveRevisionAsync",
-        "callExpression": "dependencies.resolveRevisionAsync",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "workspaceAnalysisCacheKey",
-        "callExpression": "workspaceAnalysisCacheKey",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "getAnalysis",
-        "callExpression": "cache.getAnalysis",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "parseProjectSource",
-        "callExpression": "parseProjectSource",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "__type",
-        "callExpression": "(dependencies.materializeAsync ?? loadProjectSourceAsync)",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "__type",
-        "callExpression": "(dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "createProjectAnalysisSnapshotAsync",
-        "callExpression": "createProjectAnalysisSnapshotAsync",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "createSourceGraphFromProjectAnalysisSnapshots",
-        "callExpression": "createSourceGraphFromProjectAnalysisSnapshots",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "projectDependencyGraphFromProjectAnalysisSnapshots",
-        "callExpression": "projectDependencyGraphFromProjectAnalysisSnapshots",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "selectParserLanguage",
-        "callExpression": "selectParserLanguage",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "createProjectFileTreeAsync",
-        "callExpression": "createProjectFileTreeAsync",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "setAnalysis",
-        "callExpression": "cache.setAnalysis",
-        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
-      },
-      {
-        "fromSymbol": "analyzeRepositoryAsync",
-        "toSymbol": "cleanupAsync",
-        "callExpression": "resolved.cleanupAsync",
+        "toSymbol": "analyzeWorkspaceRepositoryAsync",
+        "callExpression": "analyzeWorkspaceRepositoryAsync",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       },
       {
@@ -16292,6 +16984,18 @@
         "toSymbol": "operation",
         "callExpression": "operation",
         "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceRepositoryStatus",
+        "toSymbol": "classifyWorkspaceRepositoryFailure",
+        "callExpression": "classifyWorkspaceRepositoryFailure",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceRepositoryStatus",
+        "toSymbol": "workspaceRepositoryFailureDescription",
+        "callExpression": "workspaceRepositoryFailureDescription",
+        "sourcePath": "src/features/workspace/composition/createWorkspaceRepositoryStatus.ts"
       },
       {
         "fromSymbol": "loadEmbeddedWorkspaceSnapshot",
@@ -16345,6 +17049,42 @@
         "fromSymbol": "retryWorkspaceRepositoryAsync",
         "toSymbol": "retryAsync",
         "callExpression": "defaultWorkspaceRepositoryRuntime.retryAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "discoverWorkspaceInventoryAsync",
+        "toSymbol": "discoverWorkspaceGitHubSourcesAsync",
+        "callExpression": "discoverWorkspaceGitHubSourcesAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSelectionOperationAsync",
+        "toSymbol": "discoverWorkspaceGitHubSourcesAsync",
+        "callExpression": "discoverWorkspaceGitHubSourcesAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSelectionOperationAsync",
+        "toSymbol": "selectedInventoryRepositories",
+        "callExpression": "selectedInventoryRepositories",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "runAsync",
+        "toSymbol": "loadAsync",
+        "callExpression": "defaultWorkspaceRepositoryRuntime.loadAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSelectionOperationAsync",
+        "toSymbol": "validateAsync",
+        "callExpression": "defaultWorkspaceRepositoryRuntime.validateAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "runAsync",
+        "toSymbol": "updateAsync",
+        "callExpression": "defaultWorkspaceRepositoryRuntime.updateAsync",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
       {
@@ -16451,24 +17191,54 @@
       },
       {
         "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
-        "toSymbol": "settleBoundedAsync",
-        "callExpression": "settleBoundedAsync",
-        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
-      },
-      {
-        "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
         "toSymbol": "createWorkspaceRepositoryStatus",
         "callExpression": "createWorkspaceRepositoryStatus",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
       },
       {
         "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "publishWorkspaceProgress",
+        "callExpression": "publishWorkspaceProgress",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "settleBoundedAsync",
+        "callExpression": "settleBoundedAsync",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "toSymbol": "createWorkspaceRepositoryStatus",
+        "callExpression": "createWorkspaceRepositoryStatus",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
         "toSymbol": "isCancellation",
         "callExpression": "isCancellation",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
       },
       {
+        "fromSymbol": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "toSymbol": "publishWorkspaceProgress",
+        "callExpression": "publishWorkspaceProgress",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
         "fromSymbol": "loadWorkspaceRepositoryBatchAsync",
+        "toSymbol": "composeWorkspaceRepositoryRuntimeResult",
+        "callExpression": "composeWorkspaceRepositoryRuntimeResult",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "publishWorkspaceProgress",
+        "toSymbol": "onProgress",
+        "callExpression": "onProgress",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
+      },
+      {
+        "fromSymbol": "publishWorkspaceProgress",
         "toSymbol": "composeWorkspaceRepositoryRuntimeResult",
         "callExpression": "composeWorkspaceRepositoryRuntimeResult",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
@@ -16480,9 +17250,63 @@
         "sourcePath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts"
       },
       {
+        "fromSymbol": "updateWorkspaceRepositoryRuntimeAsync",
+        "toSymbol": "applyWorkspaceSelectionUpdate",
+        "callExpression": "applyWorkspaceSelectionUpdate",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "updateWorkspaceRepositoryRuntimeAsync",
+        "toSymbol": "publishRemovedWorkspace",
+        "callExpression": "publishRemovedWorkspace",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "updateWorkspaceRepositoryRuntimeAsync",
+        "toSymbol": "runWorkspaceOperationAsync",
+        "callExpression": "runWorkspaceOperationAsync",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts",
+        "toSymbol": "loadWorkspaceRepositoriesAsync",
+        "callExpression": "loadWorkspaceRepositoriesAsync",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspaceSelectionUpdate",
+        "toSymbol": "cancelWorkspaceOperation",
+        "callExpression": "cancelWorkspaceOperation",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspaceSelectionUpdate",
+        "toSymbol": "repositoriesRequiringAnalysis",
+        "callExpression": "repositoriesRequiringAnalysis",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "publishRemovedWorkspace",
+        "toSymbol": "composeWorkspaceRepositoryRuntimeResult",
+        "callExpression": "composeWorkspaceRepositoryRuntimeResult",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
+        "fromSymbol": "publishRemovedWorkspace",
+        "toSymbol": "onProgress",
+        "callExpression": "input.onProgress",
+        "sourcePath": "src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts"
+      },
+      {
         "fromSymbol": "src/features/workspace/utils/settleBoundedAsync.ts",
         "toSymbol": "getAbortReason",
         "callExpression": "getAbortReason",
+        "sourcePath": "src/features/workspace/utils/settleBoundedAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/utils/settleBoundedAsync.ts",
+        "toSymbol": "onSettled",
+        "callExpression": "onSettled",
         "sourcePath": "src/features/workspace/utils/settleBoundedAsync.ts"
       },
       {
@@ -18886,6 +19710,108 @@
         "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toSymbol": "classifyWorkspaceRepositoryFailure",
+        "callExpression": "classifyWorkspaceRepositoryFailure",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toSymbol": "workspaceRepositoryFailureDescription",
+        "callExpression": "workspaceRepositoryFailureDescription",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
+        "toSymbol": "createWorkspaceInventoryRoute",
+        "callExpression": "createWorkspaceInventoryRoute",
+        "sourcePath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
+        "toSymbol": "GET",
+        "callExpression": "GET",
+        "sourcePath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "createWorkspaceProgressResponse",
+        "callExpression": "createWorkspaceProgressResponse",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "publish",
+        "callExpression": "publish",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "result",
+        "callExpression": "result",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "parseFrames",
+        "callExpression": "parseFrames",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "progressFrame",
+        "callExpression": "progressFrame",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts",
+        "toSymbol": "readFrames",
+        "callExpression": "readFrames",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
+        "fromSymbol": "readFrames",
+        "toSymbol": "parseFrames",
+        "callExpression": "parseFrames",
+        "sourcePath": "test/src/features/workspace/createWorkspaceProgressResponse.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -18920,6 +19846,72 @@
         "toSymbol": "invalid",
         "callExpression": "invalid",
         "sourcePath": "test/src/features/workspace/createWorkspaceRetryRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "createWorkspaceSelectionRoute",
+        "callExpression": "createWorkspaceSelectionRoute",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "runAsync",
+        "toSymbol": "publish",
+        "callExpression": "publish",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "runAsync",
+        "toSymbol": "frame",
+        "callExpression": "frame",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "POST",
+        "callExpression": "POST",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "selectionRequest",
+        "callExpression": "selectionRequest",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "transportFrame",
+        "callExpression": "transportFrame",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "invalid",
+        "callExpression": "invalid",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts",
+        "toSymbol": "unavailable",
+        "callExpression": "unavailable",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "transportFrame",
+        "toSymbol": "frame",
+        "callExpression": "frame",
+        "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/workspace/loadWorkspaceAsync.spec.ts",
@@ -19390,6 +20382,42 @@
         "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
+        "toSymbol": "updateAsync",
+        "callExpression": "runtime.updateAsync",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
+        "fromSymbol": "onProgress",
+        "toSymbol": "repositoryNodes",
+        "callExpression": "repositoryNodes",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
+        "toSymbol": "signalBegan",
+        "callExpression": "signalBegan",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
+        "toSymbol": "reject",
+        "callExpression": "reject",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
+        "fromSymbol": "inspectAsync",
+        "toSymbol": "inspectProjectForAnalysisAsync",
+        "callExpression": "inspectProjectForAnalysisAsync",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts",
+        "toSymbol": "initialWorkersBlocked",
+        "callExpression": "initialWorkersBlocked",
+        "sourcePath": "test/src/features/workspace/workspaceRepositoryRuntime.spec.ts"
+      },
+      {
         "fromSymbol": "resolvedFixture",
         "toSymbol": "resolve",
         "callExpression": "resolve",
@@ -19660,6 +20688,30 @@
         "sourcePath": "test/src/utils/filter/filterVendorPackages.spec.ts"
       },
       {
+        "fromSymbol": "src/app/api/workspace/inventory/route.ts",
+        "toSymbol": "createWorkspaceInventoryRoute",
+        "callExpression": "createWorkspaceInventoryRoute",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/inventory/route.ts",
+        "toSymbol": "discoverWorkspaceInventoryAsync",
+        "callExpression": "discoverWorkspaceInventoryAsync",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/inventory/route.ts",
+        "toSymbol": "toWorkspaceAuthorization",
+        "callExpression": "toWorkspaceAuthorization",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/inventory/route.ts",
+        "toSymbol": "readGitHubRepositoryAuthenticationAsync",
+        "callExpression": "readGitHubRepositoryAuthenticationAsync",
+        "sourcePath": "src/app/api/workspace/inventory/route.ts"
+      },
+      {
         "fromSymbol": "src/app/api/workspace/retry/route.ts",
         "toSymbol": "createWorkspaceRetryRoute",
         "callExpression": "createWorkspaceRetryRoute",
@@ -19676,6 +20728,30 @@
         "toSymbol": "retryWorkspaceRepositoryAsync",
         "callExpression": "retryWorkspaceRepositoryAsync",
         "sourcePath": "src/app/api/workspace/retry/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/selection/route.ts",
+        "toSymbol": "createWorkspaceSelectionRoute",
+        "callExpression": "createWorkspaceSelectionRoute",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/selection/route.ts",
+        "toSymbol": "createWorkspaceSelectionOperationAsync",
+        "callExpression": "createWorkspaceSelectionOperationAsync",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/selection/route.ts",
+        "toSymbol": "toWorkspaceAuthorization",
+        "callExpression": "toWorkspaceAuthorization",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
+      },
+      {
+        "fromSymbol": "src/app/api/workspace/selection/route.ts",
+        "toSymbol": "readGitHubRepositoryAuthenticationAsync",
+        "callExpression": "readGitHubRepositoryAuthenticationAsync",
+        "sourcePath": "src/app/api/workspace/selection/route.ts"
       },
       {
         "fromSymbol": "createAuditFromSnapshot",
@@ -19982,6 +21058,48 @@
         "toSymbol": "resolveProjectTreeGraphNodeId",
         "callExpression": "resolveProjectTreeGraphNodeId",
         "sourcePath": "src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "isAbort",
+        "callExpression": "isAbort",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "statusCode",
+        "callExpression": "statusCode",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "rateLimitKindFrom",
+        "callExpression": "rateLimitKindFrom",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "retryAfterSeconds",
+        "callExpression": "retryAfterSeconds",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "isTimeout",
+        "callExpression": "isTimeout",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "isParsing",
+        "callExpression": "isParsing",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "isRuntimeLimit",
+        "callExpression": "isRuntimeLimit",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
         "fromSymbol": "getAnalysis",
@@ -23140,6 +24258,48 @@
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "toSymbol": "isSelectionSource",
+        "callExpression": "isSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "toSymbol": "inventoryAsync",
+        "callExpression": "inventoryAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceProgressResponse",
+        "toSymbol": "streamWorkspaceProgressAsync",
+        "callExpression": "streamWorkspaceProgressAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      },
+      {
+        "fromSymbol": "publish",
+        "toSymbol": "toProgressFrame",
+        "callExpression": "toProgressFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      },
+      {
+        "fromSymbol": "streamWorkspaceProgressAsync",
+        "toSymbol": "publish",
+        "callExpression": "publish",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      },
+      {
+        "fromSymbol": "streamWorkspaceProgressAsync",
+        "toSymbol": "runAsync",
+        "callExpression": "runAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      },
+      {
+        "fromSymbol": "streamWorkspaceProgressAsync",
+        "toSymbol": "toTerminalErrorFrame",
+        "callExpression": "toTerminalErrorFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts"
+      },
+      {
         "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "toSymbol": "isRetryRequest",
         "callExpression": "isRetryRequest",
@@ -23168,6 +24328,66 @@
         "toSymbol": "isOpaqueIdentifier",
         "callExpression": "isOpaqueIdentifier",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toSymbol": "isSelectionRequest",
+        "callExpression": "isSelectionRequest",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toSymbol": "normalizeSelectionSource",
+        "callExpression": "normalizeSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toSymbol": "selectionAsync",
+        "callExpression": "selectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toSymbol": "createWorkspaceProgressResponse",
+        "callExpression": "createWorkspaceProgressResponse",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "toSymbol": "selectionFailureResponse",
+        "callExpression": "selectionFailureResponse",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "isSelectionRequest",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "isSelectionRequest",
+        "toSymbol": "isSelectionSource",
+        "callExpression": "isSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "isSelectionRequest",
+        "toSymbol": "isGeneration",
+        "callExpression": "isGeneration",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "isSelectionRequest",
+        "toSymbol": "isIdentifierArray",
+        "callExpression": "isIdentifierArray",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "isSelectionRequest",
+        "toSymbol": "isOpaqueIdentifier",
+        "callExpression": "isOpaqueIdentifier",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
         "fromSymbol": "createWorkspaceDefinition",

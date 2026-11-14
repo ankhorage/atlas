@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.20.0
+
+### Minor Changes
+
+- 61411ec: Expose authenticated workspace inventory and progressive repository-selection HTTP endpoints.
+
 ## 0.19.2
 
 ### Patch Changes
