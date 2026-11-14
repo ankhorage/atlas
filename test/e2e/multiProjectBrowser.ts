@@ -531,7 +531,7 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
       .__atlasViewportProbe;
     const measurement = probe?.controller?.measureNodes?.(ids);
     const graph = document.querySelector('[role="application"][aria-label="Graph"]');
-    const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.parentElement;
+    const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
     if (
       measurement === undefined ||
       measurement === null ||
