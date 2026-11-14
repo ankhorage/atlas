@@ -1,5 +1,6 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
+import type { GitHubRepositoryDiscoveryRepository } from '@ankhorage/repository/github';
 import {
   type GitHubRepositoryAuthentication,
   type GitHubRepositoryRevisionResolutionResult,
@@ -16,12 +17,18 @@ import {
   createWorkspaceRepositoryRuntime,
   type WorkspaceRepositoryAuthorization,
   type WorkspaceRepositoryRuntime,
+  WorkspaceRepositoryRuntimeError,
 } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
+import type { WorkspaceRepositoryProgress } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
-import type { WorkspaceLoadResult } from '@/types/workspace';
-import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
+import type {
+  WorkspaceLoadResult,
+  WorkspaceRepositoryInventoryOption,
+  WorkspaceRepositoryLoadStatus,
+  WorkspaceSelectionRequest,
+} from '@/types/workspace';
 import { getProjectName } from '@/utils/getProjectName';
 import { parseProjectPath } from '@/utils/parseProjectPath';
 
@@ -48,6 +55,87 @@ export function retryWorkspaceRepositoryAsync(
     authorization,
     signal
   );
+}
+
+/*** Discover only credential-free repository metadata for a request-scoped GitHub owner inventory. */
+export async function discoverWorkspaceInventoryAsync(
+  source: string,
+  authorization: WorkspaceRepositoryAuthorization
+): Promise<{
+  readonly owner: string;
+  readonly repositories: readonly WorkspaceRepositoryInventoryOption[];
+}> {
+  const discovery = await discoverWorkspaceGitHubSourcesAsync(
+    source,
+    new Set(),
+    undefined,
+    authorization.authentication
+  );
+  return { owner: source, repositories: discovery.repositories };
+}
+
+/*** Validate a browser selection against current authorized inventory before creating a streaming runtime operation. */
+export async function createWorkspaceSelectionOperationAsync(
+  input: WorkspaceSelectionRequest,
+  authorization: WorkspaceRepositoryAuthorization,
+  signal?: AbortSignal
+) {
+  const discovery = await discoverWorkspaceGitHubSourcesAsync(
+    input.source,
+    new Set(),
+    undefined,
+    authorization.authentication
+  );
+  const repositories = selectedInventoryRepositories(
+    discovery.repositories,
+    input.addedRepositoryIds
+  );
+  if (input.runtimeId === undefined)
+    return {
+      runAsync: (onProgress: WorkspaceRepositoryProgress) =>
+        defaultWorkspaceRepositoryRuntime.loadAsync(
+          {
+            authentication: authorization.authentication,
+            authorizationScope: authorization.authorizationScope,
+            onProgress,
+            repositories,
+            source: input.source,
+          },
+          signal
+        ),
+    };
+  const { runtimeId } = input;
+  defaultWorkspaceRepositoryRuntime.validateAsync(runtimeId, input.source, authorization);
+  return {
+    runAsync: (onProgress: WorkspaceRepositoryProgress) =>
+      defaultWorkspaceRepositoryRuntime.updateAsync(
+        runtimeId,
+        {
+          addedRepositories: repositories,
+          onProgress,
+          removedRepositoryIds: input.removedRepositoryIds,
+        },
+        authorization,
+        signal
+      ),
+  };
+}
+
+/*** Resolve opaque browser IDs exclusively from the fresh authorized inventory. */
+function selectedInventoryRepositories(
+  inventory: readonly GitHubRepositoryDiscoveryRepository[],
+  ids: readonly string[]
+): readonly GitHubRepositoryDiscoveryRepository[] {
+  const byId = new Map(inventory.map(repository => [repository.id, repository]));
+  if (ids.some(id => !byId.has(id)))
+    throw new WorkspaceRepositoryRuntimeError(
+      'invalid',
+      'A selected repository is unavailable for this source and account.'
+    );
+  return ids.flatMap(id => {
+    const repository = byId.get(id);
+    return repository === undefined ? [] : [repository];
+  });
 }
 
 /*** Load the configured local project or discover GitHub sources supplied by the browser query. */

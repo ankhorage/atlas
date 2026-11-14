@@ -11,6 +11,7 @@ import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
 export interface WorkspaceRuntimeState {
   active: boolean;
+  readonly authorizationScope: string;
   abortController?: AbortController;
   readonly entries: Map<string, RepositoryAnalysis>;
   generation: number;

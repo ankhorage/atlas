@@ -33,6 +33,11 @@ export async function updateWorkspaceRepositoryRuntimeAsync(
       'The workspace runtime is no longer available. Reload it to continue.'
     );
   const known = new Map(workspace.repositories.map(repository => [repository.id, repository]));
+  if (input.removedRepositoryIds.some(repositoryId => !known.has(repositoryId)))
+    throw new WorkspaceRepositoryRuntimeError(
+      'invalid',
+      'The requested repository is not part of this workspace.'
+    );
   for (const repository of input.addedRepositories) known.set(repository.id, repository);
   const removed = new Set(input.removedRepositoryIds);
   workspace.generation += 1;
@@ -59,6 +64,29 @@ export async function updateWorkspaceRepositoryRuntimeAsync(
     signal,
     true
   );
+}
+
+/*** Verify that a retained runtime remains bound to this request's source and authorization scope. */
+export function validateWorkspaceRepositoryRuntime(
+  workspaces: ReadonlyMap<string, WorkspaceRuntimeState>,
+  runtimeId: string,
+  source: string,
+  authorization: WorkspaceRepositoryAuthorization
+): void {
+  const workspace = workspaces.get(runtimeId);
+  if (workspace === undefined)
+    throw new WorkspaceRepositoryRuntimeError(
+      'unavailable',
+      'The workspace runtime is no longer available. Reload it to continue.'
+    );
+  if (
+    workspace.source !== source ||
+    workspace.authorizationScope !== authorization.authorizationScope
+  )
+    throw new WorkspaceRepositoryRuntimeError(
+      'invalid',
+      'The workspace runtime is not available for this source and account.'
+    );
 }
 
 /*** Publish a removal-only update without starting a redundant materialization operation. */

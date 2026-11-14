@@ -20,7 +20,10 @@ import type {
   WorkspaceRuntimeState,
 } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
 import { loadWorkspaceRepositoryBatchAsync } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
-import { updateWorkspaceRepositoryRuntimeAsync } from '@/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync';
+import {
+  updateWorkspaceRepositoryRuntimeAsync,
+  validateWorkspaceRepositoryRuntime,
+} from '@/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 
 /*** Own process-local GitHub workspace state and revision-keyed portable analysis snapshots. */
@@ -61,6 +64,13 @@ function createWorkspaceRuntimeActions(
         input,
         authorization ?? anonymousAuthorization,
         signal
+      ),
+    validateAsync: (runtimeId, source, authorization) =>
+      validateWorkspaceRepositoryRuntime(
+        workspaces,
+        runtimeId,
+        source,
+        authorization ?? anonymousAuthorization
       ),
   };
 }
@@ -142,6 +152,7 @@ function runtimeWorkspace(input: WorkspaceRepositoryRuntimeInput): WorkspaceRunt
     generation: 0,
     repositories: input.repositories,
     source: input.source,
+    authorizationScope: input.authorizationScope ?? 'anonymous',
     statuses: new Map(),
   };
 }
@@ -250,6 +261,12 @@ export interface WorkspaceRepositoryRuntime {
     authorization?: WorkspaceRepositoryAuthorization,
     signal?: AbortSignal
   ) => Promise<WorkspaceRepositoryRuntimeResult>;
+  /*** Verify a request-local runtime before a transport begins a streaming response. */
+  readonly validateAsync: (
+    runtimeId: string,
+    source: string,
+    authorization?: WorkspaceRepositoryAuthorization
+  ) => void;
 }
 
 export interface WorkspaceRepositoryRuntimeDependencies {
@@ -270,7 +287,7 @@ export interface WorkspaceRepositoryRuntimeDependencies {
   }>;
 }
 
-export interface WorkspaceRepositoryRuntimeInput {
+interface WorkspaceRepositoryRuntimeInput {
   readonly authentication?: GitHubRepositoryAuthentication;
   readonly authorizationScope?: string;
   readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];

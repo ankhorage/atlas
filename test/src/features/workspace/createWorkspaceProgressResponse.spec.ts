@@ -4,7 +4,7 @@ import { createWorkspaceProgressResponse } from '@/features/workspace/adapters/i
 
 describe('[createWorkspaceProgressResponse]', () => {
   it('emits each supplied snapshot immediately as safe NDJSON and disables caching', async () => {
-    const response = createWorkspaceProgressResponse(async publish => {
+    const response = createWorkspaceProgressResponse(7, async publish => {
       await publish(result('first'));
       return result('second');
     });
@@ -17,8 +17,18 @@ describe('[createWorkspaceProgressResponse]', () => {
         .split('\n')
         .map(line => JSON.parse(line)),
       [
-        { result: result('first'), type: 'workspace' },
-        { result: result('second'), type: 'workspace' },
+        {
+          generation: 7,
+          repositoryStatuses: [],
+          runtimeId: 'first',
+          workspace: result('first').workspace,
+        },
+        {
+          generation: 7,
+          repositoryStatuses: [],
+          runtimeId: 'second',
+          workspace: result('second').workspace,
+        },
       ]
     );
   });
