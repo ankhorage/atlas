@@ -1,5 +1,5 @@
 ---
-"@ankhorage/atlas": patch
+'@ankhorage/atlas': patch
 ---
 
 chore: add canonical repository metadata
