@@ -104,11 +104,21 @@ async function materializeViewportFixtureAsync(
   source: ProjectSource
 ): Promise<ResolvedProjectSource> {
   const rootPath = resolve(viewportFixtureRoot, repository.id);
-  await mkdir(rootPath, { recursive: true });
-  await writeFile(
-    resolve(rootPath, 'package.json'),
-    JSON.stringify({ name: `@fixture/${repository.id}`, version: '1.0.0' })
-  );
+  await mkdir(resolve(rootPath, 'src'), { recursive: true });
+  await Promise.all([
+    writeFile(
+      resolve(rootPath, 'package.json'),
+      JSON.stringify({ name: `@fixture/${repository.id}`, version: '1.0.0' })
+    ),
+    writeFile(
+      resolve(rootPath, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: { module: 'ESNext', moduleResolution: 'bundler' },
+        include: ['src'],
+      })
+    ),
+    writeFile(resolve(rootPath, 'src/index.ts'), 'export {};\n'),
+  ]);
   return {
     cleanupAsync: () => rm(rootPath, { force: true, recursive: true }),
     projectName: repository.name,
