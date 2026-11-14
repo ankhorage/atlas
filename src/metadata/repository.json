@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "application",
+  "title": "Ankhorage Atlas",
+  "summary": "Analyzes codebases, dependencies, architecture rules, and audit evidence through an interactive graph workspace and CLI.",
+  "purpose": "Provide inspectable evidence about source projects and their architecture while keeping reusable graph, dependency, and project-detection behavior in their dedicated packages.",
+  "domain": "codebase analysis and architecture visualization",
+  "responsibilities": [
+    "Analyze local paths and GitHub repositories into project, dependency, and audit evidence.",
+    "Render interactive graph and audit workspaces.",
+    "Expose audit, inspect, and export capabilities through its CLI provider.",
+    "Export portable Atlas reports and offline workspaces."
+  ],
+  "boundaries": [
+    "Does not replace the dedicated project detection, graph, graph-to-Cytoscape, or dependency-analysis packages.",
+    "Does not own repository authentication or source materialization providers.",
+    "Does not make architecture policy reusable by duplicating rules owned by rule-provider packages."
+  ],
+  "audience": [
+    "Developers and architecture reviewers investigating source-project structure and dependencies.",
+    "Tooling integrations that need Atlas audit, inspection, or export capabilities."
+  ],
+  "useCases": [
+    "Inspect a local project or GitHub repository as an interactive dependency graph.",
+    "Run an architecture audit and retain evidence for its findings.",
+    "Export a portable Atlas report or offline workspace."
+  ],
+  "architecture": {
+    "role": "Application and CLI composition layer over canonical project, dependency, graph, audit, and visualization boundaries.",
+    "invariants": [
+      "Reusable analysis and graph behavior is consumed through released public APIs of its owning packages.",
+      "Audits provide evidence suitable for UI and build-tool integrations.",
+      "The interactive workspace remains a consumer of reusable analysis contracts rather than their duplicate owner."
+    ]
+  },
+  "constraints": {
+    "limitations": [
+      "Repository access and source acquisition depend on explicit configured capabilities or adapters.",
+      "Atlas does not claim to support every language or build-system analyzer."
+    ]
+  }
+}
