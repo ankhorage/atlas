@@ -11,7 +11,7 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const session = createBrowserWorkspaceSessionStore(window.localStorage).load();
-      if (session !== undefined) {
+      if (session?.source.trim() === source.trim()) {
         setSource(session.source);
         const restoredSelectedIds = new Set(session.selectedRepositoryIds);
         setSelectedIds(restoredSelectedIds);
@@ -23,7 +23,7 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
       setHydrated(true);
     });
     return () => cancelAnimationFrame(frame);
-  }, [onRestoreSelection, setSelectedIds, setSource]);
+  }, [onRestoreSelection, setSelectedIds, setSource, source]);
   useEffect(() => {
     if (!hydrated) return;
     createBrowserWorkspaceSessionStore(window.localStorage).save({
