@@ -35,7 +35,9 @@ describe('[GitHub callback route]', () => {
 
   it('rejects tampered cookie ciphertext', () => {
     const cookie = sessionCookie({ expiresAt: Date.now() + 60_000 });
-    const tampered = `${cookie.slice(0, -1)}${cookie.endsWith('a') ? 'b' : 'a'}`;
+    const [name, iv, tag, ciphertext] = cookie.match(/^(.*)=([^.]+)\.([^.]+)\.([^.]+)$/u) ?? [];
+    const tamperedCiphertext = `${ciphertext?.startsWith('a') ? 'b' : 'a'}${ciphertext?.slice(1)}`;
+    const tampered = `${name}=${iv}.${tag}.${tamperedCiphertext}`;
 
     assert.equal(readGitHubAuthSession(tampered), undefined);
   });
