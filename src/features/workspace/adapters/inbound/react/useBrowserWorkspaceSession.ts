@@ -6,19 +6,24 @@ import type { WorkspaceRepositoryOption } from '@/features/workspace/composition
 
 /*** Restore first, then persist only the active owner and nonsecret repository identifiers. */
 export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput): void {
-  const { selectedIds, setSelectedIds, setSource, source } = input;
+  const { onRestoreSelection, selectedIds, setSelectedIds, setSource, source } = input;
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       const session = createBrowserWorkspaceSessionStore(window.localStorage).load();
       if (session !== undefined) {
         setSource(session.source);
-        setSelectedIds(new Set(session.selectedRepositoryIds));
+        const restoredSelectedIds = new Set(session.selectedRepositoryIds);
+        setSelectedIds(restoredSelectedIds);
+        onRestoreSelection({
+          selectedIds: [...restoredSelectedIds].toSorted(),
+          source: session.source,
+        });
       }
       setHydrated(true);
     });
     return () => cancelAnimationFrame(frame);
-  }, [setSelectedIds, setSource]);
+  }, [onRestoreSelection, setSelectedIds, setSource]);
   useEffect(() => {
     if (!hydrated) return;
     createBrowserWorkspaceSessionStore(window.localStorage).save({
@@ -29,6 +34,10 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
 }
 
 interface BrowserWorkspaceSessionInput {
+  readonly onRestoreSelection: (detail: {
+    readonly selectedIds: readonly string[];
+    readonly source: string;
+  }) => void;
   readonly selectedIds: ReadonlySet<string>;
   readonly setSelectedIds: (selectedIds: Set<string>) => void;
   readonly setSource: (source: string) => void;

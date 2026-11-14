@@ -126,7 +126,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     props.repositories,
     props.activeWorkspaceId
   );
-  useBrowserWorkspaceSession(state);
+  useBrowserWorkspaceSession({ ...state, onRestoreSelection: props.onSelection });
   const { inventoryError, repositories: inventory } = useRepositoryInventory(
     initial.owner,
     props.repositories,
