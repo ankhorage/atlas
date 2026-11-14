@@ -5,6 +5,8 @@ import { Button } from '@ankhorage/zora/web/button';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { View } from '@ankhorage/zora/web/view';
 
+import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
+import { GitHubAuthControls } from '@/features/github-auth/adapters/inbound/react/GitHubAuthControls';
 import { ProjectSourceForm } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { ProjectTreeNode } from '@/types/projectTree';
@@ -16,7 +18,6 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
   return (
     <AppHeader
       inverted
-      style={{ position: 'relative', zIndex: 4 }}
       actions={
         <View align="center" direction="row" gap="s">
           {props.offline ? (
@@ -29,6 +30,7 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
               selectionRequired={props.selectionRequired}
             />
           )}
+          {props.offline ? null : <GitHubAuthControls auth={props.githubAuth} />}
           <Button
             leadingIcon={{ name: mode === 'dark' ? 'sunny-outline' : 'moon-outline' }}
             size="s"
@@ -109,6 +111,7 @@ function normalizeGraphPackage(path: string): string {
 interface WorkspaceHeaderProps {
   readonly currentPackage: string;
   readonly currentSource?: string;
+  readonly githubAuth: GitHubAuthView;
   readonly offline?: boolean;
   readonly projectName: string;
   readonly projectTree: readonly ProjectTreeNode[];

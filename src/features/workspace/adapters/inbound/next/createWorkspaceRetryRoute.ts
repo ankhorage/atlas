@@ -9,7 +9,7 @@ export function createWorkspaceRetryRoute(retryAsync: WorkspaceRepositoryRetryAs
       const body: unknown = await request.json();
       if (!isRetryRequest(body))
         return Response.json({ error: 'Invalid workspace retry request.' }, { status: 400 });
-      return Response.json(await retryAsync(body.runtimeId, body.repositoryId));
+      return Response.json(await retryAsync(body.runtimeId, body.repositoryId, request));
     } catch (error) {
       return retryFailureResponse(error);
     }
@@ -45,4 +45,8 @@ function retryFailureResponse(error: unknown): Response {
   return Response.json({ error: error.message }, { status });
 }
 
-type WorkspaceRepositoryRetryAsync = (runtimeId: string, repositoryId: string) => Promise<unknown>;
+type WorkspaceRepositoryRetryAsync = (
+  runtimeId: string,
+  repositoryId: string,
+  request: Request
+) => Promise<unknown>;

@@ -155,8 +155,20 @@ async function assertOwnedFixtureServerAsync(metadata: FixtureServerMetadata): P
     ['-p', String(metadata.pid), '-o', 'command='],
     process.cwd()
   );
+  if (commandLine.includes('next start') && commandLine.includes(`--port ${metadata.port}`)) return;
+  const currentDirectory = await runProcessAsync(
+    'lsof',
+    ['-a', '-p', String(metadata.pid), '-d', 'cwd', '-Fn'],
+    process.cwd()
+  );
+  const listener = await runProcessAsync(
+    'lsof',
+    ['-Pan', '-p', String(metadata.pid), `-iTCP:${metadata.port}`, '-sTCP:LISTEN'],
+    process.cwd()
+  );
   assert(
-    commandLine.includes('next start') && commandLine.includes(`--port ${metadata.port}`),
+    currentDirectory.includes(`n${fixtureApplication}`) &&
+      listener.includes(`:${metadata.port} (LISTEN)`),
     `Recorded fixture-server process ${metadata.pid} is not an owned Next fixture server.`
   );
 }

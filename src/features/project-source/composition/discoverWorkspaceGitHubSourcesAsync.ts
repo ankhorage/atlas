@@ -1,5 +1,7 @@
 import {
+  discoverGitHubAuthenticatedUserRepositoriesAsync,
   discoverGitHubRepositoriesAsync,
+  type GitHubRepositoryAuthentication,
   type GitHubRepositoryDiscoveryRepository,
 } from '@ankhorage/repository/github';
 
@@ -7,7 +9,8 @@ import {
 export async function discoverWorkspaceGitHubSourcesAsync(
   sourceValue: string,
   excludedRepositoryIds: ReadonlySet<string>,
-  selectedRepositoryIds?: ReadonlySet<string> | 'all'
+  selectedRepositoryIds?: ReadonlySet<string> | 'all',
+  authentication: GitHubRepositoryAuthentication = 'anonymous'
 ): Promise<WorkspaceGitHubDiscovery> {
   const sources = sourceValue
     .split(',')
@@ -16,7 +19,7 @@ export async function discoverWorkspaceGitHubSourcesAsync(
   if (sources.length === 0) throw new Error('At least one GitHub owner or repository is required.');
 
   const discoveries = await Promise.all(
-    sources.map(source => discoverGitHubRepositoriesAsync({ authentication: 'anonymous', source }))
+    sources.map(source => discoverGitHubSourceAsync(source, authentication))
   );
   const repositories = dedupeRepositories(discoveries.flatMap(discovery => discovery.repositories));
   const selectedIds =
@@ -31,6 +34,20 @@ export async function discoverWorkspaceGitHubSourcesAsync(
   );
 
   return { repositories, selectedRepositories };
+}
+
+/*** Resolve the explicit authenticated inventory token without permitting it to select environment credentials. */
+async function discoverGitHubSourceAsync(
+  source: string,
+  authentication: GitHubRepositoryAuthentication
+): Promise<{
+  readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
+  readonly selectedRepository?: GitHubRepositoryDiscoveryRepository;
+}> {
+  if (source !== '@me') return discoverGitHubRepositoriesAsync({ authentication, source });
+  if (authentication === 'anonymous' || authentication === 'environment')
+    throw new Error('Sign in with GitHub to view your accessible repositories.');
+  return discoverGitHubAuthenticatedUserRepositoriesAsync({ authentication });
 }
 
 /*** Preserve direct repository choices while owner discovery waits for an explicit selection. */
