@@ -25,8 +25,8 @@ export function useGraphViewport(input: UseGraphViewportInput) {
 
   /*** Captures the controller before synchronizing the initial viewport. */
   const handleReady = (nextController: GraphViewController) => {
+    if (controllerRef.current !== nextController) initialFitControllerRef.current = null;
     controllerRef.current = nextController;
-    initialFitControllerRef.current = null;
     setController(nextController);
     synchronizeGraphViewport(nextController, setViewport);
   };
@@ -51,7 +51,10 @@ export function useGraphViewport(input: UseGraphViewportInput) {
       nextController: GraphViewController,
       visibleNodeIds: readonly string[]
     ) => {
-      if (initialFitControllerRef.current !== nextController) {
+      if (
+        initialFitControllerRef.current !== nextController &&
+        hasMeasuredVisibleLayout(nextController, visibleNodeIds)
+      ) {
         initialFitControllerRef.current = nextController;
         fitGraphWithOptimizedSpacing(nextController, setViewport);
       }
@@ -62,6 +65,25 @@ export function useGraphViewport(input: UseGraphViewportInput) {
     handleViewportChange,
     ...viewport,
   };
+}
+
+/*** Requires a non-empty, fully measured layout before consuming the one automatic fit. */
+function hasMeasuredVisibleLayout(
+  controller: GraphViewController,
+  visibleNodeIds: readonly string[]
+): boolean {
+  const uniqueVisibleNodeIds = [...new Set(visibleNodeIds)];
+  if (uniqueVisibleNodeIds.length === 0) return false;
+
+  const measurement = controller.measureNodes?.(uniqueVisibleNodeIds);
+  return (
+    measurement !== null &&
+    measurement !== undefined &&
+    measurement.viewport.width > 0 &&
+    measurement.viewport.height > 0 &&
+    measurement.nodes.length === uniqueVisibleNodeIds.length &&
+    measurement.nodes.every(node => node.size.width > 0 && node.size.height > 0)
+  );
 }
 
 /*** Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit. */

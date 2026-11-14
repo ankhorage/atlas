@@ -115,11 +115,19 @@ describe('[graph viewport controls]', () => {
     }
   });
 
-  it('fits the first settled layout and preserves later user navigation', async () => {
+  it('waits for measured visible nodes and preserves navigation across duplicate readiness', async () => {
     const state = { zoom: 1, min: 0.5, max: 8 };
     const fits: (GraphViewFitOptions | undefined)[] = [];
     const controller: GraphViewController = {
       fit: options => fits.push(options),
+      measureNodes: nodeIds => ({
+        viewport: { width: 1200, height: 800 },
+        nodes: nodeIds.map(id => ({
+          id,
+          position: { x: 600, y: 400 },
+          size: { width: 48, height: 24 },
+        })),
+      }),
       getViewport: () => ({ zoom: state.zoom, pan: { x: 0, y: 0 } }),
       getZoomRange: () => ({ min: state.min, max: state.max }),
       setPan: () => {},
@@ -144,7 +152,10 @@ describe('[graph viewport controls]', () => {
           <button id="ready" onClick={() => viewport.handleReady(controller)}>
             Ready
           </button>
-          <button id="settled" onClick={() => viewport.handleLayoutComplete(controller, [])}>
+          <button id="empty" onClick={() => viewport.handleLayoutComplete(controller, [])}>
+            Empty
+          </button>
+          <button id="settled" onClick={() => viewport.handleLayoutComplete(controller, ['a'])}>
             Settled
           </button>
           <button id="zoom-event" onClick={viewport.handleViewportChange}>
@@ -175,6 +186,8 @@ describe('[graph viewport controls]', () => {
         )
       );
       await click('#ready');
+      await click('#empty');
+      expect(fits).toEqual([]);
       await click('#settled');
       await click('#settled');
       expect(fits).toEqual([{ optimizeSpacing: true }]);
@@ -182,6 +195,10 @@ describe('[graph viewport controls]', () => {
       state.zoom = 5;
       await click('#zoom-event');
       expect(slider().value).toBe('5');
+
+      await click('#ready');
+      await click('#settled');
+      expect(fits).toEqual([{ optimizeSpacing: true }]);
 
       state.max = 3;
       state.zoom = 1;

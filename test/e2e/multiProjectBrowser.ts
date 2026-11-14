@@ -31,6 +31,19 @@ type Scenario = {
   readonly id: string;
   readonly run: (page: Page) => Promise<readonly string[]>;
 };
+type GraphViewportProbe = {
+  controller: {
+    readonly measureNodes?: (nodeIds: readonly string[]) => {
+      readonly nodes: readonly {
+        readonly id: string;
+        readonly position: { readonly x: number; readonly y: number };
+        readonly size: { readonly width: number; readonly height: number };
+      }[];
+      readonly viewport: { readonly width: number; readonly height: number };
+    } | null;
+  } | null;
+  layoutCount: number;
+};
 type FixtureServerMetadata = {
   readonly pid: number;
   readonly port: number;
@@ -292,6 +305,7 @@ async function runScenarioAsync(browser: Browser, scenario: Scenario): Promise<R
   try {
     context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const page = await context.newPage();
+    await installGraphViewportProbeAsync(page);
     Object.assign(diagnostics, collectDiagnostics(page));
     artifacts = await scenario.run(page);
     assert(
@@ -418,6 +432,87 @@ async function assertTopmostControlAsync(control: Locator, name: string): Promis
     return target !== null && (target === element || element.contains(target));
   });
   assert(receivesPointerEvents, `${name} is obstructed by another layer.`);
+}
+
+/*** Captures the released controller event instead of reaching through GraphView's renderer internals. */
+async function installGraphViewportProbeAsync(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const target = window as typeof window & { __atlasViewportProbe?: GraphViewportProbe };
+    target.__atlasViewportProbe = { controller: null, layoutCount: 0 };
+    document.addEventListener('zora-graph-view-layout-complete', event => {
+      const detail = event instanceof CustomEvent ? event.detail : null;
+      if (typeof detail !== 'object' || detail === null || !('controller' in detail)) return;
+      target.__atlasViewportProbe = {
+        controller: detail.controller as GraphViewportProbe['controller'],
+        layoutCount: (target.__atlasViewportProbe?.layoutCount ?? 0) + 1,
+      };
+    });
+  });
+}
+
+/*** Proves public node geometry occupies the actual graph canvas after the one measured initial fit. */
+async function assertMeasuredViewportOccupancyAsync(
+  page: Page,
+  repositoryCount: number
+): Promise<void> {
+  const nodeIds = Array.from({ length: repositoryCount }, (_, index) => `repository-${index}`);
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    const measurement = probe?.controller?.measureNodes?.(ids);
+    return (
+      probe !== undefined &&
+      probe.layoutCount > 0 &&
+      measurement !== null &&
+      measurement !== undefined &&
+      measurement.viewport.width > 0 &&
+      measurement.viewport.height > 0 &&
+      measurement.nodes.length === ids.length &&
+      measurement.nodes.every(node => node.size.width > 0 && node.size.height > 0)
+    );
+  }, nodeIds);
+  const occupancy = await page.evaluate(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    const measurement = probe?.controller?.measureNodes?.(ids);
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const bounds = graph?.getBoundingClientRect();
+    if (measurement === null || measurement === undefined || bounds === undefined) return null;
+    const x1 = Math.min(...measurement.nodes.map(node => node.position.x - node.size.width / 2));
+    const x2 = Math.max(...measurement.nodes.map(node => node.position.x + node.size.width / 2));
+    const y1 = Math.min(...measurement.nodes.map(node => node.position.y - node.size.height / 2));
+    const y2 = Math.max(...measurement.nodes.map(node => node.position.y + node.size.height / 2));
+    return {
+      canvas: { height: bounds.height, width: bounds.width },
+      coverage: {
+        height: (y2 - y1) / measurement.viewport.height,
+        width: (x2 - x1) / measurement.viewport.width,
+      },
+      nodeBounds: { x1, x2, y1, y2 },
+      viewport: measurement.viewport,
+    };
+  }, nodeIds);
+  assert(occupancy !== null, 'Graph viewport occupancy could not be measured.');
+  assert(
+    occupancy.canvas.width > 0 && occupancy.canvas.height > 0,
+    `Graph canvas has no visible area for ${repositoryCount} repositories.`
+  );
+  assert(
+    occupancy.viewport.width === occupancy.canvas.width &&
+      occupancy.viewport.height === occupancy.canvas.height,
+    `Controller viewport does not match graph canvas for ${repositoryCount} repositories.`
+  );
+  assert(
+    occupancy.nodeBounds.x1 >= 0 &&
+      occupancy.nodeBounds.y1 >= 0 &&
+      occupancy.nodeBounds.x2 <= occupancy.viewport.width &&
+      occupancy.nodeBounds.y2 <= occupancy.viewport.height,
+    `Initial fit leaves repository nodes outside the visible canvas for ${repositoryCount} repositories.`
+  );
+  assert(
+    Math.max(occupancy.coverage.width, occupancy.coverage.height) >= 0.6,
+    `Initial fit underuses the graph canvas for ${repositoryCount} repositories: ${JSON.stringify(occupancy.coverage)}.`
+  );
 }
 
 const scenarios: readonly Scenario[] = [
@@ -783,6 +878,33 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'viewport-fit-matrix',
+    'Uses the measured initial fit for 5, 20, and 87 repository graphs on desktop and mobile.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const [repositoryCount, viewport] of [
+        [5, { width: 1440, height: 900 }],
+        [20, { width: 1440, height: 900 }],
+        [87, { width: 1440, height: 900 }],
+        [5, { width: 390, height: 844 }],
+        [20, { width: 390, height: 844 }],
+        [87, { width: 390, height: 844 }],
+      ] as const) {
+        await page.setViewportSize(viewport);
+        await page.goto(`${url}/viewport?repositories=${repositoryCount}`, {
+          waitUntil: 'networkidle',
+        });
+        await assertMeasuredViewportOccupancyAsync(page, repositoryCount);
+        const artifact = `viewport-${repositoryCount}-${viewport.width}.png`;
+        await page.getByRole('application', { name: 'Graph' }).screenshot({
+          path: resolve(evidenceDirectory, artifact),
+        });
+        artifacts.push(artifact);
+      }
+      return artifacts;
+    }
+  ),
+  scenario(
     'single-project-offline-parity',
     'Retains direct single-project browser behavior with no outbound requests.',
     async page => {
@@ -814,7 +936,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 21, `Expected exactly 21 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 22, `Expected exactly 22 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
