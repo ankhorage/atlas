@@ -986,8 +986,8 @@ const scenarios: readonly Scenario[] = [
         await page.goto(`${url}/?source=viewport-${repositoryCount}&repositories=${repositories}`, {
           waitUntil: 'networkidle',
         });
-        await page.getByTestId('cytoscape-layout').click();
-        await page.getByText('elk', { exact: true }).click();
+        await page.getByTestId('cytoscape-layout-trigger').click();
+        await page.getByTestId('cytoscape-layout-option-elk').click();
         await assertWorkspaceViewportAsync(page, repositoryCount);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
