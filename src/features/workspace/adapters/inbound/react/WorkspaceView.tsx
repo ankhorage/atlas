@@ -110,6 +110,7 @@ function WorkspaceShell({
       <WorkspaceBody
         currentSource={currentSource}
         auditExportActions={auditExportActions}
+        githubAuth={githubAuth}
         navigation={navigation}
         offline={offline}
         projectName={projectName}
@@ -148,6 +149,7 @@ function WorkspaceBody({
   auditExportActions,
   currentSource,
   navigation,
+  githubAuth,
   offline,
   projectName,
   repositoryStatuses,
@@ -178,21 +180,37 @@ function WorkspaceBody({
       {selectionRequired ? (
         <RepositorySelectionNotice />
       ) : (
-        <WorkspacePanels
-          auditExportActions={auditExportActions}
-          currentSource={currentSource}
-          cycleInspection={cycleInspection}
-          cycleSelection={cycleSelection}
-          evaluation={auditEvaluation}
-          navigation={navigation}
-          offline={offline}
-          projectError={workspace.ok ? null : workspace.error}
-          repositoryStatuses={repositoryStatuses}
-          selectionError={selectionError}
-          onRetry={onRetry}
-        />
+        <>
+          {githubAuth.status === 'anonymous' && hasIncompleteBulkSelection(repositoryStatuses) ? (
+            <p role="status" style={{ margin: 8 }}>
+              Sign in with GitHub to analyze many repositories with authenticated GitHub limits.
+            </p>
+          ) : null}
+          <WorkspacePanels
+            auditExportActions={auditExportActions}
+            currentSource={currentSource}
+            cycleInspection={cycleInspection}
+            cycleSelection={cycleSelection}
+            evaluation={auditEvaluation}
+            navigation={navigation}
+            offline={offline}
+            projectError={workspace.ok ? null : workspace.error}
+            repositoryStatuses={repositoryStatuses}
+            selectionError={selectionError}
+            onRetry={onRetry}
+          />
+        </>
       )}
     </main>
+  );
+}
+
+/*** Show the anonymous bulk-selection guidance only while a multiple-repository operation remains incomplete. */
+function hasIncompleteBulkSelection(
+  statuses: readonly WorkspaceRepositoryLoadStatus[] | undefined
+): boolean {
+  return (
+    (statuses?.length ?? 0) > 1 && statuses?.some(status => status.status !== 'successful') === true
   );
 }
 
@@ -311,6 +329,7 @@ interface WorkspaceShellProps {
 interface WorkspaceBodyProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
+  readonly githubAuth: GitHubAuthView;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
   readonly projectName: string;

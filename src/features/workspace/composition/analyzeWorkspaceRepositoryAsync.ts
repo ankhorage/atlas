@@ -14,6 +14,7 @@ import { createProjectFileTreeAsync } from '@/features/project-analysis/composit
 import { parseProjectSource } from '@/features/project-source/application/use-cases/parseProjectSource';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
 import type { WorkspaceAnalysisCache } from '@/features/workspace/application/use-cases/createWorkspaceAnalysisCache';
+import { diagnoseWorkspaceRepositoryOperationAsync } from '@/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync';
 import type { RepositoryAnalysis } from '@/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult';
 import type { WorkspaceRepositoryRuntimeDependencies } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 
@@ -26,37 +27,54 @@ export async function analyzeWorkspaceRepositoryAsync(
   dependencies: WorkspaceRepositoryRuntimeDependencies,
   signal?: AbortSignal
 ): Promise<RepositoryAnalysis> {
-  const revision = await dependencies.resolveRevisionAsync(repository.url, authentication, signal);
+  const correlationId = crypto.randomUUID();
+  const revision = await diagnoseWorkspaceRepositoryOperationAsync(correlationId, 'revision', () =>
+    dependencies.resolveRevisionAsync(repository.url, authentication, signal)
+  );
   const key = cacheKey(revision, authorizationScope);
   const cached = cache.getAnalysis(key);
   if (cached !== undefined) return cached;
   const source = parseProjectSource(repository.url);
   if (source.kind !== 'github') throw new Error('Workspace repositories must be GitHub sources.');
-  const resolved = await (dependencies.materializeAsync ?? loadProjectSourceAsync)(
-    { ...source, revision: revision.revision.commitSha },
-    signal,
-    authentication
+  const resolved = await diagnoseWorkspaceRepositoryOperationAsync(
+    correlationId,
+    'materialization',
+    () =>
+      (dependencies.materializeAsync ?? loadProjectSourceAsync)(
+        { ...source, revision: revision.revision.commitSha },
+        signal,
+        authentication
+      )
   );
   try {
-    const inspection = await (dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)(
-      resolved.rootPath
+    const value = await diagnoseWorkspaceRepositoryOperationAsync(
+      correlationId,
+      'analysis',
+      async () => {
+        const inspection = await (dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)(
+          resolved.rootPath
+        );
+        const analysis = await createProjectAnalysisSnapshotAsync({
+          id: repository.id,
+          inspection,
+        });
+        const graph = projectDependencyGraphFromProjectAnalysisSnapshots(
+          createSourceGraphFromProjectAnalysisSnapshots([analysis]),
+          [analysis]
+        );
+        const language = selectParserLanguage(inspection.detection);
+        return {
+          analysis,
+          files: await createProjectFileTreeAsync(
+            inspection,
+            graph,
+            language.language,
+            resolved.rootPath
+          ),
+          language,
+        };
+      }
     );
-    const analysis = await createProjectAnalysisSnapshotAsync({ id: repository.id, inspection });
-    const graph = projectDependencyGraphFromProjectAnalysisSnapshots(
-      createSourceGraphFromProjectAnalysisSnapshots([analysis]),
-      [analysis]
-    );
-    const language = selectParserLanguage(inspection.detection);
-    const value = {
-      analysis,
-      files: await createProjectFileTreeAsync(
-        inspection,
-        graph,
-        language.language,
-        resolved.rootPath
-      ),
-      language,
-    };
     cache.setAnalysis(key, value);
     return value;
   } finally {

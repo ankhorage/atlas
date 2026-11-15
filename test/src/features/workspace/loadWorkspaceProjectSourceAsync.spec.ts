@@ -249,14 +249,23 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
       ok: false,
       error: 'No selected GitHub repositories could be analyzed.',
     });
-    assert.deepEqual(result.repositoryStatuses, [
-      {
-        description: 'The repository could not be analyzed. Retry to obtain a fresh diagnostic.',
-        failure: { category: 'unknown' },
-        repository: { id: 'ankhorage-atlas', name: 'atlas', owner: 'ankhorage' },
-        status: 'failed',
-      },
-    ]);
+    assert.deepEqual(
+      result.repositoryStatuses?.map(status => ({
+        ...status,
+        failure:
+          status.failure === undefined
+            ? undefined
+            : { ...status.failure, correlationId: Boolean(status.failure.correlationId) },
+      })),
+      [
+        {
+          description: 'The repository could not be analyzed. Retry to obtain a fresh diagnostic.',
+          failure: { category: 'unknown', correlationId: true, stage: 'materialization' },
+          repository: { id: 'ankhorage-atlas', name: 'atlas', owner: 'ankhorage' },
+          status: 'failed',
+        },
+      ]
+    );
   });
 
   it('keeps a successful repository workspace visible with a sanitized failed-repository status', async () => {
@@ -312,18 +321,27 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     );
 
     assert.equal(result.workspace.ok, true);
-    assert.deepEqual(result.repositoryStatuses, [
-      {
-        description: 'The repository could not be analyzed. Retry to obtain a fresh diagnostic.',
-        failure: { category: 'unknown' },
-        repository: { id: 'repository-broken', name: 'broken', owner: 'another-owner' },
-        status: 'failed',
-      },
-      {
-        repository: { id: 'repository-good', name: 'atlas-ui', owner: 'ankhorage' },
-        status: 'successful',
-      },
-    ]);
+    assert.deepEqual(
+      result.repositoryStatuses?.map(status => ({
+        ...status,
+        failure:
+          status.failure === undefined
+            ? undefined
+            : { ...status.failure, correlationId: Boolean(status.failure.correlationId) },
+      })),
+      [
+        {
+          description: 'The repository could not be analyzed. Retry to obtain a fresh diagnostic.',
+          failure: { category: 'unknown', correlationId: true, stage: 'materialization' },
+          repository: { id: 'repository-broken', name: 'broken', owner: 'another-owner' },
+          status: 'failed',
+        },
+        {
+          repository: { id: 'repository-good', name: 'atlas-ui', owner: 'ankhorage' },
+          status: 'successful',
+        },
+      ]
+    );
   });
 });
 

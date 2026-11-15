@@ -51,7 +51,11 @@ export interface WorkspaceSelectionRequest {
 /*** A bounded, provider-safe explanation that may cross the workspace transport boundary. */
 export interface WorkspaceRepositoryFailure {
   readonly category: WorkspaceRepositoryFailureCategory;
+  /** An opaque identifier that lets support correlate one safe repository-operation failure. */
+  readonly correlationId?: string;
   readonly retryAfterSeconds?: number;
+  /** The Atlas boundary at which the repository operation stopped. */
+  readonly stage?: WorkspaceRepositoryFailureStage;
 }
 
 /*** Classifies observable repository failures without exposing provider bodies, credentials, or paths. */
@@ -68,6 +72,9 @@ export type WorkspaceRepositoryFailureCategory =
   | 'timeout'
   | 'unknown'
   | 'upstream';
+
+/** Identifies the bounded Atlas operation that produced a repository failure. */
+export type WorkspaceRepositoryFailureStage = 'analysis' | 'materialization' | 'revision';
 
 /*** Keeps repository presentation identity independent from checkout paths and provider response details. */
 interface WorkspaceRepositoryIdentity {

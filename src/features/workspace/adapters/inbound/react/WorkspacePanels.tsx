@@ -48,24 +48,27 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
 
 /*** Renders the graph or the current project-source load error. */
 function WorkspaceContent(props: WorkspaceContentProps) {
-  if (props.projectError !== null) return <WorkspaceError message={props.projectError} />;
   return (
     <>
       <RepositoryLoadFailures statuses={props.repositoryStatuses} onRetry={props.onRetry} />
-      <WorkspaceGraph
-        currentPackage={props.navigation.currentPackage}
-        cycleHighlights={props.cycleSelection.highlights}
-        cycleInspection={props.cycleInspection}
-        cycleEvidenceHidden={props.cycleEvidenceHidden}
-        packageGraph={props.navigation.packageGraph}
-        revealedCycleId={props.revealedCycleId}
-        selectedGraphNodeIds={props.navigation.selectedGraphNodeIds}
-        setCurrentPackage={props.navigation.navigateToPackage}
-        onCloseInspection={props.onCloseInspection}
-        onCycleEvidenceVisibilityChange={props.onCycleEvidenceVisibilityChange}
-        onGraphNodeSelect={props.navigation.selectGraphNode}
-        onRevealCycle={props.onRevealCycle}
-      />
+      {props.projectError !== null ? (
+        <WorkspaceError message={props.projectError} />
+      ) : (
+        <WorkspaceGraph
+          currentPackage={props.navigation.currentPackage}
+          cycleHighlights={props.cycleSelection.highlights}
+          cycleInspection={props.cycleInspection}
+          cycleEvidenceHidden={props.cycleEvidenceHidden}
+          packageGraph={props.navigation.packageGraph}
+          revealedCycleId={props.revealedCycleId}
+          selectedGraphNodeIds={props.navigation.selectedGraphNodeIds}
+          setCurrentPackage={props.navigation.navigateToPackage}
+          onCloseInspection={props.onCloseInspection}
+          onCycleEvidenceVisibilityChange={props.onCycleEvidenceVisibilityChange}
+          onGraphNodeSelect={props.navigation.selectGraphNode}
+          onRevealCycle={props.onRevealCycle}
+        />
+      )}
     </>
   );
 }
@@ -78,35 +81,59 @@ function RepositoryLoadFailures({
   readonly statuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }) {
-  const failures = statuses?.filter(status => status.status !== 'successful') ?? [];
-  if (failures.length === 0) return null;
+  if (statuses === undefined || statuses.length === 0) return null;
+  const summary = repositoryLoadSummary(statuses);
+  if (summary.pending === 0 && summary.failed === 0 && summary.cancelled === 0) return null;
+  const failures = statuses.filter(status => status.status === 'failed');
   return (
     <section aria-label="Repository loading status" role="status" style={{ padding: 8 }}>
-      <details>
-        <summary>
-          {failures.length} of {statuses?.length ?? 0} repositories failed
-        </summary>
-        <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-          {failures.map(({ description, repository, status }) => (
-            <div
-              key={repository.id}
-              style={{ alignItems: 'center', display: 'flex', gap: 8, paddingBlock: 4 }}
-            >
-              <span>
-                {repository.owner}/{repository.name}: {status}
-                {description === undefined ? '' : ` — ${description}`}
-              </span>
-              {status === 'failed' && onRetry !== undefined ? (
-                <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
-                  Retry
-                </Button>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      </details>
+      <div>
+        {summary.completed} of {summary.selected} analyzed · {summary.pending} pending ·{' '}
+        {summary.successful} successful · {summary.failed} failed · {summary.cancelled} cancelled
+      </div>
+      {failures.length === 0 ? null : (
+        <details>
+          <summary>{failures.length} repositories failed</summary>
+          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+            {failures.map(({ description, failure, repository, status }) => (
+              <div
+                key={repository.id}
+                style={{ alignItems: 'center', display: 'flex', gap: 8, paddingBlock: 4 }}
+              >
+                <span>
+                  {repository.owner}/{repository.name}: {status}
+                  {description === undefined ? '' : ` — ${description}`}
+                  {failure?.stage === undefined ? '' : ` (${failure.stage})`}
+                  {failure?.correlationId === undefined ? '' : ` [${failure.correlationId}]`}
+                </span>
+                {status === 'failed' && onRetry !== undefined ? (
+                  <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
+                    Retry
+                  </Button>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
     </section>
   );
+}
+
+/*** Count each selected repository exactly once so pending and cancellation are never presented as failures. */
+function repositoryLoadSummary(statuses: readonly WorkspaceRepositoryLoadStatus[]) {
+  const counts = statuses.reduce(
+    (current, { status }) => ({ ...current, [status]: current[status] + 1 }),
+    { cancelled: 0, failed: 0, loading: 0, successful: 0 }
+  );
+  return {
+    cancelled: counts.cancelled,
+    completed: counts.cancelled + counts.failed + counts.successful,
+    failed: counts.failed,
+    pending: counts.loading,
+    selected: statuses.length,
+    successful: counts.successful,
+  };
 }
 
 /*** Renders the persistent project-load failure state. */

@@ -2,27 +2,40 @@ import type {
   WorkspaceRepositoryFailure,
   WorkspaceRepositoryFailureCategory,
 } from '@/types/workspace';
+import { workspaceRepositoryOperationDiagnostic } from '@/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync';
 
 /*** Convert only observable transport facts into a bounded, browser-safe repository failure. */
 export function classifyWorkspaceRepositoryFailure(error: unknown): WorkspaceRepositoryFailure {
-  if (isAbort(error)) return { category: 'cancelled' };
-  const status = statusCode(error);
-  if (status === 401) return { category: 'authentication' };
-  if (status === 404) return { category: 'not-found' };
-  const rateLimitKind = rateLimitKindFrom(error);
+  const diagnostic = workspaceRepositoryOperationDiagnostic(error);
+  const cause = diagnostic?.cause ?? error;
+  const context =
+    diagnostic === undefined
+      ? {}
+      : { correlationId: diagnostic.correlationId, stage: diagnostic.stage };
+  if (isAbort(cause)) return { category: 'cancelled', ...context };
+  const code = repositoryErrorCode(cause);
+  if (code === 'permission-denied') return { category: 'authorization', ...context };
+  if (code === 'owner-not-found') return { category: 'not-found', ...context };
+  if (code === 'timeout') return { category: 'timeout', ...context };
+  if (code === 'rate-limited')
+    return { category: 'rate-limited', ...context, ...retryAfter(cause) };
+  const status = statusCode(cause);
+  if (status === 401) return { category: 'authentication', ...context };
+  if (status === 404) return { category: 'not-found', ...context };
+  const rateLimitKind = rateLimitKindFrom(cause);
   if (rateLimitKind !== undefined)
     return {
       category: rateLimitKind,
-      ...(retryAfterSeconds(error) === undefined
-        ? {}
-        : { retryAfterSeconds: retryAfterSeconds(error) }),
+      ...context,
+      ...retryAfter(cause),
     };
-  if (status === 429) return { category: 'rate-limited' };
-  if (status !== undefined && status >= 500 && status <= 599) return { category: 'upstream' };
-  if (isTimeout(error)) return { category: 'timeout' };
-  if (isParsing(error)) return { category: 'parsing' };
-  if (isRuntimeLimit(error)) return { category: 'runtime-limit' };
-  return { category: 'unknown' };
+  if (status === 429) return { category: 'rate-limited', ...context, ...retryAfter(cause) };
+  if (status !== undefined && status >= 500 && status <= 599)
+    return { category: 'upstream', ...context };
+  if (isTimeout(cause)) return { category: 'timeout', ...context };
+  if (isParsing(cause)) return { category: 'parsing', ...context };
+  if (isRuntimeLimit(cause)) return { category: 'runtime-limit', ...context };
+  return { category: 'unknown', ...context };
 }
 
 /*** Return only a prewritten explanation for a classified failure. */
@@ -85,6 +98,28 @@ function retryAfterSeconds(error: unknown): number | undefined {
     retryAfter <= 86_400
     ? retryAfter
     : undefined;
+}
+
+/** Translate the Repository package's bounded millisecond delay to a browser-safe second count. */
+function retryAfter(error: unknown): { readonly retryAfterSeconds?: number } {
+  const seconds = retryAfterSeconds(error) ?? retryAfterMilliseconds(error);
+  return seconds === undefined ? {} : { retryAfterSeconds: seconds };
+}
+
+/** Read published Repository rate-limit timing without forwarding provider headers or bodies. */
+function retryAfterMilliseconds(error: unknown): number | undefined {
+  if (typeof error !== 'object' || error === null || !('retryAfterMilliseconds' in error))
+    return undefined;
+  const { retryAfterMilliseconds: milliseconds } = error;
+  const seconds = typeof milliseconds === 'number' ? Math.ceil(milliseconds / 1_000) : NaN;
+  return Number.isInteger(seconds) && seconds >= 0 && seconds <= 86_400 ? seconds : undefined;
+}
+
+/** Recognize only the published credential-free Repository error codes. */
+function repositoryErrorCode(error: unknown): string | undefined {
+  if (typeof error !== 'object' || error === null || !('code' in error)) return undefined;
+  const { code } = error;
+  return typeof code === 'string' ? code : undefined;
 }
 
 /*** Classify standard timeout names without forwarding their potentially sensitive details. */
