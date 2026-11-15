@@ -2,7 +2,7 @@ import { access, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises
 import { spawn, type ChildProcess } from 'node:child_process';
 import { resolve } from 'node:path';
 
-import { chromium, type Browser, type Locator, type Page } from 'playwright-core';
+import { chromium, type Browser, type Locator, type Page, type Response } from 'playwright-core';
 
 const browserPath = process.env.ATLAS_CHROME;
 if (browserPath === undefined) throw new Error('Missing ENV: ATLAS_CHROME');
@@ -414,6 +414,28 @@ async function openWorkspaceAsync(
   await page.getByRole('application', { name: 'Graph' }).waitFor();
 }
 
+/*** Opens the workspace menu only when its action controls are not already visible. */
+async function openWorkspaceMenuAsync(page: Page): Promise<void> {
+  const saveAs = page.getByRole('button', { name: 'Save as' });
+  if (!(await saveAs.isVisible())) await page.getByLabel('Manage workspaces').click();
+  await saveAs.waitFor();
+}
+
+/*** Opens the repository picker only when its repository controls are not already visible. */
+async function openRepositoryPickerAsync(page: Page): Promise<void> {
+  const catalog = page.getByLabel('owner-a/catalog');
+  if (!(await catalog.isVisible())) await page.getByLabel('Choose repositories').click();
+  await catalog.waitFor();
+}
+
+/*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
+async function assertGraphCanvasAsync(page: Page): Promise<void> {
+  const graph = page.getByRole('application', { name: 'Graph' });
+  await graph.waitFor();
+  const box = await graph.boundingBox();
+  assert(box !== null && box.width > 0 && box.height > 0, 'Graph canvas has no rendered area.');
+}
+
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
 async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
   const thumb = switchControl.locator(':scope > div > div:first-child > div');
@@ -608,7 +630,8 @@ const scenarios: readonly Scenario[] = [
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Shorthand repository owner was not normalized.'
       );
-      await page.getByLabel('Choose repositories').click();
+      await assertGraphCanvasAsync(page);
+      await openRepositoryPickerAsync(page);
       assert(
         await page.getByLabel('owner-a/catalog').isChecked(),
         'Shorthand repository was not selected.'
@@ -655,11 +678,68 @@ const scenarios: readonly Scenario[] = [
         (await page.getByRole('button', { name: 'Open' }).count()) === 0,
         'Open is still visible.'
       );
-      await page.getByLabel('Choose repositories').click();
+      await assertGraphCanvasAsync(page);
+      await page.getByRole('button', { name: 'Expand' }).first().click();
+      await page
+        .getByRole('tree', { name: 'Project tree' })
+        .getByText('catalog', { exact: true })
+        .waitFor({
+          state: 'detached',
+        });
+      await openRepositoryPickerAsync(page);
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
         'Excluded repository was selected after Open.'
       );
+      return [];
+    }
+  ),
+  scenario(
+    'source-picker-runtime-recovery',
+    'Recovers a current single-owner selection after the server evicts its incremental runtime.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-recovery', ['owner-a-catalog', 'owner-a-shared']);
+      const recoveryRequest = page.waitForRequest(request => {
+        if (!request.url().endsWith('/api/workspace/selection') || request.method() !== 'POST')
+          return false;
+        const body = JSON.parse(request.postData() ?? '{}') as { readonly runtimeId?: unknown };
+        return body.runtimeId === undefined;
+      });
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').uncheck();
+      await recoveryRequest;
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-recovery' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-shared'
+      );
+      await assertGraphCanvasAsync(page);
+      return [];
+    }
+  ),
+  scenario(
+    'source-picker-rapid-selection',
+    'Applies the final repository choice during consecutive single-owner changes.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-rapid', ['owner-a-catalog', 'owner-a-shared']);
+      const firstRequest = page.waitForRequest(
+        request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
+      );
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').uncheck();
+      await firstRequest;
+      const secondRequest = page.waitForRequest(
+        request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
+      );
+      await openRepositoryPickerAsync(page);
+      await page.getByLabel('owner-a/catalog').check();
+      await secondRequest;
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-rapid' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-catalog,owner-a-shared'
+      );
+      await assertGraphCanvasAsync(page);
       return [];
     }
   ),
@@ -682,11 +762,12 @@ const scenarios: readonly Scenario[] = [
     'Preserves multi-owner exclusions.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
+      const picker = page.getByLabel('Choose repositories');
       assert(
-        await page.getByLabel('Choose repositories').isDisabled(),
+        await picker.isDisabled(),
         'Multi-owner exclusions were exposed to incremental selection.'
       );
-      await page.getByRole('button', { name: 'Repositories (4/5)' }).waitFor();
+      await page.getByText('Repositories (4/5)', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -821,17 +902,34 @@ const scenarios: readonly Scenario[] = [
     'workspace-crud',
     'Saves, opens, renames, and confirmed-deletes a workspace.',
     async page => {
+      await page.setViewportSize({ height: 1000, width: 1920 });
       await openWorkspaceAsync(page);
       const menu = page.getByLabel('Manage workspaces');
       await assertTopmostControlAsync(menu, 'Workspace management menu');
       await menu.click();
       page.once('dialog', dialog => dialog.accept('Acceptance workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
-      await page.getByLabel('Manage workspaces').click();
+      await page.waitForURL(/workspace=acceptance-workspace/u);
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Renamed workspace'));
-      await page.getByRole('button', { name: 'Rename' }).click();
+      const rename = page.getByRole('button', { name: 'Rename' });
+      await rename.scrollIntoViewIfNeeded();
+      await rename.click();
+      await page.reload({ waitUntil: 'networkidle' });
+      await openWorkspaceMenuAsync(page);
+      assert(
+        (await page.getByLabel('Saved workspace').inputValue()) === 'acceptance-workspace',
+        'Renamed workspace did not persist its stable workspace identity.'
+      );
       page.once('dialog', dialog => dialog.accept());
       await page.getByRole('button', { name: 'Delete' }).click();
+      await page.waitForURL(openedUrl => openedUrl.searchParams.get('workspace') === null);
+      await page.reload({ waitUntil: 'networkidle' });
+      await openWorkspaceMenuAsync(page);
+      assert(
+        (await page.getByLabel('Saved workspace').inputValue()) === '',
+        'Deleted workspace was restored after reload.'
+      );
       return [];
     }
   ),
@@ -864,6 +962,36 @@ const scenarios: readonly Scenario[] = [
         fullPage: true,
       });
       return ['saved-workspace-restored.png'];
+    }
+  ),
+  scenario(
+    'workspace-auth-redirect-restoration',
+    'Restores the current owner and exclusions after an auth-form redirect return.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.waitForURL(
+        openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
+      );
+      await page.evaluate(() => {
+        const form = document.createElement('form');
+        form.action = '/api/auth/github/login';
+        document.body.append(form);
+        form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true }));
+      });
+      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.getByRole('application', { name: 'Graph' }).waitFor();
+      assert(
+        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
+        'Owner was not restored after the auth redirect.'
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        'Excluded repository was not restored after the auth redirect.'
+      );
+      return [];
     }
   ),
   scenario(
@@ -1039,7 +1167,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 23, `Expected exactly 23 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 26, `Expected exactly 26 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
@@ -1087,25 +1215,41 @@ function collectDiagnostics(page: Page): BrowserDiagnostics {
     outboundRequests: [],
   };
   page.on('console', message => {
-    if (message.type() === 'error') diagnostics.consoleErrors.push(message.text());
+    if (message.type() === 'error' && !isExpectedRecoveryConsoleError(message.text()))
+      diagnostics.consoleErrors.push(message.text());
   });
   page.on('pageerror', error => diagnostics.consoleErrors.push(error.message));
   page.on('response', response => {
-    if (response.url().startsWith(url) && response.status() >= 400)
+    if (
+      response.url().startsWith(url) &&
+      response.status() >= 400 &&
+      !isExpectedRecoveryResponse(response)
+    )
       diagnostics.failedResources.push(
         `${response.status()} ${response.request().resourceType()} ${response.url()}`
       );
   });
-  page.on('requestfailed', request =>
+  page.on('requestfailed', request => {
+    if (request.failure()?.errorText === 'net::ERR_ABORTED') return;
     diagnostics.failedResources.push(
       `${request.resourceType()} ${request.url()} ${request.failure()?.errorText ?? 'failed'}`
-    )
-  );
+    );
+  });
   page.on('request', request => {
     if (!request.url().startsWith(url))
       diagnostics.outboundRequests.push(`${request.method()} ${request.url()}`);
   });
   return diagnostics;
+}
+
+/*** Allows the documented 410 runtime-eviction response exercised by the recovery scenario. */
+function isExpectedRecoveryResponse(response: Response): boolean {
+  return response.status() === 410 && response.url().endsWith('/api/workspace/selection');
+}
+
+/*** Chromium logs the intentional recovery response as a resource error without a page exception. */
+function isExpectedRecoveryConsoleError(message: string): boolean {
+  return message.includes('server responded with a status of 410 (Gone)');
 }
 /*** Waits for the fixture server without browser timing sleeps. */
 async function waitForServerAsync(): Promise<void> {

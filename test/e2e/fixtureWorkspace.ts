@@ -77,6 +77,8 @@ export async function createFixtureWorkspaceSelectionOperationAsync(
   input: WorkspaceSelectionRequest,
   request: Request
 ) {
+  if (input.source === 'owner-recovery' && input.runtimeId !== undefined)
+    throw new WorkspaceRepositoryRuntimeError('unavailable', 'Fixture runtime was evicted.');
   const runtime =
     input.runtimeId === undefined ? createFixtureRuntime() : fixtureRuntimeRegistry().runtime;
   if (runtime === undefined)
@@ -239,13 +241,15 @@ function discoverFixtureAsync(
   excluded: ReadonlySet<string>,
   selected?: ReadonlySet<string> | 'all'
 ) {
-  const viewportSelection = viewportFixtureRepositories(ownerSource);
+  const fixtureOwnerSource = normalizeFixtureOwnerSource(ownerSource);
+  const viewportSelection = viewportFixtureRepositories(fixtureOwnerSource);
   const availableRepositories = viewportSelection ?? repositories;
   const directRepository = availableRepositories.find(
     repository =>
-      repository.url === ownerSource || `${repository.owner}/${repository.name}` === ownerSource
+      repository.url === fixtureOwnerSource ||
+      `${repository.owner}/${repository.name}` === fixtureOwnerSource
   );
-  const owners = ownerSource
+  const owners = fixtureOwnerSource
     .split(',')
     .map(owner => owner.trim().replace(/^@/u, ''))
     .filter(Boolean);
@@ -270,6 +274,11 @@ function discoverFixtureAsync(
     repositories: discoveredRepositories,
     selectedRepositories,
   });
+}
+
+/*** Maps test-only recovery and supersession owners onto the deterministic single-owner inventory. */
+function normalizeFixtureOwnerSource(source: string): string {
+  return source === 'owner-recovery' || source === 'owner-rapid' ? 'owner-a' : source;
 }
 
 /*** Returns one deterministic selected-repository scale only for viewport acceptance. */
