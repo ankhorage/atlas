@@ -7,8 +7,13 @@ import type { AuditExportActions } from '@/features/audit/adapters/inbound/react
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
+import type { WorkspaceSelectionEventDetail } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
 import { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
+import {
+  type LiveWorkspace,
+  useWorkspaceRepositorySelection,
+} from '@/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection';
 import { WorkspaceHeader } from '@/features/workspace/adapters/inbound/react/WorkspaceHeader';
 import { WorkspacePanels } from '@/features/workspace/adapters/inbound/react/WorkspacePanels';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
@@ -30,7 +35,17 @@ export function WorkspaceView({
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
-  const [liveWorkspace, setLiveWorkspace] = useState({ repositoryStatuses, runtimeId, workspace });
+  const [liveWorkspace, setLiveWorkspace] = useState<LiveWorkspace>({
+    repositoryStatuses,
+    runtimeId,
+    workspace,
+  });
+  const selection = useWorkspaceRepositorySelection(
+    currentSource,
+    selectedRepositoryIds(repositories),
+    liveWorkspace,
+    setLiveWorkspace
+  );
   const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
   const navigation = useWorkspaceNavigation(liveWorkspace.workspace);
   const settingsScope =
@@ -46,9 +61,11 @@ export function WorkspaceView({
         offline={offline}
         projectName={projectName}
         repositories={repositories}
-        selectionRequired={selectionRequired}
+        selectionError={liveWorkspace.error}
+        selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
         workspaceScope={workspaceScope}
         onRetry={onRetry}
+        onSelection={selection}
       />
     </SettingsProvider>
   );
@@ -64,9 +81,11 @@ function WorkspaceShell({
   offline,
   projectName,
   repositories,
+  selectionError,
   selectionRequired,
   workspaceScope,
   onRetry,
+  onSelection,
 }: WorkspaceShellProps) {
   return (
     <AppShell
@@ -83,6 +102,7 @@ function WorkspaceShell({
             selectionRequired={selectionRequired}
             workspaceScope={workspaceScope}
             onNavigate={navigation.navigateToPackage}
+            onSelection={onSelection}
           />
         </div>
       }
@@ -94,11 +114,21 @@ function WorkspaceShell({
         offline={offline}
         projectName={projectName}
         repositoryStatuses={liveWorkspace.repositoryStatuses}
-        selectionRequired={selectionRequired}
+        selectionError={selectionError}
+        selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
         workspace={liveWorkspace.workspace}
         onRetry={onRetry}
       />
     </AppShell>
+  );
+}
+
+/*** Derive the initial server-confirmed selection without persisting a graph or provider payload. */
+function selectedRepositoryIds(
+  repositories: readonly WorkspaceRepositoryOption[] | undefined
+): readonly string[] {
+  return (
+    repositories?.filter(repository => repository.selected).map(repository => repository.id) ?? []
   );
 }
 
@@ -121,13 +151,13 @@ function WorkspaceBody({
   offline,
   projectName,
   repositoryStatuses,
+  selectionError,
   selectionRequired,
   workspace,
   onRetry,
 }: WorkspaceBodyProps) {
   const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
-  const projectError = workspace.ok ? null : workspace.error;
   const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
   const cycleInspection = useWorkspaceCycleInspection();
 
@@ -156,8 +186,9 @@ function WorkspaceBody({
           evaluation={auditEvaluation}
           navigation={navigation}
           offline={offline}
-          projectError={projectError}
+          projectError={workspace.ok ? null : workspace.error}
           repositoryStatuses={repositoryStatuses}
+          selectionError={selectionError}
           onRetry={onRetry}
         />
       )}
@@ -178,7 +209,7 @@ function RepositorySelectionNotice() {
         padding: 24,
       }}
     >
-      Select the repositories to inspect, then choose Open. No repository has been materialized yet.
+      Select one or more repositories to inspect. No repository has been materialized yet.
     </div>
   );
 }
@@ -269,16 +300,12 @@ interface WorkspaceShellProps {
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
+  readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly selectionError?: string;
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
-}
-
-interface LiveWorkspace {
-  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
-  readonly runtimeId: string | undefined;
-  readonly workspace: WorkspaceLoadResult;
 }
 
 interface WorkspaceBodyProps {
@@ -288,6 +315,7 @@ interface WorkspaceBodyProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly selectionError?: string;
   readonly selectionRequired?: boolean;
   readonly workspace: WorkspaceLoadResult;
   readonly onRetry?: (repositoryId: string) => Promise<void>;

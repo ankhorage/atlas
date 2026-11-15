@@ -16,6 +16,7 @@ import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 export function WorkspacePanels(props: WorkspacePanelsProps) {
   return (
     <>
+      {props.selectionError === undefined ? null : <div role="alert">{props.selectionError}</div>}
       <WorkspaceSidebar
         auditExportActions={props.auditExportActions}
         currentSource={props.currentSource}
@@ -136,6 +137,7 @@ interface WorkspacePanelsProps {
   readonly offline?: boolean;
   readonly projectError: string | null;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly selectionError?: string;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
 

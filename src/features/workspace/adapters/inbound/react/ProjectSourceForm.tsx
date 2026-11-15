@@ -3,19 +3,23 @@ import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
+import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession';
+import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
+import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
+import { useRepositoryInventory } from '@/features/workspace/adapters/inbound/react/useRepositoryInventory';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 import styles from './WorkspaceHeader.module.css';
 
-/*** Edits a GitHub source and stages repository inclusion before one explicit workspace refresh. */
+/*** Edits a GitHub source while applying repository selection changes immediately. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
   const [publicOnly, setPublicOnly] = useState(false);
   const visibleRepositories = useVisibleRepositories(
-    props.repositories,
+    sourceForm.repositories,
     sourceForm.search,
     publicOnly
   );
@@ -28,33 +32,51 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         size="s"
         value={sourceForm.source}
         onChangeText={sourceForm.setSource}
-        onSubmitEditing={sourceForm.openSource}
       />
       <RepositoryPicker
         repositories={visibleRepositories}
         search={sourceForm.search}
         selectedIds={sourceForm.selectedIds}
-        totalCount={props.repositories?.length ?? 0}
+        selectionSupported={sourceForm.selectionSupported}
+        totalCount={sourceForm.repositories.length}
         initiallyOpen={props.selectionRequired}
         onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
         onSearchChange={sourceForm.setSearch}
         onSelectAll={() =>
-          sourceForm.setSelectedIds(new Set(props.repositories?.map(repository => repository.id)))
+          sourceForm.setSelectedIds(
+            new Set(sourceForm.repositories.map(repository => repository.id))
+          )
         }
         onSelectionChange={sourceForm.setSelectedIds}
       />
+      <SelectionSourceNotice sourceForm={sourceForm} />
+      {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
       <PublicOnlyFilter checked={publicOnly} onChange={setPublicOnly} />
       <RepositoryCopyButton sourceForm={sourceForm} />
-      <Button size="s" variant="outline" onPress={sourceForm.openSource}>
-        Open
-      </Button>
       <WorkspaceControls
-        activeWorkspaceId={props.activeWorkspaceId}
-        repositories={props.repositories}
+        activeWorkspaceId={sourceForm.activeWorkspaceId}
+        repositories={sourceForm.repositories}
         selectedIds={sourceForm.selectedIds}
         source={sourceForm.source}
+        onDeleteWorkspace={sourceForm.deleteWorkspace}
+        onOpenWorkspace={sourceForm.openWorkspace}
       />
     </View>
+  );
+}
+
+/*** Explains why a preserved legacy workspace cannot use the single-owner incremental transport. */
+function SelectionSourceNotice({
+  sourceForm,
+}: {
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+}) {
+  if (sourceForm.selectionSupported || sourceForm.source.trim() === '') return null;
+  return (
+    <span role="status">
+      Repository selection is available for one GitHub owner or @me. This workspace remains
+      unchanged.
+    </span>
   );
 }
 
@@ -113,44 +135,63 @@ function useVisibleRepositories(
   );
 }
 
-/*** Keeps staged source edits isolated until an explicit workspace refresh is requested. */
+/*** Keeps inventory discovery independent from selection-driven workspace changes. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
   const initial = readSource(props.currentSource);
-  const [source, setSource] = useState(initial.owner);
-  const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(props.repositories));
-  const [search, setSearch] = useState('');
-  const selectedRepositories =
-    props.repositories?.filter(repository => selectedIds.has(repository.id)) ?? [];
-  const openSource = () => {
-    const params = new URLSearchParams();
-    const normalizedSource = source.trim();
-    if (normalizedSource !== '') params.set('source', normalizedSource);
-    if (props.repositories !== undefined)
-      params.set('repositories', [...selectedIds].toSorted().join(','));
-    window.location.assign(params.size === 0 ? '/' : `/?${params.toString()}`);
-  };
-  const copyRepositoryLinks = () =>
-    void navigator.clipboard.writeText(
-      selectedRepositories.map(repository => repository.url).join('\n')
-    );
-  useEffect(() => {
-    if (source.trim() === '' || source.trim() === initial.owner) return;
-    const timer = window.setTimeout(() => {
-      window.location.assign(`/?${new URLSearchParams({ source: source.trim() }).toString()}`);
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [initial.owner, source]);
-  return {
-    copyRepositoryLinks,
-    openSource,
-    search,
-    selectedIds,
+  const state = useProjectSourceFormState(
+    initial.owner,
+    props.repositories,
+    props.activeWorkspaceId
+  );
+  useBrowserWorkspaceSession({ ...state, onRestoreSelection: props.onSelection });
+  const {
+    inventoryError,
+    inventoryLoaded,
+    inventoryOwner,
+    repositories: inventory,
+    selectionSupported,
+  } = useRepositoryInventory(initial.owner, props.repositories, state.source);
+  const owner = state.source.trim().toLowerCase();
+  const repositories = selectRepositories(inventory, initial.owner, owner, state.selectedIds);
+  const selectedRepositories = repositories.filter(repository =>
+    state.selectedIds.has(repository.id)
+  );
+  const actions = useProjectSourceFormActions({
+    onSelection: props.onSelection,
+    inventoryLoaded,
+    inventoryOwner,
+    repositories,
+    selectionSupported,
     selectedRepositories,
-    setSearch,
-    setSelectedIds,
-    setSource,
-    source,
+    state,
+  });
+  return {
+    activeWorkspaceId: state.activeId,
+    copyRepositoryLinks: actions.copyRepositoryLinks,
+    deleteWorkspace: actions.deleteWorkspace,
+    inventoryError,
+    openWorkspace: actions.openWorkspace,
+    repositories,
+    search: state.search,
+    selectedIds: state.selectedIds,
+    selectedRepositories,
+    selectionSupported,
+    setSearch: state.setSearch,
+    setSelectedIds: actions.setSelectedIds,
+    setSource: actions.setSource,
+    source: state.source,
   };
+}
+
+/*** Reuses server-confirmed selection for the initial source and stages later single-owner inventory. */
+function selectRepositories(
+  inventory: readonly WorkspaceRepositoryOption[],
+  initialOwner: string,
+  owner: string,
+  selectedIds: ReadonlySet<string>
+): readonly WorkspaceRepositoryOption[] {
+  if (owner === initialOwner.toLowerCase()) return inventory;
+  return inventory.map(repository => ({ ...repository, selected: selectedIds.has(repository.id) }));
 }
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
@@ -162,6 +203,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
       anchor={({ toggle }) => (
         <Button
           accessibilityLabel="Choose repositories"
+          disabled={!props.selectionSupported}
           size="s"
           variant="outline"
           onPress={toggle}
@@ -206,21 +248,12 @@ function RepositoryChoices(props: RepositoryPickerProps) {
   ));
 }
 
-/*** Toggle a repository inclusion without requesting another analysis until Open is pressed. */
+/*** Toggle a repository inclusion and pass the immediate selection to its workspace owner. */
 function toggleRepository(selectedIds: ReadonlySet<string>, repositoryId: string): Set<string> {
   const next = new Set(selectedIds);
   if (next.has(repositoryId)) next.delete(repositoryId);
   else next.add(repositoryId);
   return next;
-}
-
-/*** Initialize the browser selection from server-discovered repository state. */
-function createSelectedRepositoryIds(
-  repositories: readonly WorkspaceRepositoryOption[] | undefined
-): Set<string> {
-  return new Set(
-    repositories?.filter(repository => repository.selected).map(repository => repository.id)
-  );
 }
 
 /*** Remove query-only workspace selection state before displaying the editable source. */
@@ -240,12 +273,19 @@ interface ProjectSourceFormProps {
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
+  readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
+}
+
+export interface WorkspaceSelectionEventDetail {
+  readonly selectedIds: readonly string[];
+  readonly source: string;
 }
 
 interface RepositoryPickerProps {
   readonly repositories: readonly WorkspaceRepositoryOption[];
   readonly search: string;
   readonly selectedIds: ReadonlySet<string>;
+  readonly selectionSupported: boolean;
   readonly totalCount: number;
   readonly initiallyOpen?: boolean;
   readonly onDeselectAll: () => void;

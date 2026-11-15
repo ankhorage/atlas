@@ -1,10 +1,10 @@
 import { isRecord } from '@ankhorage/utility/object';
 
-import {
-  isSelectionSource,
-  normalizeSelectionSource,
-} from '@/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute';
 import { createWorkspaceProgressResponse } from '@/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse';
+import {
+  isWorkspaceSelectionSource,
+  normalizeWorkspaceSelectionSource,
+} from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
 import { WorkspaceRepositoryRuntimeError } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 import type { WorkspaceSelectionRequest } from '@/types/workspace';
 
@@ -16,7 +16,7 @@ export function createWorkspaceSelectionRoute(selectionAsync: WorkspaceSelection
       const body: unknown = await request.json();
       if (!isSelectionRequest(body))
         return Response.json({ error: 'Invalid workspace selection request.' }, { status: 400 });
-      input = { ...body, source: normalizeSelectionSource(body.source) };
+      input = { ...body, source: normalizeWorkspaceSelectionSource(body.source) };
     } catch {
       return Response.json({ error: 'Invalid workspace selection request.' }, { status: 400 });
     }
@@ -31,7 +31,11 @@ export function createWorkspaceSelectionRoute(selectionAsync: WorkspaceSelection
 
 /*** Reject URLs, duplicate identifiers, and non-diff initial requests at the untrusted HTTP boundary. */
 function isSelectionRequest(value: unknown): value is WorkspaceSelectionRequest {
-  if (!isRecord(value) || !isSelectionSource(value.source) || !isGeneration(value.generation))
+  if (
+    !isRecord(value) ||
+    !isWorkspaceSelectionSource(value.source) ||
+    !isGeneration(value.generation)
+  )
     return false;
   if (
     !isIdentifierArray(value.addedRepositoryIds) ||

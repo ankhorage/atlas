@@ -6,28 +6,50 @@ import { View } from '@ankhorage/zora/web/view';
 import { useEffect, useRef, useState } from 'react';
 
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
+import {
+  applyWorkspacePresentationSettings,
+  readWorkspacePresentationSettings,
+} from '@/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings';
 import { createWorkspaceDefinition } from '@/features/workspace/adapters/inbound/react/createWorkspaceDefinition';
+import { createWorkspaceOpenDetail } from '@/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail';
+import type {
+  WorkspaceControlsProps,
+  WorkspaceMenuProps,
+  WorkspaceOpenDetail,
+} from '@/features/workspace/adapters/inbound/react/workspaceControlTypes';
 import { createBrowserWorkspaceStore } from '@/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore';
-import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
-import type { DependencyFilterKind } from '@/types/settings';
-import type { WorkspaceDefinition, WorkspacePresentationSettings } from '@/types/workspace';
+import type { WorkspaceDefinition } from '@/types/workspace';
 
 /*** Renders browser-local named workspace controls without persisting analyzed repository data. */
 export function WorkspaceControls(props: WorkspaceControlsProps) {
   const settings = useSettings();
   const [definitions, setDefinitions] = useSavedWorkspaceDefinitions();
   useWorkspaceSettingsRestore(props.activeWorkspaceId, definitions, settings);
-  const activeWorkspace = definitions.find(definition => definition.id === props.activeWorkspaceId);
 
   return (
     <WorkspaceMenu
       activeWorkspaceId={props.activeWorkspaceId}
       definitions={definitions}
-      isDirty={hasUnsavedChanges(activeWorkspace, props, settings)}
-      onDelete={() => deleteWorkspace(props.activeWorkspaceId, definitions, setDefinitions)}
-      onOpen={openWorkspace}
+      isDirty={hasUnsavedChanges(
+        definitions.find(definition => definition.id === props.activeWorkspaceId),
+        props,
+        settings
+      )}
+      onDelete={() =>
+        deleteWorkspace(
+          props.activeWorkspaceId,
+          definitions,
+          setDefinitions,
+          props.onDeleteWorkspace
+        )
+      }
+      onOpen={workspace => openWorkspace(workspace, settings, props.onOpenWorkspace)}
       onRename={() => renameWorkspace(props.activeWorkspaceId, definitions, setDefinitions)}
-      onSave={saveAs => saveWorkspace(saveAs, props, settings, definitions, setDefinitions)}
+      onSave={saveAs =>
+        saveWorkspace(saveAs, props, settings, definitions, setDefinitions, workspace =>
+          openWorkspace(workspace, settings, props.onOpenWorkspace)
+        )
+      }
     />
   );
 }
@@ -43,7 +65,7 @@ function hasUnsavedChanges(
     ...workspace,
     repositories: props.repositories,
     selectedIds: props.selectedIds,
-    settings: readWorkspaceSettings(settings),
+    settings: readWorkspacePresentationSettings(settings),
     source: props.source,
   });
   return current === null || JSON.stringify(current) !== JSON.stringify(workspace);
@@ -60,7 +82,6 @@ function useSavedWorkspaceDefinitions() {
   }, []);
   return [definitions, setDefinitions] as const;
 }
-
 /*** Applies a saved presentation definition once when its browser workspace scope becomes active. */
 function useWorkspaceSettingsRestore(
   activeWorkspaceId: string | undefined,
@@ -74,10 +95,9 @@ function useWorkspaceSettingsRestore(
     const workspace = definitions.find(definition => definition.id === activeWorkspaceId);
     if (workspace === undefined) return;
     restoredWorkspaceId.current = workspace.id;
-    applyWorkspaceSettings(settings, workspace.settings);
+    applyWorkspacePresentationSettings(settings, workspace.settings);
   }, [activeWorkspaceId, definitions, settings]);
 }
-
 /*** Keeps the compact workspace popover purely presentational. */
 function WorkspaceMenu(props: WorkspaceMenuProps) {
   return (
@@ -113,7 +133,6 @@ function WorkspaceMenu(props: WorkspaceMenuProps) {
     </Popover>
   );
 }
-
 /*** Groups workspace mutations without widening the compact selector's responsibility. */
 function WorkspaceActions(props: WorkspaceMenuProps) {
   return (
@@ -150,7 +169,8 @@ function saveWorkspace(
   props: WorkspaceControlsProps,
   settings: ReturnType<typeof useSettings>,
   definitions: readonly WorkspaceDefinition[],
-  setDefinitions: (definitions: readonly WorkspaceDefinition[]) => void
+  setDefinitions: (definitions: readonly WorkspaceDefinition[]) => void,
+  open: (workspace: WorkspaceDefinition) => void
 ): void {
   const name = window.prompt(saveAs ? 'Save workspace as' : 'Workspace name');
   if (name === null || name.trim() === '') return;
@@ -160,7 +180,7 @@ function saveWorkspace(
     name: name.trim(),
     repositories: props.repositories,
     selectedIds: props.selectedIds,
-    settings: readWorkspaceSettings(settings),
+    settings: readWorkspacePresentationSettings(settings),
     source: props.source,
   });
   if (workspace === null)
@@ -168,7 +188,7 @@ function saveWorkspace(
   setDefinitions(
     createBrowserWorkspaceStore(window.localStorage).apply({ kind: 'save', workspace })
   );
-  openWorkspace(workspace);
+  open(workspace);
 }
 
 /*** Derive a stable readable browser-local id while avoiding collisions with existing definitions. */
@@ -208,14 +228,16 @@ function renameWorkspace(
 function deleteWorkspace(
   activeWorkspaceId: string | undefined,
   definitions: readonly WorkspaceDefinition[],
-  setDefinitions: (definitions: readonly WorkspaceDefinition[]) => void
+  setDefinitions: (definitions: readonly WorkspaceDefinition[]) => void,
+  onDelete: () => void
 ): void {
   const current = definitions.find(definition => definition.id === activeWorkspaceId);
   if (current === undefined || !window.confirm(`Delete workspace “${current.name}”?`)) return;
   setDefinitions(
     createBrowserWorkspaceStore(window.localStorage).apply({ kind: 'delete', id: current.id })
   );
-  window.location.assign('/');
+  window.history.replaceState(null, '', '/');
+  onDelete();
 }
 
 /*** Resolve one selection event through the saved-definition collection. */
@@ -228,105 +250,12 @@ function openSelectedWorkspace(
   if (workspace !== undefined) open(workspace);
 }
 
-/*** Capture only presentation controls; immutable analysis data remains outside browser definitions. */
-function readWorkspaceSettings(
-  settings: ReturnType<typeof useSettings>
-): WorkspacePresentationSettings {
-  return {
-    dependencyPrefix: settings.dependencyPackagePrefix,
-    dependencyKinds: [...settings.enabledDependencyKinds].map(toWorkspaceDependencyKind),
-    layout: settings.cytoscapeLayout,
-    showCompoundNodes: settings.showCompoundNodes,
-    showVendorPackages: settings.showVendorPackages,
-    spacing: settings.cytoscapeLayoutSpacing,
-    subPackageDepth: settings.subPackageDepth,
-  };
-}
-
-/*** Restore graph settings before navigating so the loaded workspace never reanalyzes for filters. */
-function applyWorkspaceSettings(
+/*** Apply saved presentation while exposing the portable source policy to the live workspace owner. */
+function openWorkspace(
+  workspace: WorkspaceDefinition,
   settings: ReturnType<typeof useSettings>,
-  workspace: WorkspacePresentationSettings
+  onOpenWorkspace: (detail: WorkspaceOpenDetail) => void
 ): void {
-  settings.setDependencyPackagePrefix(workspace.dependencyPrefix);
-  setWorkspaceLayout(settings, workspace.layout);
-  settings.setCytoscapeLayoutSpacing(workspace.spacing);
-  settings.setSubPackageDepth(workspace.subPackageDepth);
-  if (settings.showCompoundNodes !== workspace.showCompoundNodes)
-    settings.toggleShowCompoundNodes();
-  if (settings.showVendorPackages !== workspace.showVendorPackages)
-    settings.toggleShowVendorPackages();
-  const enabled = new Set(workspace.dependencyKinds.map(fromWorkspaceDependencyKind));
-  for (const kind of ALL_DEPENDENCY_KINDS)
-    if (settings.enabledDependencyKinds.has(kind) !== enabled.has(kind))
-      settings.toggleDependencyKind(kind);
+  applyWorkspacePresentationSettings(settings, workspace.settings);
+  onOpenWorkspace(createWorkspaceOpenDetail(workspace));
 }
-/*** Apply only layouts supported by the current GraphView runtime. */
-function setWorkspaceLayout(settings: ReturnType<typeof useSettings>, layout: string): void {
-  if (
-    layout === 'breadthfirst' ||
-    layout === 'circle' ||
-    layout === 'concentric' ||
-    layout === 'elk' ||
-    layout === 'grid'
-  )
-    settings.setCytoscapeLayout(layout);
-}
-/*** Encode one settings dependency kind into the portable workspace contract. */
-function toWorkspaceDependencyKind(
-  kind: DependencyFilterKind
-): WorkspacePresentationSettings['dependencyKinds'][number] {
-  return kind === 'dependency'
-    ? 'runtime'
-    : kind === 'devDependency'
-      ? 'dev'
-      : kind === 'peerDependency'
-        ? 'peer'
-        : 'optional';
-}
-/*** Decode one portable dependency kind into the settings adapter vocabulary. */
-function fromWorkspaceDependencyKind(
-  kind: WorkspacePresentationSettings['dependencyKinds'][number]
-): DependencyFilterKind {
-  return kind === 'runtime'
-    ? 'dependency'
-    : kind === 'dev'
-      ? 'devDependency'
-      : kind === 'peer'
-        ? 'peerDependency'
-        : 'optionalDependency';
-}
-/*** Navigate through the canonical server source loader using the workspace's persisted selection. */
-function openWorkspace(workspace: WorkspaceDefinition): void {
-  const source = workspace.sources
-    .map(item => (item.kind === 'github-owner' ? item.owner : item.url))
-    .join(',');
-  const excluded = workspace.sources.flatMap(item =>
-    item.kind === 'github-owner' ? item.excludedRepositoryIds : []
-  );
-  const params = new URLSearchParams({ source, workspace: workspace.id });
-  if (excluded.length > 0) params.set('source', `${source}|exclude=${excluded.join(',')}`);
-  window.location.assign(`/?${params.toString()}`);
-}
-interface WorkspaceControlsProps {
-  readonly activeWorkspaceId?: string;
-  readonly repositories?: readonly WorkspaceRepositoryOption[];
-  readonly selectedIds: ReadonlySet<string>;
-  readonly source: string;
-}
-interface WorkspaceMenuProps {
-  readonly activeWorkspaceId?: string;
-  readonly definitions: readonly WorkspaceDefinition[];
-  readonly isDirty: boolean;
-  readonly onDelete: () => void;
-  readonly onOpen: (workspace: WorkspaceDefinition) => void;
-  readonly onRename: () => void;
-  readonly onSave: (saveAs: boolean) => void;
-}
-
-const ALL_DEPENDENCY_KINDS: readonly DependencyFilterKind[] = [
-  'dependency',
-  'devDependency',
-  'peerDependency',
-  'optionalDependency',
-];

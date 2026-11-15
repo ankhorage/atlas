@@ -2,7 +2,7 @@ import { access, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises
 import { spawn, type ChildProcess } from 'node:child_process';
 import { resolve } from 'node:path';
 
-import { chromium, type Browser, type Locator, type Page } from 'playwright-core';
+import { chromium, type Browser, type Locator, type Page, type Response } from 'playwright-core';
 
 const browserPath = process.env.ATLAS_CHROME;
 if (browserPath === undefined) throw new Error('Missing ENV: ATLAS_CHROME');
@@ -108,8 +108,8 @@ async function buildFixtureAsync(): Promise<void> {
   try {
     const output = await runProcessAsync(
       command,
-      ['next', 'build', fixtureApplication, '--webpack'],
-      process.cwd(),
+      ['next', 'build', '--webpack'],
+      fixtureApplication,
       [0],
       fixtureEnvironment
     );
@@ -405,11 +405,35 @@ async function writeReportAsync(status: 'passed' | 'failed'): Promise<void> {
 async function openWorkspaceAsync(
   page: Page,
   source = 'owner-a%2Cowner-b',
-  repositoryIds = source === 'owner-a%2Cowner-b' ? fixtureRepositoryIds : undefined
+  repositoryIds: readonly string[] | undefined = source === 'owner-a%2Cowner-b'
+    ? fixtureRepositoryIds
+    : undefined
 ): Promise<void> {
   const repositories = repositoryIds === undefined ? '' : `&repositories=${repositoryIds}`;
   await page.goto(`${url}/?source=${source}${repositories}`, { waitUntil: 'networkidle' });
   await page.getByRole('application', { name: 'Graph' }).waitFor();
+}
+
+/*** Opens the workspace menu only when its action controls are not already visible. */
+async function openWorkspaceMenuAsync(page: Page): Promise<void> {
+  const saveAs = page.getByRole('button', { name: 'Save as' });
+  if (!(await saveAs.isVisible())) await page.getByLabel('Manage workspaces').click();
+  await saveAs.waitFor();
+}
+
+/*** Opens the repository picker only when its repository controls are not already visible. */
+async function openRepositoryPickerAsync(page: Page): Promise<void> {
+  const catalog = page.getByLabel('owner-a/catalog');
+  if (!(await catalog.isVisible())) await page.getByLabel('Choose repositories').click();
+  await catalog.waitFor();
+}
+
+/*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
+async function assertGraphCanvasAsync(page: Page): Promise<void> {
+  const graph = page.getByRole('application', { name: 'Graph' });
+  await graph.waitFor();
+  const box = await graph.boundingBox();
+  assert(box !== null && box.width > 0 && box.height > 0, 'Graph canvas has no rendered area.');
 }
 
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
@@ -584,79 +608,85 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
-    'Discovers an entered owner and normalizes a pasted repository URL.',
+    'Discovers a single owner through delayed and empty inventories without navigating the workspace.',
     async page => {
       await page.goto(url, { waitUntil: 'networkidle' });
+      await page.getByLabel('GitHub owner').fill('owner-delayed');
+      await page.getByLabel('GitHub owner').fill('owner-empty');
+      await page.getByLabel('Choose repositories').click();
+      await page.getByText('No repositories match this search.').waitFor();
+      await page.getByLabel('Choose repositories').click();
       await page.getByLabel('GitHub owner').fill('owner-a');
-      await page.waitForURL(openedUrl => openedUrl.searchParams.get('source') === 'owner-a');
       await page.getByLabel('Choose repositories').waitFor();
-      await page.getByText('No repository has been materialized yet.', { exact: false }).waitFor();
-      await openWorkspaceAsync(page, 'owner-a/catalog');
-      await page.getByText('catalog', { exact: true }).waitFor();
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').check();
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-a' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-catalog'
+      );
+      await page.getByRole('application', { name: 'Graph' }).waitFor();
       assert(
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Shorthand repository owner was not normalized.'
       );
-      await page.getByLabel('Choose repositories').click();
+      await assertGraphCanvasAsync(page);
+      await openRepositoryPickerAsync(page);
       assert(
         await page.getByLabel('owner-a/catalog').isChecked(),
         'Shorthand repository was not selected.'
-      );
-      await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
-      await page.getByText('catalog', { exact: true }).waitFor();
-      assert(
-        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
-        'URL owner was not normalized.'
-      );
-      await page.getByLabel('Choose repositories').click();
-      assert(
-        await page.getByLabel('owner-a/catalog').isChecked(),
-        'URL repository was not selected.'
       );
       return [];
     }
   ),
   scenario(
     'source-picker-multi-select',
-    'Filters repository choices and changes checkbox state.',
+    'Keeps a multi-owner graph visible while marking incremental selection unavailable.',
     async page => {
       await openWorkspaceAsync(page);
       const picker = page.getByLabel('Choose repositories');
       await assertTopmostControlAsync(picker, 'Repository picker');
-      await picker.click();
-      await page.getByLabel('Search repositories').fill('catalog');
-      const box = page.getByLabel('owner-a/catalog');
-      assert(await box.isChecked(), 'Catalog was not selected.');
-      await box.uncheck();
-      assert(!(await box.isChecked()), 'Catalog checkbox did not change.');
+      assert(
+        await picker.isDisabled(),
+        'Multi-owner picker was not bounded to the server contract.'
+      );
+      await page
+        .getByText('Repository selection is available for one GitHub owner or @me.', {
+          exact: false,
+        })
+        .waitFor();
+      await page.getByText('owner-a', { exact: true }).waitFor();
+      await page.getByText('owner-b', { exact: true }).waitFor();
       return [];
     }
   ),
   scenario(
-    'source-picker-explicit-open',
-    'Stages selection until an explicit Open action.',
+    'source-picker-immediate-selection',
+    'Applies a selection diff immediately without an Open action or document navigation.',
     async page => {
-      await openWorkspaceAsync(page);
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').uncheck();
-      assert(page.url() === before, 'Selection navigated before Open.');
-      await page.getByRole('button', { name: 'Open' }).click();
       await page.waitForURL(
         openedUrl =>
-          openedUrl.searchParams.get('source') === 'owner-a,owner-b' &&
-          openedUrl.searchParams.get('repositories') ===
-            fixtureRepositoryIds
-              .filter(id => id !== 'owner-a-catalog')
-              .toSorted()
-              .join(',')
+          openedUrl.searchParams.get('source') === 'owner-a' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
-      const openedSource = new URL(page.url()).searchParams.get('source');
+      assert(page.url() !== before, 'Selection did not update browser history.');
       assert(
-        openedSource === 'owner-a,owner-b',
-        `Open navigated to an unexpected source: ${String(openedSource)}`
+        (await page.getByRole('button', { name: 'Open' }).count()) === 0,
+        'Open is still visible.'
       );
-      await page.getByLabel('Choose repositories').click();
+      await assertGraphCanvasAsync(page);
+      await page.getByRole('button', { name: 'Expand' }).first().click();
+      await page
+        .getByRole('tree', { name: 'Project tree' })
+        .getByText('catalog', { exact: true })
+        .waitFor({
+          state: 'detached',
+        });
+      await openRepositoryPickerAsync(page);
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
         'Excluded repository was selected after Open.'
@@ -665,27 +695,82 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
-    'source-picker-overlap-deduplication',
-    'Deduplicates overlapping owner discovery.',
+    'source-picker-runtime-recovery',
+    'Recovers a current single-owner selection after the server evicts its incremental runtime.',
     async page => {
-      await openWorkspaceAsync(page);
+      await openWorkspaceAsync(page, 'owner-recovery', ['owner-a-catalog', 'owner-a-shared']);
+      const recoveryRequest = page.waitForRequest(request => {
+        if (!request.url().endsWith('/api/workspace/selection') || request.method() !== 'POST')
+          return false;
+        const body = JSON.parse(request.postData() ?? '{}') as { readonly runtimeId?: unknown };
+        return body.runtimeId === undefined;
+      });
       await page.getByLabel('Choose repositories').click();
-      assert(
-        (await page.getByLabel('owner-a/shared').count()) === 1,
-        'Overlapping repository was duplicated.'
+      await page.getByLabel('owner-a/catalog').uncheck();
+      await recoveryRequest;
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-recovery' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
+      await assertGraphCanvasAsync(page);
       return [];
     }
   ),
-  scenario('source-picker-exclusion-restoration', 'Restores repository exclusions.', async page => {
-    await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
-    await page.getByLabel('Choose repositories').click();
-    assert(
-      !(await page.getByLabel('owner-a/catalog').isChecked()),
-      'Excluded repository was selected.'
-    );
-    return [];
-  }),
+  scenario(
+    'source-picker-rapid-selection',
+    'Applies the final repository choice during consecutive single-owner changes.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-rapid', ['owner-a-catalog', 'owner-a-shared']);
+      const firstRequest = page.waitForRequest(
+        request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
+      );
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').uncheck();
+      await firstRequest;
+      const secondRequest = page.waitForRequest(
+        request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
+      );
+      await openRepositoryPickerAsync(page);
+      await page.getByLabel('owner-a/catalog').check();
+      await secondRequest;
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-rapid' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-catalog,owner-a-shared'
+      );
+      await assertGraphCanvasAsync(page);
+      return [];
+    }
+  ),
+  scenario(
+    'source-picker-overlap-deduplication',
+    'Preserves overlapping-owner topology without exposing it to a single-owner selection request.',
+    async page => {
+      await openWorkspaceAsync(page);
+      assert(
+        await page.getByLabel('Choose repositories').isDisabled(),
+        'Overlapping owners were exposed to the single-owner picker.'
+      );
+      await page.getByRole('button', { name: 'Expand' }).first().click();
+      await page.getByText('shared', { exact: true }).waitFor();
+      return [];
+    }
+  ),
+  scenario(
+    'source-picker-exclusion-restoration',
+    'Preserves multi-owner exclusions.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
+      const picker = page.getByLabel('Choose repositories');
+      assert(
+        await picker.isDisabled(),
+        'Multi-owner exclusions were exposed to incremental selection.'
+      );
+      await page.getByText('Repositories (4/5)', { exact: true }).waitFor();
+      return [];
+    }
+  ),
   scenario(
     'canvas-connected-disconnected',
     'Shows connected and disconnected projects on the shared canvas.',
@@ -817,17 +902,34 @@ const scenarios: readonly Scenario[] = [
     'workspace-crud',
     'Saves, opens, renames, and confirmed-deletes a workspace.',
     async page => {
+      await page.setViewportSize({ height: 1000, width: 1920 });
       await openWorkspaceAsync(page);
       const menu = page.getByLabel('Manage workspaces');
       await assertTopmostControlAsync(menu, 'Workspace management menu');
       await menu.click();
       page.once('dialog', dialog => dialog.accept('Acceptance workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
-      await page.getByLabel('Manage workspaces').click();
+      await page.waitForURL(/workspace=acceptance-workspace/u);
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Renamed workspace'));
-      await page.getByRole('button', { name: 'Rename' }).click();
+      const rename = page.getByRole('button', { name: 'Rename' });
+      await rename.scrollIntoViewIfNeeded();
+      await rename.click();
+      await page.reload({ waitUntil: 'networkidle' });
+      await openWorkspaceMenuAsync(page);
+      assert(
+        (await page.getByLabel('Saved workspace').inputValue()) === 'acceptance-workspace',
+        'Renamed workspace did not persist its stable workspace identity.'
+      );
       page.once('dialog', dialog => dialog.accept());
       await page.getByRole('button', { name: 'Delete' }).click();
+      await page.waitForURL(openedUrl => openedUrl.searchParams.get('workspace') === null);
+      await page.reload({ waitUntil: 'networkidle' });
+      await openWorkspaceMenuAsync(page);
+      assert(
+        (await page.getByLabel('Saved workspace').inputValue()) === '',
+        'Deleted workspace was restored after reload.'
+      );
       return [];
     }
   ),
@@ -835,7 +937,7 @@ const scenarios: readonly Scenario[] = [
     'workspace-reload-restoration',
     'Restores source exclusions and settings after reload.',
     async page => {
-      await openWorkspaceAsync(page);
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').uncheck();
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
@@ -860,6 +962,36 @@ const scenarios: readonly Scenario[] = [
         fullPage: true,
       });
       return ['saved-workspace-restored.png'];
+    }
+  ),
+  scenario(
+    'workspace-auth-redirect-restoration',
+    'Restores the current owner and exclusions after an auth-form redirect return.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.waitForURL(
+        openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
+      );
+      await page.evaluate(() => {
+        const form = document.createElement('form');
+        form.action = '/api/auth/github/login';
+        document.body.append(form);
+        form.dispatchEvent(new SubmitEvent('submit', { bubbles: true, cancelable: true }));
+      });
+      await page.goto(url, { waitUntil: 'networkidle' });
+      await page.getByRole('application', { name: 'Graph' }).waitFor();
+      assert(
+        (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
+        'Owner was not restored after the auth redirect.'
+      );
+      await page.getByLabel('Choose repositories').click();
+      assert(
+        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        'Excluded repository was not restored after the auth redirect.'
+      );
+      return [];
     }
   ),
   scenario(
@@ -1035,7 +1167,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 23, `Expected exactly 23 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 26, `Expected exactly 26 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
@@ -1083,25 +1215,41 @@ function collectDiagnostics(page: Page): BrowserDiagnostics {
     outboundRequests: [],
   };
   page.on('console', message => {
-    if (message.type() === 'error') diagnostics.consoleErrors.push(message.text());
+    if (message.type() === 'error' && !isExpectedRecoveryConsoleError(message.text()))
+      diagnostics.consoleErrors.push(message.text());
   });
   page.on('pageerror', error => diagnostics.consoleErrors.push(error.message));
   page.on('response', response => {
-    if (response.url().startsWith(url) && response.status() >= 400)
+    if (
+      response.url().startsWith(url) &&
+      response.status() >= 400 &&
+      !isExpectedRecoveryResponse(response)
+    )
       diagnostics.failedResources.push(
         `${response.status()} ${response.request().resourceType()} ${response.url()}`
       );
   });
-  page.on('requestfailed', request =>
+  page.on('requestfailed', request => {
+    if (request.failure()?.errorText === 'net::ERR_ABORTED') return;
     diagnostics.failedResources.push(
       `${request.resourceType()} ${request.url()} ${request.failure()?.errorText ?? 'failed'}`
-    )
-  );
+    );
+  });
   page.on('request', request => {
     if (!request.url().startsWith(url))
       diagnostics.outboundRequests.push(`${request.method()} ${request.url()}`);
   });
   return diagnostics;
+}
+
+/*** Allows the documented 410 runtime-eviction response exercised by the recovery scenario. */
+function isExpectedRecoveryResponse(response: Response): boolean {
+  return response.status() === 410 && response.url().endsWith('/api/workspace/selection');
+}
+
+/*** Chromium logs the intentional recovery response as a resource error without a page exception. */
+function isExpectedRecoveryConsoleError(message: string): boolean {
+  return message.includes('server responded with a status of 410 (Gone)');
 }
 /*** Waits for the fixture server without browser timing sleeps. */
 async function waitForServerAsync(): Promise<void> {
