@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.0
+
+### Minor Changes
+
+- cd39622: Select GitHub workspace repositories directly from the live UI with progressive graph updates.
+
 ## 0.20.0
 
 ### Minor Changes

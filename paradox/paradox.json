@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.20.0",
+      "value": "v0.21.0",
       "color": "cb3837"
     },
     {
@@ -1650,12 +1650,11 @@
       "path": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
         "createWorkspaceInventoryRoute",
-        "isSelectionSource",
-        "normalizeSelectionSource",
         "WorkspaceInventoryAsync"
       ]
     },
@@ -1683,13 +1682,26 @@
       "path": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
         "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
         "createWorkspaceSelectionRoute"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/settings/adapters/inbound/react/useSettings.ts",
+        "src/types/settings.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "applyWorkspacePresentationSettings",
+        "readWorkspacePresentationSettings"
       ]
     },
     {
@@ -1704,14 +1716,88 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createWorkspaceOpenDetail"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       ],
       "exports": [
-        "ProjectSourceForm"
+        "ProjectSourceForm",
+        "WorkspaceSelectionEventDetail"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts",
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "useBrowserWorkspaceSession",
+        "useSavedWorkspaceSelectionRestore"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "useProjectSourceActions"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+        "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "useProjectSourceFormActions"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "useProjectSourceFormState"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      ],
+      "exports": [
+        "useRepositoryInventory"
       ]
     },
     {
@@ -1738,18 +1824,45 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "LiveWorkspace",
+        "useWorkspaceRepositorySelection"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/settings/adapters/inbound/react/useSettings.ts",
+        "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
         "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts",
+        "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts",
+        "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
         "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts",
-        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "src/types/settings.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
         "WorkspaceControls"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "WorkspaceControlsProps",
+        "WorkspaceMenuProps",
+        "WorkspaceOpenDetail"
       ]
     },
     {
@@ -1821,8 +1934,10 @@
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
@@ -1831,6 +1946,15 @@
       ],
       "exports": [
         "WorkspaceView"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "BrowserWorkspaceSessionStore",
+        "createBrowserWorkspaceSessionStore"
       ]
     },
     {
@@ -1911,6 +2035,15 @@
       ],
       "exports": [
         "hydrateWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "isWorkspaceSelectionSource",
+        "normalizeWorkspaceSelectionSource"
       ]
     },
     {
@@ -2372,9 +2505,13 @@
       "dependencies": [
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "src/types/projectSource.ts"
+        "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "src/types/projectSource.ts",
+        "src/types/workspace.ts"
       ],
       "exports": [
+        "createFixtureWorkspaceSelectionOperationAsync",
+        "discoverFixtureWorkspaceInventoryAsync",
         "loadFixtureWorkspaceAsync",
         "retryFixtureWorkspaceRepositoryAsync"
       ]
@@ -2386,10 +2523,32 @@
       "exports": []
     },
     {
+      "path": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "test/e2e/fixtureWorkspace.ts"
+      ],
+      "exports": [
+        "GET"
+      ]
+    },
+    {
       "path": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts",
       "isEntrypoint": false,
       "dependencies": [
         "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
+        "test/e2e/fixtureWorkspace.ts"
+      ],
+      "exports": [
+        "POST"
+      ]
+    },
+    {
+      "path": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
         "test/e2e/fixtureWorkspace.ts"
       ],
       "exports": [
@@ -3170,6 +3329,14 @@
       "dependencies": [
         "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts"
       ],
       "exports": []
     },
@@ -8020,29 +8187,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
-        "line": 4,
-        "column": 1
-      }
-    },
-    {
-      "name": "isSelectionSource",
-      "description": "Accept only one GitHub owner or the authenticated-user inventory sentinel.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
-        "line": 18,
-        "column": 1
-      }
-    },
-    {
-      "name": "normalizeSelectionSource",
-      "description": "Canonicalize equivalent owner spellings before they become a runtime scope key.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
-        "line": 26,
+        "line": 5,
         "column": 1
       }
     },
@@ -8174,7 +8319,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "line": 51,
+        "line": 55,
         "column": 1
       }
     },
@@ -8185,7 +8330,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "line": 56,
+        "line": 60,
         "column": 1
       }
     },
@@ -8196,7 +8341,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "line": 63,
+        "line": 67,
         "column": 1
       }
     },
@@ -8207,7 +8352,62 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "line": 73,
+        "line": 77,
+        "column": 1
+      }
+    },
+    {
+      "name": "applyWorkspacePresentationSettings",
+      "description": "Restore saved graph presentation without changing the current repository analysis.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "name": "readWorkspacePresentationSettings",
+      "description": "Capture current graph presentation without including analysis data in a workspace definition.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "line": 30,
+        "column": 1
+      }
+    },
+    {
+      "name": "setWorkspaceLayout",
+      "description": "Apply only layouts supported by the current GraphView runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "line": 45,
+        "column": 1
+      }
+    },
+    {
+      "name": "toWorkspaceDependencyKind",
+      "description": "Encode one settings dependency kind into the portable workspace contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
+      "name": "fromWorkspaceDependencyKind",
+      "description": "Decode one portable dependency kind into the settings adapter vocabulary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "line": 70,
         "column": 1
       }
     },
@@ -8256,13 +8456,35 @@
       }
     },
     {
+      "name": "createWorkspaceOpenDetail",
+      "description": "Convert a saved workspace definition into browser-local live-workspace navigation detail.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts",
+        "line": 5,
+        "column": 1
+      }
+    },
+    {
       "name": "ProjectSourceForm",
-      "description": "Edits a GitHub source and stages repository inclusion before one explicit workspace refresh.",
+      "description": "Edits a GitHub source while applying repository selection changes immediately.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 14,
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "name": "SelectionSourceNotice",
+      "description": "Explains why a preserved legacy workspace cannot use the single-owner incremental transport.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "line": 69,
         "column": 1
       }
     },
@@ -8273,7 +8495,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 62,
+        "line": 84,
         "column": 1
       }
     },
@@ -8284,7 +8506,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 78,
+        "line": 100,
         "column": 1
       }
     },
@@ -8295,41 +8517,30 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 98,
+        "line": 120,
         "column": 1
       }
     },
     {
       "name": "useProjectSourceForm",
-      "description": "Keeps staged source edits isolated until an explicit workspace refresh is requested.",
+      "description": "Keeps inventory discovery independent from selection-driven workspace changes.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 117,
+        "line": 139,
         "column": 1
       }
     },
     {
-      "name": "openSource",
-      "description": null,
+      "name": "selectRepositories",
+      "description": "Reuses server-confirmed selection for the initial source and stages later single-owner inventory.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 124,
-        "column": 9
-      }
-    },
-    {
-      "name": "copyRepositoryLinks",
-      "description": null,
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 132,
-        "column": 9
+        "line": 187,
+        "column": 1
       }
     },
     {
@@ -8339,7 +8550,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 157,
+        "line": 198,
         "column": 1
       }
     },
@@ -8350,29 +8561,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 195,
+        "line": 237,
         "column": 1
       }
     },
     {
       "name": "toggleRepository",
-      "description": "Toggle a repository inclusion without requesting another analysis until Open is pressed.",
+      "description": "Toggle a repository inclusion and pass the immediate selection to its workspace owner.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 210,
-        "column": 1
-      }
-    },
-    {
-      "name": "createSelectedRepositoryIds",
-      "description": "Initialize the browser selection from server-discovered repository state.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 218,
+        "line": 252,
         "column": 1
       }
     },
@@ -8383,7 +8583,139 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 227,
+        "line": 260,
+        "column": 1
+      }
+    },
+    {
+      "name": "useBrowserWorkspaceSession",
+      "description": "Restore first, then persist only the active owner and nonsecret repository identifiers.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "name": "markAuthRedirect",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "line": 37,
+        "column": 11
+      }
+    },
+    {
+      "name": "consumeWorkspaceAuthRedirectRestore",
+      "description": "Consume the one-shot browser marker so ordinary page visits never replay prior selections.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "line": 54,
+        "column": 1
+      }
+    },
+    {
+      "name": "useSavedWorkspaceSelectionRestore",
+      "description": "Restore saved owner exclusions only after the current inventory is available to the picker.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "line": 74,
+        "column": 1
+      }
+    },
+    {
+      "name": "useProjectSourceActions",
+      "description": "Creates source-form actions that keep browser navigation local to the live workspace.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+        "line": 6,
+        "column": 1
+      }
+    },
+    {
+      "name": "select",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+        "line": 7,
+        "column": 9
+      }
+    },
+    {
+      "name": "useProjectSourceFormActions",
+      "description": "Combine source-form actions with restoration and nonsecret browser-session persistence.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "useProjectSourceFormState",
+      "description": "Owns the mutable browser state of the source picker independently from inventory transport.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "line": 7,
+        "column": 1
+      }
+    },
+    {
+      "name": "createSelectedRepositoryIds",
+      "description": "Initialize browser selection from the server-authorized discovery result.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "line": 34,
+        "column": 1
+      }
+    },
+    {
+      "name": "useRepositoryInventory",
+      "description": "Fetches only a replacement picker inventory after an owner edit.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "line": 10,
+        "column": 1
+      }
+    },
+    {
+      "name": "loadRepositoryInventoryAsync",
+      "description": "Loads only the repository picker inventory for an edited owner.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "line": 55,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRepositoryInventory",
+      "description": "Narrows the untrusted inventory response before it reaches the repository picker.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "line": 69,
         "column": 1
       }
     },
@@ -8531,13 +8863,167 @@
       }
     },
     {
+      "name": "useWorkspaceRepositorySelection",
+      "description": "Applies the newest streamed repository-selection operation without replacing the graph runtime.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "name": "useWorkspaceSelectionOperation",
+      "description": "Owns request generation, cancellation, and the latest browser selection outside render closures.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "name": "runWorkspaceSelectionAsync",
+      "description": "Start one generation and retain only its corresponding streamed workspace snapshots.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "name": "recoverWorkspaceRuntimeAsync",
+      "description": "Starts a fresh runtime with the current complete selection after the server evicts an old one.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 104,
+        "column": 1
+      }
+    },
+    {
+      "name": "streamWorkspaceSelectionAsync",
+      "description": "Consume every complete NDJSON snapshot as it arrives instead of waiting for the terminal frame.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 138,
+        "column": 1
+      }
+    },
+    {
+      "name": "consumeWorkspaceProgressRecord",
+      "description": "Validate one NDJSON record before it can affect visible graph or status state.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 164,
+        "column": 1
+      }
+    },
+    {
+      "name": "preserveWorkspaceDuringRecovery",
+      "description": "Retain the visible graph only while a recovered runtime has not produced usable topology.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 177,
+        "column": 1
+      }
+    },
+    {
+      "name": "replaceWorkspaceHistory",
+      "description": "Keep history in sync with an applied selection without causing a document navigation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 195,
+        "column": 1
+      }
+    },
+    {
+      "name": "normalizeSource",
+      "description": "Normalize the owner identity to the same stable value used in the server runtime contract.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 205,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRuntimeGone",
+      "description": "Identify the documented recoverable runtime eviction response.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 210,
+        "column": 1
+      }
+    },
+    {
+      "name": "readSelectionError",
+      "description": "Keep transport failures understandable without exposing untrusted server bodies.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 215,
+        "column": 1
+      }
+    },
+    {
+      "name": "isWorkspaceProgressFrame",
+      "description": "Narrow a credential-free progressive workspace snapshot from the server transport.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 222,
+        "column": 1
+      }
+    },
+    {
+      "name": "isTerminalErrorFrame",
+      "description": "Distinguish a documented terminal stream failure from ordinary progress snapshots.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 241,
+        "column": 1
+      }
+    },
+    {
+      "name": "isWorkspaceLoadResult",
+      "description": "Check only the portable workspace result discriminant at the transport boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 253,
+        "column": 1
+      }
+    },
+    {
       "name": "WorkspaceControls",
       "description": "Renders browser-local named workspace controls without persisting analyzed repository data.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 16,
+        "line": 24,
         "column": 1
       }
     },
@@ -8548,7 +9034,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 36,
+        "line": 58,
         "column": 1
       }
     },
@@ -8559,7 +9045,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 53,
+        "line": 75,
         "column": 1
       }
     },
@@ -8570,7 +9056,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 65,
+        "line": 86,
         "column": 1
       }
     },
@@ -8581,7 +9067,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 82,
+        "line": 102,
         "column": 1
       }
     },
@@ -8592,7 +9078,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 118,
+        "line": 137,
         "column": 1
       }
     },
@@ -8603,7 +9089,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 148,
+        "line": 167,
         "column": 1
       }
     },
@@ -8614,7 +9100,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 175,
+        "line": 195,
         "column": 1
       }
     },
@@ -8625,7 +9111,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 189,
+        "line": 209,
         "column": 1
       }
     },
@@ -8636,7 +9122,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 208,
+        "line": 228,
         "column": 1
       }
     },
@@ -8647,73 +9133,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 222,
-        "column": 1
-      }
-    },
-    {
-      "name": "readWorkspaceSettings",
-      "description": "Capture only presentation controls; immutable analysis data remains outside browser definitions.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 232,
-        "column": 1
-      }
-    },
-    {
-      "name": "applyWorkspaceSettings",
-      "description": "Restore graph settings before navigating so the loaded workspace never reanalyzes for filters.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 247,
-        "column": 1
-      }
-    },
-    {
-      "name": "setWorkspaceLayout",
-      "description": "Apply only layouts supported by the current GraphView runtime.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 265,
-        "column": 1
-      }
-    },
-    {
-      "name": "toWorkspaceDependencyKind",
-      "description": "Encode one settings dependency kind into the portable workspace contract.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 276,
-        "column": 1
-      }
-    },
-    {
-      "name": "fromWorkspaceDependencyKind",
-      "description": "Decode one portable dependency kind into the settings adapter vocabulary.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 288,
+        "line": 244,
         "column": 1
       }
     },
     {
       "name": "openWorkspace",
-      "description": "Navigate through the canonical server source loader using the workspace's persisted selection.",
+      "description": "Apply saved presentation while exposing the portable source policy to the live workspace owner.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 300,
+        "line": 254,
         "column": 1
       }
     },
@@ -8735,7 +9166,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 17,
+        "line": 18,
         "column": 1
       }
     },
@@ -8746,7 +9177,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 65,
+        "line": 67,
         "column": 1
       }
     },
@@ -8757,7 +9188,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 81,
+        "line": 83,
         "column": 1
       }
     },
@@ -8768,7 +9199,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 113,
+        "line": 115,
         "column": 1
       }
     },
@@ -8790,7 +9221,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 49,
+        "line": 50,
         "column": 1
       }
     },
@@ -8801,7 +9232,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 73,
+        "line": 74,
         "column": 1
       }
     },
@@ -8812,7 +9243,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 112,
+        "line": 113,
         "column": 1
       }
     },
@@ -8900,7 +9331,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 20,
+        "line": 25,
         "column": 1
       }
     },
@@ -8911,7 +9342,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 58,
+        "line": 75,
+        "column": 1
+      }
+    },
+    {
+      "name": "selectedRepositoryIds",
+      "description": "Derive the initial server-confirmed selection without persisting a graph or provider payload.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 127,
         "column": 1
       }
     },
@@ -8922,7 +9364,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 106,
+        "line": 136,
         "column": 1
       }
     },
@@ -8933,7 +9375,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 117,
+        "line": 147,
         "column": 1
       }
     },
@@ -8944,7 +9386,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 169,
+        "line": 200,
         "column": 1
       }
     },
@@ -8955,7 +9397,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 187,
+        "line": 218,
         "column": 1
       }
     },
@@ -8966,7 +9408,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 213,
+        "line": 244,
         "column": 1
       }
     },
@@ -8977,7 +9419,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 230,
+        "line": 261,
         "column": 1
       }
     },
@@ -8988,7 +9430,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 242,
+        "line": 273,
+        "column": 1
+      }
+    },
+    {
+      "name": "createBrowserWorkspaceSessionStore",
+      "description": "Creates the browser-local persistence boundary for the nonsecret active workspace selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts",
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "name": "isWorkspaceSession",
+      "description": "Rejects malformed, oversized, or credential-shaped browser persistence before use.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts",
+        "line": 28,
         "column": 1
       }
     },
@@ -9506,6 +9970,28 @@
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
         "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "name": "isWorkspaceSelectionSource",
+      "description": "Recognizes the single-owner source scope accepted by workspace discovery and selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
+      "name": "normalizeWorkspaceSelectionSource",
+      "description": "Canonicalizes equivalent owner spellings before they become a workspace runtime scope key.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "line": 10,
         "column": 1
       }
     },
@@ -10758,12 +11244,22 @@
       },
       {
         "fromPath": "test/e2e/fixtureWorkspace.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromPath": "test/e2e/fixtureWorkspace.ts",
         "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
         "fromPath": "test/e2e/fixtureWorkspace.ts",
         "toPath": "src/types/projectSource.ts",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromPath": "test/e2e/fixtureWorkspace.ts",
+        "toPath": "src/types/workspace.ts",
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
@@ -12082,6 +12578,11 @@
         "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
       },
       {
+        "fromPath": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "sourcePath": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/workspace/loadWorkspaceAsync.spec.ts",
         "toPath": "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "sourcePath": "test/src/features/workspace/loadWorkspaceAsync.spec.ts"
@@ -13158,6 +13659,11 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
       },
@@ -13173,12 +13679,12 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
@@ -13192,6 +13698,21 @@
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "toPath": "src/features/settings/adapters/inbound/react/useSettings.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "toPath": "src/types/settings.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts",
         "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts"
@@ -13202,6 +13723,36 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/createWorkspaceDefinition.ts"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
@@ -13210,6 +13761,66 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
@@ -13237,8 +13848,28 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "toPath": "src/features/settings/adapters/inbound/react/useSettings.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -13248,23 +13879,33 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/createWorkspaceOpenDetail.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "toPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "toPath": "src/types/settings.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
@@ -13413,12 +14054,22 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -13472,6 +14123,16 @@
         "sourcePath": "test/fixtures/typescript/compound-selection/src/features/feature.ts"
       },
       {
+        "fromPath": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts",
+        "toPath": "test/e2e/fixtureWorkspace.ts",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts"
+      },
+      {
         "fromPath": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts",
         "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceRetryRoute.ts",
         "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts"
@@ -13480,6 +14141,16 @@
         "fromPath": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts",
         "toPath": "test/e2e/fixtureWorkspace.ts",
         "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts",
+        "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts",
+        "toPath": "test/e2e/fixtureWorkspace.ts",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts"
       },
       {
         "fromPath": "test/fixtures/workspace-multi/owner-b/workspace/packages/client/src/left/index.ts",
@@ -14220,6 +14891,42 @@
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
+        "fromSymbol": "discoverFixtureWorkspaceInventoryAsync",
+        "toSymbol": "discoverFixtureAsync",
+        "callExpression": "discoverFixtureAsync",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "createFixtureWorkspaceSelectionOperationAsync",
+        "toSymbol": "createFixtureRuntime",
+        "callExpression": "createFixtureRuntime",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "createFixtureWorkspaceSelectionOperationAsync",
+        "toSymbol": "fixtureRuntimeRegistry",
+        "callExpression": "fixtureRuntimeRegistry",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "createFixtureWorkspaceSelectionOperationAsync",
+        "toSymbol": "discoverFixtureAsync",
+        "callExpression": "discoverFixtureAsync",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "runAsync",
+        "toSymbol": "loadAsync",
+        "callExpression": "runtime.loadAsync",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "runAsync",
+        "toSymbol": "updateAsync",
+        "callExpression": "runtime.updateAsync",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
         "fromSymbol": "materializeFixtureAsync",
         "toSymbol": "__function",
         "callExpression": "createFixtureMaterializer()",
@@ -14301,6 +15008,12 @@
         "fromSymbol": "resolveFixtureRoot",
         "toSymbol": "resolve",
         "callExpression": "resolve",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "discoverFixtureAsync",
+        "toSymbol": "normalizeFixtureOwnerSource",
+        "callExpression": "normalizeFixtureOwnerSource",
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
       },
       {
@@ -14664,6 +15377,12 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
+        "fromSymbol": "assertGraphCanvasAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
         "fromSymbol": "assertSwitchCheckedAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
@@ -14701,20 +15420,38 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "openWorkspaceAsync",
-        "callExpression": "openWorkspaceAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assert",
         "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "assertGraphCanvasAsync",
+        "callExpression": "assertGraphCanvasAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "openRepositoryPickerAsync",
+        "callExpression": "openRepositoryPickerAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "openWorkspaceAsync",
+        "callExpression": "openWorkspaceAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assertTopmostControlAsync",
         "callExpression": "assertTopmostControlAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "openWorkspaceMenuAsync",
+        "callExpression": "openWorkspaceMenuAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -14757,6 +15494,18 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "runAcceptanceAsync",
         "callExpression": "runAcceptanceAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "isExpectedRecoveryConsoleError",
+        "callExpression": "isExpectedRecoveryConsoleError",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "isExpectedRecoveryResponse",
+        "callExpression": "isExpectedRecoveryResponse",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -19914,6 +20663,30 @@
         "sourcePath": "test/src/features/workspace/createWorkspaceSelectionRoute.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
+        "sourcePath": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts",
+        "toSymbol": "normalizeWorkspaceSelectionSource",
+        "callExpression": "normalizeWorkspaceSelectionSource",
+        "sourcePath": "test/src/features/workspace/isWorkspaceSelectionSource.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/workspace/loadWorkspaceAsync.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -24259,8 +25032,8 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
-        "toSymbol": "isSelectionSource",
-        "callExpression": "isSelectionSource",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts"
       },
       {
@@ -24337,8 +25110,8 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts",
-        "toSymbol": "normalizeSelectionSource",
-        "callExpression": "normalizeSelectionSource",
+        "toSymbol": "normalizeWorkspaceSelectionSource",
+        "callExpression": "normalizeWorkspaceSelectionSource",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
@@ -24367,8 +25140,8 @@
       },
       {
         "fromSymbol": "isSelectionRequest",
-        "toSymbol": "isSelectionSource",
-        "callExpression": "isSelectionSource",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
       },
       {
@@ -24388,6 +25161,54 @@
         "toSymbol": "isOpaqueIdentifier",
         "callExpression": "isOpaqueIdentifier",
         "sourcePath": "src/features/workspace/adapters/inbound/next/createWorkspaceSelectionRoute.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "setDependencyPackagePrefix",
+        "callExpression": "settings.setDependencyPackagePrefix",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "setWorkspaceLayout",
+        "callExpression": "setWorkspaceLayout",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "setCytoscapeLayoutSpacing",
+        "callExpression": "settings.setCytoscapeLayoutSpacing",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "setSubPackageDepth",
+        "callExpression": "settings.setSubPackageDepth",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "toggleShowCompoundNodes",
+        "callExpression": "settings.toggleShowCompoundNodes",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "toggleShowVendorPackages",
+        "callExpression": "settings.toggleShowVendorPackages",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "toggleDependencyKind",
+        "callExpression": "settings.toggleDependencyKind",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "setWorkspaceLayout",
+        "toSymbol": "setCytoscapeLayout",
+        "callExpression": "settings.setCytoscapeLayout",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
       },
       {
         "fromSymbol": "createWorkspaceDefinition",
@@ -24451,20 +25272,32 @@
       },
       {
         "fromSymbol": "useProjectSourceForm",
-        "toSymbol": "useState",
-        "callExpression": "useState",
+        "toSymbol": "useProjectSourceFormState",
+        "callExpression": "useProjectSourceFormState",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
         "fromSymbol": "useProjectSourceForm",
-        "toSymbol": "createSelectedRepositoryIds",
-        "callExpression": "createSelectedRepositoryIds",
+        "toSymbol": "useBrowserWorkspaceSession",
+        "callExpression": "useBrowserWorkspaceSession",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
         "fromSymbol": "useProjectSourceForm",
-        "toSymbol": "useEffect",
-        "callExpression": "useEffect",
+        "toSymbol": "useRepositoryInventory",
+        "callExpression": "useRepositoryInventory",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "useProjectSourceForm",
+        "toSymbol": "selectRepositories",
+        "callExpression": "selectRepositories",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "useProjectSourceForm",
+        "toSymbol": "useProjectSourceFormActions",
+        "callExpression": "useProjectSourceFormActions",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
@@ -24484,6 +25317,240 @@
         "toSymbol": "toggleRepository",
         "callExpression": "toggleRepository",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "useBrowserWorkspaceSession",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "useBrowserWorkspaceSession",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "load",
+        "callExpression": "createBrowserWorkspaceSessionStore(window.localStorage).load",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "createBrowserWorkspaceSessionStore",
+        "callExpression": "createBrowserWorkspaceSessionStore",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "consumeWorkspaceAuthRedirectRestore",
+        "callExpression": "consumeWorkspaceAuthRedirectRestore",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "setSource",
+        "callExpression": "setSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "setSelectedIds",
+        "callExpression": "setSelectedIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "onRestoreSelection",
+        "callExpression": "onRestoreSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "setHydrated",
+        "callExpression": "setHydrated",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "save",
+        "callExpression": "createBrowserWorkspaceSessionStore(window.localStorage).save",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "markAuthRedirect",
+        "toSymbol": "save",
+        "callExpression": "createBrowserWorkspaceSessionStore(window.localStorage).save",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "markAuthRedirect",
+        "toSymbol": "createBrowserWorkspaceSessionStore",
+        "callExpression": "createBrowserWorkspaceSessionStore",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "useSavedWorkspaceSelectionRestore",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "setSelectedIds",
+        "callExpression": "input.setSelectedIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "setExclusions",
+        "callExpression": "input.setExclusions",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
+        "toSymbol": "select",
+        "callExpression": "input.select",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
+      },
+      {
+        "fromSymbol": "select",
+        "toSymbol": "setSelectedIds",
+        "callExpression": "input.setSelectedIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "select",
+        "toSymbol": "onSelection",
+        "callExpression": "input.onSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "deleteWorkspace",
+        "toSymbol": "setActiveWorkspaceId",
+        "callExpression": "input.setActiveWorkspaceId",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "openWorkspace",
+        "toSymbol": "setActiveWorkspaceId",
+        "callExpression": "input.setActiveWorkspaceId",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "openWorkspace",
+        "toSymbol": "setSource",
+        "callExpression": "input.setSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "openWorkspace",
+        "toSymbol": "setWorkspaceExclusions",
+        "callExpression": "input.setWorkspaceExclusions",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "setSelectedIds",
+        "toSymbol": "select",
+        "callExpression": "select",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "setSource",
+        "toSymbol": "setSource",
+        "callExpression": "input.setSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "setSource",
+        "toSymbol": "setSelectedIds",
+        "callExpression": "input.setSelectedIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceActions.ts"
+      },
+      {
+        "fromSymbol": "useProjectSourceFormActions",
+        "toSymbol": "useProjectSourceActions",
+        "callExpression": "useProjectSourceActions",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts"
+      },
+      {
+        "fromSymbol": "useProjectSourceFormActions",
+        "toSymbol": "useSavedWorkspaceSelectionRestore",
+        "callExpression": "useSavedWorkspaceSelectionRestore",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormActions.ts"
+      },
+      {
+        "fromSymbol": "useProjectSourceFormState",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts"
+      },
+      {
+        "fromSymbol": "useProjectSourceFormState",
+        "toSymbol": "createSelectedRepositoryIds",
+        "callExpression": "createSelectedRepositoryIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useProjectSourceFormState.ts"
+      },
+      {
+        "fromSymbol": "useRepositoryInventory",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "useRepositoryInventory",
+        "toSymbol": "normalizeWorkspaceSelectionSource",
+        "callExpression": "normalizeWorkspaceSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "useRepositoryInventory",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "useRepositoryInventory",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "toSymbol": "loadRepositoryInventoryAsync",
+        "callExpression": "loadRepositoryInventoryAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "toSymbol": "setInventoryError",
+        "callExpression": "setInventoryError",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "toSymbol": "setLoadedOwner",
+        "callExpression": "setLoadedOwner",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts",
+        "toSymbol": "setRepositories",
+        "callExpression": "setRepositories",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
+      },
+      {
+        "fromSymbol": "loadRepositoryInventoryAsync",
+        "toSymbol": "isRepositoryInventory",
+        "callExpression": "isRepositoryInventory",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useRepositoryInventory.ts"
       },
       {
         "fromSymbol": "useWorkspaceCycleInspection",
@@ -24636,6 +25703,156 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts"
       },
       {
+        "fromSymbol": "useWorkspaceRepositorySelection",
+        "toSymbol": "useWorkspaceSelectionOperation",
+        "callExpression": "useWorkspaceSelectionOperation",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "useWorkspaceRepositorySelection",
+        "toSymbol": "useCallback",
+        "callExpression": "useCallback",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "useWorkspaceSelectionOperation",
+        "toSymbol": "useRef",
+        "callExpression": "useRef",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "useWorkspaceSelectionOperation",
+        "toSymbol": "normalizeSource",
+        "callExpression": "normalizeSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "useWorkspaceSelectionOperation",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toSymbol": "runWorkspaceSelectionAsync",
+        "callExpression": "runWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "normalizeSource",
+        "callExpression": "normalizeSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "replaceWorkspaceHistory",
+        "callExpression": "replaceWorkspaceHistory",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "streamWorkspaceSelectionAsync",
+        "callExpression": "streamWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toSymbol": "setLiveWorkspace",
+        "callExpression": "setLiveWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toSymbol": "preserveWorkspaceDuringRecovery",
+        "callExpression": "preserveWorkspaceDuringRecovery",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "isRuntimeGone",
+        "callExpression": "isRuntimeGone",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "recoverWorkspaceRuntimeAsync",
+        "callExpression": "recoverWorkspaceRuntimeAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "setLiveWorkspace",
+        "callExpression": "setLiveWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toSymbol": "readSelectionError",
+        "callExpression": "readSelectionError",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "recoverWorkspaceRuntimeAsync",
+        "toSymbol": "streamWorkspaceSelectionAsync",
+        "callExpression": "streamWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "recoverWorkspaceRuntimeAsync",
+        "toSymbol": "replaceWorkspaceHistory",
+        "callExpression": "replaceWorkspaceHistory",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "recoverWorkspaceRuntimeAsync",
+        "toSymbol": "setLiveWorkspace",
+        "callExpression": "setLiveWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toSymbol": "consumeWorkspaceProgressRecord",
+        "callExpression": "consumeWorkspaceProgressRecord",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "streamWorkspaceSelectionAsync",
+        "toSymbol": "consumeWorkspaceProgressRecord",
+        "callExpression": "consumeWorkspaceProgressRecord",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "consumeWorkspaceProgressRecord",
+        "toSymbol": "isTerminalErrorFrame",
+        "callExpression": "isTerminalErrorFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "consumeWorkspaceProgressRecord",
+        "toSymbol": "isWorkspaceProgressFrame",
+        "callExpression": "isWorkspaceProgressFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "consumeWorkspaceProgressRecord",
+        "toSymbol": "onFrame",
+        "callExpression": "onFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "isWorkspaceProgressFrame",
+        "toSymbol": "isWorkspaceLoadResult",
+        "callExpression": "isWorkspaceLoadResult",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
         "fromSymbol": "WorkspaceControls",
         "toSymbol": "useSettings",
         "callExpression": "useSettings",
@@ -24667,6 +25884,12 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
+        "toSymbol": "openWorkspace",
+        "callExpression": "openWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "toSymbol": "renameWorkspace",
         "callExpression": "renameWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
@@ -24685,8 +25908,8 @@
       },
       {
         "fromSymbol": "hasUnsavedChanges",
-        "toSymbol": "readWorkspaceSettings",
-        "callExpression": "readWorkspaceSettings",
+        "toSymbol": "readWorkspacePresentationSettings",
+        "callExpression": "readWorkspacePresentationSettings",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -24733,8 +25956,8 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "toSymbol": "applyWorkspaceSettings",
-        "callExpression": "applyWorkspaceSettings",
+        "toSymbol": "applyWorkspacePresentationSettings",
+        "callExpression": "applyWorkspacePresentationSettings",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -24763,8 +25986,8 @@
       },
       {
         "fromSymbol": "saveWorkspace",
-        "toSymbol": "readWorkspaceSettings",
-        "callExpression": "readWorkspaceSettings",
+        "toSymbol": "readWorkspacePresentationSettings",
+        "callExpression": "readWorkspacePresentationSettings",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -24787,8 +26010,8 @@
       },
       {
         "fromSymbol": "saveWorkspace",
-        "toSymbol": "openWorkspace",
-        "callExpression": "openWorkspace",
+        "toSymbol": "open",
+        "callExpression": "open",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -24825,6 +26048,12 @@
         "fromSymbol": "deleteWorkspace",
         "toSymbol": "createBrowserWorkspaceStore",
         "callExpression": "createBrowserWorkspaceStore",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
+      },
+      {
+        "fromSymbol": "deleteWorkspace",
+        "toSymbol": "onDelete",
+        "callExpression": "onDelete",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -24834,51 +26063,21 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "setDependencyPackagePrefix",
-        "callExpression": "settings.setDependencyPackagePrefix",
+        "fromSymbol": "openWorkspace",
+        "toSymbol": "applyWorkspacePresentationSettings",
+        "callExpression": "applyWorkspacePresentationSettings",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "setWorkspaceLayout",
-        "callExpression": "setWorkspaceLayout",
+        "fromSymbol": "openWorkspace",
+        "toSymbol": "onOpenWorkspace",
+        "callExpression": "onOpenWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "setCytoscapeLayoutSpacing",
-        "callExpression": "settings.setCytoscapeLayoutSpacing",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "setSubPackageDepth",
-        "callExpression": "settings.setSubPackageDepth",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "toggleShowCompoundNodes",
-        "callExpression": "settings.toggleShowCompoundNodes",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "toggleShowVendorPackages",
-        "callExpression": "settings.toggleShowVendorPackages",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromSymbol": "applyWorkspaceSettings",
-        "toSymbol": "toggleDependencyKind",
-        "callExpression": "settings.toggleDependencyKind",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
-      },
-      {
-        "fromSymbol": "setWorkspaceLayout",
-        "toSymbol": "setCytoscapeLayout",
-        "callExpression": "settings.setCytoscapeLayout",
+        "fromSymbol": "openWorkspace",
+        "toSymbol": "createWorkspaceOpenDetail",
+        "callExpression": "createWorkspaceOpenDetail",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
@@ -24979,6 +26178,18 @@
       },
       {
         "fromSymbol": "WorkspaceView",
+        "toSymbol": "useWorkspaceRepositorySelection",
+        "callExpression": "useWorkspaceRepositorySelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceView",
+        "toSymbol": "selectedRepositoryIds",
+        "callExpression": "selectedRepositoryIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceView",
         "toSymbol": "useWorkspaceRepositoryRetry",
         "callExpression": "useWorkspaceRepositoryRetry",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
@@ -25051,6 +26262,12 @@
       },
       {
         "fromSymbol": "load",
+        "toSymbol": "isWorkspaceSession",
+        "callExpression": "isWorkspaceSession",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts"
+      },
+      {
+        "fromSymbol": "load",
         "toSymbol": "validateWorkspaceDefinitions",
         "callExpression": "validateWorkspaceDefinitions",
         "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts"
@@ -25068,10 +26285,28 @@
         "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts"
       },
       {
+        "fromSymbol": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts",
+        "toSymbol": "createWorkspaceInventoryRoute",
+        "callExpression": "createWorkspaceInventoryRoute",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts",
+        "toSymbol": "discoverFixtureWorkspaceInventoryAsync",
+        "callExpression": "discoverFixtureWorkspaceInventoryAsync",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/inventory/route.ts"
+      },
+      {
         "fromSymbol": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts",
         "toSymbol": "createWorkspaceRetryRoute",
         "callExpression": "createWorkspaceRetryRoute",
         "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/retry/route.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts",
+        "toSymbol": "createWorkspaceSelectionRoute",
+        "callExpression": "createWorkspaceSelectionRoute",
+        "sourcePath": "test/e2e/next-fixture-app/app/api/workspace/selection/route.ts"
       }
     ],
     "typeReferences": [
