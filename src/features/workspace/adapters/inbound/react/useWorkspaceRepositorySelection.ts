@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 import type { WorkspaceSelectionEventDetail } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
+import { isWorkspaceSelectionSource } from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
 import type { WorkspaceLoadResult, WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
 /*** Applies the newest streamed repository-selection operation without replacing the graph runtime. */
@@ -55,6 +56,7 @@ async function runWorkspaceSelectionAsync(
   setLiveWorkspace: (value: LiveWorkspace | ((current: LiveWorkspace) => LiveWorkspace)) => void
 ): Promise<void> {
   const source = normalizeSource(detail.source);
+  if (!isWorkspaceSelectionSource(source)) return;
   const selectedIds = new Set(detail.selectedIds);
   const sourceChanged = source !== previous.source;
   const addedRepositoryIds = sourceChanged

@@ -17,7 +17,10 @@ export function useProjectSourceFormActions(input: ProjectSourceFormActionsInput
   });
   useSavedWorkspaceSelectionRestore({
     exclusions: input.state.workspaceExclusions,
+    inventoryLoaded: input.inventoryLoaded,
+    inventoryOwner: input.inventoryOwner,
     repositories: input.repositories,
+    selectionSupported: input.selectionSupported,
     select: actions.select,
     setExclusions: input.state.setWorkspaceExclusions,
     setSelectedIds: input.state.setSelectedIds,
@@ -31,7 +34,10 @@ interface ProjectSourceFormActionsInput {
     readonly selectedIds: readonly string[];
     readonly source: string;
   }) => void;
+  readonly inventoryLoaded: boolean;
+  readonly inventoryOwner: string | undefined;
   readonly repositories: readonly WorkspaceRepositoryOption[];
+  readonly selectionSupported: boolean;
   readonly selectedRepositories: readonly WorkspaceRepositoryOption[];
   readonly state: ReturnType<typeof useProjectSourceFormState>;
 }

@@ -108,8 +108,8 @@ async function buildFixtureAsync(): Promise<void> {
   try {
     const output = await runProcessAsync(
       command,
-      ['next', 'build', fixtureApplication, '--webpack'],
-      process.cwd(),
+      ['next', 'build', '--webpack'],
+      fixtureApplication,
       [0],
       fixtureEnvironment
     );
@@ -586,14 +586,24 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
 const scenarios: readonly Scenario[] = [
   scenario(
     'source-picker-owner-forms',
-    'Discovers an entered owner without navigating the existing workspace.',
+    'Discovers a single owner through delayed and empty inventories without navigating the workspace.',
     async page => {
       await page.goto(url, { waitUntil: 'networkidle' });
+      await page.getByLabel('GitHub owner').fill('owner-delayed');
+      await page.getByLabel('GitHub owner').fill('owner-empty');
+      await page.getByLabel('Choose repositories').click();
+      await page.getByText('No repositories match this search.').waitFor();
+      await page.getByLabel('Choose repositories').click();
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').check();
-      await page.getByText('catalog', { exact: true }).waitFor();
+      await page.waitForURL(
+        openedUrl =>
+          openedUrl.searchParams.get('source') === 'owner-a' &&
+          openedUrl.searchParams.get('repositories') === 'owner-a-catalog'
+      );
+      await page.getByRole('application', { name: 'Graph' }).waitFor();
       assert(
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Shorthand repository owner was not normalized.'
@@ -608,17 +618,22 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'source-picker-multi-select',
-    'Filters repository choices and changes checkbox state.',
+    'Keeps a multi-owner graph visible while marking incremental selection unavailable.',
     async page => {
       await openWorkspaceAsync(page);
       const picker = page.getByLabel('Choose repositories');
       await assertTopmostControlAsync(picker, 'Repository picker');
-      await picker.click();
-      await page.getByLabel('Search repositories').fill('catalog');
-      const box = page.getByLabel('owner-a/catalog');
-      assert(await box.isChecked(), 'Catalog was not selected.');
-      await box.uncheck();
-      assert(!(await box.isChecked()), 'Catalog checkbox did not change.');
+      assert(
+        await picker.isDisabled(),
+        'Multi-owner picker was not bounded to the server contract.'
+      );
+      await page
+        .getByText('Repository selection is available for one GitHub owner or @me.', {
+          exact: false,
+        })
+        .waitFor();
+      await page.getByText('owner-a', { exact: true }).waitFor();
+      await page.getByText('owner-b', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -650,26 +665,31 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'source-picker-overlap-deduplication',
-    'Deduplicates overlapping owner discovery.',
+    'Preserves overlapping-owner topology without exposing it to a single-owner selection request.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByLabel('Choose repositories').click();
       assert(
-        (await page.getByLabel('owner-a/shared').count()) === 1,
-        'Overlapping repository was duplicated.'
+        await page.getByLabel('Choose repositories').isDisabled(),
+        'Overlapping owners were exposed to the single-owner picker.'
       );
+      await page.getByRole('button', { name: 'Expand' }).first().click();
+      await page.getByText('shared', { exact: true }).waitFor();
       return [];
     }
   ),
-  scenario('source-picker-exclusion-restoration', 'Restores repository exclusions.', async page => {
-    await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
-    await page.getByLabel('Choose repositories').click();
-    assert(
-      !(await page.getByLabel('owner-a/catalog').isChecked()),
-      'Excluded repository was selected.'
-    );
-    return [];
-  }),
+  scenario(
+    'source-picker-exclusion-restoration',
+    'Preserves multi-owner exclusions.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
+      assert(
+        await page.getByLabel('Choose repositories').isDisabled(),
+        'Multi-owner exclusions were exposed to incremental selection.'
+      );
+      await page.getByRole('button', { name: 'Repositories (4/5)' }).waitFor();
+      return [];
+    }
+  ),
   scenario(
     'canvas-connected-disconnected',
     'Shows connected and disconnected projects on the shared canvas.',
@@ -819,7 +839,7 @@ const scenarios: readonly Scenario[] = [
     'workspace-reload-restoration',
     'Restores source exclusions and settings after reload.',
     async page => {
-      await openWorkspaceAsync(page);
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').uncheck();
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });

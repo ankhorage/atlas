@@ -37,6 +37,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         repositories={visibleRepositories}
         search={sourceForm.search}
         selectedIds={sourceForm.selectedIds}
+        selectionSupported={sourceForm.selectionSupported}
         totalCount={sourceForm.repositories.length}
         initiallyOpen={props.selectionRequired}
         onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
@@ -48,6 +49,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         }
         onSelectionChange={sourceForm.setSelectedIds}
       />
+      <SelectionSourceNotice sourceForm={sourceForm} />
       {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
       <PublicOnlyFilter checked={publicOnly} onChange={setPublicOnly} />
       <RepositoryCopyButton sourceForm={sourceForm} />
@@ -60,6 +62,21 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         onOpenWorkspace={sourceForm.openWorkspace}
       />
     </View>
+  );
+}
+
+/*** Explains why a preserved legacy workspace cannot use the single-owner incremental transport. */
+function SelectionSourceNotice({
+  sourceForm,
+}: {
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+}) {
+  if (sourceForm.selectionSupported || sourceForm.source.trim() === '') return null;
+  return (
+    <span role="status">
+      Repository selection is available for one GitHub owner or @me. This workspace remains
+      unchanged.
+    </span>
   );
 }
 
@@ -127,25 +144,24 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     props.activeWorkspaceId
   );
   useBrowserWorkspaceSession({ ...state, onRestoreSelection: props.onSelection });
-  const { inventoryError, repositories: inventory } = useRepositoryInventory(
-    initial.owner,
-    props.repositories,
-    state.source
-  );
-  const owner = state.source.trim();
-  const repositories =
-    owner === initial.owner
-      ? inventory
-      : inventory.map(repository => ({
-          ...repository,
-          selected: state.selectedIds.has(repository.id),
-        }));
+  const {
+    inventoryError,
+    inventoryLoaded,
+    inventoryOwner,
+    repositories: inventory,
+    selectionSupported,
+  } = useRepositoryInventory(initial.owner, props.repositories, state.source);
+  const owner = state.source.trim().toLowerCase();
+  const repositories = selectRepositories(inventory, initial.owner, owner, state.selectedIds);
   const selectedRepositories = repositories.filter(repository =>
     state.selectedIds.has(repository.id)
   );
   const actions = useProjectSourceFormActions({
     onSelection: props.onSelection,
+    inventoryLoaded,
+    inventoryOwner,
     repositories,
+    selectionSupported,
     selectedRepositories,
     state,
   });
@@ -159,11 +175,23 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     search: state.search,
     selectedIds: state.selectedIds,
     selectedRepositories,
+    selectionSupported,
     setSearch: state.setSearch,
     setSelectedIds: actions.setSelectedIds,
     setSource: actions.setSource,
     source: state.source,
   };
+}
+
+/*** Reuses server-confirmed selection for the initial source and stages later single-owner inventory. */
+function selectRepositories(
+  inventory: readonly WorkspaceRepositoryOption[],
+  initialOwner: string,
+  owner: string,
+  selectedIds: ReadonlySet<string>
+): readonly WorkspaceRepositoryOption[] {
+  if (owner === initialOwner.toLowerCase()) return inventory;
+  return inventory.map(repository => ({ ...repository, selected: selectedIds.has(repository.id) }));
 }
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
@@ -175,6 +203,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
       anchor={({ toggle }) => (
         <Button
           accessibilityLabel="Choose repositories"
+          disabled={!props.selectionSupported}
           size="s"
           variant="outline"
           onPress={toggle}
@@ -256,6 +285,7 @@ interface RepositoryPickerProps {
   readonly repositories: readonly WorkspaceRepositoryOption[];
   readonly search: string;
   readonly selectedIds: ReadonlySet<string>;
+  readonly selectionSupported: boolean;
   readonly totalCount: number;
   readonly initiallyOpen?: boolean;
   readonly onDeselectAll: () => void;

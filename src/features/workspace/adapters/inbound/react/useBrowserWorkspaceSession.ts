@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 
 import { createBrowserWorkspaceSessionStore } from '@/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore';
+import { isWorkspaceSelectionSource } from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 /*** Restore first, then persist only the active owner and nonsecret repository identifiers. */
@@ -15,10 +16,11 @@ export function useBrowserWorkspaceSession(input: BrowserWorkspaceSessionInput):
         setSource(session.source);
         const restoredSelectedIds = new Set(session.selectedRepositoryIds);
         setSelectedIds(restoredSelectedIds);
-        onRestoreSelection({
-          selectedIds: [...restoredSelectedIds].toSorted(),
-          source: session.source,
-        });
+        if (isWorkspaceSelectionSource(session.source.trim().toLowerCase()))
+          onRestoreSelection({
+            selectedIds: [...restoredSelectedIds].toSorted(),
+            source: session.source,
+          });
       }
       setHydrated(true);
     });
@@ -76,7 +78,9 @@ export function useSavedWorkspaceSelectionRestore(
     const { exclusions } = input;
     if (
       exclusions === undefined ||
-      input.repositories.some(repository => repository.owner !== input.source)
+      !input.selectionSupported ||
+      !input.inventoryLoaded ||
+      input.inventoryOwner !== input.source.trim().toLowerCase()
     )
       return;
     const selectedIds = new Set(
@@ -92,7 +96,10 @@ export function useSavedWorkspaceSelectionRestore(
 
 interface SavedWorkspaceSelectionRestoreInput {
   readonly exclusions: ReadonlySet<string> | undefined;
+  readonly inventoryLoaded: boolean;
+  readonly inventoryOwner: string | undefined;
   readonly repositories: readonly WorkspaceRepositoryOption[];
+  readonly selectionSupported: boolean;
   readonly select: (selectedIds: Set<string>, source?: string) => void;
   readonly setExclusions: (selectedIds: ReadonlySet<string> | undefined) => void;
   readonly setSelectedIds: (selectedIds: Set<string>) => void;

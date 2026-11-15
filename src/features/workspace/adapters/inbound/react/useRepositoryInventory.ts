@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
 
+import {
+  isWorkspaceSelectionSource,
+  normalizeWorkspaceSelectionSource,
+} from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 /*** Fetches only a replacement picker inventory after an owner edit. */
@@ -9,14 +13,20 @@ export function useRepositoryInventory(
   source: string
 ) {
   const [repositories, setRepositories] = useState(initialRepositories ?? []);
+  const initialInventoryOwner = normalizeWorkspaceSelectionSource(initialOwner.trim());
+  const [loadedOwner, setLoadedOwner] = useState(initialInventoryOwner);
   const [inventoryError, setInventoryError] = useState<string | undefined>(undefined);
-  const owner = source.trim();
+  const owner = normalizeWorkspaceSelectionSource(source.trim());
+  const selectionSupported = isWorkspaceSelectionSource(owner);
+  const initialInventory = owner === initialInventoryOwner;
   useEffect(() => {
-    if (owner === '' || owner === initialOwner) return;
+    if (!selectionSupported || initialInventory) return;
     const controller = new AbortController();
     void loadRepositoryInventoryAsync(owner, controller.signal)
       .then(inventory => {
+        if (controller.signal.aborted) return;
         setInventoryError(undefined);
+        setLoadedOwner(owner);
         setRepositories(inventory);
       })
       .catch(error => {
@@ -26,11 +36,18 @@ export function useRepositoryInventory(
     return () => {
       controller.abort();
     };
-  }, [initialOwner, owner]);
+  }, [initialInventory, owner, selectionSupported]);
+  const inventoryLoaded = selectionSupported && (initialInventory || loadedOwner === owner);
   return {
-    inventoryError: owner === '' || owner === initialOwner ? undefined : inventoryError,
-    repositories:
-      owner === '' || owner === initialOwner ? (initialRepositories ?? []) : repositories,
+    inventoryError: !selectionSupported || initialInventory ? undefined : inventoryError,
+    inventoryLoaded,
+    inventoryOwner: inventoryLoaded ? owner : undefined,
+    repositories: initialInventory
+      ? (initialRepositories ?? [])
+      : inventoryLoaded
+        ? repositories
+        : [],
+    selectionSupported,
   };
 }
 

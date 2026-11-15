@@ -62,6 +62,12 @@ export function retryFixtureWorkspaceRepositoryAsync(runtimeId: string, reposito
 
 /*** Discover one synthetic owner inventory without materializing fixture repositories. */
 export async function discoverFixtureWorkspaceInventoryAsync(source: string) {
+  if (source === 'owner-delayed') {
+    await new Promise(resolve => setTimeout(resolve, 150));
+    const discovery = await discoverFixtureAsync('owner-a', new Set(), undefined);
+    return { owner: source, repositories: discovery.repositories };
+  }
+  if (source === 'owner-empty') return { owner: source, repositories: [] };
   const discovery = await discoverFixtureAsync(source, new Set(), undefined);
   return { owner: source, repositories: discovery.repositories };
 }
