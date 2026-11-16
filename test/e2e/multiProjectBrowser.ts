@@ -1174,7 +1174,7 @@ const scenarios: readonly Scenario[] = [
         });
         await page.getByRole('application', { name: 'Graph' }).waitFor();
         const beforeSelection = await captureWorkspaceGeometryAsync(page);
-        await openRepositoryPickerAsync(page, 'bulk-pending-0');
+        await openRepositoryPickerAsync(page, 'bulk-pending/repository-0');
         await page.getByRole('button', { exact: true, name: 'Select all' }).click();
         const hint = page.getByText(
           'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
