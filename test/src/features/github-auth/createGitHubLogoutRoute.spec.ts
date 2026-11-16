@@ -23,12 +23,28 @@ describe('[GitHub logout route]', () => {
     );
   });
 
-  it('fails closed when the local adapter cannot clear its request-scoped session', async () => {
+  it('clears both host cookies when the local adapter cannot clear its request-scoped session', async () => {
     const POST = createGitHubLogoutRoute(async () => false);
     const response = await POST(logoutRequest());
 
-    assert.equal(response.status, 503);
-    assert.equal(response.headers.get('location'), null);
+    assert.equal(response.status, 303);
+    assert.equal(
+      response.headers.getSetCookie().join('\n').includes('__Host-atlas-github-session=;'),
+      true
+    );
+  });
+
+  it('clears both host cookies when adapter cleanup throws', async () => {
+    const POST = createGitHubLogoutRoute(async () => {
+      throw new Error('GitHub is unavailable');
+    });
+    const response = await POST(logoutRequest());
+
+    assert.equal(response.status, 303);
+    assert.equal(
+      response.headers.getSetCookie().join('\n').includes('__Host-atlas-github-session=;'),
+      true
+    );
   });
 });
 
