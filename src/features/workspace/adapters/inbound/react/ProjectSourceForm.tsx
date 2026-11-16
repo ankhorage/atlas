@@ -91,7 +91,13 @@ function PublicOnlyFilter({
   readonly onChange: (checked: boolean) => void;
 }) {
   return (
-    <Checkbox checked={checked} className={styles.publicOnly} size="s" onCheckedChange={onChange}>
+    <Checkbox
+      accessibilityLabel="Public only"
+      checked={checked}
+      className={styles.publicOnly}
+      size="s"
+      onCheckedChange={onChange}
+    >
       Public only
     </Checkbox>
   );
@@ -240,6 +246,7 @@ function RepositoryChoices(props: RepositoryPickerProps) {
   if (props.repositories.length === 0) return <span>No repositories match this search.</span>;
   return props.repositories.map(repository => (
     <Checkbox
+      accessibilityLabel={`${repository.owner}/${repository.name}`}
       key={repository.id}
       checked={props.selectedIds.has(repository.id)}
       size="s"

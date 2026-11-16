@@ -444,6 +444,13 @@ async function openRepositoryPickerAsync(page: Page): Promise<void> {
   await catalog.waitFor();
 }
 
+/*** Toggles a repository through the released checkbox role and its accessible name. */
+async function toggleRepositoryCheckboxAsync(page: Page, repository: string): Promise<void> {
+  const checkbox = page.getByRole('checkbox', { name: repository });
+  await checkbox.waitFor();
+  await checkbox.click();
+}
+
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
 async function assertGraphCanvasAsync(page: Page): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
@@ -635,7 +642,7 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').check();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -683,7 +690,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -722,7 +729,7 @@ const scenarios: readonly Scenario[] = [
         return body.runtimeId === undefined;
       });
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       await recoveryRequest;
       await page.waitForURL(
         openedUrl =>
@@ -742,13 +749,13 @@ const scenarios: readonly Scenario[] = [
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       await firstRequest;
       const secondRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await openRepositoryPickerAsync(page);
-      await page.getByLabel('owner-a/catalog').check();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       await secondRequest;
       await page.waitForURL(
         openedUrl =>
@@ -955,7 +962,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
       await vendor.click();
       await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
@@ -986,7 +993,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await toggleRepositoryCheckboxAsync(page, 'owner-a/catalog');
       await page.waitForURL(
         openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
