@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.21.0",
+      "value": "v0.21.1",
       "color": "cb3837"
     },
     {
@@ -1893,6 +1893,27 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
+        "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
+        "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
+        "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "src/types/audit.ts",
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "WorkspaceLayout"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
       "isEntrypoint": false,
       "dependencies": [
@@ -1931,17 +1952,11 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
-        "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
-        "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
-        "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "src/types/audit.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
@@ -1974,6 +1989,7 @@
       "path": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
         "src/types/workspace.ts"
       ],
       "exports": [
@@ -2013,6 +2029,17 @@
       ],
       "exports": [
         "deserializeWorkspaceSnapshot"
+      ]
+    },
+    {
+      "path": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "diagnoseWorkspaceRepositoryOperationAsync",
+        "workspaceRepositoryOperationDiagnostic"
       ]
     },
     {
@@ -2118,6 +2145,7 @@
         "src/features/project-source/application/use-cases/parseProjectSource.ts",
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
         "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
+        "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
         "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts"
       ],
@@ -2451,6 +2479,7 @@
         "WorkspacePresentationSettings",
         "WorkspaceRepositoryFailure",
         "WorkspaceRepositoryFailureCategory",
+        "WorkspaceRepositoryFailureStage",
         "WorkspaceRepositoryInventoryOption",
         "WorkspaceRepositoryLoadStatus",
         "WorkspaceSelectionRequest",
@@ -3294,7 +3323,8 @@
       "path": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+        "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts"
       ],
       "exports": []
     },
@@ -9204,6 +9234,94 @@
       }
     },
     {
+      "name": "WorkspaceLayout",
+      "description": "Compose the workspace's persistent shell and its graph, inspection, and load-state presentation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "name": "WorkspaceHeaderSlot",
+      "description": "Place the workspace header above graph overlays without mixing header and graph responsibilities.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 66,
+        "column": 1
+      }
+    },
+    {
+      "name": "WorkspaceMain",
+      "description": "Renders workspace tools, graph content, cycle inspection, and persistent load errors.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 87,
+        "column": 1
+      }
+    },
+    {
+      "name": "workspaceMainStyle",
+      "description": "Keep the workspace canvas layout independent from its status and graph content.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 133,
+        "column": 1
+      }
+    },
+    {
+      "name": "hasIncompleteBulkSelection",
+      "description": "Show the anonymous bulk-selection guidance only while a multiple-repository operation remains incomplete.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 147,
+        "column": 1
+      }
+    },
+    {
+      "name": "RepositorySelectionNotice",
+      "description": "Explain the discover-before-open state without representing it as a repository failure.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 156,
+        "column": 1
+      }
+    },
+    {
+      "name": "useWorkspaceCycleSelection",
+      "description": "Connects visible cycle evidence to the portable project scope that owns its preferences.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 174,
+        "column": 1
+      }
+    },
+    {
+      "name": "resolveWorkspaceProjectIdentity",
+      "description": "Chooses a portable workspace scope even while a failed load renders its persistent error state.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 186,
+        "column": 1
+      }
+    },
+    {
       "name": "WorkspacePanels",
       "description": "Connect sidebar inspection controls to the one graph view without duplicating navigation state.",
       "see": [],
@@ -9221,18 +9339,62 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 50,
+        "line": 51,
         "column": 1
       }
     },
     {
-      "name": "RepositoryLoadFailures",
+      "name": "RepositoryLoadStatus",
       "description": "Surface only incomplete repository work while the shared graph remains usable for successful projects.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 74,
+        "line": 83,
+        "column": 1
+      }
+    },
+    {
+      "name": "hasRepositoryLoadStatus",
+      "description": "Avoid an empty overlay while preserving status visibility for errors, progress, and the anonymous limit notice.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "line": 119,
+        "column": 1
+      }
+    },
+    {
+      "name": "RepositoryLoadFailures",
+      "description": "Reveal retry controls only for the terminal repository failures in the current operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "line": 128,
+        "column": 1
+      }
+    },
+    {
+      "name": "repositoryLoadSummary",
+      "description": "Count each selected repository exactly once so pending and cancellation are never presented as failures.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "line": 182,
+        "column": 1
+      }
+    },
+    {
+      "name": "countRepositoryLoadStatus",
+      "description": "Count one repository outcome through its explicit finite status vocabulary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "line": 195,
         "column": 1
       }
     },
@@ -9243,7 +9405,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 113,
+        "line": 212,
         "column": 1
       }
     },
@@ -9331,18 +9493,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 25,
-        "column": 1
-      }
-    },
-    {
-      "name": "WorkspaceShell",
-      "description": "Compose the persistent shell separately from the stateful workspace boundary.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 75,
+        "line": 17,
         "column": 1
       }
     },
@@ -9353,7 +9504,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 127,
+        "line": 65,
         "column": 1
       }
     },
@@ -9364,29 +9515,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 136,
-        "column": 1
-      }
-    },
-    {
-      "name": "WorkspaceBody",
-      "description": "Renders workspace tools, graph content, cycle inspection, and persistent load errors.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 147,
-        "column": 1
-      }
-    },
-    {
-      "name": "RepositorySelectionNotice",
-      "description": "Explain the discover-before-open state without representing it as a repository failure.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 200,
+        "line": 74,
         "column": 1
       }
     },
@@ -9397,7 +9526,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 218,
+        "line": 85,
         "column": 1
       }
     },
@@ -9408,18 +9537,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 244,
-        "column": 1
-      }
-    },
-    {
-      "name": "useWorkspaceCycleSelection",
-      "description": "Connects visible cycle evidence to the portable project scope that owns its preferences.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 261,
+        "line": 111,
         "column": 1
       }
     },
@@ -9430,7 +9548,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 273,
+        "line": 128,
         "column": 1
       }
     },
@@ -9485,7 +9603,51 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 7,
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "repositoryErrorCategory",
+      "description": "Classify stable Repository package codes without retaining a provider error object.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 27,
+        "column": 1
+      }
+    },
+    {
+      "name": "transportErrorCategory",
+      "description": "Classify safe HTTP and adapter rate-limit facts without treating an ambiguous 403 as throttling.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
+      "name": "localErrorCategory",
+      "description": "Classify bounded Atlas operation failures after external transport facts have been exhausted.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRateLimited",
+      "description": "Identify categories that may safely include bounded retry timing.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 63,
         "column": 1
       }
     },
@@ -9496,7 +9658,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 29,
+        "line": 72,
         "column": 1
       }
     },
@@ -9507,7 +9669,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 51,
+        "line": 94,
         "column": 1
       }
     },
@@ -9518,7 +9680,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 58,
+        "line": 101,
         "column": 1
       }
     },
@@ -9529,7 +9691,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 66,
+        "line": 109,
         "column": 1
       }
     },
@@ -9540,7 +9702,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 78,
+        "line": 121,
+        "column": 1
+      }
+    },
+    {
+      "name": "retryAfter",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 134,
+        "column": 1
+      }
+    },
+    {
+      "name": "retryAfterMilliseconds",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 140,
+        "column": 1
+      }
+    },
+    {
+      "name": "repositoryErrorCode",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "line": 149,
         "column": 1
       }
     },
@@ -9551,7 +9746,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 91,
+        "line": 156,
         "column": 1
       }
     },
@@ -9562,7 +9757,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 96,
+        "line": 161,
         "column": 1
       }
     },
@@ -9573,7 +9768,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
-        "line": 101,
+        "line": 166,
         "column": 1
       }
     },
@@ -9651,6 +9846,28 @@
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
         "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "name": "diagnoseWorkspaceRepositoryOperationAsync",
+      "description": "Associate one repository-operation boundary with an opaque correlation identifier without exposing its cause.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "name": "workspaceRepositoryOperationDiagnostic",
+      "description": "Extract a known safe diagnostic envelope while keeping the original provider error internal.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+        "line": 29,
         "column": 1
       }
     },
@@ -10442,7 +10659,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
-        "line": 21,
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "name": "analyzeMaterializedWorkspaceRepositoryAsync",
+      "description": "Analyze one materialized revision while retaining the outer cleanup and correlation boundaries.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "line": 64,
         "column": 1
       }
     },
@@ -10453,7 +10681,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
-        "line": 68,
+        "line": 89,
         "column": 1
       }
     },
@@ -10618,7 +10846,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 147,
+        "line": 152,
         "column": 1
       }
     },
@@ -10629,7 +10857,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 161,
+        "line": 166,
         "column": 1
       }
     },
@@ -10640,7 +10868,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 171,
+        "line": 176,
         "column": 1
       }
     },
@@ -10651,7 +10879,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 200,
+        "line": 205,
         "column": 1
       }
     },
@@ -10662,7 +10890,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
-        "line": 231,
+        "line": 236,
         "column": 1
       }
     },
@@ -11799,6 +12027,11 @@
       },
       {
         "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toPath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
         "toPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
         "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
       },
@@ -12548,6 +12781,11 @@
         "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
       },
       {
+        "fromPath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toPath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
         "toPath": "src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts",
         "sourcePath": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts"
@@ -12939,6 +13177,11 @@
       },
       {
         "fromPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
+        "toPath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
@@ -12971,6 +13214,11 @@
         "fromPath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts"
       },
       {
         "fromPath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
@@ -13953,6 +14201,66 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/types/audit.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
@@ -14039,11 +14347,6 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
@@ -14054,42 +14357,17 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "toPath": "src/types/audit.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -15024,6 +15302,12 @@
       },
       {
         "fromSymbol": "discoverFixtureAsync",
+        "toSymbol": "pendingBulkFixtureRepositories",
+        "callExpression": "pendingBulkFixtureRepositories",
+        "sourcePath": "test/e2e/fixtureWorkspace.ts"
+      },
+      {
+        "fromSymbol": "discoverFixtureAsync",
         "toSymbol": "deduplicateRepositories",
         "callExpression": "deduplicateRepositories",
         "sourcePath": "test/e2e/fixtureWorkspace.ts"
@@ -15473,7 +15757,103 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "captureWorkspaceGeometryAsync",
+        "callExpression": "captureWorkspaceGeometryAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "toggleThemeAsync",
+        "callExpression": "toggleThemeAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "assertAnonymousBulkWorkspaceGeometry",
+        "callExpression": "assertAnonymousBulkWorkspaceGeometry",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
         "fromSymbol": "assertScenarioRegistry",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "bounds",
+        "callExpression": "bounds",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "captureWorkspaceGeometryAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertAnonymousBulkWorkspaceGeometry",
+        "toSymbol": "assertWorkspaceGeometryBaseline",
+        "callExpression": "assertWorkspaceGeometryBaseline",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertAnonymousBulkWorkspaceGeometry",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertAnonymousBulkWorkspaceGeometry",
+        "toSymbol": "assertBoundsContained",
+        "callExpression": "assertBoundsContained",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertAnonymousBulkWorkspaceGeometry",
+        "toSymbol": "assertBoundsEqual",
+        "callExpression": "assertBoundsEqual",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspaceGeometryBaseline",
+        "toSymbol": "assertDimensionsEqual",
+        "callExpression": "assertDimensionsEqual",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspaceGeometryBaseline",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspaceGeometryBaseline",
+        "toSymbol": "assertBoundsContained",
+        "callExpression": "assertBoundsContained",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertBoundsEqual",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertDimensionsEqual",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertBoundsContained",
         "toSymbol": "assert",
         "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -17466,6 +17846,12 @@
       },
       {
         "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "toSymbol": "diagnoseWorkspaceRepositoryOperationAsync",
+        "callExpression": "diagnoseWorkspaceRepositoryOperationAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
         "toSymbol": "resolveRevisionAsync",
         "callExpression": "dependencies.resolveRevisionAsync",
         "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
@@ -17489,45 +17875,15 @@
         "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
       },
       {
-        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
         "toSymbol": "__type",
         "callExpression": "(dependencies.materializeAsync ?? loadProjectSourceAsync)",
         "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
       },
       {
         "fromSymbol": "analyzeWorkspaceRepositoryAsync",
-        "toSymbol": "__type",
-        "callExpression": "(dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)",
-        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
-      },
-      {
-        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
-        "toSymbol": "createProjectAnalysisSnapshotAsync",
-        "callExpression": "createProjectAnalysisSnapshotAsync",
-        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
-      },
-      {
-        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
-        "toSymbol": "projectDependencyGraphFromProjectAnalysisSnapshots",
-        "callExpression": "projectDependencyGraphFromProjectAnalysisSnapshots",
-        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
-      },
-      {
-        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
-        "toSymbol": "createSourceGraphFromProjectAnalysisSnapshots",
-        "callExpression": "createSourceGraphFromProjectAnalysisSnapshots",
-        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
-      },
-      {
-        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
-        "toSymbol": "selectParserLanguage",
-        "callExpression": "selectParserLanguage",
-        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
-      },
-      {
-        "fromSymbol": "analyzeWorkspaceRepositoryAsync",
-        "toSymbol": "createProjectFileTreeAsync",
-        "callExpression": "createProjectFileTreeAsync",
+        "toSymbol": "analyzeMaterializedWorkspaceRepositoryAsync",
+        "callExpression": "analyzeMaterializedWorkspaceRepositoryAsync",
         "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
       },
       {
@@ -17540,6 +17896,48 @@
         "fromSymbol": "analyzeWorkspaceRepositoryAsync",
         "toSymbol": "cleanupAsync",
         "callExpression": "resolved.cleanupAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "analyzeMaterializedWorkspaceRepositoryAsync",
+        "toSymbol": "diagnoseWorkspaceRepositoryOperationAsync",
+        "callExpression": "diagnoseWorkspaceRepositoryOperationAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toSymbol": "__type",
+        "callExpression": "(dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toSymbol": "createProjectAnalysisSnapshotAsync",
+        "callExpression": "createProjectAnalysisSnapshotAsync",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toSymbol": "projectDependencyGraphFromProjectAnalysisSnapshots",
+        "callExpression": "projectDependencyGraphFromProjectAnalysisSnapshots",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toSymbol": "createSourceGraphFromProjectAnalysisSnapshots",
+        "callExpression": "createSourceGraphFromProjectAnalysisSnapshots",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toSymbol": "selectParserLanguage",
+        "callExpression": "selectParserLanguage",
+        "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts",
+        "toSymbol": "createProjectFileTreeAsync",
+        "callExpression": "createProjectFileTreeAsync",
         "sourcePath": "src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts"
       },
       {
@@ -20483,6 +20881,12 @@
         "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
+        "toSymbol": "diagnoseWorkspaceRepositoryOperationAsync",
+        "callExpression": "diagnoseWorkspaceRepositoryOperationAsync",
+        "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/workspace/createWorkspaceInventoryRoute.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -21353,6 +21757,12 @@
         "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
       },
       {
+        "fromSymbol": "test/src/features/workspace/WorkspaceView.spec.tsx",
+        "toSymbol": "status",
+        "callExpression": "status",
+        "sourcePath": "test/src/features/workspace/WorkspaceView.spec.tsx"
+      },
+      {
         "fromSymbol": "test/src/utils/filter/filterByPackagePrefix.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -21834,44 +22244,92 @@
       },
       {
         "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "workspaceRepositoryOperationDiagnostic",
+        "callExpression": "workspaceRepositoryOperationDiagnostic",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
         "toSymbol": "isAbort",
         "callExpression": "isAbort",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
         "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "repositoryErrorCategory",
+        "callExpression": "repositoryErrorCategory",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "transportErrorCategory",
+        "callExpression": "transportErrorCategory",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "localErrorCategory",
+        "callExpression": "localErrorCategory",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "isRateLimited",
+        "callExpression": "isRateLimited",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "toSymbol": "retryAfter",
+        "callExpression": "retryAfter",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "repositoryErrorCategory",
+        "toSymbol": "repositoryErrorCode",
+        "callExpression": "repositoryErrorCode",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "transportErrorCategory",
         "toSymbol": "statusCode",
         "callExpression": "statusCode",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
-        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "fromSymbol": "transportErrorCategory",
         "toSymbol": "rateLimitKindFrom",
         "callExpression": "rateLimitKindFrom",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
-        "fromSymbol": "classifyWorkspaceRepositoryFailure",
-        "toSymbol": "retryAfterSeconds",
-        "callExpression": "retryAfterSeconds",
-        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
-      },
-      {
-        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "fromSymbol": "localErrorCategory",
         "toSymbol": "isTimeout",
         "callExpression": "isTimeout",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
-        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "fromSymbol": "localErrorCategory",
         "toSymbol": "isParsing",
         "callExpression": "isParsing",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
-        "fromSymbol": "classifyWorkspaceRepositoryFailure",
+        "fromSymbol": "localErrorCategory",
         "toSymbol": "isRuntimeLimit",
         "callExpression": "isRuntimeLimit",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "retryAfter",
+        "toSymbol": "retryAfterSeconds",
+        "callExpression": "retryAfterSeconds",
+        "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromSymbol": "retryAfter",
+        "toSymbol": "retryAfterMilliseconds",
+        "callExpression": "retryAfterMilliseconds",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
       },
       {
@@ -21939,6 +22397,12 @@
         "toSymbol": "deserializeSourceGraph",
         "callExpression": "deserializeSourceGraph",
         "sourcePath": "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "diagnoseWorkspaceRepositoryOperationAsync",
+        "toSymbol": "operation",
+        "callExpression": "operation",
+        "sourcePath": "src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts"
       },
       {
         "fromSymbol": "isArchitectureDetection",
@@ -26117,9 +26581,69 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {
+        "fromSymbol": "WorkspaceLayout",
+        "toSymbol": "useWorkspaceNavigation",
+        "callExpression": "useWorkspaceNavigation",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceMain",
+        "toSymbol": "useZoraTheme",
+        "callExpression": "useZoraTheme",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceMain",
+        "toSymbol": "useWorkspaceCycleSelection",
+        "callExpression": "useWorkspaceCycleSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceMain",
+        "toSymbol": "useWorkspaceCycleInspection",
+        "callExpression": "useWorkspaceCycleInspection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceMain",
+        "toSymbol": "workspaceMainStyle",
+        "callExpression": "workspaceMainStyle",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceMain",
+        "toSymbol": "hasIncompleteBulkSelection",
+        "callExpression": "hasIncompleteBulkSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "useWorkspaceCycleSelection",
+        "toSymbol": "useCycleSelection",
+        "callExpression": "useCycleSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "useWorkspaceCycleSelection",
+        "toSymbol": "resolveWorkspaceProjectIdentity",
+        "callExpression": "resolveWorkspaceProjectIdentity",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "toSymbol": "change",
         "callExpression": "props.cycleInspection.change",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
+      },
+      {
+        "fromSymbol": "RepositoryLoadStatus",
+        "toSymbol": "repositoryLoadSummary",
+        "callExpression": "repositoryLoadSummary",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
+      },
+      {
+        "fromSymbol": "RepositoryLoadStatus",
+        "toSymbol": "hasRepositoryLoadStatus",
+        "callExpression": "hasRepositoryLoadStatus",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
       },
       {
@@ -26196,12 +26720,6 @@
       },
       {
         "fromSymbol": "WorkspaceView",
-        "toSymbol": "useWorkspaceNavigation",
-        "callExpression": "useWorkspaceNavigation",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "WorkspaceView",
         "toSymbol": "resolveWorkspaceProjectIdentity",
         "callExpression": "resolveWorkspaceProjectIdentity",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
@@ -26219,24 +26737,6 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
-        "fromSymbol": "WorkspaceBody",
-        "toSymbol": "useZoraTheme",
-        "callExpression": "useZoraTheme",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "WorkspaceBody",
-        "toSymbol": "useWorkspaceCycleSelection",
-        "callExpression": "useWorkspaceCycleSelection",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "WorkspaceBody",
-        "toSymbol": "useWorkspaceCycleInspection",
-        "callExpression": "useWorkspaceCycleInspection",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
         "fromSymbol": "retryRepositoryAsync",
         "toSymbol": "isWorkspaceRetryResult",
         "callExpression": "isWorkspaceRetryResult",
@@ -26246,18 +26746,6 @@
         "fromSymbol": "retryRepositoryAsync",
         "toSymbol": "setLiveWorkspace",
         "callExpression": "setLiveWorkspace",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "useWorkspaceCycleSelection",
-        "toSymbol": "useCycleSelection",
-        "callExpression": "useCycleSelection",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "useWorkspaceCycleSelection",
-        "toSymbol": "resolveWorkspaceProjectIdentity",
-        "callExpression": "resolveWorkspaceProjectIdentity",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {

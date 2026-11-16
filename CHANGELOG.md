@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.1
+
+### Patch Changes
+
+- 1542bf9: Report anonymous bulk-analysis progress without changing the workspace canvas layout, and keep safe repository diagnostics visible during incomplete analysis.
+
 ## 0.21.0
 
 ### Minor Changes
