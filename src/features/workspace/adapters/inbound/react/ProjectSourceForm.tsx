@@ -1,10 +1,10 @@
 'use client';
-import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
-import { TextInput } from '@ankhorage/zora/web/text-input';
+import { Dialog } from '@ankhorage/zora/web/dialog';
 import { View } from '@ankhorage/zora/web/view';
 import { useMemo, useState } from 'react';
 
+import { ProjectSourceControls } from '@/features/workspace/adapters/inbound/react/ProjectSourceControls';
 import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession';
 import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
 import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
@@ -18,6 +18,7 @@ import styles from './WorkspaceHeader.module.css';
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
   const [publicOnly, setPublicOnly] = useState(false);
+  const [mobileSourceOpen, setMobileSourceOpen] = useState(false);
   const visibleRepositories = useVisibleRepositories(
     sourceForm.repositories,
     sourceForm.search,
@@ -25,34 +26,44 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   );
 
   return (
-    <View align="center" className={styles.sourceForm} direction="row" gap="xs">
-      <TextInput
-        accessibilityLabel="GitHub owner"
-        placeholder="ankhorage or @me"
-        size="s"
-        value={sourceForm.source}
-        onChangeText={sourceForm.setSource}
-      />
-      <RepositoryPicker
-        repositories={visibleRepositories}
-        search={sourceForm.search}
-        selectedIds={sourceForm.selectedIds}
-        selectionSupported={sourceForm.selectionSupported}
-        totalCount={sourceForm.repositories.length}
+    <>
+      <View align="center" className={styles.sourceForm} direction="row" gap="xs">
+        <div className={styles.desktopSourceControls}>
+          <ProjectSourceControls
+            initiallyOpen={props.selectionRequired}
+            publicOnly={publicOnly}
+            sourceForm={sourceForm}
+            visibleRepositories={visibleRepositories}
+            onPublicOnlyChange={setPublicOnly}
+          />
+        </div>
+        <MobileSourceEntry sourceForm={sourceForm} onOpen={() => setMobileSourceOpen(true)} />
+      </View>
+      <MobileProjectSourceDialog
         initiallyOpen={props.selectionRequired}
-        onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
-        onSearchChange={sourceForm.setSearch}
-        onSelectAll={() =>
-          sourceForm.setSelectedIds(
-            new Set(sourceForm.repositories.map(repository => repository.id))
-          )
-        }
-        onSelectionChange={sourceForm.setSelectedIds}
+        open={mobileSourceOpen}
+        publicOnly={publicOnly}
+        sourceForm={sourceForm}
+        visibleRepositories={visibleRepositories}
+        onDismiss={() => setMobileSourceOpen(false)}
+        onPublicOnlyChange={setPublicOnly}
       />
-      <SelectionSourceNotice sourceForm={sourceForm} />
-      {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
-      <PublicOnlyFilter checked={publicOnly} onChange={setPublicOnly} />
-      <RepositoryCopyButton sourceForm={sourceForm} />
+    </>
+  );
+}
+
+/*** Keeps the compact repository and workspace entry in the persistent header settings context. */
+function MobileSourceEntry({ sourceForm, onOpen }: MobileSourceEntryProps) {
+  return (
+    <div className={styles.mobileSourceControls}>
+      <Button
+        accessibilityLabel="Choose repositories and workspace"
+        size="s"
+        variant="outline"
+        onPress={onOpen}
+      >
+        Repositories ({sourceForm.selectedIds.size}/{sourceForm.repositories.length})
+      </Button>
       <WorkspaceControls
         activeWorkspaceId={sourceForm.activeWorkspaceId}
         repositories={sourceForm.repositories}
@@ -61,58 +72,40 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         onDeleteWorkspace={sourceForm.deleteWorkspace}
         onOpenWorkspace={sourceForm.openWorkspace}
       />
-    </View>
+    </div>
   );
 }
 
-/*** Explains why a preserved legacy workspace cannot use the single-owner incremental transport. */
-function SelectionSourceNotice({
+/*** Keeps mobile repository choices in a focused ZORA dialog while staging the same selection. */
+function MobileProjectSourceDialog({
+  initiallyOpen,
+  open,
+  publicOnly,
   sourceForm,
-}: {
-  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
-}) {
-  if (sourceForm.selectionSupported || sourceForm.source.trim() === '') return null;
+  visibleRepositories,
+  onDismiss,
+  onPublicOnlyChange,
+}: MobileProjectSourceDialogProps) {
   return (
-    <span role="status">
-      Repository selection is available for one GitHub owner or @me. This workspace remains
-      unchanged.
-    </span>
-  );
-}
-
-/*** Keeps repository visibility filtering separate from GitHub authorization consent. */
-function PublicOnlyFilter({
-  checked,
-  onChange,
-}: {
-  readonly checked: boolean;
-  readonly onChange: (checked: boolean) => void;
-}) {
-  return (
-    <label className={styles.publicOnly}>
-      <input checked={checked} type="checkbox" onChange={event => onChange(event.target.checked)} />
-      Public only
-    </label>
-  );
-}
-
-/*** Copies the canonical URLs of the staged repository selection. */
-function RepositoryCopyButton({
-  sourceForm,
-}: {
-  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
-}) {
-  return (
-    <Button
-      accessibilityLabel="Copy repository links"
-      disabled={sourceForm.selectedRepositories.length === 0}
-      leadingIcon={{ name: 'copy-outline' }}
-      size="s"
-      variant="ghost"
-      onPress={sourceForm.copyRepositoryLinks}
+    <Dialog
+      closeOnBackdrop
+      description="Choose repositories, manage the saved workspace, and start analysis."
+      title="Repository source"
+      visible={open}
+      width="wide"
+      onDismiss={onDismiss}
     >
-      Copy
-    </Button>
+      <View className={styles.mobileSourceDialog} direction="column" gap="s">
+        <ProjectSourceControls
+          includeWorkspaceControls={false}
+          initiallyOpen={initiallyOpen}
+          publicOnly={publicOnly}
+          sourceForm={sourceForm}
+          visibleRepositories={visibleRepositories}
+          onPublicOnlyChange={onPublicOnlyChange}
+        />
+      </View>
+    </Dialog>
   );
 }
 
@@ -194,68 +187,6 @@ function selectRepositories(
   return inventory.map(repository => ({ ...repository, selected: selectedIds.has(repository.id) }));
 }
 
-/*** Renders one searchable multi-select rather than a header action for every repository. */
-function RepositoryPicker(props: RepositoryPickerProps) {
-  return (
-    <Popover
-      defaultOpen={props.initiallyOpen}
-      placement="bottom-start"
-      anchor={({ toggle }) => (
-        <Button
-          accessibilityLabel="Choose repositories"
-          disabled={!props.selectionSupported}
-          size="s"
-          variant="outline"
-          onPress={toggle}
-        >
-          Repositories ({props.selectedIds.size}/{props.totalCount})
-        </Button>
-      )}
-    >
-      <div style={REPOSITORY_PICKER_STYLE}>
-        <input
-          aria-label="Search repositories"
-          placeholder="Search repositories"
-          value={props.search}
-          onChange={event => props.onSearchChange(event.target.value)}
-        />
-        <View direction="row" gap="xs" style={{ marginBlock: 8 }}>
-          <Button size="s" variant="ghost" onPress={props.onSelectAll}>
-            Select all
-          </Button>
-          <Button size="s" variant="ghost" onPress={props.onDeselectAll}>
-            Deselect all
-          </Button>
-        </View>
-        <RepositoryChoices {...props} />
-      </div>
-    </Popover>
-  );
-}
-
-/*** Renders the searchable repository checkbox choices. */
-function RepositoryChoices(props: RepositoryPickerProps) {
-  if (props.repositories.length === 0) return <span>No repositories match this search.</span>;
-  return props.repositories.map(repository => (
-    <label key={repository.id} style={{ display: 'block', paddingBlock: 3 }}>
-      <input
-        checked={props.selectedIds.has(repository.id)}
-        type="checkbox"
-        onChange={() => props.onSelectionChange(toggleRepository(props.selectedIds, repository.id))}
-      />{' '}
-      {repository.owner}/{repository.name}
-    </label>
-  ));
-}
-
-/*** Toggle a repository inclusion and pass the immediate selection to its workspace owner. */
-function toggleRepository(selectedIds: ReadonlySet<string>, repositoryId: string): Set<string> {
-  const next = new Set(selectedIds);
-  if (next.has(repositoryId)) next.delete(repositoryId);
-  else next.add(repositoryId);
-  return next;
-}
-
 /*** Remove query-only workspace selection state before displaying the editable source. */
 function readSource(currentSource: string | undefined): { readonly owner: string } {
   const value = currentSource?.split('|')[0]?.trim() ?? '';
@@ -276,29 +207,22 @@ interface ProjectSourceFormProps {
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
 }
 
+interface MobileProjectSourceDialogProps {
+  readonly initiallyOpen?: boolean;
+  readonly open: boolean;
+  readonly publicOnly: boolean;
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+  readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
+  readonly onDismiss: () => void;
+  readonly onPublicOnlyChange: (checked: boolean) => void;
+}
+
+interface MobileSourceEntryProps {
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+  readonly onOpen: () => void;
+}
+
 export interface WorkspaceSelectionEventDetail {
   readonly selectedIds: readonly string[];
   readonly source: string;
 }
-
-interface RepositoryPickerProps {
-  readonly repositories: readonly WorkspaceRepositoryOption[];
-  readonly search: string;
-  readonly selectedIds: ReadonlySet<string>;
-  readonly selectionSupported: boolean;
-  readonly totalCount: number;
-  readonly initiallyOpen?: boolean;
-  readonly onDeselectAll: () => void;
-  readonly onSearchChange: (search: string) => void;
-  readonly onSelectAll: () => void;
-  readonly onSelectionChange: (ids: Set<string>) => void;
-}
-
-const REPOSITORY_PICKER_STYLE = {
-  background: 'var(--zora-surface-default, white)',
-  border: '1px solid currentColor',
-  maxHeight: 360,
-  minWidth: 280,
-  overflowY: 'auto',
-  padding: 8,
-} as const;

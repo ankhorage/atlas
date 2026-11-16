@@ -1,0 +1,10 @@
+.canvas {
+  padding-inline: 32px;
+}
+
+@media (max-width: 768px) {
+  .canvas {
+    padding-inline: 12px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}

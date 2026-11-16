@@ -5,6 +5,7 @@ import React from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import type { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
+import { MobileWorkspaceTools } from '@/features/workspace/adapters/inbound/react/MobileWorkspaceTools';
 import type { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import type { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
@@ -12,11 +13,16 @@ import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/Wo
 import type { Audit } from '@/types/audit';
 import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
+import styles from './WorkspacePanels.module.css';
+
 /*** Connect sidebar inspection controls to the one graph view without duplicating navigation state. */
 export function WorkspacePanels(props: WorkspacePanelsProps) {
+  const [toolsOpen, setToolsOpen] = React.useState(false);
+  const [activeTool, setActiveTool] = React.useState('tree');
   return (
     <>
       <WorkspaceSidebar
+        activeTool={activeTool}
         auditExportActions={props.auditExportActions}
         currentSource={props.currentSource}
         cycleSelection={props.cycleSelection}
@@ -27,6 +33,7 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
         onCycleInspectionChange={props.cycleInspection.change}
         onProjectTreeSelect={props.navigation.selectProjectTreeNode}
         offline={props.offline}
+        onToolChange={setActiveTool}
       />
       <WorkspaceContent
         cycleInspection={props.cycleInspection.inspection}
@@ -42,6 +49,14 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
         onCloseInspection={() => props.cycleInspection.change(null)}
         onCycleEvidenceVisibilityChange={props.cycleInspection.setHiddenEvidence}
         onRevealCycle={props.cycleInspection.reveal}
+        onOpenTools={() => setToolsOpen(true)}
+      />
+      <MobileWorkspaceTools
+        activeTool={activeTool}
+        open={toolsOpen}
+        workspacePanels={props}
+        onDismiss={() => setToolsOpen(false)}
+        onToolChange={setActiveTool}
       />
     </>
   );
@@ -51,6 +66,16 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
 function WorkspaceContent(props: WorkspaceContentProps) {
   return (
     <section data-testid="workspace-content" style={workspaceContentStyle}>
+      <div className={styles.toolsControl}>
+        <Button
+          leadingIcon={{ name: 'options-outline' }}
+          size="s"
+          variant="outline"
+          onPress={props.onOpenTools}
+        >
+          Tools
+        </Button>
+      </div>
       <RepositoryLoadStatus
         selectionError={props.selectionError}
         showAnonymousBulkLoginHint={props.showAnonymousBulkLoginHint}
@@ -226,7 +251,7 @@ function WorkspaceError({ message }: { readonly message: string }) {
   );
 }
 
-interface WorkspacePanelsProps {
+export interface WorkspacePanelsProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
   readonly cycleInspection: ReturnType<typeof useWorkspaceCycleInspection>;
@@ -253,6 +278,7 @@ interface WorkspaceContentProps {
   readonly showAnonymousBulkLoginHint: boolean;
   readonly onCloseInspection: () => void;
   readonly onCycleEvidenceVisibilityChange: (hidden: boolean) => void;
+  readonly onOpenTools: () => void;
   readonly onRevealCycle: () => void;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }

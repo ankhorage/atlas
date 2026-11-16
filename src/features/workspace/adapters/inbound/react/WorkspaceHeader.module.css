@@ -30,6 +30,21 @@
   z-index: 1;
 }
 
+.desktopSourceControls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mobileSourceControls {
+  display: none;
+}
+
+.mobileSourceDialog > * {
+  margin-bottom: 8px;
+}
+
 .publicOnly {
   align-items: center;
   display: inline-flex;
@@ -51,5 +66,15 @@
 
   .sourceForm {
     max-width: 100%;
+  }
+
+  .desktopSourceControls {
+    display: none;
+  }
+
+  .mobileSourceControls {
+    align-items: center;
+    display: flex;
+    gap: 8px;
   }
 }

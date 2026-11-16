@@ -122,6 +122,42 @@ describe('[WorkspaceView]', () => {
     unmount();
   });
 
+  it('keeps repository selection behind one accessible mobile source entry', async () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const { container, unmount } = render(
+      <ZoraRuntimeProvider
+        initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+        themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+      >
+        <WorkspaceView
+          currentSource="ankhorage"
+          projectName="Atlas"
+          repositories={[
+            {
+              id: 'atlas',
+              name: 'atlas',
+              owner: 'ankhorage',
+              selected: true,
+              url: 'https://github.com/ankhorage/atlas',
+              visibility: 'public',
+            },
+          ]}
+          workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+        />
+      </ZoraRuntimeProvider>
+    );
+    const sourceEntry = container.querySelector<HTMLButtonElement>(
+      '[aria-label="Choose repositories and workspace"]'
+    );
+
+    assert.equal(sourceEntry?.textContent, 'Repositories (1/1)');
+    await React.act(async () => sourceEntry?.click());
+    assert.equal(document.body.textContent?.includes('Repository source'), true);
+    unmount();
+  });
+
   it('reports selected, pending, successful, failed, and cancelled repositories without calling pending work failed', () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
