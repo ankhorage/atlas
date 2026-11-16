@@ -1,6 +1,8 @@
 'use client';
 import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
+import { Checkbox } from '@ankhorage/zora/web/checkbox';
+import { Surface } from '@ankhorage/zora/web/surface';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
 import { useMemo, useState } from 'react';
@@ -212,12 +214,13 @@ function RepositoryPicker(props: RepositoryPickerProps) {
         </Button>
       )}
     >
-      <div style={REPOSITORY_PICKER_STYLE}>
-        <input
-          aria-label="Search repositories"
+      <Surface style={REPOSITORY_PICKER_STYLE}>
+        <TextInput
+          accessibilityLabel="Search repositories"
           placeholder="Search repositories"
+          size="s"
           value={props.search}
-          onChange={event => props.onSearchChange(event.target.value)}
+          onChangeText={props.onSearchChange}
         />
         <View direction="row" gap="xs" style={{ marginBlock: 8 }}>
           <Button size="s" variant="ghost" onPress={props.onSelectAll}>
@@ -228,7 +231,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
           </Button>
         </View>
         <RepositoryChoices {...props} />
-      </div>
+      </Surface>
     </Popover>
   );
 }
@@ -237,14 +240,16 @@ function RepositoryPicker(props: RepositoryPickerProps) {
 function RepositoryChoices(props: RepositoryPickerProps) {
   if (props.repositories.length === 0) return <span>No repositories match this search.</span>;
   return props.repositories.map(repository => (
-    <label key={repository.id} style={{ display: 'block', paddingBlock: 3 }}>
-      <input
-        checked={props.selectedIds.has(repository.id)}
-        type="checkbox"
-        onChange={() => props.onSelectionChange(toggleRepository(props.selectedIds, repository.id))}
-      />{' '}
+    <Checkbox
+      key={repository.id}
+      checked={props.selectedIds.has(repository.id)}
+      size="s"
+      onCheckedChange={() =>
+        props.onSelectionChange(toggleRepository(props.selectedIds, repository.id))
+      }
+    >
       {repository.owner}/{repository.name}
-    </label>
+    </Checkbox>
   ));
 }
 
@@ -295,8 +300,6 @@ interface RepositoryPickerProps {
 }
 
 const REPOSITORY_PICKER_STYLE = {
-  background: 'var(--zora-surface-default, white)',
-  border: '1px solid currentColor',
   maxHeight: 360,
   minWidth: 280,
   overflowY: 'auto',

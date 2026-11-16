@@ -16,7 +16,7 @@ import styles from './WorkspaceHeader.module.css';
 
 /*** Renders workspace breadcrumbs, source selection, and theme action. */
 export function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { mode, setMode, theme } = useZoraTheme();
+  const { mode, setMode } = useZoraTheme();
 
   return (
     <AppHeader inverted safeAreaTop={false}>
@@ -32,11 +32,7 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
             onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
           />
         </div>
-        <div
-          className={styles.actions}
-          data-testid="workspace-header-actions"
-          style={{ color: theme.semantics.content.default }}
-        >
+        <div className={styles.actions} data-testid="workspace-header-actions">
           {props.offline ? (
             <span aria-label="Offline snapshot">Offline snapshot</span>
           ) : (
