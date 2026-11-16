@@ -93,7 +93,6 @@ function PublicOnlyFilter({
   return (
     <Checkbox
       accessibilityLabel="Public only"
-      aria-checked={checked}
       checked={checked}
       className={styles.publicOnly}
       size="s"
@@ -248,7 +247,6 @@ function RepositoryChoices(props: RepositoryPickerProps) {
   return props.repositories.map(repository => (
     <Checkbox
       accessibilityLabel={`${repository.owner}/${repository.name}`}
-      aria-checked={props.selectedIds.has(repository.id)}
       key={repository.id}
       checked={props.selectedIds.has(repository.id)}
       size="s"
