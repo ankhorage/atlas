@@ -1150,7 +1150,7 @@ const scenarios: readonly Scenario[] = [
         });
         await page.getByRole('application', { name: 'Graph' }).waitFor();
         await page.getByLabel('Choose repositories').click();
-        await page.getByRole('button', { name: 'Select all' }).click();
+        await page.getByRole('button', { exact: true, name: 'Select all' }).click();
         const hint = page.getByText(
           'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
         );
