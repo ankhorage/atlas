@@ -93,6 +93,7 @@ function PublicOnlyFilter({
   return (
     <Checkbox
       accessibilityLabel="Public only"
+      aria-checked={checked}
       checked={checked}
       className={styles.publicOnly}
       size="s"
@@ -247,11 +248,12 @@ function RepositoryChoices(props: RepositoryPickerProps) {
   return props.repositories.map(repository => (
     <Checkbox
       accessibilityLabel={`${repository.owner}/${repository.name}`}
+      aria-checked={props.selectedIds.has(repository.id)}
       key={repository.id}
       checked={props.selectedIds.has(repository.id)}
       size="s"
-      onCheckedChange={() =>
-        props.onSelectionChange(toggleRepository(props.selectedIds, repository.id))
+      onCheckedChange={(checked: boolean) =>
+        props.onSelectionChange(setRepositorySelected(props.selectedIds, repository.id, checked))
       }
     >
       {repository.owner}/{repository.name}
@@ -259,11 +261,15 @@ function RepositoryChoices(props: RepositoryPickerProps) {
   ));
 }
 
-/*** Toggle a repository inclusion and pass the immediate selection to its workspace owner. */
-function toggleRepository(selectedIds: ReadonlySet<string>, repositoryId: string): Set<string> {
+/*** Apply the checkbox's resolved selection value to the staged repository identifiers. */
+function setRepositorySelected(
+  selectedIds: ReadonlySet<string>,
+  repositoryId: string,
+  checked: boolean
+): Set<string> {
   const next = new Set(selectedIds);
-  if (next.has(repositoryId)) next.delete(repositoryId);
-  else next.add(repositoryId);
+  if (checked) next.add(repositoryId);
+  else next.delete(repositoryId);
   return next;
 }
 
