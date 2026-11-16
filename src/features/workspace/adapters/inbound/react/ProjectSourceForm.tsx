@@ -91,10 +91,9 @@ function PublicOnlyFilter({
   readonly onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className={styles.publicOnly}>
-      <input checked={checked} type="checkbox" onChange={event => onChange(event.target.checked)} />
+    <Checkbox checked={checked} className={styles.publicOnly} size="s" onCheckedChange={onChange}>
       Public only
-    </label>
+    </Checkbox>
   );
 }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@ankhorage/zora/web/button';
+import { Surface } from '@ankhorage/zora/web/surface';
 import React from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
@@ -98,19 +99,22 @@ function RepositoryLoadStatus({
   const failures = (statuses ?? []).filter(status => status.status === 'failed');
   return (
     <section aria-label="Repository loading status" role="status" style={repositoryStatusStyle}>
-      {selectionError === undefined ? null : <div role="alert">{selectionError}</div>}
-      {showProgress ? (
-        <div>
-          {summary.completed} of {summary.selected} analyzed · {summary.pending} pending ·{' '}
-          {summary.successful} successful · {summary.failed} failed · {summary.cancelled} cancelled
-        </div>
-      ) : null}
-      {showAnonymousBulkLoginHint ? (
-        <p style={{ margin: 0 }}>
-          Sign in with GitHub to analyze many repositories with authenticated GitHub limits.
-        </p>
-      ) : null}
-      <RepositoryLoadFailures failures={failures} onRetry={onRetry} />
+      <Surface style={{ padding: 8 }} variant="raised">
+        {selectionError === undefined ? null : <div role="alert">{selectionError}</div>}
+        {showProgress ? (
+          <div>
+            {summary.completed} of {summary.selected} analyzed · {summary.pending} pending ·{' '}
+            {summary.successful} successful · {summary.failed} failed · {summary.cancelled}{' '}
+            cancelled
+          </div>
+        ) : null}
+        {showAnonymousBulkLoginHint ? (
+          <p style={{ margin: 0 }}>
+            Sign in with GitHub to analyze many repositories with authenticated GitHub limits.
+          </p>
+        ) : null}
+        <RepositoryLoadFailures failures={failures} onRetry={onRetry} />
+      </Surface>
     </section>
   );
 }

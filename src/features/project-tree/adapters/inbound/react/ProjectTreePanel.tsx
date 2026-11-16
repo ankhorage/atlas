@@ -1,6 +1,7 @@
 'use client';
 import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { Icon } from '@ankhorage/zora/web/icon';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Text } from '@ankhorage/zora/web/text';
 import { type TreeItemNode, TreeView } from '@ankhorage/zora/web/tree-view';
 import { View } from '@ankhorage/zora/web/view';
@@ -12,11 +13,12 @@ import type { ProjectTreeNode } from '@/types/projectTree';
 
 /*** Adapt Atlas's serializable project tree to the generated ZORA browser TreeView. */
 export function ProjectTreePanel({ nodes, onSelect, selectedIds }: ProjectTreePanelProps) {
+  const { theme } = useZoraTheme();
   const treeNodes = React.useMemo(() => nodes.map(node => toTreeItemNode(node)), [nodes]);
   const expansion = useProjectTreeExpansion(nodes, selectedIds);
 
   return (
-    <View p="xs">
+    <View p="xs" style={{ color: theme.semantics.content.default }}>
       <TreeView
         ariaLabel="Project tree"
         expansionIndicator="chevron"

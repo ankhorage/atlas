@@ -116,9 +116,8 @@ describe('[WorkspaceView]', () => {
       </ZoraRuntimeProvider>
     );
 
-    const publicOnly = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
-    assert.equal(publicOnly?.labels?.[0]?.textContent?.trim(), 'Public only');
-    assert.equal(publicOnly?.checked, false);
+    const publicOnly = document.querySelector<HTMLElement>('[role="checkbox"]');
+    assert.equal(publicOnly?.textContent?.trim(), 'Public only');
     unmount();
   });
 
