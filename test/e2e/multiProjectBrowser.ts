@@ -452,6 +452,16 @@ async function openRepositoryPickerAsync(
   await repository.waitFor();
 }
 
+/*** Closes the picker and then its mobile dialog so subsequent controls are no longer obscured. */
+async function closeMobileRepositorySourceDialogAsync(page: Page): Promise<void> {
+  const closePopover = page.getByLabel('Close popover');
+  if (await closePopover.isVisible()) await closePopover.click();
+  await page.keyboard.press('Escape');
+  await page.getByRole('heading', { exact: true, name: 'Repository source' }).waitFor({
+    state: 'hidden',
+  });
+}
+
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
 async function assertGraphCanvasAsync(page: Page): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
@@ -1176,6 +1186,7 @@ const scenarios: readonly Scenario[] = [
         const beforeSelection = await captureWorkspaceGeometryAsync(page);
         await openRepositoryPickerAsync(page, 'bulk-pending/repository-0');
         await page.getByRole('button', { exact: true, name: 'Select all' }).click();
+        await closeMobileRepositorySourceDialogAsync(page);
         const hint = page.getByText(
           'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
         );
