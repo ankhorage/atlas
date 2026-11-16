@@ -452,6 +452,35 @@ async function assertGraphCanvasAsync(page: Page): Promise<void> {
   assert(box !== null && box.width > 0 && box.height > 0, 'Graph canvas has no rendered area.');
 }
 
+/*** Verifies the production workspace shell contains the resolved WorkspaceGraph at the requested viewport. */
+async function assertWorkspaceGraphShellAsync(
+  page: Page,
+  viewport: { readonly height: number; readonly width: number }
+): Promise<void> {
+  const geometry = await captureWorkspaceGeometryAsync(page);
+  assertDimensionsEqual(
+    geometry.viewport,
+    viewport,
+    'WorkspaceGraph changed the browser viewport.'
+  );
+  assertBoundsContained(
+    geometry.graph,
+    geometry.workspaceContent,
+    'WorkspaceGraph escaped the workspace content region.'
+  );
+}
+
+/*** Captures one independently named real-workspace graph frame for acceptance diagnosis. */
+async function captureWorkspaceGraphAsync(
+  page: Page,
+  viewport: string,
+  themePhase: 'initial' | 'toggled'
+): Promise<string> {
+  const artifact = `workspace-graph-e2e-${viewport}-${themePhase}.png`;
+  await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
+  return artifact;
+}
+
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
 async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
   const thumb = switchControl.locator(':scope > div > div:first-child > div');
@@ -1152,6 +1181,28 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'workspace-graph-e2e',
+    'Renders the real WorkspaceGraph in both themes and supported viewports outside the loading fixture.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const viewport of [
+        { height: 900, name: 'desktop', width: 1440 },
+        { height: 844, name: 'mobile', width: 390 },
+      ]) {
+        await page.setViewportSize(viewport);
+        await openWorkspaceAsync(page);
+        await assertGraphCanvasAsync(page);
+        await assertWorkspaceGraphShellAsync(page, viewport);
+        artifacts.push(await captureWorkspaceGraphAsync(page, viewport.name, 'initial'));
+        await toggleThemeAsync(page);
+        await assertGraphCanvasAsync(page);
+        await assertWorkspaceGraphShellAsync(page, viewport);
+        artifacts.push(await captureWorkspaceGraphAsync(page, viewport.name, 'toggled'));
+      }
+      return artifacts;
+    }
+  ),
+  scenario(
     'anonymous-bulk-progress-viewport',
     'Keeps the anonymous 87-repository progress hint visible without resizing the sidebar or canvas.',
     async page => {
@@ -1230,7 +1281,7 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 27, `Expected exactly 27 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 28, `Expected exactly 28 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
