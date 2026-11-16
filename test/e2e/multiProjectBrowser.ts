@@ -437,11 +437,19 @@ async function openWorkspaceMenuAsync(page: Page): Promise<void> {
   await saveAs.waitFor();
 }
 
-/*** Opens the repository picker only when its repository controls are not already visible. */
-async function openRepositoryPickerAsync(page: Page): Promise<void> {
-  const catalog = page.getByLabel('owner-a/catalog');
-  if (!(await catalog.isVisible())) await page.getByLabel('Choose repositories').click();
-  await catalog.waitFor();
+/*** Opens the one visible picker, entering the mobile source dialog before its shared controls. */
+async function openRepositoryPickerAsync(
+  page: Page,
+  repositoryLabel = 'owner-a/catalog'
+): Promise<void> {
+  const repository = page.getByLabel(repositoryLabel);
+  if (!(await repository.isVisible())) {
+    const mobileSourceEntry = page.getByLabel('Manage repository source and workspace');
+    if (await mobileSourceEntry.isVisible()) await mobileSourceEntry.click();
+    const picker = page.locator('[aria-label="Choose repositories"]:visible');
+    if (!(await repository.isVisible())) await picker.click();
+  }
+  await repository.waitFor();
 }
 
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
@@ -783,7 +791,7 @@ const scenarios: readonly Scenario[] = [
         await picker.isDisabled(),
         'Multi-owner exclusions were exposed to incremental selection.'
       );
-      await page.getByText('Repositories (4/5)', { exact: true }).waitFor();
+      await picker.getByText('Repositories (4/5)', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -1166,7 +1174,7 @@ const scenarios: readonly Scenario[] = [
         });
         await page.getByRole('application', { name: 'Graph' }).waitFor();
         const beforeSelection = await captureWorkspaceGeometryAsync(page);
-        await page.getByLabel('Choose repositories').click();
+        await openRepositoryPickerAsync(page, 'bulk-pending-0');
         await page.getByRole('button', { exact: true, name: 'Select all' }).click();
         const hint = page.getByText(
           'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
