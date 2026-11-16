@@ -7,12 +7,12 @@ import { View } from '@ankhorage/zora/web/view';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceOpenDetail } from '@/features/workspace/adapters/inbound/react/workspaceControlTypes';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
+import type { SettingsContextValue } from '@/types/settings';
 
 import styles from './WorkspaceHeader.module.css';
 
 /*** Compose the existing repository workflow so desktop and mobile share one staged selection. */
 export function ProjectSourceControls({
-  includeWorkspaceControls = true,
   initiallyOpen,
   publicOnly,
   sourceForm,
@@ -48,7 +48,7 @@ export function ProjectSourceControls({
       {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
       <PublicOnlyFilter checked={publicOnly} onChange={onPublicOnlyChange} />
       <RepositoryCopyButton sourceForm={sourceForm} />
-      {includeWorkspaceControls ? <WorkspaceControl sourceForm={sourceForm} /> : null}
+      <WorkspaceControl sourceForm={sourceForm} />
     </>
   );
 }
@@ -60,6 +60,7 @@ function WorkspaceControl({ sourceForm }: { readonly sourceForm: ProjectSourceFo
       activeWorkspaceId={sourceForm.activeWorkspaceId}
       repositories={sourceForm.repositories}
       selectedIds={sourceForm.selectedIds}
+      settings={sourceForm.settings}
       source={sourceForm.source}
       onDeleteWorkspace={sourceForm.deleteWorkspace}
       onOpenWorkspace={sourceForm.openWorkspace}
@@ -111,7 +112,6 @@ function RepositoryCopyButton({ sourceForm }: { readonly sourceForm: ProjectSour
 }
 
 interface ProjectSourceControlsProps {
-  readonly includeWorkspaceControls?: boolean;
   readonly initiallyOpen?: boolean;
   readonly publicOnly: boolean;
   readonly sourceForm: ProjectSourceFormModel;
@@ -130,6 +130,7 @@ interface ProjectSourceFormModel {
   readonly selectedIds: ReadonlySet<string>;
   readonly selectedRepositories: readonly WorkspaceRepositoryOption[];
   readonly selectionSupported: boolean;
+  readonly settings: SettingsContextValue;
   readonly setSearch: (search: string) => void;
   readonly setSelectedIds: (ids: Set<string>) => void;
   readonly setSource: (source: string) => void;

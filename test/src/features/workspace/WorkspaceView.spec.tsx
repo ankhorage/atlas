@@ -122,7 +122,7 @@ describe('[WorkspaceView]', () => {
     unmount();
   });
 
-  it('keeps repository selection behind one accessible mobile source entry', async () => {
+  it('keeps repository and workspace actions in one accessible mobile source workflow', async () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
     if (!parsed.ok) return;
@@ -149,12 +149,13 @@ describe('[WorkspaceView]', () => {
       </ZoraRuntimeProvider>
     );
     const sourceEntry = container.querySelector<HTMLButtonElement>(
-      '[aria-label="Choose repositories and workspace"]'
+      '[aria-label="Manage repository source and workspace"]'
     );
 
     assert.equal(sourceEntry?.textContent, 'Repositories (1/1)');
     await React.act(async () => sourceEntry?.click());
     assert.equal(document.body.textContent?.includes('Repository source'), true);
+    assert.equal(document.body.querySelector('[aria-label="Manage workspaces"]') !== null, true);
     unmount();
   });
 

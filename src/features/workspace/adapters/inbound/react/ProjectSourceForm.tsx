@@ -5,11 +5,11 @@ import { View } from '@ankhorage/zora/web/view';
 import { useMemo, useState } from 'react';
 
 import { ProjectSourceControls } from '@/features/workspace/adapters/inbound/react/ProjectSourceControls';
+import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
 import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession';
 import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
 import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { useRepositoryInventory } from '@/features/workspace/adapters/inbound/react/useRepositoryInventory';
-import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 import styles from './WorkspaceHeader.module.css';
@@ -52,26 +52,18 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   );
 }
 
-/*** Keeps the compact repository and workspace entry in the persistent header settings context. */
+/*** Opens the focused mobile source workflow without duplicating its workspace actions in the header. */
 function MobileSourceEntry({ sourceForm, onOpen }: MobileSourceEntryProps) {
   return (
     <div className={styles.mobileSourceControls}>
       <Button
-        accessibilityLabel="Choose repositories and workspace"
+        accessibilityLabel="Manage repository source and workspace"
         size="s"
         variant="outline"
         onPress={onOpen}
       >
         Repositories ({sourceForm.selectedIds.size}/{sourceForm.repositories.length})
       </Button>
-      <WorkspaceControls
-        activeWorkspaceId={sourceForm.activeWorkspaceId}
-        repositories={sourceForm.repositories}
-        selectedIds={sourceForm.selectedIds}
-        source={sourceForm.source}
-        onDeleteWorkspace={sourceForm.deleteWorkspace}
-        onOpenWorkspace={sourceForm.openWorkspace}
-      />
     </div>
   );
 }
@@ -97,7 +89,6 @@ function MobileProjectSourceDialog({
     >
       <View className={styles.mobileSourceDialog} direction="column" gap="s">
         <ProjectSourceControls
-          includeWorkspaceControls={false}
           initiallyOpen={initiallyOpen}
           publicOnly={publicOnly}
           sourceForm={sourceForm}
@@ -130,6 +121,7 @@ function useVisibleRepositories(
 
 /*** Keeps inventory discovery independent from selection-driven workspace changes. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
+  const settings = useSettings();
   const initial = readSource(props.currentSource);
   const state = useProjectSourceFormState(
     initial.owner,
@@ -169,6 +161,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     selectedIds: state.selectedIds,
     selectedRepositories,
     selectionSupported,
+    settings,
     setSearch: state.setSearch,
     setSelectedIds: actions.setSelectedIds,
     setSource: actions.setSource,

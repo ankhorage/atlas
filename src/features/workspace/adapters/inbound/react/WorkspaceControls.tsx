@@ -5,7 +5,6 @@ import { Surface } from '@ankhorage/zora/web/surface';
 import { View } from '@ankhorage/zora/web/view';
 import { useEffect, useRef, useState } from 'react';
 
-import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
 import {
   applyWorkspacePresentationSettings,
   readWorkspacePresentationSettings,
@@ -18,13 +17,13 @@ import type {
   WorkspaceOpenDetail,
 } from '@/features/workspace/adapters/inbound/react/workspaceControlTypes';
 import { createBrowserWorkspaceStore } from '@/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore';
+import type { SettingsContextValue } from '@/types/settings';
 import type { WorkspaceDefinition } from '@/types/workspace';
 
 /*** Renders browser-local named workspace controls without persisting analyzed repository data. */
 export function WorkspaceControls(props: WorkspaceControlsProps) {
-  const settings = useSettings();
   const [definitions, setDefinitions] = useSavedWorkspaceDefinitions();
-  useWorkspaceSettingsRestore(props.activeWorkspaceId, definitions, settings);
+  useWorkspaceSettingsRestore(props.activeWorkspaceId, definitions, props.settings);
 
   return (
     <WorkspaceMenu
@@ -33,7 +32,7 @@ export function WorkspaceControls(props: WorkspaceControlsProps) {
       isDirty={hasUnsavedChanges(
         definitions.find(definition => definition.id === props.activeWorkspaceId),
         props,
-        settings
+        props.settings
       )}
       onDelete={() =>
         deleteWorkspace(
@@ -43,11 +42,11 @@ export function WorkspaceControls(props: WorkspaceControlsProps) {
           props.onDeleteWorkspace
         )
       }
-      onOpen={workspace => openWorkspace(workspace, settings, props.onOpenWorkspace)}
+      onOpen={workspace => openWorkspace(workspace, props.settings, props.onOpenWorkspace)}
       onRename={() => renameWorkspace(props.activeWorkspaceId, definitions, setDefinitions)}
       onSave={saveAs =>
-        saveWorkspace(saveAs, props, settings, definitions, setDefinitions, workspace =>
-          openWorkspace(workspace, settings, props.onOpenWorkspace)
+        saveWorkspace(saveAs, props, props.settings, definitions, setDefinitions, workspace =>
+          openWorkspace(workspace, props.settings, props.onOpenWorkspace)
         )
       }
     />
@@ -58,7 +57,7 @@ export function WorkspaceControls(props: WorkspaceControlsProps) {
 function hasUnsavedChanges(
   workspace: WorkspaceDefinition | undefined,
   props: WorkspaceControlsProps,
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsContextValue
 ): boolean {
   if (workspace === undefined) return false;
   const current = createWorkspaceDefinition({
@@ -86,7 +85,7 @@ function useSavedWorkspaceDefinitions() {
 function useWorkspaceSettingsRestore(
   activeWorkspaceId: string | undefined,
   definitions: readonly WorkspaceDefinition[],
-  settings: ReturnType<typeof useSettings>
+  settings: SettingsContextValue
 ) {
   const restoredWorkspaceId = useRef<string | undefined>(undefined);
   useEffect(() => {
@@ -167,7 +166,7 @@ function WorkspaceActions(props: WorkspaceMenuProps) {
 function saveWorkspace(
   saveAs: boolean,
   props: WorkspaceControlsProps,
-  settings: ReturnType<typeof useSettings>,
+  settings: SettingsContextValue,
   definitions: readonly WorkspaceDefinition[],
   setDefinitions: (definitions: readonly WorkspaceDefinition[]) => void,
   open: (workspace: WorkspaceDefinition) => void
@@ -253,7 +252,7 @@ function openSelectedWorkspace(
 /*** Apply saved presentation while exposing the portable source policy to the live workspace owner. */
 function openWorkspace(
   workspace: WorkspaceDefinition,
-  settings: ReturnType<typeof useSettings>,
+  settings: SettingsContextValue,
   onOpenWorkspace: (detail: WorkspaceOpenDetail) => void
 ): void {
   applyWorkspacePresentationSettings(settings, workspace.settings);
