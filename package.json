@@ -68,6 +68,7 @@
     "test:compound-selection-browser": "bun test/e2e/compoundSelectionBrowser.ts",
     "test:github-logout-browser": "bun test/e2e/githubLogoutBrowser.ts",
     "test:multi-project-browser": "bun ./test/e2e/multiProjectBrowser.ts",
+    "test:workspace-loading-browser": "ATLAS_FIXTURE_DIST_DIR=build-workspace-loading bunx next build test/e2e/next-fixture-app --webpack && bun ./test/e2e/workspaceLoadingBrowser.ts",
     "infra:validate": "bun src/cli/runAtlasInfraLifecycleAsync.ts validate",
     "infra:plan": "bun src/cli/runAtlasInfraLifecycleAsync.ts plan",
     "infra:generate": "bun src/cli/runAtlasInfraLifecycleAsync.ts generate",

@@ -9,10 +9,11 @@ const aliases = {
 
 const nextConfig: NextConfig = {
   agentRules: false,
-  distDir: 'build',
+  distDir: process.env.ATLAS_FIXTURE_DIST_DIR ?? 'build',
   env: { ATLAS_FIXTURE_ROOT: resolve(root, 'test/fixtures/workspace-multi') },
   experimental: { externalDir: true },
   outputFileTracingRoot: root,
+  typescript: { tsconfigPath: 'tsconfig.next.json' },
   turbopack: { root, resolveAlias: aliases },
   webpack: configuration => ({
     ...configuration,

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "../fixtureWorkspace.ts",
+    "build-workspace-loading/types/**/*.ts",
+    "build-workspace-loading/dev/types/**/*.ts"
+  ],
+  "exclude": ["build-workspace-loading", "node_modules"]
+}
