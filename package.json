@@ -66,6 +66,7 @@
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
     "test:offline-browser": "bun test/e2e/offlineWorkspace.ts",
     "test:compound-selection-browser": "bun test/e2e/compoundSelectionBrowser.ts",
+    "test:github-logout-browser": "bun test/e2e/githubLogoutBrowser.ts",
     "test:multi-project-browser": "bun ./test/e2e/multiProjectBrowser.ts",
     "infra:validate": "bun src/cli/runAtlasInfraLifecycleAsync.ts validate",
     "infra:plan": "bun src/cli/runAtlasInfraLifecycleAsync.ts plan",
