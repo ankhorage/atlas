@@ -179,7 +179,12 @@ function boundsDifference(first: Bounds, second: Bounds): number {
 function markFailure(matrix: ScenarioResult[], id: string, issue: string): void {
   const index = matrix.findIndex(result => result.id === id);
   if (index === -1) return;
-  matrix[index] = { ...matrix[index], issue, status: 'failed' };
+  const existingIssue = matrix[index]?.issue;
+  matrix[index] = {
+    ...matrix[index],
+    issue: existingIssue === undefined ? issue : `${existingIssue} ${issue}`,
+    status: 'failed',
+  };
 }
 
 /*** Extracts the loading element and its graph-region bounds from the actual rendered page. */
@@ -205,7 +210,7 @@ function readDiagnosticsAsync(page: Page): Promise<LoadingDiagnostics> {
 /*** Enforces the published consumer contract: a compact, centered spinner in the available graph region. */
 function validateDiagnostics(diagnostics: LoadingDiagnostics): string | undefined {
   const { indicator, region } = diagnostics;
-  const maximumCompactSize = 32;
+  const expectedIndicatorSize = 20;
   const centerTolerance = 1;
   const horizontalOffset = Math.abs(
     indicator.left + indicator.width / 2 - (region.left + region.width / 2)
@@ -213,11 +218,19 @@ function validateDiagnostics(diagnostics: LoadingDiagnostics): string | undefine
   const verticalOffset = Math.abs(
     indicator.top + indicator.height / 2 - (region.top + region.height / 2)
   );
-  if (indicator.width > maximumCompactSize || indicator.height > maximumCompactSize)
-    return `Indicator is not compact: ${indicator.width}x${indicator.height}px.`;
+  const issues = [];
+  if (
+    Math.abs(indicator.width - expectedIndicatorSize) > centerTolerance ||
+    Math.abs(indicator.height - expectedIndicatorSize) > centerTolerance
+  )
+    issues.push(
+      `Indicator is not ${expectedIndicatorSize}x${expectedIndicatorSize}px: ${indicator.width}x${indicator.height}px.`
+    );
   if (horizontalOffset > centerTolerance || verticalOffset > centerTolerance)
-    return `Indicator is not centered: horizontal ${horizontalOffset}px, vertical ${verticalOffset}px.`;
-  return undefined;
+    issues.push(
+      `Indicator is not centered: horizontal ${horizontalOffset}px, vertical ${verticalOffset}px.`
+    );
+  return issues.length === 0 ? undefined : issues.join(' ');
 }
 
 /*** Terminates only the Next server process group that this runner created. */

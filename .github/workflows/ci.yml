@@ -79,6 +79,19 @@ jobs:
                   - 'src/app/api/auth/github/**'
                   - 'src/features/github-auth/**'
                   - 'test/e2e/githubLogoutBrowser.ts'
+            workspace_loading_browser:
+              - added|modified|deleted:
+                  - '.github/workflows/**'
+                  - 'ankh.config.json'
+                  - 'next.config.*'
+                  - 'tsconfig*.json'
+                  - 'package.json'
+                  - 'bun.lock'
+                  - 'src/app/**'
+                  - 'src/features/workspace/**'
+                  - 'src/features/theme/**'
+                  - 'test/e2e/next-fixture-app/**'
+                  - 'test/e2e/workspaceLoadingBrowser.ts'
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -209,6 +222,21 @@ jobs:
           export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
           test -n "$ATLAS_CHROME"
           bun run test:github-logout-browser
+
+      - name: Verify workspace loading first frame
+        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.workspace_loading_browser == 'true'
+        run: |
+          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$ATLAS_CHROME"
+          bun run test:workspace-loading-browser
+
+      - name: Retain workspace loading first-frame diagnostics
+        if: always() && (github.event_name == 'workflow_dispatch' || steps.changes.outputs.workspace_loading_browser == 'true')
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-loading-browser-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/workspace-loading-browser/
+          if-no-files-found: warn
 
       - name: Verify multi-project browser acceptance
         run: |
