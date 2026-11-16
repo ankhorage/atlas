@@ -50,7 +50,7 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
 /*** Renders the graph or the current project-source load error. */
 function WorkspaceContent(props: WorkspaceContentProps) {
   return (
-    <section style={workspaceContentStyle}>
+    <section data-testid="workspace-content" style={workspaceContentStyle}>
       <RepositoryLoadStatus
         selectionError={props.selectionError}
         showAnonymousBulkLoginHint={props.showAnonymousBulkLoginHint}

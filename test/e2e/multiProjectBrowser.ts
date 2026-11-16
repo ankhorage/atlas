@@ -45,6 +45,22 @@ type GraphViewportProbe = {
   } | null;
   layoutCount: number;
 };
+type Bounds = {
+  readonly bottom: number;
+  readonly height: number;
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly width: number;
+};
+type WorkspaceGeometry = {
+  readonly graph: Bounds;
+  readonly main: Bounds;
+  readonly overlay: Bounds | null;
+  readonly sidebar: Bounds;
+  readonly viewport: { readonly height: number; readonly width: number };
+  readonly workspaceContent: Bounds;
+};
 type FixtureServerMetadata = {
   readonly pid: number;
   readonly port: number;
@@ -1149,21 +1165,35 @@ const scenarios: readonly Scenario[] = [
           waitUntil: 'networkidle',
         });
         await page.getByRole('application', { name: 'Graph' }).waitFor();
+        const beforeSelection = await captureWorkspaceGeometryAsync(page);
         await page.getByLabel('Choose repositories').click();
         await page.getByRole('button', { exact: true, name: 'Select all' }).click();
         const hint = page.getByText(
           'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
         );
         await hint.waitFor();
-        await assertAnonymousBulkWorkspaceGeometryAsync(page, viewport.width);
-        await page.getByRole('button', { name: theme === 'dark' ? 'Dark' : 'Light' }).click();
-        await page.getByRole('button', { name: theme === 'dark' ? 'Light' : 'Dark' }).waitFor();
-        await assertAnonymousBulkWorkspaceGeometryAsync(page, viewport.width);
-        const artifact = `anonymous-bulk-progress-${viewport.width}-${theme}.png`;
-        await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
-        artifacts.push(artifact);
+        const duringProgress = await captureWorkspaceGeometryAsync(page);
+        const screenshot = `anonymous-bulk-progress-${viewport.width}-${theme}.png`;
+        await page.screenshot({ path: resolve(evidenceDirectory, screenshot), fullPage: true });
+        artifacts.push(screenshot);
         await hint.waitFor({ state: 'hidden', timeout: 15_000 });
-        await assertAnonymousBulkWorkspaceGeometryAsync(page, viewport.width);
+        const afterCompletion = await captureWorkspaceGeometryAsync(page);
+        await toggleThemeAsync(page);
+        const afterThemeChange = await captureWorkspaceGeometryAsync(page);
+        const geometryArtifact = `anonymous-bulk-progress-${viewport.width}-${theme}.json`;
+        await writeFile(
+          resolve(evidenceDirectory, geometryArtifact),
+          JSON.stringify(
+            { afterCompletion, afterThemeChange, beforeSelection, duringProgress },
+            null,
+            2
+          )
+        );
+        artifacts.push(geometryArtifact);
+        assertAnonymousBulkWorkspaceGeometry(
+          { afterCompletion, afterThemeChange, beforeSelection, duringProgress },
+          viewport
+        );
       }
       return artifacts;
     }
@@ -1207,22 +1237,142 @@ function assertScenarioRegistry(): void {
   );
 }
 
-/*** Prove a status overlay leaves the fixed sidebar and remaining graph canvas untouched. */
-async function assertAnonymousBulkWorkspaceGeometryAsync(page: Page, viewportWidth: number) {
+/*** Records every bounding box that defines the sidebar, content region, graph viewport, and status overlay. */
+async function captureWorkspaceGeometryAsync(page: Page): Promise<WorkspaceGeometry> {
   const geometry = await page.evaluate(() => {
+    const bounds = (element: Element) => {
+      const { bottom, height, left, right, top, width } = element.getBoundingClientRect();
+      return { bottom, height, left, right, top, width };
+    };
     const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const main = document.querySelector('[data-testid="main"]');
+    const overlay = document.querySelector(
+      '[role="status"][aria-label="Repository loading status"]'
+    );
     const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
-    if (graph === null || sidebar === null || sidebar === undefined) return null;
-    const graphBounds = graph.getBoundingClientRect();
-    const sidebarBounds = sidebar.getBoundingClientRect();
-    return { graph: graphBounds, sidebar: sidebarBounds };
+    const workspaceContent = document.querySelector('[data-testid="workspace-content"]');
+    if (
+      graph === null ||
+      main === null ||
+      sidebar === null ||
+      sidebar === undefined ||
+      workspaceContent === null
+    )
+      return null;
+    return {
+      graph: bounds(graph),
+      main: bounds(main),
+      overlay: overlay === null ? null : bounds(overlay),
+      sidebar: bounds(sidebar),
+      viewport: { height: window.innerHeight, width: window.innerWidth },
+      workspaceContent: bounds(workspaceContent),
+    };
   });
-  assert(geometry !== null, 'Anonymous bulk workspace did not render its sidebar and graph.');
-  assert(geometry.sidebar.left === 0, 'Anonymous bulk progress shifted the sidebar.');
-  assert(geometry.sidebar.width === 288, 'Anonymous bulk progress changed the sidebar width.');
   assert(
-    geometry.graph.width === viewportWidth - geometry.sidebar.width,
-    'Anonymous bulk progress changed the canvas width.'
+    geometry !== null,
+    'Anonymous bulk workspace did not render its main, sidebar, content, and graph.'
+  );
+  return geometry;
+}
+
+/*** Proves the absolute status overlay preserves the measured usable graph region through bulk progress and theme changes. */
+function assertAnonymousBulkWorkspaceGeometry(
+  geometry: {
+    readonly afterCompletion: WorkspaceGeometry;
+    readonly afterThemeChange: WorkspaceGeometry;
+    readonly beforeSelection: WorkspaceGeometry;
+    readonly duringProgress: WorkspaceGeometry;
+  },
+  viewport: { readonly height: number; readonly width: number }
+) {
+  assertWorkspaceGeometryBaseline(geometry.beforeSelection, viewport, 'before selection');
+  assertWorkspaceGeometryBaseline(geometry.duringProgress, viewport, 'during progress');
+  assertWorkspaceGeometryBaseline(geometry.afterCompletion, viewport, 'after completion');
+  assertWorkspaceGeometryBaseline(geometry.afterThemeChange, viewport, 'after theme change');
+  assert(
+    geometry.duringProgress.overlay !== null,
+    'Anonymous bulk progress did not render its status overlay.'
+  );
+  assertBoundsContained(
+    geometry.duringProgress.overlay,
+    geometry.duringProgress.workspaceContent,
+    'Anonymous bulk overlay escaped its workspace content region.'
+  );
+  for (const [phase, current] of [
+    ['during progress', geometry.duringProgress],
+    ['after completion', geometry.afterCompletion],
+    ['after theme change', geometry.afterThemeChange],
+  ] as const)
+    assertBoundsEqual(
+      current.graph,
+      geometry.beforeSelection.graph,
+      `Anonymous bulk ${phase} changed the usable graph bounds.`
+    );
+}
+
+/*** Verifies the shell keeps its fixed sidebar and allocates the remainder only to workspace content. */
+function assertWorkspaceGeometryBaseline(
+  geometry: WorkspaceGeometry,
+  viewport: { readonly height: number; readonly width: number },
+  phase: string
+) {
+  assertDimensionsEqual(
+    geometry.viewport,
+    viewport,
+    `Anonymous bulk ${phase} changed the viewport.`
+  );
+  assert(geometry.sidebar.left === 0, `Anonymous bulk ${phase} shifted the sidebar.`);
+  assert(geometry.sidebar.width === 288, `Anonymous bulk ${phase} changed the sidebar width.`);
+  assertBoundsContained(
+    geometry.graph,
+    geometry.workspaceContent,
+    `Anonymous bulk ${phase} placed the graph outside usable workspace content.`
+  );
+}
+
+/*** Allows only device-pixel rounding while requiring a measured browser layout invariant. */
+function assertBoundsEqual(actual: Bounds, expected: Bounds, message: string) {
+  const tolerance = 1;
+  for (const key of ['bottom', 'height', 'left', 'right', 'top', 'width'] as const)
+    assert(
+      Math.abs(actual[key] - expected[key]) <= tolerance,
+      `${message} ${JSON.stringify({ actual, expected, key, tolerance })}`
+    );
+}
+
+/*** Verifies the browser viewport itself remains at the exact requested dimensions. */
+function assertDimensionsEqual(
+  actual: { readonly height: number; readonly width: number },
+  expected: { readonly height: number; readonly width: number },
+  message: string
+) {
+  assert(
+    actual.height === expected.height && actual.width === expected.width,
+    `${message} ${JSON.stringify({ actual, expected })}`
+  );
+}
+
+/*** Toggles whichever theme action is currently exposed without assuming the browser's initial color scheme. */
+async function toggleThemeAsync(page: Page) {
+  const darkAction = page.getByRole('button', { exact: true, name: 'Dark' });
+  if (await darkAction.isVisible()) {
+    await darkAction.click();
+    await page.getByRole('button', { exact: true, name: 'Light' }).waitFor();
+    return;
+  }
+  await page.getByRole('button', { exact: true, name: 'Light' }).click();
+  await darkAction.waitFor();
+}
+
+/*** Rejects a graph or overlay that crosses the content allocation that owns it. */
+function assertBoundsContained(inner: Bounds, outer: Bounds, message: string) {
+  const tolerance = 1;
+  assert(
+    inner.left >= outer.left - tolerance &&
+      inner.right <= outer.right + tolerance &&
+      inner.top >= outer.top - tolerance &&
+      inner.bottom <= outer.bottom + tolerance,
+    `${message} ${JSON.stringify({ inner, outer, tolerance })}`
   );
 }
 
