@@ -5,7 +5,7 @@ import {
   clearGitHubAuthSessionCookie,
 } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 
-/*** Create a same-origin local logout route that always revokes the browser's local session. */
+/*** Create a same-origin logout route that clears this browser's local session, not copied stateless cookies. */
 export function createGitHubLogoutRoute(
   signOutAsync: (cookieHeader: string | null) => Promise<boolean>
 ): (request: Request) => Promise<Response> {

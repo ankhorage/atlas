@@ -33,12 +33,20 @@ export function setGitHubAuthSessionCookie(session: AuthSession, cookies: Respon
 
 /*** Remove transient authorization state after a callback, whether it succeeded or failed. */
 export function clearGitHubAuthAttemptCookie(cookies: ResponseCookies): void {
-  cookies.delete(githubAuthCookieNames.attempt);
+  clearGitHubAuthCookie(githubAuthCookieNames.attempt, cookies);
 }
 
-/*** Remove the opaque local session after the adapter revokes its stored credentials. */
+/*** Remove the opaque local browser session without claiming to revoke copied stateless cookies. */
 export function clearGitHubAuthSessionCookie(cookies: ResponseCookies): void {
-  cookies.delete(githubAuthCookieNames.session);
+  clearGitHubAuthCookie(githubAuthCookieNames.session, cookies);
+}
+
+/*** Emit a host-only HTTPS tombstone that matches the scope of each authentication cookie. */
+function clearGitHubAuthCookie(
+  name: (typeof githubAuthCookieNames)[keyof typeof githubAuthCookieNames],
+  cookies: ResponseCookies
+): void {
+  cookies.set(name, '', { ...cookieOptions(), expires: new Date(0), maxAge: 0 });
 }
 
 /*** Use host-only, HTTPS, HttpOnly, SameSite cookies; no token ever enters browser-readable storage. */
