@@ -125,7 +125,12 @@ async function retryWorkspaceRuntimeAsync(
       'invalid',
       'The requested repository is not part of this workspace.'
     );
-  if (workspace.statuses.get(repository.id)?.status === 'successful')
+  if (workspace.active)
+    throw new WorkspaceRepositoryRuntimeError(
+      'rate-limited',
+      'A workspace operation is already in progress. Try again shortly.'
+    );
+  if (workspace.statuses.get(repository.id)?.status !== 'failed')
     throw new WorkspaceRepositoryRuntimeError('stale', 'Only failed repositories can be retried.');
   return runWorkspaceOperationAsync(
     workspace,

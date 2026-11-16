@@ -121,4 +121,53 @@ describe('[WorkspaceView]', () => {
     assert.equal(publicOnly?.checked, false);
     unmount();
   });
+
+  it('reports selected, pending, successful, failed, and cancelled repositories without calling pending work failed', () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const { container, unmount } = render(
+      <ZoraRuntimeProvider
+        initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+        themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+      >
+        <WorkspaceView
+          currentSource="ankhorage"
+          projectName="GitHub workspace"
+          repositoryStatuses={[
+            status('loading'),
+            status('successful'),
+            status('failed'),
+            status('cancelled'),
+          ]}
+          workspace={{ ok: false, error: 'Loading.' }}
+        />
+      </ZoraRuntimeProvider>
+    );
+    assert.equal(
+      container.textContent?.includes(
+        '3 of 4 analyzed · 1 pending · 1 successful · 1 failed · 1 cancelled'
+      ),
+      true
+    );
+    assert.equal(
+      container.textContent?.includes('Sign in with GitHub to analyze many repositories'),
+      true
+    );
+    const statusRegion = container.querySelector<HTMLElement>(
+      '[aria-label="Repository loading status"]'
+    );
+    assert.equal(statusRegion?.style.position, 'absolute');
+    assert.equal(statusRegion?.parentElement?.style.flex, '1 1 0%');
+    assert.equal(container.textContent?.includes('3 of 4 repositories failed'), false);
+    unmount();
+  });
 });
+
+/** Build client-safe repository states covering every terminal and pending outcome. */
+function status(status: 'cancelled' | 'failed' | 'loading' | 'successful') {
+  return {
+    repository: { id: status, name: status, owner: 'ankhorage' },
+    status,
+  };
+}

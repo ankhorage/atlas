@@ -4,11 +4,19 @@ import {
   classifyWorkspaceRepositoryFailure,
   workspaceRepositoryFailureDescription,
 } from '@/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure';
+import { diagnoseWorkspaceRepositoryOperationAsync } from '@/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync';
 
 describe('[classifyWorkspaceRepositoryFailure]', () => {
   it('classifies observable provider outcomes without returning provider bodies or local paths', () => {
     const cases = [
       [Object.assign(new Error('token=secret /private/tmp'), { status: 401 }), 'authentication'],
+      [
+        Object.assign(new Error('token=secret /private/tmp'), {
+          rateLimitKind: 'primary',
+          status: 401,
+        }),
+        'authentication',
+      ],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 403 }), 'unknown'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 404 }), 'not-found'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 429 }), 'rate-limited'],
@@ -53,5 +61,29 @@ describe('[classifyWorkspaceRepositoryFailure]', () => {
         category: 'rate-limited',
       }
     );
+  });
+
+  it('keeps Repository rate-limit timing and an Atlas operation stage without exposing its cause', async () => {
+    let failure: unknown;
+    try {
+      await diagnoseWorkspaceRepositoryOperationAsync(
+        'bd4cbec4-0e72-467c-a929-242e2385799a',
+        'revision',
+        async () => {
+          throw Object.assign(new Error('token=secret /private/tmp'), {
+            code: 'rate-limited',
+            retryAfterMilliseconds: 1_500,
+          });
+        }
+      );
+    } catch (error) {
+      failure = error;
+    }
+    assert.deepEqual(classifyWorkspaceRepositoryFailure(failure), {
+      category: 'rate-limited',
+      correlationId: 'bd4cbec4-0e72-467c-a929-242e2385799a',
+      retryAfterSeconds: 2,
+      stage: 'revision',
+    });
   });
 });

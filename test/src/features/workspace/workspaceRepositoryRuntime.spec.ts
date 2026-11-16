@@ -251,8 +251,8 @@ describe('[workspace repository runtime]', () => {
     assert.equal(repositoryNodes(removed, ['B']).length, 0);
   });
 
-  it('resumes retained pending repositories through mixed rapid selection changes at 5, 20, and 80 repositories', async () => {
-    for (const total of [5, 20, 80]) {
+  it('resumes retained pending repositories through mixed rapid selection changes at 5, 20, and 87 repositories', async () => {
+    for (const total of [5, 20, 87]) {
       const repositories = Array.from({ length: total }, (_, index) =>
         repository(`repository-${index}`, 'owner-a', `catalog-${index}`)
       );
