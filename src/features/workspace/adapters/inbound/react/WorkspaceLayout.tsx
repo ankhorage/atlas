@@ -107,11 +107,6 @@ function WorkspaceMain({
         <RepositorySelectionNotice />
       ) : (
         <>
-          {githubAuth.status === 'anonymous' && hasIncompleteBulkSelection(repositoryStatuses) ? (
-            <p role="status" style={{ margin: 8 }}>
-              Sign in with GitHub to analyze many repositories with authenticated GitHub limits.
-            </p>
-          ) : null}
           <WorkspacePanels
             auditExportActions={auditExportActions}
             currentSource={currentSource}
@@ -123,6 +118,9 @@ function WorkspaceMain({
             projectError={workspace.ok ? null : workspace.error}
             repositoryStatuses={repositoryStatuses}
             selectionError={selectionError}
+            showAnonymousBulkLoginHint={
+              githubAuth.status === 'anonymous' && hasIncompleteBulkSelection(repositoryStatuses)
+            }
             onRetry={onRetry}
           />
         </>

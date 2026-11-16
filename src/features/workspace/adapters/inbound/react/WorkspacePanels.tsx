@@ -16,7 +16,6 @@ import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 export function WorkspacePanels(props: WorkspacePanelsProps) {
   return (
     <>
-      {props.selectionError === undefined ? null : <div role="alert">{props.selectionError}</div>}
       <WorkspaceSidebar
         auditExportActions={props.auditExportActions}
         currentSource={props.currentSource}
@@ -36,6 +35,8 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
         navigation={props.navigation}
         projectError={props.projectError}
         repositoryStatuses={props.repositoryStatuses}
+        selectionError={props.selectionError}
+        showAnonymousBulkLoginHint={props.showAnonymousBulkLoginHint}
         onRetry={props.onRetry}
         revealedCycleId={props.cycleInspection.revealedId}
         onCloseInspection={() => props.cycleInspection.change(null)}
@@ -49,8 +50,13 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
 /*** Renders the graph or the current project-source load error. */
 function WorkspaceContent(props: WorkspaceContentProps) {
   return (
-    <>
-      <RepositoryLoadFailures statuses={props.repositoryStatuses} onRetry={props.onRetry} />
+    <section style={workspaceContentStyle}>
+      <RepositoryLoadStatus
+        selectionError={props.selectionError}
+        showAnonymousBulkLoginHint={props.showAnonymousBulkLoginHint}
+        statuses={props.repositoryStatuses}
+        onRetry={props.onRetry}
+      />
       {props.projectError !== null ? (
         <WorkspaceError message={props.projectError} />
       ) : (
@@ -69,56 +75,108 @@ function WorkspaceContent(props: WorkspaceContentProps) {
           onRevealCycle={props.onRevealCycle}
         />
       )}
-    </>
+    </section>
   );
 }
 
 /*** Surface only incomplete repository work while the shared graph remains usable for successful projects. */
-function RepositoryLoadFailures({
+function RepositoryLoadStatus({
+  selectionError,
+  showAnonymousBulkLoginHint,
   statuses,
   onRetry,
 }: {
+  readonly selectionError?: string;
+  readonly showAnonymousBulkLoginHint: boolean;
   readonly statuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }) {
-  if (statuses === undefined || statuses.length === 0) return null;
-  const summary = repositoryLoadSummary(statuses);
-  if (summary.pending === 0 && summary.failed === 0 && summary.cancelled === 0) return null;
-  const failures = statuses.filter(status => status.status === 'failed');
+  const summary = repositoryLoadSummary(statuses ?? []);
+  const showProgress = summary.pending > 0 || summary.failed > 0 || summary.cancelled > 0;
+  if (!hasRepositoryLoadStatus(selectionError, showAnonymousBulkLoginHint, showProgress))
+    return null;
+  const failures = (statuses ?? []).filter(status => status.status === 'failed');
   return (
-    <section aria-label="Repository loading status" role="status" style={{ padding: 8 }}>
-      <div>
-        {summary.completed} of {summary.selected} analyzed · {summary.pending} pending ·{' '}
-        {summary.successful} successful · {summary.failed} failed · {summary.cancelled} cancelled
-      </div>
-      {failures.length === 0 ? null : (
-        <details>
-          <summary>{failures.length} repositories failed</summary>
-          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-            {failures.map(({ description, failure, repository, status }) => (
-              <div
-                key={repository.id}
-                style={{ alignItems: 'center', display: 'flex', gap: 8, paddingBlock: 4 }}
-              >
-                <span>
-                  {repository.owner}/{repository.name}: {status}
-                  {description === undefined ? '' : ` — ${description}`}
-                  {failure?.stage === undefined ? '' : ` (${failure.stage})`}
-                  {failure?.correlationId === undefined ? '' : ` [${failure.correlationId}]`}
-                </span>
-                {status === 'failed' && onRetry !== undefined ? (
-                  <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
-                    Retry
-                  </Button>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </details>
-      )}
+    <section aria-label="Repository loading status" role="status" style={repositoryStatusStyle}>
+      {selectionError === undefined ? null : <div role="alert">{selectionError}</div>}
+      {showProgress ? (
+        <div>
+          {summary.completed} of {summary.selected} analyzed · {summary.pending} pending ·{' '}
+          {summary.successful} successful · {summary.failed} failed · {summary.cancelled} cancelled
+        </div>
+      ) : null}
+      {showAnonymousBulkLoginHint ? (
+        <p style={{ margin: 0 }}>
+          Sign in with GitHub to analyze many repositories with authenticated GitHub limits.
+        </p>
+      ) : null}
+      <RepositoryLoadFailures failures={failures} onRetry={onRetry} />
     </section>
   );
 }
+
+/*** Avoid an empty overlay while preserving status visibility for errors, progress, and the anonymous limit notice. */
+function hasRepositoryLoadStatus(
+  selectionError: string | undefined,
+  showAnonymousBulkLoginHint: boolean,
+  showProgress: boolean
+) {
+  return selectionError !== undefined || showAnonymousBulkLoginHint || showProgress;
+}
+
+/*** Reveal retry controls only for the terminal repository failures in the current operation. */
+function RepositoryLoadFailures({
+  failures,
+  onRetry,
+}: {
+  readonly failures: readonly WorkspaceRepositoryLoadStatus[];
+  readonly onRetry?: (repositoryId: string) => Promise<void>;
+}) {
+  if (failures.length === 0) return null;
+  return (
+    <details>
+      <summary>{failures.length} repositories failed</summary>
+      <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+        {failures.map(({ description, failure, repository, status }) => (
+          <div
+            key={repository.id}
+            style={{ alignItems: 'center', display: 'flex', gap: 8, paddingBlock: 4 }}
+          >
+            <span>
+              {repository.owner}/{repository.name}: {status}
+              {description === undefined ? '' : ` — ${description}`}
+              {failure?.stage === undefined ? '' : ` (${failure.stage})`}
+              {failure?.correlationId === undefined ? '' : ` [${failure.correlationId}]`}
+            </span>
+            {onRetry === undefined ? null : (
+              <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
+                Retry
+              </Button>
+            )}
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+const workspaceContentStyle = {
+  display: 'flex',
+  flex: 1,
+  minHeight: 0,
+  minWidth: 0,
+  position: 'relative' as const,
+};
+
+const repositoryStatusStyle = {
+  left: 0,
+  maxWidth: 'min(100%, 560px)',
+  padding: 8,
+  pointerEvents: 'auto' as const,
+  position: 'absolute' as const,
+  top: 0,
+  zIndex: 1,
+};
 
 /*** Count each selected repository exactly once so pending and cancellation are never presented as failures. */
 function repositoryLoadSummary(statuses: readonly WorkspaceRepositoryLoadStatus[]) {
@@ -179,6 +237,7 @@ interface WorkspacePanelsProps {
   readonly projectError: string | null;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly selectionError?: string;
+  readonly showAnonymousBulkLoginHint: boolean;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
 
@@ -189,7 +248,9 @@ interface WorkspaceContentProps {
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly projectError: string | null;
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
+  readonly selectionError?: string;
   readonly revealedCycleId: string | null;
+  readonly showAnonymousBulkLoginHint: boolean;
   readonly onCloseInspection: () => void;
   readonly onCycleEvidenceVisibilityChange: (hidden: boolean) => void;
   readonly onRevealCycle: () => void;

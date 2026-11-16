@@ -154,6 +154,11 @@ describe('[WorkspaceView]', () => {
       container.textContent?.includes('Sign in with GitHub to analyze many repositories'),
       true
     );
+    const statusRegion = container.querySelector<HTMLElement>(
+      '[aria-label="Repository loading status"]'
+    );
+    assert.equal(statusRegion?.style.position, 'absolute');
+    assert.equal(statusRegion?.parentElement?.style.flex, '1 1 0%');
     assert.equal(container.textContent?.includes('3 of 4 repositories failed'), false);
     unmount();
   });

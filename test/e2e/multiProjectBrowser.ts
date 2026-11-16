@@ -1136,6 +1136,44 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'anonymous-bulk-progress-viewport',
+    'Keeps the anonymous 87-repository progress hint visible without resizing the sidebar or canvas.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const [viewport, theme] of [
+        [{ width: 1440, height: 900 }, 'dark'],
+        [{ width: 390, height: 844 }, 'light'],
+      ] as const) {
+        await page.setViewportSize(viewport);
+        await page.goto(`${url}/?source=bulk-pending&repositories=bulk-pending-0`, {
+          waitUntil: 'networkidle',
+        });
+        await page.getByRole('application', { name: 'Graph' }).waitFor();
+        await page.getByLabel('Choose repositories').click();
+        const request = page.waitForRequest(
+          candidate =>
+            candidate.url().endsWith('/api/workspace/selection') && candidate.method() === 'POST'
+        );
+        await page.getByRole('button', { name: 'Select all' }).click();
+        await request;
+        const hint = page.getByText(
+          'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
+        );
+        await hint.waitFor();
+        await assertAnonymousBulkWorkspaceGeometryAsync(page, viewport.width);
+        await page.getByRole('button', { name: theme === 'dark' ? 'Dark' : 'Light' }).click();
+        await page.getByRole('button', { name: theme === 'dark' ? 'Light' : 'Dark' }).waitFor();
+        await assertAnonymousBulkWorkspaceGeometryAsync(page, viewport.width);
+        const artifact = `anonymous-bulk-progress-${viewport.width}-${theme}.png`;
+        await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
+        artifacts.push(artifact);
+        await hint.waitFor({ state: 'hidden', timeout: 15_000 });
+        await assertAnonymousBulkWorkspaceGeometryAsync(page, viewport.width);
+      }
+      return artifacts;
+    }
+  ),
+  scenario(
     'single-project-offline-parity',
     'Retains direct single-project browser behavior with no outbound requests.',
     async page => {
@@ -1167,10 +1205,29 @@ const fixtureRepositoryIds = [
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 26, `Expected exactly 26 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 27, `Expected exactly 27 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
+  );
+}
+
+/*** Prove a status overlay leaves the fixed sidebar and remaining graph canvas untouched. */
+async function assertAnonymousBulkWorkspaceGeometryAsync(page: Page, viewportWidth: number) {
+  const geometry = await page.evaluate(() => {
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
+    if (graph === null || sidebar === null || sidebar === undefined) return null;
+    const graphBounds = graph.getBoundingClientRect();
+    const sidebarBounds = sidebar.getBoundingClientRect();
+    return { graph: graphBounds, sidebar: sidebarBounds };
+  });
+  assert(geometry !== null, 'Anonymous bulk workspace did not render its sidebar and graph.');
+  assert(geometry.sidebar.left === 0, 'Anonymous bulk progress shifted the sidebar.');
+  assert(geometry.sidebar.width === 288, 'Anonymous bulk progress changed the sidebar width.');
+  assert(
+    geometry.graph.width === viewportWidth - geometry.sidebar.width,
+    'Anonymous bulk progress changed the canvas width.'
   );
 }
 

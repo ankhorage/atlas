@@ -31,6 +31,9 @@ const viewportRepositories = [5, 20, 87].flatMap(count =>
     repository(`viewport-${count}-${index}`, 'viewport', `repository-${index}`)
   )
 );
+const pendingBulkRepositories = Array.from({ length: 87 }, (_, index) =>
+  repository(`bulk-pending-${index}`, 'bulk-pending', `repository-${index}`)
+);
 const viewportFixtureRoot = resolve(tmpdir(), `atlas-workspace-viewport-${process.pid}`);
 const fixtureRuntimeRegistryKey = '__atlasFixtureWorkspaceRuntime__';
 
@@ -143,6 +146,10 @@ function createFixtureMaterializer() {
     attempts.set(repository.id, attempt);
     if (repository.id === 'owner-b-failed' && attempt === 1)
       throw new Error('Fixture materialization failed.');
+    if (repository.id.startsWith('bulk-pending-')) {
+      await new Promise(resolve => setTimeout(resolve, 150));
+      return materializeViewportFixtureAsync(repository, source);
+    }
     if (repository.id.startsWith('viewport-'))
       return materializeViewportFixtureAsync(repository, source);
     return {
@@ -243,7 +250,8 @@ function discoverFixtureAsync(
 ) {
   const fixtureOwnerSource = normalizeFixtureOwnerSource(ownerSource);
   const viewportSelection = viewportFixtureRepositories(fixtureOwnerSource);
-  const availableRepositories = viewportSelection ?? repositories;
+  const pendingBulkSelection = pendingBulkFixtureRepositories(fixtureOwnerSource);
+  const availableRepositories = viewportSelection ?? pendingBulkSelection ?? repositories;
   const directRepository = availableRepositories.find(
     repository =>
       repository.url === fixtureOwnerSource ||
@@ -262,7 +270,9 @@ function discoverFixtureAsync(
     )
   );
   const discoveredRepositories =
-    viewportSelection ?? (directRepository === undefined ? discovered : [directRepository]);
+    viewportSelection ??
+    pendingBulkSelection ??
+    (directRepository === undefined ? discovered : [directRepository]);
   const selectedRepositories = discoveredRepositories.filter(
     repository =>
       !excluded.has(repository.id) &&
@@ -289,6 +299,11 @@ function viewportFixtureRepositories(source: string) {
     : viewportRepositories.filter(repository => repository.id.startsWith(`viewport-${match[1]}-`));
 }
 
+/*** Return the intentionally slow 87-repository inventory used to exercise visible anonymous progress. */
+function pendingBulkFixtureRepositories(source: string) {
+  return source === 'bulk-pending' ? pendingBulkRepositories : undefined;
+}
+
 /*** Reuses a real package fixture while each repository retains its canonical identity. */
 function fixturePath(repository: { readonly owner: string; readonly name: string }): string {
   const path = resolve(fixtureRoot, repository.owner, repository.name);
@@ -297,7 +312,7 @@ function fixturePath(repository: { readonly owner: string; readonly name: string
 
 /*** Makes test-only scale records materializable without exposing them to ordinary fixture owners. */
 function allRepositories() {
-  return [...repositories, ...viewportRepositories];
+  return [...repositories, ...viewportRepositories, ...pendingBulkRepositories];
 }
 
 /*** Retains one canonical record when two owners expose the same repository through discovery. */
