@@ -101,7 +101,7 @@ function useWorkspaceSettingsRestore(
 function WorkspaceMenu(props: WorkspaceMenuProps) {
   return (
     <Popover
-      placement="bottom-start"
+      placement="bottom-end"
       anchor={({ toggle }) => (
         <Button accessibilityLabel="Manage workspaces" size="s" variant="outline" onPress={toggle}>
           Workspace
@@ -135,7 +135,7 @@ function WorkspaceMenu(props: WorkspaceMenuProps) {
 /*** Groups workspace mutations without widening the compact selector's responsibility. */
 function WorkspaceActions(props: WorkspaceMenuProps) {
   return (
-    <View direction="row" gap="xs" style={{ marginTop: 8 }}>
+    <View direction="row" gap="xs" style={{ marginTop: 8 }} wrap="wrap">
       <Button size="s" variant="ghost" onPress={() => props.onSave(false)}>
         Save
       </Button>

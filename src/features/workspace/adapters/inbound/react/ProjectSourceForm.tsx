@@ -2,7 +2,7 @@
 import { Button } from '@ankhorage/zora/web/button';
 import { Dialog } from '@ankhorage/zora/web/dialog';
 import { View } from '@ankhorage/zora/web/view';
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
 import { ProjectSourceControls } from '@/features/workspace/adapters/inbound/react/ProjectSourceControls';
@@ -40,6 +40,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         <MobileSourceEntry sourceForm={sourceForm} onOpen={() => setMobileSourceOpen(true)} />
       </View>
       <MobileProjectSourceDialog
+        authControls={props.authControls}
         initiallyOpen={props.selectionRequired}
         open={mobileSourceOpen}
         publicOnly={publicOnly}
@@ -70,6 +71,7 @@ function MobileSourceEntry({ sourceForm, onOpen }: MobileSourceEntryProps) {
 
 /*** Keeps mobile repository choices in a focused ZORA dialog while staging the same selection. */
 function MobileProjectSourceDialog({
+  authControls,
   initiallyOpen,
   open,
   publicOnly,
@@ -88,6 +90,7 @@ function MobileProjectSourceDialog({
       onDismiss={onDismiss}
     >
       <View className={styles.mobileSourceDialog} direction="column" gap="s">
+        {authControls}
         <ProjectSourceControls
           initiallyOpen={initiallyOpen}
           publicOnly={publicOnly}
@@ -194,6 +197,7 @@ function readSource(currentSource: string | undefined): { readonly owner: string
 
 interface ProjectSourceFormProps {
   readonly activeWorkspaceId?: string;
+  readonly authControls?: ReactNode;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
@@ -201,6 +205,7 @@ interface ProjectSourceFormProps {
 }
 
 interface MobileProjectSourceDialogProps {
+  readonly authControls?: ReactNode;
   readonly initiallyOpen?: boolean;
   readonly open: boolean;
   readonly publicOnly: boolean;

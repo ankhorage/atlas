@@ -39,7 +39,6 @@ export function WorkspaceSidebar({ mobile = false, ...props }: WorkspaceSidebarP
       style={{
         alignSelf: 'stretch',
         borderRight: `1px solid ${theme.semantics.border.subtle}`,
-        display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
         maxWidth: 288,
