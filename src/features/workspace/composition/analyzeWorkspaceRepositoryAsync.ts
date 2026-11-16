@@ -47,39 +47,42 @@ export async function analyzeWorkspaceRepositoryAsync(
       )
   );
   try {
-    const value = await diagnoseWorkspaceRepositoryOperationAsync(
+    const value = await analyzeMaterializedWorkspaceRepositoryAsync(
       correlationId,
-      'analysis',
-      async () => {
-        const inspection = await (dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)(
-          resolved.rootPath
-        );
-        const analysis = await createProjectAnalysisSnapshotAsync({
-          id: repository.id,
-          inspection,
-        });
-        const graph = projectDependencyGraphFromProjectAnalysisSnapshots(
-          createSourceGraphFromProjectAnalysisSnapshots([analysis]),
-          [analysis]
-        );
-        const language = selectParserLanguage(inspection.detection);
-        return {
-          analysis,
-          files: await createProjectFileTreeAsync(
-            inspection,
-            graph,
-            language.language,
-            resolved.rootPath
-          ),
-          language,
-        };
-      }
+      repository.id,
+      resolved.rootPath,
+      dependencies
     );
     cache.setAnalysis(key, value);
     return value;
   } finally {
     await resolved.cleanupAsync();
   }
+}
+
+/*** Analyze one materialized revision while retaining the outer cleanup and correlation boundaries. */
+async function analyzeMaterializedWorkspaceRepositoryAsync(
+  correlationId: string,
+  repositoryId: string,
+  rootPath: string,
+  dependencies: WorkspaceRepositoryRuntimeDependencies
+): Promise<RepositoryAnalysis> {
+  return diagnoseWorkspaceRepositoryOperationAsync(correlationId, 'analysis', async () => {
+    const inspection = await (dependencies.inspectAsync ?? inspectProjectForAnalysisAsync)(
+      rootPath
+    );
+    const analysis = await createProjectAnalysisSnapshotAsync({ id: repositoryId, inspection });
+    const graph = projectDependencyGraphFromProjectAnalysisSnapshots(
+      createSourceGraphFromProjectAnalysisSnapshots([analysis]),
+      [analysis]
+    );
+    const language = selectParserLanguage(inspection.detection);
+    return {
+      analysis,
+      files: await createProjectFileTreeAsync(inspection, graph, language.language, rootPath),
+      language,
+    };
+  });
 }
 
 /*** Scope an immutable analysis to its authorized GitHub identity and resolved revision. */

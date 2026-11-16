@@ -10,6 +10,13 @@ describe('[classifyWorkspaceRepositoryFailure]', () => {
   it('classifies observable provider outcomes without returning provider bodies or local paths', () => {
     const cases = [
       [Object.assign(new Error('token=secret /private/tmp'), { status: 401 }), 'authentication'],
+      [
+        Object.assign(new Error('token=secret /private/tmp'), {
+          rateLimitKind: 'primary',
+          status: 401,
+        }),
+        'authentication',
+      ],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 403 }), 'unknown'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 404 }), 'not-found'],
       [Object.assign(new Error('token=secret /private/tmp'), { status: 429 }), 'rate-limited'],

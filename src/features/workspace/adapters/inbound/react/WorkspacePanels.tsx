@@ -122,10 +122,7 @@ function RepositoryLoadFailures({
 
 /*** Count each selected repository exactly once so pending and cancellation are never presented as failures. */
 function repositoryLoadSummary(statuses: readonly WorkspaceRepositoryLoadStatus[]) {
-  const counts = statuses.reduce(
-    (current, { status }) => ({ ...current, [status]: current[status] + 1 }),
-    { cancelled: 0, failed: 0, loading: 0, successful: 0 }
-  );
+  const counts = statuses.reduce(countRepositoryLoadStatus, initialRepositoryLoadCounts);
   return {
     cancelled: counts.cancelled,
     completed: counts.cancelled + counts.failed + counts.successful,
@@ -134,6 +131,23 @@ function repositoryLoadSummary(statuses: readonly WorkspaceRepositoryLoadStatus[
     selected: statuses.length,
     successful: counts.successful,
   };
+}
+
+/*** Count one repository outcome through its explicit finite status vocabulary. */
+function countRepositoryLoadStatus(
+  counts: RepositoryLoadCounts,
+  { status }: WorkspaceRepositoryLoadStatus
+): RepositoryLoadCounts {
+  switch (status) {
+    case 'cancelled':
+      return { ...counts, cancelled: counts.cancelled + 1 };
+    case 'failed':
+      return { ...counts, failed: counts.failed + 1 };
+    case 'loading':
+      return { ...counts, loading: counts.loading + 1 };
+    case 'successful':
+      return { ...counts, successful: counts.successful + 1 };
+  }
 }
 
 /*** Renders the persistent project-load failure state. */
@@ -181,3 +195,17 @@ interface WorkspaceContentProps {
   readonly onRevealCycle: () => void;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
+
+interface RepositoryLoadCounts {
+  readonly cancelled: number;
+  readonly failed: number;
+  readonly loading: number;
+  readonly successful: number;
+}
+
+const initialRepositoryLoadCounts: RepositoryLoadCounts = {
+  cancelled: 0,
+  failed: 0,
+  loading: 0,
+  successful: 0,
+};

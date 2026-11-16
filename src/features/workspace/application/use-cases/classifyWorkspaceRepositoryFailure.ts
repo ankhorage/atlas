@@ -1,8 +1,8 @@
+import { workspaceRepositoryOperationDiagnostic } from '@/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync';
 import type {
   WorkspaceRepositoryFailure,
   WorkspaceRepositoryFailureCategory,
 } from '@/types/workspace';
-import { workspaceRepositoryOperationDiagnostic } from '@/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync';
 
 /*** Convert only observable transport facts into a bounded, browser-safe repository failure. */
 export function classifyWorkspaceRepositoryFailure(error: unknown): WorkspaceRepositoryFailure {
@@ -13,29 +13,59 @@ export function classifyWorkspaceRepositoryFailure(error: unknown): WorkspaceRep
       ? {}
       : { correlationId: diagnostic.correlationId, stage: diagnostic.stage };
   if (isAbort(cause)) return { category: 'cancelled', ...context };
-  const code = repositoryErrorCode(cause);
-  if (code === 'permission-denied') return { category: 'authorization', ...context };
-  if (code === 'owner-not-found') return { category: 'not-found', ...context };
-  if (code === 'timeout') return { category: 'timeout', ...context };
-  if (code === 'rate-limited')
-    return { category: 'rate-limited', ...context, ...retryAfter(cause) };
-  const status = statusCode(cause);
-  if (status === 401) return { category: 'authentication', ...context };
-  if (status === 404) return { category: 'not-found', ...context };
-  const rateLimitKind = rateLimitKindFrom(cause);
-  if (rateLimitKind !== undefined)
-    return {
-      category: rateLimitKind,
-      ...context,
-      ...retryAfter(cause),
-    };
-  if (status === 429) return { category: 'rate-limited', ...context, ...retryAfter(cause) };
-  if (status !== undefined && status >= 500 && status <= 599)
-    return { category: 'upstream', ...context };
-  if (isTimeout(cause)) return { category: 'timeout', ...context };
-  if (isParsing(cause)) return { category: 'parsing', ...context };
-  if (isRuntimeLimit(cause)) return { category: 'runtime-limit', ...context };
-  return { category: 'unknown', ...context };
+  const category =
+    repositoryErrorCategory(cause) ??
+    transportErrorCategory(cause) ??
+    localErrorCategory(cause) ??
+    'unknown';
+  return isRateLimited(category)
+    ? { category, ...context, ...retryAfter(cause) }
+    : { category, ...context };
+}
+
+/*** Classify stable Repository package codes without retaining a provider error object. */
+function repositoryErrorCategory(error: unknown): WorkspaceRepositoryFailureCategory | undefined {
+  switch (repositoryErrorCode(error)) {
+    case 'owner-not-found':
+      return 'not-found';
+    case 'permission-denied':
+      return 'authorization';
+    case 'rate-limited':
+      return 'rate-limited';
+    case 'timeout':
+      return 'timeout';
+  }
+}
+
+/*** Classify safe HTTP and adapter rate-limit facts without treating an ambiguous 403 as throttling. */
+function transportErrorCategory(error: unknown): WorkspaceRepositoryFailureCategory | undefined {
+  const status = statusCode(error);
+  switch (status) {
+    case 401:
+      return 'authentication';
+    case 404:
+      return 'not-found';
+  }
+  const rateLimitKind = rateLimitKindFrom(error);
+  if (rateLimitKind !== undefined) return rateLimitKind;
+  if (status === 429) return 'rate-limited';
+  return status !== undefined && status >= 500 && status <= 599 ? 'upstream' : undefined;
+}
+
+/*** Classify bounded Atlas operation failures after external transport facts have been exhausted. */
+function localErrorCategory(error: unknown): WorkspaceRepositoryFailureCategory | undefined {
+  if (isTimeout(error)) return 'timeout';
+  if (isParsing(error)) return 'parsing';
+  return isRuntimeLimit(error) ? 'runtime-limit' : undefined;
+}
+
+/*** Identify categories that may safely include bounded retry timing. */
+function isRateLimited(category: WorkspaceRepositoryFailureCategory): boolean {
+  return (
+    category === 'primary-rate-limit' ||
+    category === 'rate-limited' ||
+    category === 'secondary-rate-limit'
+  );
 }
 
 /*** Return only a prewritten explanation for a classified failure. */
