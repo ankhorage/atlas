@@ -28,8 +28,13 @@ describe('[GitHub logout route]', () => {
     const response = await POST(logoutRequest());
 
     assert.equal(response.status, 303);
+    assert.equal(response.headers.get('location'), 'https://atlas.test/');
     assert.equal(
       response.headers.getSetCookie().join('\n').includes('__Host-atlas-github-session=;'),
+      true
+    );
+    assert.equal(
+      response.headers.getSetCookie().join('\n').includes('__Host-atlas-github-attempt=;'),
       true
     );
   });
@@ -45,6 +50,27 @@ describe('[GitHub logout route]', () => {
       response.headers.getSetCookie().join('\n').includes('__Host-atlas-github-session=;'),
       true
     );
+  });
+
+  it('rejects a cross-origin request without calling the adapter or clearing cookies', async () => {
+    let calls = 0;
+    const POST = createGitHubLogoutRoute(async () => {
+      calls += 1;
+      return true;
+    });
+    const response = await POST(
+      new Request('https://atlas.test/api/auth/github/logout', {
+        headers: {
+          cookie: '__Host-atlas-github-session=encrypted-value',
+          origin: 'https://attacker.test',
+        },
+        method: 'POST',
+      })
+    );
+
+    assert.equal(response.status, 403);
+    assert.equal(calls, 0);
+    assert.equal(response.headers.getSetCookie().length, 0);
   });
 });
 
