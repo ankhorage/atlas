@@ -1421,7 +1421,12 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const sourceEntry = page.getByLabel('Manage repository source and workspace');
   await sourceEntry.click();
   await page.getByRole('heading', { name: 'Repository source' }).waitFor();
-  await page.getByLabel('Choose repositories').click();
+  const repositoryPickers = page.getByLabel('Choose repositories');
+  assert(
+    (await repositoryPickers.count()) === 2,
+    'Mobile repository source dialog did not expose its focused repository picker.'
+  );
+  await repositoryPickers.last().click();
   assert(
     await page.getByLabel('bulk-pending/repository-0').isChecked(),
     'Repository selection was not retained in the mobile dialog.'
