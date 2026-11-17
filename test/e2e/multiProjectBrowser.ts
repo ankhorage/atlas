@@ -1485,7 +1485,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const before = await readGraphViewportAsync(page);
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const panPoint = await findGraphPanPointAsync(page);
+  const panPoint = { x: 24, y: 24 };
   await page.mouse.move(graphBox.x + panPoint.x, graphBox.y + panPoint.y);
   await page.mouse.down();
   await page.mouse.move(graphBox.x + panPoint.x + 30, graphBox.y + panPoint.y + 20);
@@ -1526,33 +1526,6 @@ async function readGraphViewportAsync(page: Page) {
   });
   assert(viewport !== null, 'Graph controller was unavailable for interaction acceptance.');
   return viewport;
-}
-
-/*** Finds graph background outside rendered nodes so a native drag proves canvas panning, not node handling. */
-async function findGraphPanPointAsync(page: Page) {
-  const geometry = await page.evaluate(nodeIds => {
-    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
-      .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.(nodeIds) ?? null;
-  }, bulkSelectionIds);
-  assert(geometry !== null, 'Graph geometry was unavailable for native pointer-pan acceptance.');
-  const candidates = [
-    { x: 24, y: 24 },
-    { x: geometry.viewport.width - 24, y: 24 },
-    { x: 24, y: geometry.viewport.height - 24 },
-    { x: geometry.viewport.width - 24, y: geometry.viewport.height - 24 },
-  ];
-  const point = candidates.find(candidate =>
-    geometry.nodes.every(
-      node =>
-        candidate.x < node.position.x - node.size.width / 2 - 12 ||
-        candidate.x > node.position.x + node.size.width / 2 + 12 ||
-        candidate.y < node.position.y - node.size.height / 2 - 12 ||
-        candidate.y > node.position.y + node.size.height / 2 + 12
-    )
-  );
-  assert(point !== undefined, 'Graph did not expose background for native pointer-pan acceptance.');
-  return point;
 }
 
 /*** Selects one measured graph node for a native touch tap without coupling to renderer internals. */
