@@ -50,6 +50,11 @@ type GraphViewportProbe = {
   } | null;
   layoutCount: number;
 };
+type GraphGestureProbe = {
+  mouseDownCount: number;
+  mouseMoveCount: number;
+  mouseUpCount: number;
+};
 type Bounds = {
   readonly bottom: number;
   readonly height: number;
@@ -1482,18 +1487,31 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   );
 
   const graph = page.getByRole('application', { name: 'Graph' });
-  const before = await readGraphViewportAsync(page);
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const panPoint = { x: 24, y: 24 };
+  const node = await readFirstGraphNodeAsync(page);
+  await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
+  await page.waitForFunction(
+    id => document.querySelector(`[data-testid="graph-node-${id}"]`) !== null,
+    node.id
+  );
+  const before = await readGraphViewportAsync(page);
+  const panPoint = await findGraphPanPointAsync(page, graphBox);
+  await installGraphGestureProbeAsync(page);
   await page.mouse.move(graphBox.x + panPoint.x, graphBox.y + panPoint.y);
   await page.mouse.down();
-  await page.mouse.move(graphBox.x + panPoint.x + 30, graphBox.y + panPoint.y + 20);
+  await page.mouse.move(graphBox.x + panPoint.x + 10, graphBox.y + panPoint.y + 7, { steps: 5 });
+  await page.mouse.move(graphBox.x + panPoint.x + 30, graphBox.y + panPoint.y + 20, { steps: 10 });
   await page.mouse.up();
   const afterPointerPan = await readGraphViewportAsync(page);
+  const gesture = await readGraphGestureProbeAsync(page);
+  assert(
+    gesture.mouseDownCount === 1 && gesture.mouseMoveCount > 1 && gesture.mouseUpCount === 1,
+    `Cytoscape did not receive the native multi-step mouse gesture: ${JSON.stringify(gesture)}.`
+  );
   assert(
     JSON.stringify(afterPointerPan.pan) !== JSON.stringify(before.pan),
-    'Pointer pan did not change the graph viewport.'
+    `Pointer pan did not change the graph viewport after Cytoscape received the gesture: ${JSON.stringify(gesture)}.`
   );
   await pinchGraphAsync(page, graphBox);
   const afterPinch = await readGraphViewportAsync(page);
@@ -1501,12 +1519,6 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   await page.getByLabel('Fit graph and optimize spacing for readability').click();
   const afterFit = await readGraphViewportAsync(page);
   assert(afterFit.zoom !== afterPinch.zoom, 'Fit did not update the graph viewport.');
-  const node = await readFirstGraphNodeAsync(page);
-  await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
-  await page.waitForFunction(
-    id => document.querySelector(`[data-testid="graph-node-${id}"]`) !== null,
-    node.id
-  );
 }
 
 /*** Closes the mobile tools dialog only after its portal unmounts and focus cleanup can complete.
@@ -1528,8 +1540,91 @@ async function readGraphViewportAsync(page: Page) {
   return viewport;
 }
 
+/*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */
+async function findGraphPanPointAsync(
+  page: Page,
+  graph: { readonly height: number; readonly width: number; readonly x: number; readonly y: number }
+) {
+  const point = await page.evaluate(graph => {
+    const application = document.querySelector<HTMLElement>(
+      '[role="application"][aria-label="Graph"]'
+    );
+    const cytoscapeContainer = application?.querySelector('canvas')?.parentElement;
+    if (cytoscapeContainer === null || cytoscapeContainer === undefined)
+      return { candidates: [], point: null };
+    const candidates = [
+      { x: 24, y: 24 },
+      { x: graph.width - 24, y: 24 },
+      { x: 24, y: graph.height - 24 },
+      { x: graph.width - 24, y: graph.height - 24 },
+    ];
+    const candidatesWithTargets = candidates.map(candidate => {
+      const target = document.elementFromPoint(graph.x + candidate.x, graph.y + candidate.y);
+      return {
+        candidate,
+        isCytoscapeBackground:
+          target !== null &&
+          cytoscapeContainer.contains(target) &&
+          getComputedStyle(target).pointerEvents !== 'none',
+        target: target === null ? null : `${target.tagName}.${target.className}`,
+      };
+    });
+    return {
+      candidates: candidatesWithTargets,
+      point:
+        candidatesWithTargets.find(candidate => candidate.isCytoscapeBackground)?.candidate ?? null,
+    };
+  }, graph);
+  assert(
+    point !== null && point.point !== null,
+    `No Cytoscape background point receives pointer events without a graph overlay: ${JSON.stringify(point)}.`
+  );
+  return point.point;
+}
+
+/*** Records the actual native event path through the Cytoscape container without reaching into its runtime. */
+async function installGraphGestureProbeAsync(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const target = window as typeof window & { __atlasGraphGestureProbe?: GraphGestureProbe };
+    const application = document.querySelector<HTMLElement>(
+      '[role="application"][aria-label="Graph"]'
+    );
+    const cytoscapeContainer = application?.querySelector('canvas')?.parentElement;
+    if (cytoscapeContainer === null || cytoscapeContainer === undefined) return;
+    target.__atlasGraphGestureProbe = { mouseDownCount: 0, mouseMoveCount: 0, mouseUpCount: 0 };
+    cytoscapeContainer.addEventListener('mousedown', () => {
+      if (target.__atlasGraphGestureProbe !== undefined)
+        target.__atlasGraphGestureProbe.mouseDownCount += 1;
+    });
+    cytoscapeContainer.ownerDocument.defaultView?.addEventListener('mousemove', () => {
+      if (target.__atlasGraphGestureProbe !== undefined)
+        target.__atlasGraphGestureProbe.mouseMoveCount += 1;
+    });
+    cytoscapeContainer.ownerDocument.defaultView?.addEventListener('mouseup', () => {
+      if (target.__atlasGraphGestureProbe !== undefined)
+        target.__atlasGraphGestureProbe.mouseUpCount += 1;
+    });
+  });
+}
+
+/*** Reads only the test-owned native event counters installed around the public graph surface. */
+async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe> {
+  const probe = await page.evaluate(
+    () =>
+      (window as typeof window & { __atlasGraphGestureProbe?: GraphGestureProbe })
+        .__atlasGraphGestureProbe ?? null
+  );
+  assert(probe !== null, 'Cytoscape gesture probe was unavailable.');
+  return probe;
+}
+
 /*** Selects one measured graph node for a native touch tap without coupling to renderer internals. */
 async function readFirstGraphNodeAsync(page: Page) {
+  await page.waitForFunction(() => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(['bulk-pending-0'])?.nodes.length === 1;
+  });
   const node = await page.evaluate(() => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
