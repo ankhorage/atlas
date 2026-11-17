@@ -17,24 +17,27 @@ import styles from './WorkspacePanels.module.css';
 
 /*** Connect sidebar inspection controls to the one graph view without duplicating navigation state. */
 export function WorkspacePanels(props: WorkspacePanelsProps) {
+  const mobile = useMobileWorkspace();
   const [toolsOpen, setToolsOpen] = React.useState(false);
   const [activeTool, setActiveTool] = React.useState('tree');
   return (
     <>
-      <WorkspaceSidebar
-        activeTool={activeTool}
-        auditExportActions={props.auditExportActions}
-        currentSource={props.currentSource}
-        cycleSelection={props.cycleSelection}
-        evaluation={props.evaluation}
-        inspectedCycleId={props.cycleInspection.inspection?.id ?? null}
-        projectTree={props.navigation.projectTree}
-        selectedTreeIds={props.navigation.selectedTreeIds}
-        onCycleInspectionChange={props.cycleInspection.change}
-        onProjectTreeSelect={props.navigation.selectProjectTreeNode}
-        offline={props.offline}
-        onToolChange={setActiveTool}
-      />
+      {mobile ? null : (
+        <WorkspaceSidebar
+          activeTool={activeTool}
+          auditExportActions={props.auditExportActions}
+          currentSource={props.currentSource}
+          cycleSelection={props.cycleSelection}
+          evaluation={props.evaluation}
+          inspectedCycleId={props.cycleInspection.inspection?.id ?? null}
+          projectTree={props.navigation.projectTree}
+          selectedTreeIds={props.navigation.selectedTreeIds}
+          onCycleInspectionChange={props.cycleInspection.change}
+          onProjectTreeSelect={props.navigation.selectProjectTreeNode}
+          offline={props.offline}
+          onToolChange={setActiveTool}
+        />
+      )}
       <WorkspaceContent
         cycleInspection={props.cycleInspection.inspection}
         cycleEvidenceHidden={props.cycleInspection.hiddenEvidence}
@@ -60,6 +63,34 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
       />
     </>
   );
+}
+
+/*** Mounts the permanent sidebar only when the workspace has room for its desktop split pane. */
+function useMobileWorkspace(): boolean {
+  return React.useSyncExternalStore(
+    subscribeToWorkspaceViewport,
+    readMobileWorkspaceViewport,
+    readDesktopWorkspaceViewport
+  );
+}
+
+/*** Reports mobile viewport changes without sharing browser state outside the workspace boundary. */
+function subscribeToWorkspaceViewport(onChange: () => void): () => void {
+  if (typeof window.matchMedia !== 'function') return () => undefined;
+  const media = window.matchMedia(MOBILE_WORKSPACE_MEDIA_QUERY);
+  media.addEventListener('change', onChange);
+  return () => media.removeEventListener('change', onChange);
+}
+
+/*** Reads whether the current browser viewport uses the graph-first workspace layout. */
+function readMobileWorkspaceViewport(): boolean {
+  if (typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia(MOBILE_WORKSPACE_MEDIA_QUERY).matches;
+}
+
+/*** Keeps the server render deterministic until the browser applies its measured viewport. */
+function readDesktopWorkspaceViewport(): boolean {
+  return false;
 }
 
 /*** Renders the graph or the current project-source load error. */
@@ -296,3 +327,5 @@ const initialRepositoryLoadCounts: RepositoryLoadCounts = {
   loading: 0,
   successful: 0,
 };
+
+const MOBILE_WORKSPACE_MEDIA_QUERY = '(max-width: 768px)';

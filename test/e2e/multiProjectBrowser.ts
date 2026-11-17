@@ -62,7 +62,7 @@ type WorkspaceGeometry = {
   readonly graph: Bounds;
   readonly main: Bounds;
   readonly overlay: Bounds | null;
-  readonly sidebar: Bounds;
+  readonly sidebar: Bounds | null;
   readonly viewport: { readonly height: number; readonly width: number };
   readonly workspaceContent: Bounds;
 };
@@ -480,11 +480,16 @@ async function assertGraphCanvasAsync(page: Page): Promise<void> {
 
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
 async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
-  if ((await switchControl.getAttribute('aria-checked')) === 'true') return;
-  const thumb = switchControl.locator(':scope > div > div:first-child > div');
-  assert(
-    (await thumb.evaluate(element => getComputedStyle(element).alignSelf)) === 'flex-end',
-    message
+  assert(await isSwitchCheckedAsync(switchControl), message);
+}
+
+/*** Reads the ZORA switch state across its semantic and visual renderings. */
+async function isSwitchCheckedAsync(switchControl: Locator): Promise<boolean> {
+  if ((await switchControl.getAttribute('aria-checked')) === 'true') return true;
+  return switchControl.evaluate(element =>
+    [...element.querySelectorAll<HTMLElement>('*')].some(
+      child => getComputedStyle(child).alignSelf === 'flex-end'
+    )
   );
 }
 
@@ -984,7 +989,7 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('owner-a/catalog').uncheck();
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
-      await vendor.click();
+      if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
       await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
       await page.getByLabel('Manage workspaces').click();
       page.once('dialog', dialog => dialog.accept('Restored workspace'));
@@ -1346,11 +1351,9 @@ async function captureResponsiveEvidenceAsync(
       },
       graph: bounds(graph),
       header: bounds(header),
-      isDark:
-        document.documentElement.dataset.theme === 'dark' ||
-        getComputedStyle(document.documentElement).colorScheme === 'dark',
       repositoryEntry: bounds(repositoryEntry ?? null),
       sidebar: bounds(sidebar),
+      themeActionName: themeAction?.textContent?.trim() ?? null,
       themeAction: bounds(themeAction ?? null),
       tools: bounds(tools ?? null),
       viewport: { height: window.innerHeight, width: window.innerWidth },
@@ -1383,11 +1386,11 @@ function assertResponsiveEvidence(
     evidence.header.height < 180,
     `Responsive acceptance header is too tall: ${evidence.header.height}.`
   );
+  assert(evidence.themeAction !== null, `Responsive acceptance lacks the ${theme} theme action.`);
   assert(
-    evidence.isDark === (theme === 'dark'),
+    evidence.themeActionName === (theme === 'dark' ? 'Light' : 'Dark'),
     `Responsive acceptance did not apply the ${theme} theme.`
   );
-  assert(evidence.themeAction !== null, `Responsive acceptance lacks the ${theme} theme action.`);
   assert(
     evidence.repositoryEntry !== null,
     'Responsive acceptance does not show 7 of 87 repositories.'
@@ -1550,26 +1553,19 @@ async function captureWorkspaceGeometryAsync(page: Page): Promise<WorkspaceGeome
     );
     const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
     const workspaceContent = document.querySelector('[data-testid="workspace-content"]');
-    if (
-      graph === null ||
-      main === null ||
-      sidebar === null ||
-      sidebar === undefined ||
-      workspaceContent === null
-    )
-      return null;
+    if (graph === null || main === null || workspaceContent === null) return null;
     return {
       graph: bounds(graph),
       main: bounds(main),
       overlay: overlay === null ? null : bounds(overlay),
-      sidebar: bounds(sidebar),
+      sidebar: sidebar === null || sidebar === undefined ? null : bounds(sidebar),
       viewport: { height: window.innerHeight, width: window.innerWidth },
       workspaceContent: bounds(workspaceContent),
     };
   });
   assert(
     geometry !== null,
-    'Anonymous bulk workspace did not render its main, sidebar, content, and graph.'
+    'Anonymous bulk workspace did not render its main, content, and graph.'
   );
   return geometry;
 }
@@ -1622,7 +1618,7 @@ function assertWorkspaceGeometryBaseline(
   );
   if (viewport.width <= 768) {
     assert(
-      geometry.sidebar.width === 0,
+      geometry.sidebar === null,
       `Anonymous bulk ${phase} left the desktop sidebar visible on mobile.`
     );
     assert(
@@ -1630,6 +1626,10 @@ function assertWorkspaceGeometryBaseline(
       `Anonymous bulk ${phase} did not allocate the full mobile width to workspace content.`
     );
   } else {
+    assert(
+      geometry.sidebar !== null,
+      `Anonymous bulk ${phase} did not render the desktop sidebar.`
+    );
     assert(geometry.sidebar.left === 0, `Anonymous bulk ${phase} shifted the sidebar.`);
     assert(geometry.sidebar.width === 288, `Anonymous bulk ${phase} changed the sidebar width.`);
   }

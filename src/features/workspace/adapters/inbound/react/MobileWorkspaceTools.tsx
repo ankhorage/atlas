@@ -1,6 +1,8 @@
 'use client';
 import { Dialog } from '@ankhorage/zora/web/dialog';
 
+import { SettingsContext } from '@/features/settings/adapters/inbound/react/SettingsContext';
+import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
 import type { WorkspacePanelsProps } from '@/features/workspace/adapters/inbound/react/WorkspacePanels';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
 
@@ -12,6 +14,8 @@ export function MobileWorkspaceTools({
   onDismiss,
   onToolChange,
 }: MobileWorkspaceToolsProps) {
+  const settings = useSettings();
+
   return (
     <Dialog
       closeOnBackdrop
@@ -21,17 +25,19 @@ export function MobileWorkspaceTools({
       width="wide"
       onDismiss={onDismiss}
     >
-      <WorkspaceSidebar
-        {...workspacePanels}
-        activeTool={activeTool}
-        inspectedCycleId={workspacePanels.cycleInspection.inspection?.id ?? null}
-        mobile
-        projectTree={workspacePanels.navigation.projectTree}
-        selectedTreeIds={workspacePanels.navigation.selectedTreeIds}
-        onCycleInspectionChange={workspacePanels.cycleInspection.change}
-        onProjectTreeSelect={workspacePanels.navigation.selectProjectTreeNode}
-        onToolChange={onToolChange}
-      />
+      <SettingsContext.Provider value={settings}>
+        <WorkspaceSidebar
+          {...workspacePanels}
+          activeTool={activeTool}
+          inspectedCycleId={workspacePanels.cycleInspection.inspection?.id ?? null}
+          mobile
+          projectTree={workspacePanels.navigation.projectTree}
+          selectedTreeIds={workspacePanels.navigation.selectedTreeIds}
+          onCycleInspectionChange={workspacePanels.cycleInspection.change}
+          onProjectTreeSelect={workspacePanels.navigation.selectProjectTreeNode}
+          onToolChange={onToolChange}
+        />
+      </SettingsContext.Provider>
     </Dialog>
   );
 }
