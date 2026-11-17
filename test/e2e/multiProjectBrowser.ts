@@ -592,8 +592,12 @@ async function assertMeasuredViewportOccupancyAsync(
   );
 }
 
-/*** Verifies the production workspace consumes the canvas left after its visible 288px sidebar. */
-async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number) {
+/*** Verifies the production workspace fit against its desktop sidebar or mobile graph-first shell. */
+async function assertWorkspaceViewportAsync(
+  page: Page,
+  repositoryCount: number,
+  viewport: { readonly height: number; readonly width: number }
+) {
   const nodeIds = Array.from(
     { length: repositoryCount },
     (_, index) => `repository.viewport-${repositoryCount}-${index}`
@@ -609,14 +613,7 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
     const measurement = probe?.controller?.measureNodes?.(ids);
     const graph = document.querySelector('[role="application"][aria-label="Graph"]');
     const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
-    if (
-      measurement === undefined ||
-      measurement === null ||
-      graph === null ||
-      sidebar === null ||
-      sidebar === undefined
-    )
-      return null;
+    if (measurement === undefined || measurement === null || graph === null) return null;
     const canvas = graph.getBoundingClientRect();
     const nodes = measurement.nodes.map(node => ({
       x1: node.position.x - node.size.width / 2,
@@ -626,7 +623,7 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
     }));
     return {
       canvas,
-      sidebar: sidebar.getBoundingClientRect(),
+      sidebar: sidebar === null || sidebar === undefined ? null : sidebar.getBoundingClientRect(),
       viewport: measurement.viewport,
       x1: Math.min(...nodes.map(node => node.x1)),
       x2: Math.max(...nodes.map(node => node.x2)),
@@ -634,11 +631,16 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
       y2: Math.max(...nodes.map(node => node.y2)),
     };
   }, nodeIds);
-  assert(result !== null, 'Real workspace sidebar or canvas was unavailable.');
-  assert(
-    result.sidebar.width === 288,
-    'Workspace sidebar is not visibly occupying its owned width.'
-  );
+  assert(result !== null, 'Real workspace canvas was unavailable.');
+  if (viewport.width <= 768)
+    assert(result.sidebar === null, 'Mobile workspace left the desktop sidebar mounted.');
+  else {
+    assert(result.sidebar !== null, 'Desktop workspace sidebar was unavailable.');
+    assert(
+      result.sidebar.width === 288,
+      'Workspace sidebar is not visibly occupying its owned width.'
+    );
+  }
   assert(
     result.canvas.width === result.viewport.width &&
       result.canvas.height === result.viewport.height,
@@ -1180,7 +1182,7 @@ const scenarios: readonly Scenario[] = [
           .getByText('Elk: Layered', { exact: true })
           .waitFor();
         if (viewport.width <= 768) await page.keyboard.press('Escape');
-        await assertWorkspaceViewportAsync(page, repositoryCount);
+        await assertWorkspaceViewportAsync(page, repositoryCount, viewport);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
         artifacts.push(artifact);
@@ -1325,7 +1327,10 @@ async function captureResponsiveEvidenceAsync(
   viewport: { readonly height: number; readonly width: number },
   theme: 'dark' | 'light'
 ) {
-  const evidence = await page.evaluate(expectedTheme => {
+  const expectedThemeActionName = theme === 'dark' ? 'Light' : 'Dark';
+  const themeAction = page.getByRole('button', { exact: true, name: expectedThemeActionName });
+  await themeAction.waitFor();
+  const evidence = await page.evaluate(() => {
     const bounds = (element: Element | null | undefined) => {
       if (element == null) return null;
       const { bottom, height, left, right, top, width } = element.getBoundingClientRect();
@@ -1336,9 +1341,6 @@ async function captureResponsiveEvidenceAsync(
     const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
     const tools = [...document.querySelectorAll('button')].find(button =>
       button.textContent?.includes('Tools')
-    );
-    const themeAction = [...document.querySelectorAll('button')].find(button =>
-      button.textContent?.includes(expectedTheme === 'dark' ? 'Light' : 'Dark')
     );
     const repositoryEntry = [...document.querySelectorAll('button')].find(button =>
       button.textContent?.includes('Repositories (7/87)')
@@ -1353,14 +1355,12 @@ async function captureResponsiveEvidenceAsync(
       header: bounds(header),
       repositoryEntry: bounds(repositoryEntry ?? null),
       sidebar: bounds(sidebar),
-      themeActionName: themeAction?.textContent?.trim() ?? null,
-      themeAction: bounds(themeAction ?? null),
       tools: bounds(tools ?? null),
       viewport: { height: window.innerHeight, width: window.innerWidth },
       visibleGraph: selected !== null,
     };
-  }, theme);
-  return evidence;
+  });
+  return { ...evidence, themeAction: await themeAction.boundingBox() };
 }
 
 /*** Enforces the mobile graph-first and desktop split-pane geometry without relying on snapshots alone. */
@@ -1386,11 +1386,7 @@ function assertResponsiveEvidence(
     evidence.header.height < 180,
     `Responsive acceptance header is too tall: ${evidence.header.height}.`
   );
-  assert(evidence.themeAction !== null, `Responsive acceptance lacks the ${theme} theme action.`);
-  assert(
-    evidence.themeActionName === (theme === 'dark' ? 'Light' : 'Dark'),
-    `Responsive acceptance did not apply the ${theme} theme.`
-  );
+  assert(evidence.themeAction !== null, `Responsive acceptance did not apply the ${theme} theme.`);
   assert(
     evidence.repositoryEntry !== null,
     'Responsive acceptance does not show 7 of 87 repositories.'
