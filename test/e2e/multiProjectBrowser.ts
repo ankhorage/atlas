@@ -1181,7 +1181,7 @@ const scenarios: readonly Scenario[] = [
           .getByTestId('cytoscape-layout-trigger')
           .getByText('Elk: Layered', { exact: true })
           .waitFor();
-        if (viewport.width <= 768) await page.keyboard.press('Escape');
+        if (viewport.width <= 768) await closeWorkspaceToolsDialogAsync(page);
         await assertWorkspaceViewportAsync(page, repositoryCount, viewport);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
@@ -1342,6 +1342,11 @@ async function captureResponsiveEvidenceAsync(
     const tools = [...document.querySelectorAll('button')].find(button =>
       button.textContent?.includes('Tools')
     );
+    const fit = [...document.querySelectorAll('button')].find(
+      button =>
+        button.getAttribute('aria-label') === 'Fit graph and optimize spacing for readability'
+    );
+    const zoom = document.querySelector('[aria-label="Zoom"]');
     const repositoryEntry = [...document.querySelectorAll('button')].find(button =>
       button.textContent?.includes('Repositories (7/87)')
     );
@@ -1356,8 +1361,10 @@ async function captureResponsiveEvidenceAsync(
       repositoryEntry: bounds(repositoryEntry ?? null),
       sidebar: bounds(sidebar),
       tools: bounds(tools ?? null),
+      fit: bounds(fit ?? null),
       viewport: { height: window.innerHeight, width: window.innerWidth },
       visibleGraph: selected !== null,
+      zoom: bounds(zoom),
     };
   });
   return { ...evidence, themeAction: await themeAction.boundingBox() };
@@ -1408,12 +1415,32 @@ function assertResponsiveEvidence(
         evidence.tools.bottom <= viewport.height,
       `Mobile Tools control escaped the viewport: ${JSON.stringify(evidence.tools)}`
     );
+    assert(
+      evidence.fit !== null && evidence.zoom !== null,
+      'Mobile graph zoom controls are unavailable for pointer interaction.'
+    );
+    assertSeparatePointerTargets(
+      evidence.tools,
+      evidence.fit,
+      'Tools overlaps the Fit graph control.'
+    );
+    assertSeparatePointerTargets(evidence.tools, evidence.zoom, 'Tools overlaps the Zoom control.');
   } else {
     assert(
       evidence.sidebar !== null && evidence.sidebar.width === 288,
       'Desktop sidebar changed width.'
     );
   }
+}
+
+/*** Rejects controls whose visible hit areas overlap, preventing ambiguous mobile pointer input. */
+function assertSeparatePointerTargets(first: Bounds, second: Bounds, message: string): void {
+  const overlaps =
+    first.left < second.right &&
+    first.right > second.left &&
+    first.top < second.bottom &&
+    first.bottom > second.top;
+  assert(!overlaps, message);
 }
 
 /*** Uses native Chromium input paths to prove source, overlay, graph, and keyboard interaction contracts. */
@@ -1448,7 +1475,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     await tab.waitFor();
   }
   await page.getByLabel('Package prefix').fill('@fixture/catalog');
-  await page.keyboard.press('Escape');
+  await closeWorkspaceToolsDialogAsync(page);
   assert(
     await tools.evaluate(element => document.activeElement === element),
     'Tools dialog did not restore focus to its entry point.'
@@ -1482,6 +1509,14 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     id => document.querySelector(`[data-testid="graph-node-${id}"]`) !== null,
     node.id
   );
+}
+
+/*** Closes the mobile tools dialog only after its portal unmounts and focus cleanup can complete.
+ */
+async function closeWorkspaceToolsDialogAsync(page: Page): Promise<void> {
+  const title = page.getByText('Workspace tools', { exact: true });
+  await page.keyboard.press('Escape');
+  await title.waitFor({ state: 'detached' });
 }
 
 /*** Reads the released GraphView controller rather than its private renderer for interaction assertions. */
