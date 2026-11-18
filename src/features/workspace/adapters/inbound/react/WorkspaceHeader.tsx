@@ -15,6 +15,9 @@ import type { ProjectTreeNode } from '@/types/projectTree';
 
 import styles from './WorkspaceHeader.module.css';
 
+const ATLAS_BRAND_ICON =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACVklEQVR4nG2TTYiNURjHf895z/veufcyvilkgzJkMUjCRNIMJWUMyiRpViYmCwtLaw1SFpaifKaIsmEzpYgUWQgp8pUYd77unfu+7zmPxTtzXZff7jzn/3z0f84Rtp3LBSPJGQnCA/i0CGqYIAgMAqTO8wfxiK0o7oZrckdtMBqflmhKL8kYjVSHxwElKOaQWlQNmhQlLB6ylbGc2A39CSIGVCDTiYDGjhM96ynkQk5eGMAHprG+R4wxCHZi7FoTBRzQ17WK4/vXgDX4ekGGQb3+U9aI4GPH/DlTKY1W+TZYZtG8ZjROESONcvmngJisQO+eVh48/cCdgXcc7mwF36icHKOOwAjVoQodm5dSjR33H7/n0ctPfP4xSlfHcuJShaDBi79OIkLUFNLd3sKpy0842rWK4/vXcvbaM3a2LWbK9Dx4/cuLPzs3wvjnErvaW3jz8ReHdqxkycIZzJ6W59i+1bx4+51921dQ/VLC1Hlhs87gU8+B7rWcOLiOcjXh5oPXbOm9ilfo3LSUzvYWZjXnCYCL917VViJhW786rxRCS+lhH4Ex3Hr4mq8/yzRPzYHA8EiVudPy7N66jMAIc7ed58dwBWsDrCoExlCuxGw5cp048Tx+/hFbjHBpZn1gDelYTOuVBcxsbmJwqIINDaqK2I39ms0CaTkBgagQ4evMUsAYIa4k4Dy2GGVBUIviEBFUTa4YoYD3WkucxHslyocI4LL77CkrXCIsGFB1XmvJ/8N7nUhWJSwYvLttnR3ps4lEmHAv3gX13/n/iEesJxm/m0ra8xvdevOqWP1lxwAAAABJRU5ErkJggg==';
+
 /*** Renders workspace breadcrumbs, source selection, and theme action. */
 export function WorkspaceHeader(props: WorkspaceHeaderProps) {
   const { theme } = useZoraTheme();
@@ -39,7 +42,7 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
 function WorkspaceIdentity(props: WorkspaceHeaderProps) {
   return (
     <div className={styles.identity}>
-      <Image alt="Atlas" height={24} source="/favicon.ico" width={24} />
+      <Image alt="Atlas" height={24} source={ATLAS_BRAND_ICON} width={24} />
       <Heading level={3} numberOfLines={1} size="h5">
         Atlas
       </Heading>
@@ -53,7 +56,7 @@ function WorkspaceIdentity(props: WorkspaceHeaderProps) {
       <div className={styles.breadcrumbs}>
         <Breadcrumbs
           compact
-          items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
+          items={createBreadcrumbItems(props.currentPackage, props.projectName, props.projectTree)}
           maxItems={3}
           separator="›"
           onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
@@ -94,17 +97,19 @@ function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
 /*** Creates package breadcrumbs from a stable Home root to the active package path. */
 function createBreadcrumbItems(
   currentPackage: string,
+  projectName: string,
   projectTree: readonly ProjectTreeNode[]
 ): readonly BreadcrumbItem[] {
   const repositoryCrumbs = findRepositoryBreadcrumbs(currentPackage, projectTree);
-  if (repositoryCrumbs !== null) return repositoryCrumbs;
+  const projectCrumb = { id: '', label: projectName };
+  if (repositoryCrumbs !== null) return [projectCrumb, ...repositoryCrumbs];
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
     id: packageSegments.slice(0, index + 1).join('.'),
     label,
   }));
 
-  return packageItems;
+  return [projectCrumb, ...packageItems];
 }
 
 /*** Present virtual owner and repository labels without leaking technical graph identities. */
@@ -148,6 +153,7 @@ interface WorkspaceHeaderProps {
   readonly currentSource?: string;
   readonly githubAuth: GitHubAuthView;
   readonly offline?: boolean;
+  readonly projectName: string;
   readonly projectTree: readonly ProjectTreeNode[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
