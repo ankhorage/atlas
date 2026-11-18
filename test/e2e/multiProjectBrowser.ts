@@ -1876,6 +1876,7 @@ async function exerciseNativeGraphInteractionContractAsync(
   page: Page,
   tools: Locator
 ): Promise<void> {
+  await waitForGraphNodesAsync(page, responsiveTouchGraphNodeIds);
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
