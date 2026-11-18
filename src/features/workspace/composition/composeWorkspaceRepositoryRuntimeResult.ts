@@ -127,7 +127,7 @@ function prefixTree(
     graphPackage:
       node.graphPackage === ''
         ? ''
-        : `${repositoryGraphId(repositoryId)}.module.${node.graphPackage}`,
+        : `${repositoryGraphId(repositoryId)}.${node.graphPackage}.module`,
     ...(node.children ? { children: prefixTree(node.children, repositoryId) } : {}),
   }));
 }

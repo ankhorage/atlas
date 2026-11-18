@@ -10,6 +10,7 @@ describe('[package graph Cytoscape presentation]', () => {
           id: 'packages.dashboard',
           data: {
             classification: 'intrinsic',
+            kind: 'package',
             path: 'packages.dashboard',
             parent: 'packages',
             label: 'dashboard',
@@ -22,6 +23,7 @@ describe('[package graph Cytoscape presentation]', () => {
           id: 'packages.dashboard.src',
           data: {
             classification: 'intrinsic',
+            kind: 'module',
             path: 'packages.dashboard.src',
             parent: 'packages.dashboard',
             label: 'src',
@@ -54,10 +56,10 @@ describe('[package graph Cytoscape presentation]', () => {
     );
 
     expect(firstClasses.get('repository.R_atlas')?.startsWith('repositoryColor')).toBe(true);
-    expect(firstClasses.get('repository.R_atlas.module.src')).toBe(
+    expect(firstClasses.get('repository.R_atlas.src.module')).toBe(
       firstClasses.get('repository.R_atlas')
     );
-    expect(firstClasses.get('repository.R_zora.module.src')).toBe(
+    expect(firstClasses.get('repository.R_zora.src.module')).toBe(
       firstClasses.get('repository.R_zora')
     );
     expect(
@@ -104,7 +106,7 @@ function repositoryGraph(
       ...repositoryIds.flatMap(repositoryId => [
         repositoryNode(`repository.${repositoryId}`, repositoryId, '', labels[repositoryId]),
         repositoryNode(
-          `repository.${repositoryId}.module.src`,
+          `repository.${repositoryId}.src.module`,
           repositoryId,
           `repository.${repositoryId}`,
           labels[repositoryId]
@@ -115,6 +117,7 @@ function repositoryGraph(
         data: {
           classification: 'intrinsic' as const,
           isIntrinsic: true,
+          kind: 'module' as const,
           label: 'example',
           name: 'example',
           parent: '',
@@ -125,6 +128,7 @@ function repositoryGraph(
         id: 'react',
         data: {
           classification: 'vendor' as const,
+          kind: 'package' as const,
           label: 'react',
           name: 'react',
           parent: '',
@@ -144,6 +148,7 @@ function repositoryNode(id: string, repositoryId: string, parent: string, label 
     data: {
       classification: 'intrinsic' as const,
       isIntrinsic: true,
+      kind: id.endsWith('.module') ? ('module' as const) : ('package' as const),
       label: id.endsWith('.src') ? `${label}/src` : label,
       name: id,
       parent,

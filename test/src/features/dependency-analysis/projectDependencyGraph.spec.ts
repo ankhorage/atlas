@@ -32,6 +32,7 @@ describe('[canonical dependency package projection]', () => {
     ]);
     expect(graph.nodes.find(node => node.id === 'src')?.data).toEqual({
       classification: 'intrinsic',
+      kind: 'module',
       path: 'src',
       parent: '',
       label: 'src',
@@ -107,21 +108,77 @@ describe('[canonical dependency package projection]', () => {
 
     expect(projected.nodes.map(node => node.id).sort()).toEqual([
       'repository.101',
-      'repository.101.module.src.shared',
+      'repository.101.src.shared.module',
       'repository.202',
-      'repository.202.module.src.shared',
+      'repository.202.src.shared.module',
     ]);
     expect(projected.nodes.find(node => node.id === 'repository.101')?.data.label).toBe(
       'renamed-first'
     );
     expect(projected.edges).toEqual([
       {
-        id: 'repository.101.module.src.shared->repository.202.module.src.shared',
-        source: 'repository.101.module.src.shared',
-        target: 'repository.202.module.src.shared',
+        id: 'repository.101.src.shared.module->repository.202.src.shared.module',
+        source: 'repository.101.src.shared.module',
+        target: 'repository.202.src.shared.module',
         data: {
           weight: 1,
           evidence: [dependencyEvidence('src/shared.ts', '@scope/second', 'intrinsic')],
+        },
+      },
+    ]);
+  });
+
+  it('keeps kind collisions as leaf identities while compounds follow real source paths', () => {
+    const projected = projectDependencyGraph(
+      {
+        nodes: [
+          repositoryRoot('101', 'first'),
+          repositoryModule('101', 'src'),
+          repositoryPackage('101', 'src'),
+          repositoryModule('101', 'src.shared'),
+        ],
+        edges: [
+          {
+            id: 'module-to-package',
+            source: 'package:101:.#src',
+            target: 'package:101:src',
+            data: {
+              kind: 'import',
+              analyzerId: 'typescript',
+              weight: 1,
+              evidence: [dependencyEvidence('src/index.ts', './package', 'intrinsic')],
+            },
+          },
+        ],
+      },
+      new Map([['101', { id: '101', label: 'first' }]])
+    );
+
+    expect(projected.nodes.map(node => node.id).sort()).toEqual([
+      'repository.101',
+      'repository.101.src.module',
+      'repository.101.src.package',
+      'repository.101.src.shared.module',
+    ]);
+    const module = projected.nodes.find(node => node.id === 'repository.101.src.module')?.data;
+    const packageNode = projected.nodes.find(
+      node => node.id === 'repository.101.src.package'
+    )?.data;
+    expect(module?.kind).toBe('module');
+    expect(module?.parent).toBe('repository.101');
+    expect(packageNode?.kind).toBe('package');
+    expect(packageNode?.parent).toBe('repository.101');
+    expect(
+      projected.nodes.find(node => node.id === 'repository.101.src.shared.module')?.data.parent
+    ).toBe('repository.101.src.module');
+    expect(projected.edges).toEqual([
+      {
+        id: 'repository.101.src.module->repository.101.src.package',
+        source: 'repository.101.src.module',
+        target: 'repository.101.src.package',
+        data: {
+          weight: 1,
+          evidence: [dependencyEvidence('src/index.ts', './package', 'intrinsic')],
         },
       },
     ]);
@@ -155,6 +212,21 @@ function repositoryModule(projectId: string, path: string): DependencyGraph['nod
       projectId,
       path,
       parentPath: path.split('.').slice(0, -1).join('.'),
+    },
+  };
+}
+
+/*** Create a project-local package that intentionally shares a source path with a module. */
+function repositoryPackage(projectId: string, path: string): DependencyGraph['nodes'][number] {
+  return {
+    id: `package:${projectId}:${path}`,
+    data: {
+      kind: 'package',
+      classification: 'intrinsic',
+      focus: true,
+      label: path.split('.').at(-1) ?? path,
+      projectId,
+      path,
     },
   };
 }
