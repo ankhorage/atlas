@@ -237,7 +237,18 @@ function validateDiagnostics(diagnostics: LoadingDiagnostics): string | undefine
 async function stopFixtureServerAsync(): Promise<void> {
   if (server?.pid === undefined) return;
   if (process.platform === 'win32') server.kill('SIGTERM');
-  else process.kill(-server.pid, 'SIGTERM');
+  else {
+    try {
+      process.kill(-server.pid, 'SIGTERM');
+    } catch (error) {
+      if (!isMissingProcessError(error)) throw error;
+    }
+  }
+}
+
+/*** Identifies an already-exited owned process group so cleanup cannot hide acceptance evidence. */
+function isMissingProcessError(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === 'ESRCH';
 }
 
 /*** Enumerates the required SSR and hydrated first-frame matrix without omitting a theme or viewport. */

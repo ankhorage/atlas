@@ -1807,7 +1807,7 @@ async function pinchGraphAsync(
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 28, `Expected exactly 28 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 29, `Expected exactly 29 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
