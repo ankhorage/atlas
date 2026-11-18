@@ -307,10 +307,7 @@ async function readSelectedTreeItems(page: Page): Promise<readonly string[]> {
 
 /*** Read the visible navigation trail after synchronized graph and tree selection. */
 async function readBreadcrumbs(page: Page): Promise<readonly string[]> {
-  const breadcrumbText = await page
-    .getByText('Home', { exact: true })
-    .locator('xpath=../../..')
-    .innerText();
+  const breadcrumbText = await page.getByLabel('Breadcrumbs').innerText();
   return breadcrumbText
     .split('›')
     .map(label => label.trim().split('\n').at(-1) ?? '')

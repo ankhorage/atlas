@@ -307,10 +307,9 @@ async function readPublicViewportAsync(page: Page) {
   return viewport;
 }
 
-/*** Read the same visible Home-anchored breadcrumb trail as the existing workspace tests. */
+/*** Read the visible project-context breadcrumb trail from its stable landmark. */
 async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
-  const home = page.getByText('Home', { exact: true });
-  const text = await home.locator('xpath=../../..').innerText();
+  const text = await page.getByLabel('Breadcrumbs').innerText();
   return text
     .split('›')
     .map(part => part.trim().split('\n').at(-1) ?? '')
@@ -320,10 +319,7 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 /*** Require real visible navigation labels without introducing production-only landmarks. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
   await page.waitForFunction(expectedBreadcrumbs => {
-    const home = [...document.querySelectorAll('*')].find(
-      element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
-    );
-    const text = home?.parentElement?.parentElement?.parentElement?.innerText;
+    const text = document.querySelector('[aria-label="Breadcrumbs"]')?.textContent;
     const breadcrumbs = text
       ?.split('›')
       .map(part => part.trim().split('\n').at(-1) ?? '')
