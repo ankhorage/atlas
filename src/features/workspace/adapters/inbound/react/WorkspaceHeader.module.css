@@ -8,8 +8,13 @@
 }
 
 .identity {
+  align-items: center;
+  display: flex;
   flex: 1 1 192px;
+  gap: 4px;
   min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .actions {
@@ -22,12 +27,20 @@
   min-width: 0;
 }
 
-.sourceForm {
-  flex-wrap: wrap;
-  max-width: 720px;
+.mobileSourceDialog > * {
+  margin-bottom: 8px;
+}
+
+.breadcrumbs {
   min-width: 0;
-  position: relative;
-  z-index: 1;
+  overflow-x: auto;
+}
+
+.dialogTitle {
+  align-items: center;
+  display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .publicOnly {
@@ -39,17 +52,14 @@
 
 @media (max-width: 768px) {
   .content {
-    align-items: flex-start;
-    flex-direction: column;
+    gap: 4px;
+  }
+
+  .identity {
+    flex: 1 1 auto;
   }
 
   .actions {
-    gap: 8px;
-    justify-content: flex-start;
-    width: 100%;
-  }
-
-  .sourceForm {
-    max-width: 100%;
+    gap: 4px;
   }
 }

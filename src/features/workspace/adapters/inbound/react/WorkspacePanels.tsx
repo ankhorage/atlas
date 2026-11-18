@@ -6,6 +6,7 @@ import React from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import type { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
+import { MobileWorkspaceTools } from '@/features/workspace/adapters/inbound/react/MobileWorkspaceTools';
 import type { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import type { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
@@ -13,22 +14,31 @@ import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/Wo
 import type { Audit } from '@/types/audit';
 import type { WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
+import styles from './WorkspacePanels.module.css';
+
 /*** Connect sidebar inspection controls to the one graph view without duplicating navigation state. */
 export function WorkspacePanels(props: WorkspacePanelsProps) {
+  const mobile = useMobileWorkspace();
+  const [toolsOpen, setToolsOpen] = React.useState(false);
+  const [activeTool, setActiveTool] = React.useState('tree');
   return (
     <>
-      <WorkspaceSidebar
-        auditExportActions={props.auditExportActions}
-        currentSource={props.currentSource}
-        cycleSelection={props.cycleSelection}
-        evaluation={props.evaluation}
-        inspectedCycleId={props.cycleInspection.inspection?.id ?? null}
-        projectTree={props.navigation.projectTree}
-        selectedTreeIds={props.navigation.selectedTreeIds}
-        onCycleInspectionChange={props.cycleInspection.change}
-        onProjectTreeSelect={props.navigation.selectProjectTreeNode}
-        offline={props.offline}
-      />
+      {mobile ? null : (
+        <WorkspaceSidebar
+          activeTool={activeTool}
+          auditExportActions={props.auditExportActions}
+          currentSource={props.currentSource}
+          cycleSelection={props.cycleSelection}
+          evaluation={props.evaluation}
+          inspectedCycleId={props.cycleInspection.inspection?.id ?? null}
+          projectTree={props.navigation.projectTree}
+          selectedTreeIds={props.navigation.selectedTreeIds}
+          onCycleInspectionChange={props.cycleInspection.change}
+          onProjectTreeSelect={props.navigation.selectProjectTreeNode}
+          offline={props.offline}
+          onToolChange={setActiveTool}
+        />
+      )}
       <WorkspaceContent
         cycleInspection={props.cycleInspection.inspection}
         cycleEvidenceHidden={props.cycleInspection.hiddenEvidence}
@@ -43,15 +53,61 @@ export function WorkspacePanels(props: WorkspacePanelsProps) {
         onCloseInspection={() => props.cycleInspection.change(null)}
         onCycleEvidenceVisibilityChange={props.cycleInspection.setHiddenEvidence}
         onRevealCycle={props.cycleInspection.reveal}
+        onOpenTools={() => setToolsOpen(true)}
+      />
+      <MobileWorkspaceTools
+        activeTool={activeTool}
+        open={toolsOpen}
+        workspacePanels={props}
+        onDismiss={() => setToolsOpen(false)}
+        onToolChange={setActiveTool}
       />
     </>
   );
+}
+
+/*** Mounts the permanent sidebar only when the workspace has room for its desktop split pane. */
+function useMobileWorkspace(): boolean {
+  return React.useSyncExternalStore(
+    subscribeToWorkspaceViewport,
+    readMobileWorkspaceViewport,
+    readDesktopWorkspaceViewport
+  );
+}
+
+/*** Reports mobile viewport changes without sharing browser state outside the workspace boundary. */
+function subscribeToWorkspaceViewport(onChange: () => void): () => void {
+  if (typeof window.matchMedia !== 'function') return () => undefined;
+  const media = window.matchMedia(MOBILE_WORKSPACE_MEDIA_QUERY);
+  media.addEventListener('change', onChange);
+  return () => media.removeEventListener('change', onChange);
+}
+
+/*** Reads whether the current browser viewport uses the graph-first workspace layout. */
+function readMobileWorkspaceViewport(): boolean {
+  if (typeof window.matchMedia !== 'function') return false;
+  return window.matchMedia(MOBILE_WORKSPACE_MEDIA_QUERY).matches;
+}
+
+/*** Keeps the server render deterministic until the browser applies its measured viewport. */
+function readDesktopWorkspaceViewport(): boolean {
+  return false;
 }
 
 /*** Renders the graph or the current project-source load error. */
 function WorkspaceContent(props: WorkspaceContentProps) {
   return (
     <section data-testid="workspace-content" style={workspaceContentStyle}>
+      <div className={styles.toolsControl}>
+        <Button
+          leadingIcon={{ name: 'options-outline' }}
+          size="s"
+          variant="outline"
+          onPress={props.onOpenTools}
+        >
+          Tools
+        </Button>
+      </div>
       <RepositoryLoadStatus
         selectionError={props.selectionError}
         showAnonymousBulkLoginHint={props.showAnonymousBulkLoginHint}
@@ -230,7 +286,7 @@ function WorkspaceError({ message }: { readonly message: string }) {
   );
 }
 
-interface WorkspacePanelsProps {
+export interface WorkspacePanelsProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
   readonly cycleInspection: ReturnType<typeof useWorkspaceCycleInspection>;
@@ -257,6 +313,7 @@ interface WorkspaceContentProps {
   readonly showAnonymousBulkLoginHint: boolean;
   readonly onCloseInspection: () => void;
   readonly onCycleEvidenceVisibilityChange: (hidden: boolean) => void;
+  readonly onOpenTools: () => void;
   readonly onRevealCycle: () => void;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
 }
@@ -274,3 +331,5 @@ const initialRepositoryLoadCounts: RepositoryLoadCounts = {
   loading: 0,
   successful: 0,
 };
+
+const MOBILE_WORKSPACE_MEDIA_QUERY = '(max-width: 768px)';

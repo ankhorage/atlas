@@ -1,0 +1,13 @@
+.toolsControl {
+  bottom: 56px;
+  display: none;
+  left: 8px;
+  position: absolute;
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .toolsControl {
+    display: block;
+  }
+}

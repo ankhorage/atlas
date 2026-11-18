@@ -48,7 +48,14 @@ describe('[WorkspaceView]', () => {
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     });
 
-    const workspaceMenu = container.querySelector<HTMLButtonElement>(
+    const sourceEntry = container.querySelector<HTMLButtonElement>(
+      '[aria-label="Open repository source and workspace"]'
+    );
+    await React.act(async () => sourceEntry?.click());
+    await React.act(async () => {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    });
+    const workspaceMenu = document.querySelector<HTMLButtonElement>(
       '[aria-label="Manage workspaces"]'
     );
     assert.equal(workspaceMenu?.textContent, 'Workspace');
@@ -61,7 +68,7 @@ describe('[WorkspaceView]', () => {
     window.localStorage.removeItem('atlas.workspace-definitions.v1');
   });
 
-  it('renders the project title, Home breadcrumb, and persistent error inside the ZORA app shell', () => {
+  it('renders the Atlas brand, icon-only Home action, and persistent error inside the ZORA app shell', () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
     if (!parsed.ok) return;
@@ -78,7 +85,8 @@ describe('[WorkspaceView]', () => {
     );
 
     assert.equal(container.textContent?.includes('Atlas'), true);
-    assert.equal(container.textContent?.includes('Home'), true);
+    assert.equal(container.textContent?.includes('Home'), false);
+    assert.equal(container.querySelector('[aria-label="Home"]') !== null, true);
     assert.equal(container.textContent?.includes('Packages'), false);
     assert.equal(
       container
@@ -89,11 +97,11 @@ describe('[WorkspaceView]', () => {
     unmount();
   });
 
-  it('keeps the Public only repository filter unchecked until the user enables it', () => {
+  it('keeps the Public only repository filter unchecked until the user enables it', async () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
     if (!parsed.ok) return;
-    const { unmount } = render(
+    const { container, unmount } = render(
       <ZoraRuntimeProvider
         initialMode={parsed.manifest.activeThemeMode ?? 'light'}
         themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
@@ -116,10 +124,63 @@ describe('[WorkspaceView]', () => {
       </ZoraRuntimeProvider>
     );
 
+    await React.act(async () =>
+      container
+        .querySelector<HTMLButtonElement>('[aria-label="Open repository source and workspace"]')
+        ?.click()
+    );
     const publicOnly = document.querySelector<HTMLElement>(
       '[role="checkbox"][aria-label="Public only"]'
     );
     assert.equal(publicOnly?.textContent?.trim(), 'Public only');
+    assert.equal(publicOnly?.getAttribute('aria-checked'), 'false');
+    unmount();
+  });
+
+  it('keeps repository and workspace actions in one accessible mobile source workflow', async () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const { container, unmount } = render(
+      <ZoraRuntimeProvider
+        initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+        themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+      >
+        <WorkspaceView
+          currentSource="ankhorage"
+          projectName="Atlas"
+          repositories={[
+            {
+              id: 'atlas',
+              name: 'atlas',
+              owner: 'ankhorage',
+              selected: true,
+              url: 'https://github.com/ankhorage/atlas',
+              visibility: 'public',
+            },
+          ]}
+          workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+        />
+      </ZoraRuntimeProvider>
+    );
+    const sourceEntry = container.querySelector<HTMLButtonElement>(
+      '[aria-label="Open repository source and workspace"]'
+    );
+
+    assert.equal(sourceEntry !== null, true);
+    await React.act(async () => sourceEntry?.click());
+    assert.equal(document.body.textContent?.includes('Repository source'), true);
+    assert.equal(document.body.querySelector('[aria-label="Manage workspaces"]') !== null, true);
+    assert.equal(
+      document.body.querySelector('[aria-label="Close repository source"]') !== null,
+      true
+    );
+    assert.equal(
+      [...document.body.querySelectorAll('button')].some(button =>
+        button.textContent?.includes('Done')
+      ),
+      true
+    );
     unmount();
   });
 

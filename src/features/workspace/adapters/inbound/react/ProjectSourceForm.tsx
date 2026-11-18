@@ -1,17 +1,18 @@
 'use client';
-import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
-import { Checkbox } from '@ankhorage/zora/web/checkbox';
-import { Surface } from '@ankhorage/zora/web/surface';
-import { TextInput } from '@ankhorage/zora/web/text-input';
+import { Dialog } from '@ankhorage/zora/web/dialog';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { View } from '@ankhorage/zora/web/view';
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 
+import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
+import { ProjectSourceControls } from '@/features/workspace/adapters/inbound/react/ProjectSourceControls';
 import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession';
 import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
 import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { useRepositoryInventory } from '@/features/workspace/adapters/inbound/react/useRepositoryInventory';
-import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
+import { WorkspaceSettingsRestore } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
+import { WorkspaceDialogTitle } from '@/features/workspace/adapters/inbound/react/WorkspaceDialogTitle';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 import styles from './WorkspaceHeader.module.css';
@@ -20,6 +21,7 @@ import styles from './WorkspaceHeader.module.css';
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
   const [publicOnly, setPublicOnly] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const visibleRepositories = useVisibleRepositories(
     sourceForm.repositories,
     sourceForm.search,
@@ -27,99 +29,77 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   );
 
   return (
-    <View align="center" className={styles.sourceForm} direction="row" gap="xs">
-      <TextInput
-        accessibilityLabel="GitHub owner"
-        placeholder="ankhorage or @me"
-        size="s"
-        value={sourceForm.source}
-        onChangeText={sourceForm.setSource}
-      />
-      <RepositoryPicker
-        repositories={visibleRepositories}
-        search={sourceForm.search}
-        selectedIds={sourceForm.selectedIds}
-        selectionSupported={sourceForm.selectionSupported}
-        totalCount={sourceForm.repositories.length}
-        initiallyOpen={props.selectionRequired}
-        onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
-        onSearchChange={sourceForm.setSearch}
-        onSelectAll={() =>
-          sourceForm.setSelectedIds(
-            new Set(sourceForm.repositories.map(repository => repository.id))
-          )
-        }
-        onSelectionChange={sourceForm.setSelectedIds}
-      />
-      <SelectionSourceNotice sourceForm={sourceForm} />
-      {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
-      <PublicOnlyFilter checked={publicOnly} onChange={setPublicOnly} />
-      <RepositoryCopyButton sourceForm={sourceForm} />
-      <WorkspaceControls
+    <>
+      <WorkspaceSettingsRestore
         activeWorkspaceId={sourceForm.activeWorkspaceId}
-        repositories={sourceForm.repositories}
-        selectedIds={sourceForm.selectedIds}
-        source={sourceForm.source}
-        onDeleteWorkspace={sourceForm.deleteWorkspace}
-        onOpenWorkspace={sourceForm.openWorkspace}
+        settings={sourceForm.settings}
       />
-    </View>
+      <RepositorySourceEntry onOpen={() => setSourceOpen(true)} />
+      <ProjectSourceDialog
+        authControls={props.authControls}
+        initiallyOpen={props.selectionRequired}
+        open={sourceOpen}
+        publicOnly={publicOnly}
+        sourceForm={sourceForm}
+        visibleRepositories={visibleRepositories}
+        onDismiss={() => setSourceOpen(false)}
+        onPublicOnlyChange={setPublicOnly}
+      />
+    </>
   );
 }
 
-/*** Explains why a preserved legacy workspace cannot use the single-owner incremental transport. */
-function SelectionSourceNotice({
-  sourceForm,
-}: {
-  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
-}) {
-  if (sourceForm.selectionSupported || sourceForm.source.trim() === '') return null;
+/*** Opens the repository workflow from the compact workspace header. */
+function RepositorySourceEntry({ onOpen }: RepositorySourceEntryProps) {
   return (
-    <span role="status">
-      Repository selection is available for one GitHub owner or @me. This workspace remains
-      unchanged.
-    </span>
-  );
-}
-
-/*** Keeps repository visibility filtering separate from GitHub authorization consent. */
-function PublicOnlyFilter({
-  checked,
-  onChange,
-}: {
-  readonly checked: boolean;
-  readonly onChange: (checked: boolean) => void;
-}) {
-  return (
-    <Checkbox
-      accessibilityLabel="Public only"
-      checked={checked}
-      className={styles.publicOnly}
-      size="s"
-      onCheckedChange={onChange}
-    >
-      Public only
-    </Checkbox>
-  );
-}
-
-/*** Copies the canonical URLs of the staged repository selection. */
-function RepositoryCopyButton({
-  sourceForm,
-}: {
-  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
-}) {
-  return (
-    <Button
-      accessibilityLabel="Copy repository links"
-      disabled={sourceForm.selectedRepositories.length === 0}
-      leadingIcon={{ name: 'copy-outline' }}
-      size="s"
+    <IconButton
+      icon={{ name: 'settings-outline' }}
+      label="Open repository source and workspace"
+      size="m"
       variant="ghost"
-      onPress={sourceForm.copyRepositoryLinks}
+      onPress={onOpen}
+    />
+  );
+}
+
+/*** Keeps repository choices in a focused ZORA dialog while staging the same selection. */
+function ProjectSourceDialog({
+  authControls,
+  initiallyOpen,
+  open,
+  publicOnly,
+  sourceForm,
+  visibleRepositories,
+  onDismiss,
+  onPublicOnlyChange,
+}: ProjectSourceDialogProps) {
+  return (
+    <Dialog
+      closeOnBackdrop
+      description="Choose repositories, manage the saved workspace, and start analysis."
+      footer={<Button onPress={onDismiss}>Done</Button>}
+      title={
+        <WorkspaceDialogTitle
+          label="Close repository source"
+          title="Repository source"
+          onDismiss={onDismiss}
+        />
+      }
+      visible={open}
+      width="wide"
+      onDismiss={onDismiss}
     >
-      Copy
-    </Button>
+      <View className={styles.mobileSourceDialog} direction="column" gap="s">
+        {authControls}
+        <ProjectSourceControls
+          initiallyOpen={initiallyOpen && sourceForm.selectionSupported}
+          publicOnly={publicOnly}
+          sourceForm={sourceForm}
+          visibleRepositories={visibleRepositories}
+          onPublicOnlyChange={onPublicOnlyChange}
+        />
+      </View>
+    </Dialog>
   );
 }
 
@@ -144,6 +124,7 @@ function useVisibleRepositories(
 
 /*** Keeps inventory discovery independent from selection-driven workspace changes. */
 function useProjectSourceForm(props: ProjectSourceFormProps) {
+  const settings = useSettings();
   const initial = readSource(props.currentSource);
   const state = useProjectSourceFormState(
     initial.owner,
@@ -183,6 +164,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     selectedIds: state.selectedIds,
     selectedRepositories,
     selectionSupported,
+    settings,
     setSearch: state.setSearch,
     setSelectedIds: actions.setSelectedIds,
     setSource: actions.setSource,
@@ -201,76 +183,6 @@ function selectRepositories(
   return inventory.map(repository => ({ ...repository, selected: selectedIds.has(repository.id) }));
 }
 
-/*** Renders one searchable multi-select rather than a header action for every repository. */
-function RepositoryPicker(props: RepositoryPickerProps) {
-  return (
-    <Popover
-      defaultOpen={props.initiallyOpen}
-      placement="bottom-start"
-      anchor={({ toggle }) => (
-        <Button
-          accessibilityLabel="Choose repositories"
-          disabled={!props.selectionSupported}
-          size="s"
-          variant="outline"
-          onPress={toggle}
-        >
-          Repositories ({props.selectedIds.size}/{props.totalCount})
-        </Button>
-      )}
-    >
-      <Surface style={REPOSITORY_PICKER_STYLE}>
-        <TextInput
-          accessibilityLabel="Search repositories"
-          placeholder="Search repositories"
-          size="s"
-          value={props.search}
-          onChangeText={props.onSearchChange}
-        />
-        <View direction="row" gap="xs" style={{ marginBlock: 8 }}>
-          <Button size="s" variant="ghost" onPress={props.onSelectAll}>
-            Select all
-          </Button>
-          <Button size="s" variant="ghost" onPress={props.onDeselectAll}>
-            Deselect all
-          </Button>
-        </View>
-        <RepositoryChoices {...props} />
-      </Surface>
-    </Popover>
-  );
-}
-
-/*** Renders the searchable repository checkbox choices. */
-function RepositoryChoices(props: RepositoryPickerProps) {
-  if (props.repositories.length === 0) return <span>No repositories match this search.</span>;
-  return props.repositories.map(repository => (
-    <Checkbox
-      accessibilityLabel={`${repository.owner}/${repository.name}`}
-      key={repository.id}
-      checked={props.selectedIds.has(repository.id)}
-      size="s"
-      onCheckedChange={(checked: boolean) =>
-        props.onSelectionChange(setRepositorySelected(props.selectedIds, repository.id, checked))
-      }
-    >
-      {repository.owner}/{repository.name}
-    </Checkbox>
-  ));
-}
-
-/*** Apply the checkbox's resolved selection value to the staged repository identifiers. */
-function setRepositorySelected(
-  selectedIds: ReadonlySet<string>,
-  repositoryId: string,
-  checked: boolean
-): Set<string> {
-  const next = new Set(selectedIds);
-  if (checked) next.add(repositoryId);
-  else next.delete(repositoryId);
-  return next;
-}
-
 /*** Remove query-only workspace selection state before displaying the editable source. */
 function readSource(currentSource: string | undefined): { readonly owner: string } {
   const value = currentSource?.split('|')[0]?.trim() ?? '';
@@ -285,33 +197,29 @@ function readSource(currentSource: string | undefined): { readonly owner: string
 
 interface ProjectSourceFormProps {
   readonly activeWorkspaceId?: string;
+  readonly authControls?: ReactNode;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
 }
 
+interface ProjectSourceDialogProps {
+  readonly authControls?: ReactNode;
+  readonly initiallyOpen?: boolean;
+  readonly open: boolean;
+  readonly publicOnly: boolean;
+  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+  readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
+  readonly onDismiss: () => void;
+  readonly onPublicOnlyChange: (checked: boolean) => void;
+}
+
+interface RepositorySourceEntryProps {
+  readonly onOpen: () => void;
+}
+
 export interface WorkspaceSelectionEventDetail {
   readonly selectedIds: readonly string[];
   readonly source: string;
 }
-
-interface RepositoryPickerProps {
-  readonly repositories: readonly WorkspaceRepositoryOption[];
-  readonly search: string;
-  readonly selectedIds: ReadonlySet<string>;
-  readonly selectionSupported: boolean;
-  readonly totalCount: number;
-  readonly initiallyOpen?: boolean;
-  readonly onDeselectAll: () => void;
-  readonly onSearchChange: (search: string) => void;
-  readonly onSelectAll: () => void;
-  readonly onSelectionChange: (ids: Set<string>) => void;
-}
-
-const REPOSITORY_PICKER_STYLE = {
-  maxHeight: 360,
-  minWidth: 280,
-  overflowY: 'auto',
-  padding: 8,
-} as const;
