@@ -696,8 +696,10 @@ const scenarios: readonly Scenario[] = [
       );
       const publicOnly = page.getByRole('checkbox', { name: 'Public only' });
       await publicOnly.click();
+      await waitForCheckboxStateAsync(page, 'Public only', true);
       assert(await publicOnly.isChecked(), 'Public only did not become checked after selection.');
       await publicOnly.press('Space');
+      await waitForCheckboxStateAsync(page, 'Public only', false);
       assert(!(await publicOnly.isChecked()), 'Public only remained checked after deselection.');
       await page.getByLabel('Choose repositories').click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
@@ -713,6 +715,7 @@ const scenarios: readonly Scenario[] = [
       );
       await assertGraphCanvasAsync(page);
       await openRepositoryPickerAsync(page);
+      await waitForCheckboxStateAsync(page, 'owner-a/catalog', true);
       assert(
         await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked(),
         'Shorthand repository was not selected.'
@@ -1039,6 +1042,8 @@ const scenarios: readonly Scenario[] = [
       await page.getByRole('application', { name: 'Graph' }).waitFor();
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
+      await waitForCheckboxStateAsync(page, 'owner-a/catalog', false);
+      await waitForCheckboxStateAsync(page, 'owner-a/shared', true);
       assert(
         !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Saved exclusion was not restored.'
@@ -1504,6 +1509,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     'Repository source dialog did not expose its focused repository picker.'
   );
   await repositoryPickers.last().click();
+  await waitForCheckboxStateAsync(page, 'bulk-pending/repository-0', true);
   assert(
     await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).isChecked(),
     'Repository selection was not retained in the mobile dialog.'
@@ -1589,6 +1595,23 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   await page.getByLabel('Fit graph and optimize spacing for readability').click();
   const afterFit = await readGraphViewportAsync(page);
   assert(afterFit.zoom !== afterPinch.zoom, 'Fit did not update the graph viewport.');
+}
+
+/*** Waits for ZORA's public checkbox ARIA state before asserting its checked value. */
+async function waitForCheckboxStateAsync(
+  page: Page,
+  accessibilityLabel: string,
+  checked: boolean
+): Promise<void> {
+  await page.waitForFunction(
+    ({ accessibilityLabel: label, checked: expectedChecked }) =>
+      [...document.querySelectorAll('[role="checkbox"]')].some(
+        checkbox =>
+          checkbox.getAttribute('aria-label') === label &&
+          checkbox.getAttribute('aria-checked') === String(expectedChecked)
+      ),
+    { accessibilityLabel, checked }
+  );
 }
 
 /*** Closes the mobile tools dialog only after its portal unmounts and focus cleanup can complete.
