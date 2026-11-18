@@ -1985,7 +1985,10 @@ async function panAndZoomGraphAsync(page: Page): Promise<void> {
   const previousZoom = await zoom.inputValue();
   await zoom.focus();
   await page.keyboard.press('ArrowRight');
-  assert((await zoom.inputValue()) !== previousZoom, 'Native zoom control did not change the viewport.');
+  assert(
+    (await zoom.inputValue()) !== previousZoom,
+    'Native zoom control did not change the viewport.'
+  );
 }
 
 /*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */
