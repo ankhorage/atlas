@@ -223,13 +223,16 @@ async function selectGraphNodes(page: Page): Promise<void> {
   await page.keyboard.down(modifier);
   await page.mouse.click(secondTarget.x, secondTarget.y);
   await page.keyboard.up(modifier);
-  await page.waitForFunction(expectedModifier => {
-    const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
-      .__atlasGraphInputProbe;
-    return expectedModifier === 'ctrlKey'
-      ? probe?.events.some(event => event.graphTarget && event.ctrlKey)
-      : probe?.events.some(event => event.graphTarget && event.metaKey);
-  }, modifier === 'Meta' ? 'metaKey' : 'ctrlKey');
+  await page.waitForFunction(
+    expectedModifier => {
+      const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
+        .__atlasGraphInputProbe;
+      return expectedModifier === 'ctrlKey'
+        ? probe?.events.some(event => event.graphTarget && event.ctrlKey)
+        : probe?.events.some(event => event.graphTarget && event.metaKey);
+    },
+    modifier === 'Meta' ? 'metaKey' : 'ctrlKey'
+  );
   await page.waitForFunction(
     () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
   );
@@ -288,7 +291,9 @@ async function assertGraphHitTargetAsync(
     };
   }, point);
   if (!hitTarget.graphTarget || hitTarget.pointerEvents === 'none')
-    throw new Error(`Measured GraphView coordinate missed a pointer target: ${JSON.stringify(hitTarget)}`);
+    throw new Error(
+      `Measured GraphView coordinate missed a pointer target: ${JSON.stringify(hitTarget)}`
+    );
 }
 
 /*** Reads exact public GraphView hit geometry so native clicks target two distinct rendered nodes. */
