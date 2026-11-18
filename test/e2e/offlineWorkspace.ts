@@ -214,7 +214,9 @@ async function selectGraphNodes(page: Page): Promise<void> {
   );
   const selection = await readSelectedTreeItems(page);
   if (selection.length !== 2)
-    throw new Error(`Modified GraphView click selected ${selection.length} tree items, expected two.`);
+    throw new Error(
+      `Modified GraphView click selected ${selection.length} tree items, expected two.`
+    );
 }
 
 /*** Reads exact public GraphView hit geometry so native clicks target two distinct rendered nodes. */
@@ -230,7 +232,9 @@ async function readMeasuredGraphNodesAsync(page: Page, nodeIds: readonly string[
     return probe?.controller?.measureNodes?.(ids)?.nodes ?? [];
   }, nodeIds);
   if (measurement.length !== nodeIds.length)
-    throw new Error(`GraphView did not measure both selection targets: ${JSON.stringify(measurement)}`);
+    throw new Error(
+      `GraphView did not measure both selection targets: ${JSON.stringify(measurement)}`
+    );
   return measurement;
 }
 
