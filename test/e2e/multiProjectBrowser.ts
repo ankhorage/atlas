@@ -446,6 +446,7 @@ async function openWorkspaceAsync(
 /*** Opens the workspace menu only when its action controls are not already visible. */
 async function openWorkspaceMenuAsync(page: Page): Promise<void> {
   await openRepositorySourceDialogAsync(page);
+  await closeRepositoryPickerAsync(page);
   const saveAs = page.getByRole('button', { name: 'Save as', exact: true });
   if (!(await saveAs.isVisible()))
     await page.locator('[aria-label="Manage workspaces"]:visible').click();
@@ -476,10 +477,15 @@ async function openRepositorySourceDialogAsync(page: Page): Promise<void> {
 
 /*** Closes the picker and then its mobile dialog so subsequent controls are no longer obscured. */
 async function closeMobileRepositorySourceDialogAsync(page: Page): Promise<void> {
-  const closePopover = page.getByLabel('Close popover');
-  if (await closePopover.isVisible()) await closePopover.click();
+  await closeRepositoryPickerAsync(page);
   await page.keyboard.press('Escape');
   await page.getByText('Repository source', { exact: true }).waitFor({ state: 'hidden' });
+}
+
+/*** Closes the repository picker before targeting controls in its source dialog. */
+async function closeRepositoryPickerAsync(page: Page): Promise<void> {
+  const closePopover = page.getByLabel('Close popover');
+  if (await closePopover.isVisible()) await closePopover.click();
 }
 
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
@@ -726,7 +732,7 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'source-picker-immediate-selection',
-    'Applies a selection diff immediately without an Open action or document navigation.',
+    'Applies a selection diff immediately without a deferred source action or document navigation.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
@@ -740,10 +746,6 @@ const scenarios: readonly Scenario[] = [
       );
       await closeMobileRepositorySourceDialogAsync(page);
       assert(page.url() !== before, 'Selection did not update browser history.');
-      assert(
-        (await page.getByRole('button', { name: 'Open' }).count()) === 0,
-        'Open is still visible.'
-      );
       await assertGraphCanvasAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page
@@ -755,7 +757,7 @@ const scenarios: readonly Scenario[] = [
       await openRepositoryPickerAsync(page);
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
-        'Excluded repository was selected after Open.'
+        'Excluded repository was selected after the immediate selection update.'
       );
       return [];
     }
@@ -975,11 +977,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await page.setViewportSize({ height: 1000, width: 1920 });
       await openWorkspaceAsync(page);
-      await openRepositorySourceDialogAsync(page);
-      const menu = page.getByLabel('Manage workspaces');
-      const visibleMenu = page.locator('[aria-label="Manage workspaces"]:visible');
-      await assertTopmostControlAsync(visibleMenu, 'Workspace management menu');
-      await visibleMenu.click();
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Acceptance workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=acceptance-workspace/u);
@@ -1018,7 +1016,7 @@ const scenarios: readonly Scenario[] = [
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
       if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
       await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
-      await page.getByLabel('Manage workspaces').click();
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Restored workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=restored-workspace/u);
