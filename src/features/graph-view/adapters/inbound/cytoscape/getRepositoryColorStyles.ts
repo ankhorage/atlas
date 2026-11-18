@@ -9,6 +9,7 @@ export function getRepositoryColorStyles(repositoryColors: Readonly<Record<strin
   return {
     compound: getRepositoryCompoundStyles(repositoryColors),
     leaf: getRepositoryLeafStyles(repositoryColors),
+    selectedLeaf: getSelectedRepositoryLeafStyles(repositoryColors),
   };
 }
 
@@ -30,6 +31,22 @@ function getRepositoryLeafStyles(repositoryColors: Readonly<Record<string, strin
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
       selector: `node:childless.repositoryOwned[repositoryId = "${repositoryId}"]`,
+      style: { 'background-color': color },
+    })),
+  ];
+}
+
+/*** Preserves the repository fill for selected leaf nodes without replacing selection evidence. */
+function getSelectedRepositoryLeafStyles(
+  repositoryColors: Readonly<Record<string, string>>
+): StylesheetJson {
+  return [
+    {
+      selector: 'node:childless.repositoryOwned:selected',
+      style: { 'background-color': DEFAULT_REPOSITORY_COLOR },
+    },
+    ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
+      selector: `node:childless.repositoryOwned[repositoryId = "${repositoryId}"]:selected`,
       style: { 'background-color': color },
     })),
   ];

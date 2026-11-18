@@ -21,10 +21,11 @@ export function getStyle(
 
   return [
     ...getNodeBaseStyles(colors),
+    ...repositoryStyles.leaf,
     ...getNodeInteractionStyles(colors),
     ...getNodeStateStyles(colors),
     ...getCompoundStyles(colors),
-    ...repositoryStyles.leaf,
+    ...repositoryStyles.selectedLeaf,
     ...repositoryStyles.compound,
     ...getCompoundOpacityStyles(filteredElements),
     ...getEdgeBaseStyles(colors),
