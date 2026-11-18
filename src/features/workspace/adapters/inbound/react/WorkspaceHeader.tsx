@@ -59,6 +59,7 @@ function WorkspaceIdentity(props: WorkspaceHeaderProps) {
           items={createBreadcrumbItems(props.currentPackage, props.projectName, props.projectTree)}
           maxItems={3}
           separator="›"
+          testID="workspace-breadcrumbs"
           onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
         />
       </div>

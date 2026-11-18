@@ -309,7 +309,7 @@ async function readPublicViewportAsync(page: Page) {
 
 /*** Read the visible project-context breadcrumb trail from its stable landmark. */
 async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
-  const text = await page.getByLabel('Breadcrumbs').innerText();
+  const text = await page.getByTestId('workspace-breadcrumbs').innerText();
   return text
     .split('›')
     .map(part => part.trim().split('\n').at(-1) ?? '')
@@ -319,7 +319,7 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 /*** Require real visible navigation labels without introducing production-only landmarks. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
   await page.waitForFunction(expectedBreadcrumbs => {
-    const text = document.querySelector('[aria-label="Breadcrumbs"]')?.textContent;
+    const text = document.querySelector('[data-testid="workspace-breadcrumbs"]')?.textContent;
     const breadcrumbs = text
       ?.split('›')
       .map(part => part.trim().split('\n').at(-1) ?? '')
