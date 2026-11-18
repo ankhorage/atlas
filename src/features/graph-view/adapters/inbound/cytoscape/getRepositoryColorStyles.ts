@@ -1,8 +1,6 @@
 import type { StylesheetJson } from 'cytoscape';
 
-const DEFAULT_REPOSITORY_COLOR = '#DCEAFB';
-const DEFAULT_REPOSITORY_BORDER = '#496477';
-const DEFAULT_REPOSITORY_TEXT = '#102033';
+import { repositoryColor } from '@/constants/repositoryColor';
 
 /*** Builds paint-only repository identity styles from persisted workspace overrides. */
 export function getRepositoryColorStyles(repositoryColors: Readonly<Record<string, string>>) {
@@ -26,9 +24,9 @@ function getRepositoryLeafStyles(
     {
       selector: 'node:childless.repositoryOwned',
       style: {
-        'background-color': DEFAULT_REPOSITORY_COLOR,
-        'border-color': DEFAULT_REPOSITORY_BORDER,
-        color: DEFAULT_REPOSITORY_TEXT,
+        'background-color': repositoryColor.default,
+        'border-color': repositoryColor.border,
+        color: repositoryColor.text,
       },
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
@@ -45,7 +43,7 @@ function getSelectedRepositoryLeafStyles(
   return [
     {
       selector: 'node:childless.repositoryOwned:selected',
-      style: { 'background-color': DEFAULT_REPOSITORY_COLOR },
+      style: { 'background-color': repositoryColor.default },
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
       selector: `node:childless.repositoryOwned[repositoryId = ${JSON.stringify(repositoryId)}]:selected`,
@@ -67,9 +65,9 @@ function getRepositoryCompoundStyles(
     {
       selector: 'node:parent.repositoryOwned',
       style: {
-        'background-color': DEFAULT_REPOSITORY_COLOR,
-        'border-color': DEFAULT_REPOSITORY_BORDER,
-        color: DEFAULT_REPOSITORY_TEXT,
+        'background-color': repositoryColor.default,
+        'border-color': repositoryColor.border,
+        color: repositoryColor.text,
       },
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({

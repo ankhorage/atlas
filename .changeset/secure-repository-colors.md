@@ -2,4 +2,4 @@
 '@ankhorage/atlas': patch
 ---
 
-Validate persisted repository color overrides when they are read and updated.
+Let repository colors be selected from the published ZORA picker while validating their persisted overrides.

@@ -796,6 +796,75 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'source-picker-repository-color',
+    'Edits and resets one repository color without changing repository selection, graph geometry, or requests.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositoryPickerAsync(page);
+      const repository = page.getByLabel('owner-a/catalog');
+      assert(await repository.isChecked(), 'Repository was not selected before editing its color.');
+      const before = await readGraphPresentationAsync(page);
+      const requests: string[] = [];
+      page.on('request', request => requests.push(request.url()));
+      await page.getByLabel('Change color for owner-a/catalog').click();
+      const picker = page.getByTestId('repository-color-picker-owner-a-catalog');
+      await picker.getByLabel('Color wheel').waitFor();
+      assert(
+        (await picker.getByRole('tab').count()) === 2,
+        'Repository color picker did not expose exactly Wheel and Tone.'
+      );
+      assert(
+        (await picker.getByRole('button', { name: 'None' }).count()) === 0,
+        'Repository color picker exposed Harmony controls.'
+      );
+      await picker.getByRole('tab', { name: 'tone' }).click();
+      await picker.getByLabel('jewel').first().click();
+      await page.waitForFunction(() =>
+        Object.entries(localStorage).some(
+          ([key, value]) =>
+            key.endsWith('.repository-colors') &&
+            /^#[0-9A-F]{6}$/u.test(
+              (JSON.parse(value) as Record<string, unknown>)['owner-a-catalog'] as string
+            )
+        )
+      );
+      assert(
+        (await picker.getByLabel(/Selected jewel color 1:/u).count()) === 1,
+        'Tone picker did not retain exactly one selected color.'
+      );
+      await picker.getByRole('button', { name: 'Reset color' }).click();
+      await page.waitForFunction(() =>
+        Object.entries(localStorage).every(
+          ([key, value]) =>
+            !key.endsWith('.repository-colors') ||
+            !Object.hasOwn(JSON.parse(value) as Record<string, unknown>, 'owner-a-catalog')
+        )
+      );
+      const after = await readGraphPresentationAsync(page);
+      assert(
+        await repository.isChecked(),
+        'Color swatch interaction changed repository selection.'
+      );
+      assert(
+        before.layoutCount === after.layoutCount,
+        `Repository color interaction recomputed graph layout: ${before.layoutCount} -> ${after.layoutCount}.`
+      );
+      assert(
+        JSON.stringify(before.viewport) === JSON.stringify(after.viewport),
+        'Repository color interaction changed the graph viewport.'
+      );
+      assert(
+        requests.every(request => !request.includes('/api/workspace/selection')),
+        `Repository color interaction issued a selection request: ${requests.join(', ')}`
+      );
+      assert(
+        requests.every(request => !request.includes('github')),
+        `Repository color interaction issued a GitHub request: ${requests.join(', ')}`
+      );
+      return [];
+    }
+  ),
+  scenario(
     'source-picker-runtime-recovery',
     'Recovers a current single-owner selection after the server evicts its incremental runtime.',
     async page => {
@@ -1692,6 +1761,19 @@ async function readGraphViewportAsync(page: Page) {
   });
   assert(viewport !== null, 'Graph controller was unavailable for interaction acceptance.');
   return viewport;
+}
+
+/*** Capture public graph presentation state to reject color edits that re-layout or auto-fit. */
+async function readGraphPresentationAsync(page: Page) {
+  const presentation = await page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller === null || probe?.controller === undefined
+      ? null
+      : { layoutCount: probe.layoutCount, viewport: probe.controller.getViewport() };
+  });
+  assert(presentation !== null, 'Graph presentation probe was unavailable.');
+  return presentation;
 }
 
 /*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */
