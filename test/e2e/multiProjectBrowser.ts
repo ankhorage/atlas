@@ -1835,7 +1835,7 @@ async function doublePressGraphNodeAsync(
   id: string,
   graphBounds: { readonly x: number; readonly y: number }
 ): Promise<void> {
-  const node = await readGraphNodeAsync(page, id);
+  const node = await readGraphNodeAsync(page, [id]);
   await page.mouse.dblclick(graphBounds.x + node.position.x, graphBounds.y + node.position.y);
 }
 
