@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.3
+
+### Patch Changes
+
+- c0c4cb2: Refine the mobile graph workspace, compact header actions, and dialog close controls.
+
 ## 0.21.2
 
 ### Patch Changes
