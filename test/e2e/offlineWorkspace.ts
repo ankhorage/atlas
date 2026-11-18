@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { basename, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import type { GraphViewController } from '@ankhorage/zora/web/graph-view';
 import { chromium, type Page } from 'playwright-core';
 
 import {
@@ -30,7 +31,7 @@ const context = await chromium.launchPersistentContext(resolve(temporaryDirector
 
 try {
   const offline = await context.newPage();
-  if (requireCompoundNodes) await installProductionGraphProbeAsync(offline);
+  await installProductionGraphProbeAsync(offline);
   const networkAttempts = observeOfflineRuntime(offline);
   await offline.goto(pathToFileURL(copiedReportPath).href, { waitUntil: 'networkidle' });
   await assertWorkspace(offline, networkAttempts);
@@ -192,52 +193,49 @@ async function assertDarkTheme(page: Page): Promise<void> {
 
 async function selectGraphNodes(page: Page): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
-  const canvas = graph.locator('canvas').first();
-  await canvas.waitFor();
-  const box = await canvas.boundingBox();
+  const nodeIds = ['com.example.myapp.a', 'com.example.myapp.b'];
+  const nodes = await readMeasuredGraphNodesAsync(page, nodeIds);
+  const box = await graph.boundingBox();
   if (box === null) throw new Error('Graph canvas is not visible.');
+  if (nodes.some(node => node.position.x <= 0 || node.position.y <= 0))
+    throw new Error(`GraphView reported unusable node geometry: ${JSON.stringify(nodes)}`);
 
-  const positions = [0.15, 0.35, 0.5, 0.65, 0.85].flatMap(x =>
-    [0.2, 0.5, 0.8].map(y => ({ x: box.width * x, y: box.height * y }))
-  );
-  const selectedTreeItems = page.getByRole('treeitem', { selected: true });
+  await page.mouse.click(box.x + nodes[0]!.position.x, box.y + nodes[0]!.position.y);
+  await page.getByRole('treeitem', { selected: true }).waitFor();
+  const firstSelection = await readSelectedTreeItems(page);
+  if (firstSelection.length !== 1)
+    throw new Error(`Graph-node click selected ${firstSelection.length} tree items, expected one.`);
 
-  const firstSelectionIndex = await findSelectionIndex(
-    positions,
-    position => canvas.click({ position }),
-    selectedTreeItems
+  await page.keyboard.down(process.platform === 'darwin' ? 'Meta' : 'Control');
+  await page.mouse.click(box.x + nodes[1]!.position.x, box.y + nodes[1]!.position.y);
+  await page.keyboard.up(process.platform === 'darwin' ? 'Meta' : 'Control');
+  await page.waitForFunction(
+    () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
   );
-  if (firstSelectionIndex === -1) {
-    throw new Error('A real graph-node click did not synchronize selection to the project tree.');
-  }
-
-  const nextPositions = positions.filter((_, index) => index !== firstSelectionIndex);
-  const secondSelectionIndex = await findSelectionIndex(
-    nextPositions,
-    position =>
-      canvas.click({
-        modifiers: [process.platform === 'darwin' ? 'Meta' : 'Control'],
-        position,
-      }),
-    selectedTreeItems,
-    2
-  );
-  if (secondSelectionIndex === -1) {
-    throw new Error('A modified graph-node click did not create a synchronized multi-selection.');
-  }
+  const selection = await readSelectedTreeItems(page);
+  if (selection.length !== 2)
+    throw new Error(`Modified GraphView click selected ${selection.length} tree items, expected two.`);
 }
 
-async function findSelectionIndex(
-  positions: readonly { readonly x: number; readonly y: number }[],
-  click: (position: { readonly x: number; readonly y: number }) => Promise<void>,
-  selectedTreeItems: ReturnType<Page['getByRole']>,
-  minimumSelectionCount = 1
-): Promise<number> {
-  for (const [index, position] of positions.entries()) {
-    await click(position);
-    if ((await selectedTreeItems.count()) >= minimumSelectionCount) return index;
-  }
-  return -1;
+/*** Reads exact public GraphView hit geometry so native clicks target two distinct rendered nodes. */
+async function readMeasuredGraphNodesAsync(page: Page, nodeIds: readonly string[]) {
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
+      .__atlasGraphAcceptance;
+    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
+  }, nodeIds);
+  const measurement = await page.evaluate(ids => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
+      .__atlasGraphAcceptance;
+    return probe?.controller?.measureNodes?.(ids)?.nodes ?? [];
+  }, nodeIds);
+  if (measurement.length !== nodeIds.length)
+    throw new Error(`GraphView did not measure both selection targets: ${JSON.stringify(measurement)}`);
+  return measurement;
+}
+
+interface GraphProbe {
+  readonly controller: GraphViewController | null;
 }
 
 async function assertUnavailableOfflineActions(page: Page): Promise<void> {
