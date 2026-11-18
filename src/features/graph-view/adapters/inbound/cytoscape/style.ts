@@ -12,11 +12,10 @@ import { createCompoundOpacityIndex } from '@/features/graph-view/utils/createCo
 /*** Builds the shared Cytoscape styles for the active theme. */
 export function getStyle(
   filteredElements: ElementsDefinition,
-  theme: ZoraRuntimeTheme,
-  repositoryColors: Readonly<Record<string, string>> = {}
+  theme: ZoraRuntimeTheme
 ): StylesheetJson {
   const colors = getGraphPalette(theme);
-  const repositoryStyles = getRepositoryColorStyles(repositoryColors);
+  const repositoryStyles = getRepositoryColorStyles();
   const { thresholds } = getWeightBuckets(3, 'linear', filteredElements);
 
   return [

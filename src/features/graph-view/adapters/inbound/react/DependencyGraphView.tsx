@@ -150,20 +150,20 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
     () =>
       input.visibleElements === null
         ? null
-        : createGraphViewModel(input.packageGraph, input.visibleElements, input.cycleHighlights),
-    [input.cycleHighlights, input.packageGraph, input.visibleElements]
+        : createGraphViewModel(
+            input.packageGraph,
+            input.visibleElements,
+            input.cycleHighlights,
+            input.repositoryColors
+          ),
+    [input.cycleHighlights, input.packageGraph, input.repositoryColors, input.visibleElements]
   );
   const styles = useMemo(
     () =>
       input.visibleElements === null
         ? []
-        : createGraphViewStyles(
-            input.visibleElements,
-            input.theme,
-            input.layout,
-            input.repositoryColors
-          ),
-    [input.layout, input.repositoryColors, input.theme, input.visibleElements]
+        : createGraphViewStyles(input.visibleElements, input.theme, input.layout),
+    [input.layout, input.theme, input.visibleElements]
   );
   const layoutOptions = useMemo<Readonly<Record<string, unknown>>>(
     () => ({ ...LAYOUTS[input.layout] }),

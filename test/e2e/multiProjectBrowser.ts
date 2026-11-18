@@ -832,6 +832,19 @@ const scenarios: readonly Scenario[] = [
         (await picker.getByLabel(/Selected jewel color 1:/u).count()) === 1,
         'Tone picker did not retain exactly one selected color.'
       );
+      await settleGraphPresentationAsync(page);
+      const afterColor = await readGraphPresentationAsync(page);
+      assert(
+        afterColor.layoutCount === 1,
+        `Repository color update recomputed graph layout: expected 1, received ${afterColor.layoutCount}.`
+      );
+      await toggleThemeAsync(page);
+      await settleGraphPresentationAsync(page);
+      const afterThemeChange = await readGraphPresentationAsync(page);
+      assert(
+        afterThemeChange.layoutCount === 1,
+        `Repository color theme switch recomputed graph layout: expected 1, received ${afterThemeChange.layoutCount}.`
+      );
       await page.getByRole('button', { name: 'Reset color' }).click();
       await page.waitForFunction(() =>
         Object.entries(localStorage).every(
@@ -1774,6 +1787,16 @@ async function readGraphPresentationAsync(page: Page) {
   });
   assert(presentation !== null, 'Graph presentation probe was unavailable.');
   return presentation;
+}
+
+/*** Allows the public GraphView runtime to reconcile paint before reading its lifecycle counter. */
+async function settleGraphPresentationAsync(page: Page): Promise<void> {
+  await page.evaluate(
+    () =>
+      new Promise<void>(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      )
+  );
 }
 
 /*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */

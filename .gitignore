@@ -65,3 +65,4 @@ next-env.d.ts
 
 # Browser-acceptance evidence retained outside temporary fixture directories.
 /artifacts/browser-acceptance/
+test/e2e/next-fixture-app/build/

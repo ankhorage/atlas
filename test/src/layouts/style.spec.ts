@@ -139,10 +139,10 @@ describe('[getStyle]', () => {
       edges: [],
     };
     const cy = cytoscape({
-      elements: toRenderableElements(elements),
+      elements: toRenderableElements(elements, { R_catalog: '#AABBCC' }),
       headless: true,
       styleEnabled: true,
-      style: getStyle(elements, createTheme('light'), { R_catalog: '#AABBCC' }),
+      style: getStyle(elements, createTheme('light')),
     });
     try {
       const root = cy.getElementById('root');
@@ -167,7 +167,7 @@ describe('[getStyle]', () => {
     const elements = {
       nodes: Array.from({ length: 7 }, (_, index) => ({
         classes: 'repositoryOwned',
-        data: { id: `repository-${index}` },
+        data: { id: `repository-${index}`, repositoryId: `repository-${index}` },
       })),
       edges: [],
     };
@@ -414,8 +414,11 @@ function rgb(hex: string): string {
   return `rgb(${channels.join(',')})`;
 }
 
-function toRenderableElements(elements: ElementsDefinition): ElementsDefinition {
-  const model = createGraphViewModel(elements, elements, []);
+function toRenderableElements(
+  elements: ElementsDefinition,
+  repositoryColors: Readonly<Record<string, string>> = {}
+): ElementsDefinition {
+  const model = createGraphViewModel(elements, elements, [], repositoryColors);
   return {
     nodes: model.nodes.map(node => ({
       classes: node.classes,
