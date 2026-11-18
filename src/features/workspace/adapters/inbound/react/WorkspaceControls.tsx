@@ -23,7 +23,6 @@ import type { WorkspaceDefinition } from '@/types/workspace';
 /*** Renders browser-local named workspace controls without persisting analyzed repository data. */
 export function WorkspaceControls(props: WorkspaceControlsProps) {
   const [definitions, setDefinitions] = useSavedWorkspaceDefinitions();
-  useWorkspaceSettingsRestore(props.activeWorkspaceId, definitions, props.settings);
 
   return (
     <WorkspaceMenu
@@ -51,6 +50,19 @@ export function WorkspaceControls(props: WorkspaceControlsProps) {
       }
     />
   );
+}
+
+/*** Restores an active workspace's presentation even while its controls are in a closed dialog. */
+export function WorkspaceSettingsRestore({
+  activeWorkspaceId,
+  settings,
+}: {
+  readonly activeWorkspaceId?: string;
+  readonly settings: SettingsContextValue;
+}) {
+  const [definitions] = useSavedWorkspaceDefinitions();
+  useWorkspaceSettingsRestore(activeWorkspaceId, definitions, settings);
+  return null;
 }
 
 /*** Compare the staged source and presentation values with the active saved configuration only. */

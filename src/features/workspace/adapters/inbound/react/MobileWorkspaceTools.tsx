@@ -1,8 +1,10 @@
 'use client';
+import { Button } from '@ankhorage/zora/web/button';
 import { Dialog } from '@ankhorage/zora/web/dialog';
 
 import { SettingsContext } from '@/features/settings/adapters/inbound/react/SettingsContext';
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
+import { WorkspaceDialogTitle } from '@/features/workspace/adapters/inbound/react/WorkspaceDialogTitle';
 import type { WorkspacePanelsProps } from '@/features/workspace/adapters/inbound/react/WorkspacePanels';
 import { WorkspaceSidebar } from '@/features/workspace/adapters/inbound/react/WorkspaceSidebar';
 
@@ -22,7 +24,14 @@ export function MobileWorkspaceTools({
     <Dialog
       closeOnBackdrop
       description="Inspect the project tree, rules, exports, and graph settings without leaving the graph."
-      title="Workspace tools"
+      footer={<Button onPress={onDismiss}>Close</Button>}
+      title={
+        <WorkspaceDialogTitle
+          label="Close workspace tools"
+          title="Workspace tools"
+          onDismiss={onDismiss}
+        />
+      }
       visible={open}
       width="wide"
       onDismiss={onDismiss}

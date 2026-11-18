@@ -445,8 +445,11 @@ async function openWorkspaceAsync(
 
 /*** Opens the workspace menu only when its action controls are not already visible. */
 async function openWorkspaceMenuAsync(page: Page): Promise<void> {
-  const saveAs = page.getByRole('button', { name: 'Save as' });
-  if (!(await saveAs.isVisible())) await page.getByLabel('Manage workspaces').click();
+  await openRepositorySourceDialogAsync(page);
+  await closeRepositoryPickerAsync(page);
+  const saveAs = page.getByRole('button', { name: 'Save as', exact: true });
+  if (!(await saveAs.isVisible()))
+    await page.locator('[aria-label="Manage workspaces"]:visible').click();
   await saveAs.waitFor();
 }
 
@@ -457,22 +460,35 @@ async function openRepositoryPickerAsync(
 ): Promise<void> {
   const repository = page.getByLabel(repositoryLabel);
   if (!(await repository.isVisible())) {
-    const mobileSourceEntry = page.getByLabel('Manage repository source and workspace');
-    if (await mobileSourceEntry.isVisible()) await mobileSourceEntry.click();
+    await openRepositorySourceDialogAsync(page);
     const picker = page.locator('[aria-label="Choose repositories"]:visible');
     if (!(await repository.isVisible())) await picker.click();
   }
   await repository.waitFor();
 }
 
+/*** Opens the compact repository-source dialog before interacting with its shared controls. */
+async function openRepositorySourceDialogAsync(page: Page): Promise<void> {
+  const dialog = page.getByText('Repository source', { exact: true });
+  if (await dialog.isVisible()) return;
+  await page.getByLabel('Open repository source and workspace').click();
+  await dialog.waitFor();
+}
+
 /*** Closes the picker and then its mobile dialog so subsequent controls are no longer obscured. */
 async function closeMobileRepositorySourceDialogAsync(page: Page): Promise<void> {
-  const closePopover = page.getByLabel('Close popover');
-  if (await closePopover.isVisible()) await closePopover.click();
+  await closeRepositoryPickerAsync(page);
   await page.keyboard.press('Escape');
-  await page.getByRole('heading', { exact: true, name: 'Repository source' }).waitFor({
-    state: 'hidden',
-  });
+  await page.getByText('Repository source', { exact: true }).waitFor({ state: 'hidden' });
+}
+
+/*** Closes the repository picker before targeting controls in its source dialog. */
+async function closeRepositoryPickerAsync(page: Page): Promise<void> {
+  const search = page.getByPlaceholder('Search repositories');
+  if (await search.isVisible()) {
+    await page.keyboard.press('Escape');
+    await search.waitFor({ state: 'hidden' });
+  }
 }
 
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
@@ -666,6 +682,7 @@ const scenarios: readonly Scenario[] = [
     'Discovers a single owner through delayed and empty inventories without navigating the workspace.',
     async page => {
       await page.goto(url, { waitUntil: 'networkidle' });
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('GitHub owner').fill('owner-delayed');
       await page.getByLabel('GitHub owner').fill('owner-empty');
       await page.getByLabel('Choose repositories').click();
@@ -674,7 +691,7 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').check();
+      await page.getByLabel('owner-a/catalog').click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -699,6 +716,7 @@ const scenarios: readonly Scenario[] = [
     'Keeps a multi-owner graph visible while marking incremental selection unavailable.',
     async page => {
       await openWorkspaceAsync(page);
+      await openRepositorySourceDialogAsync(page);
       const picker = page.getByLabel('Choose repositories');
       await assertTopmostControlAsync(picker, 'Repository picker');
       assert(
@@ -717,22 +735,20 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'source-picker-immediate-selection',
-    'Applies a selection diff immediately without an Open action or document navigation.',
+    'Applies a selection diff immediately without a deferred source action or document navigation.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
           openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
+      await closeMobileRepositorySourceDialogAsync(page);
       assert(page.url() !== before, 'Selection did not update browser history.');
-      assert(
-        (await page.getByRole('button', { name: 'Open' }).count()) === 0,
-        'Open is still visible.'
-      );
       await assertGraphCanvasAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page
@@ -744,7 +760,7 @@ const scenarios: readonly Scenario[] = [
       await openRepositoryPickerAsync(page);
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
-        'Excluded repository was selected after Open.'
+        'Excluded repository was selected after the immediate selection update.'
       );
       return [];
     }
@@ -754,6 +770,7 @@ const scenarios: readonly Scenario[] = [
     'Recovers a current single-owner selection after the server evicts its incremental runtime.',
     async page => {
       await openWorkspaceAsync(page, 'owner-recovery', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       const recoveryRequest = page.waitForRequest(request => {
         if (!request.url().endsWith('/api/workspace/selection') || request.method() !== 'POST')
           return false;
@@ -761,7 +778,7 @@ const scenarios: readonly Scenario[] = [
         return body.runtimeId === undefined;
       });
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await recoveryRequest;
       await page.waitForURL(
         openedUrl =>
@@ -777,17 +794,18 @@ const scenarios: readonly Scenario[] = [
     'Applies the final repository choice during consecutive single-owner changes.',
     async page => {
       await openWorkspaceAsync(page, 'owner-rapid', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       const firstRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await firstRequest;
       const secondRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await openRepositoryPickerAsync(page);
-      await page.getByLabel('owner-a/catalog').check();
+      await page.getByLabel('owner-a/catalog').click();
       await secondRequest;
       await page.waitForURL(
         openedUrl =>
@@ -803,10 +821,12 @@ const scenarios: readonly Scenario[] = [
     'Preserves overlapping-owner topology without exposing it to a single-owner selection request.',
     async page => {
       await openWorkspaceAsync(page);
+      await openRepositorySourceDialogAsync(page);
       assert(
         await page.getByLabel('Choose repositories').isDisabled(),
         'Overlapping owners were exposed to the single-owner picker.'
       );
+      await closeMobileRepositorySourceDialogAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page.getByText('shared', { exact: true }).waitFor();
       return [];
@@ -817,6 +837,7 @@ const scenarios: readonly Scenario[] = [
     'Preserves multi-owner exclusions.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
+      await openRepositorySourceDialogAsync(page);
       const picker = page.getByLabel('Choose repositories');
       assert(
         await picker.isDisabled(),
@@ -875,8 +896,8 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page.getByText('catalog', { exact: true }).click();
-      await page.getByText('Home', { exact: true }).click();
-      await page.getByText('GitHub workspace', { exact: true }).waitFor();
+      await page.getByLabel('Home').click();
+      await page.getByText('Atlas', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -959,9 +980,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await page.setViewportSize({ height: 1000, width: 1920 });
       await openWorkspaceAsync(page);
-      const menu = page.getByLabel('Manage workspaces');
-      await assertTopmostControlAsync(menu, 'Workspace management menu');
-      await menu.click();
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Acceptance workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=acceptance-workspace/u);
@@ -993,12 +1012,14 @@ const scenarios: readonly Scenario[] = [
     'Restores source exclusions and settings after reload.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
+      await closeMobileRepositorySourceDialogAsync(page);
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
       if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
       await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
-      await page.getByLabel('Manage workspaces').click();
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Restored workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=restored-workspace/u);
@@ -1007,6 +1028,7 @@ const scenarios: readonly Scenario[] = [
       const restoredVendor = page.getByRole('switch', { name: 'Show Vendor' });
       await assertSwitchCheckedAsync(restoredVendor, 'Saved vendor setting was not restored.');
       await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
@@ -1024,8 +1046,9 @@ const scenarios: readonly Scenario[] = [
     'Restores the current owner and exclusions after an auth-form redirect return.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await page.waitForURL(
         openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
@@ -1037,6 +1060,7 @@ const scenarios: readonly Scenario[] = [
       });
       await page.goto(url, { waitUntil: 'networkidle' });
       await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await openRepositorySourceDialogAsync(page);
       assert(
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Owner was not restored after the auth redirect.'
@@ -1090,13 +1114,13 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario('theme-behavior', 'Switches ZORA light and dark themes.', async page => {
     await openWorkspaceAsync(page);
-    await page.getByRole('button', { name: 'Dark' }).click();
-    await page.getByRole('button', { name: 'Light' }).waitFor();
+    await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+    await page.getByRole('button', { name: 'Switch to light mode' }).waitFor();
     return [];
   }),
   scenario(
     'responsive-header',
-    'Keeps the wrapped header controls visible and operable on a mobile viewport.',
+    'Keeps the compact header actions visible and operable on a mobile viewport.',
     async page => {
       await page.setViewportSize({ height: 844, width: 390 });
       await page.goto(
@@ -1107,11 +1131,14 @@ const scenarios: readonly Scenario[] = [
       await actions.waitFor();
       assert(
         (await actions.evaluate(element => getComputedStyle(element).flexWrap)) === 'wrap',
-        'Header actions do not wrap on mobile.'
+        'Header actions do not retain their responsive layout policy.'
       );
-      await assertTopmostControlAsync(page.getByRole('button', { name: 'Dark' }), 'Theme control');
-      await page.getByRole('button', { name: 'Dark' }).click();
-      await page.getByRole('button', { name: 'Light' }).waitFor();
+      await assertTopmostControlAsync(
+        page.getByRole('button', { name: 'Switch to dark mode' }),
+        'Theme control'
+      );
+      await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+      await page.getByRole('button', { name: 'Switch to light mode' }).waitFor();
       return [];
     }
   ),
@@ -1289,7 +1316,7 @@ const scenarios: readonly Scenario[] = [
     'Retains direct single-project browser behavior with no outbound requests.',
     async page => {
       await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
-      await page.getByText('catalog', { exact: true }).waitFor();
+      await page.getByText('Atlas', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -1337,7 +1364,7 @@ async function captureResponsiveEvidenceAsync(
   viewport: { readonly height: number; readonly width: number },
   theme: 'dark' | 'light'
 ) {
-  const expectedThemeActionName = theme === 'dark' ? 'Light' : 'Dark';
+  const expectedThemeActionName = `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`;
   const themeAction = page.getByRole('button', { exact: true, name: expectedThemeActionName });
   await themeAction.waitFor();
   const evidence = await page.evaluate(() => {
@@ -1357,8 +1384,8 @@ async function captureResponsiveEvidenceAsync(
         button.getAttribute('aria-label') === 'Fit graph and optimize spacing for readability'
     );
     const zoom = document.querySelector('[aria-label="Zoom"]');
-    const repositoryEntry = [...document.querySelectorAll('button')].find(button =>
-      button.textContent?.includes('Repositories (7/87)')
+    const repositoryEntry = document.querySelector(
+      '[aria-label="Open repository source and workspace"]'
     );
     const selected = document.querySelector('[role="application"][aria-label="Graph"]');
     return {
@@ -1415,8 +1442,8 @@ function assertResponsiveEvidence(
     );
     assert(evidence.tools !== null, 'Responsive acceptance lacks the mobile Tools entry point.');
     assert(
-      evidence.graph.width >= viewport.width * 0.75,
-      `Responsive graph does not occupy useful mobile width: ${evidence.graph.width}.`
+      evidence.graph.left <= 1 && Math.abs(evidence.graph.width - viewport.width) <= 1,
+      `Responsive graph does not occupy the allocated mobile width: ${JSON.stringify(evidence.graph)}.`
     );
     assert(
       evidence.tools.left >= 0 &&
@@ -1455,13 +1482,13 @@ function assertSeparatePointerTargets(first: Bounds, second: Bounds, message: st
 
 /*** Uses native Chromium input paths to prove source, overlay, graph, and keyboard interaction contracts. */
 async function exerciseMobileInteractionContractAsync(page: Page): Promise<void> {
-  const sourceEntry = page.getByLabel('Manage repository source and workspace');
+  const sourceEntry = page.getByLabel('Open repository source and workspace');
   await sourceEntry.click();
-  await page.getByRole('heading', { name: 'Repository source' }).waitFor();
+  await page.getByText('Repository source', { exact: true }).waitFor();
   const repositoryPickers = page.getByLabel('Choose repositories');
   assert(
-    (await repositoryPickers.count()) === 2,
-    'Mobile repository source dialog did not expose its focused repository picker.'
+    (await repositoryPickers.count()) === 1,
+    'Repository source dialog did not expose its focused repository picker.'
   );
   await repositoryPickers.last().click();
   assert(
@@ -1474,6 +1501,20 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   assert(
     await sourceEntry.evaluate(element => document.activeElement === element),
     'Repository dialog did not restore focus to its entry point.'
+  );
+  await sourceEntry.click();
+  await page.getByLabel('Close repository source').click();
+  await page.getByText('Repository source', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await sourceEntry.evaluate(element => document.activeElement === element),
+    'Repository dialog X did not restore focus to its entry point.'
+  );
+  await sourceEntry.click();
+  await page.getByRole('button', { name: 'Done' }).click();
+  await page.getByText('Repository source', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await sourceEntry.evaluate(element => document.activeElement === element),
+    'Repository dialog footer did not restore focus to its entry point.'
   );
 
   const tools = page.getByRole('button', { name: 'Tools' });
@@ -1489,6 +1530,20 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   assert(
     await tools.evaluate(element => document.activeElement === element),
     'Tools dialog did not restore focus to its entry point.'
+  );
+  await tools.click();
+  await page.getByLabel('Close workspace tools').click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await tools.evaluate(element => document.activeElement === element),
+    'Tools dialog X did not restore focus to its entry point.'
+  );
+  await tools.click();
+  await page.getByRole('button', { exact: true, name: 'Close' }).click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await tools.evaluate(element => document.activeElement === element),
+    'Tools dialog footer did not restore focus to its entry point.'
   );
 
   const graph = page.getByRole('application', { name: 'Graph' });
@@ -1833,23 +1888,26 @@ function assertDimensionsEqual(
 
 /*** Toggles whichever theme action is currently exposed without assuming the browser's initial color scheme. */
 async function toggleThemeAsync(page: Page) {
-  const darkAction = page.getByRole('button', { exact: true, name: 'Dark' });
+  const darkAction = page.getByRole('button', { exact: true, name: 'Switch to dark mode' });
   if (await darkAction.isVisible()) {
     await darkAction.click();
-    await page.getByRole('button', { exact: true, name: 'Light' }).waitFor();
+    await page.getByRole('button', { exact: true, name: 'Switch to light mode' }).waitFor();
     return;
   }
-  await page.getByRole('button', { exact: true, name: 'Light' }).click();
+  await page.getByRole('button', { exact: true, name: 'Switch to light mode' }).click();
   await darkAction.waitFor();
 }
 
 /*** Selects a concrete ZORA theme without depending on the context's initial color preference. */
 async function setThemeAsync(page: Page, theme: 'dark' | 'light') {
-  const currentAction = theme === 'dark' ? 'Dark' : 'Light';
+  const currentAction = `Switch to ${theme === 'dark' ? 'dark' : 'light'} mode`;
   const action = page.getByRole('button', { exact: true, name: currentAction });
   if (await action.isVisible()) await action.click();
   await page
-    .getByRole('button', { exact: true, name: theme === 'dark' ? 'Light' : 'Dark' })
+    .getByRole('button', {
+      exact: true,
+      name: `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`,
+    })
     .waitFor();
 }
 

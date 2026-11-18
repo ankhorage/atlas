@@ -196,9 +196,9 @@ interface WorkspaceLayoutProps {
   readonly githubAuth: GitHubAuthView;
   readonly liveWorkspace: LiveWorkspace;
   readonly offline?: boolean;
+  readonly projectName: string;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
-  readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionError?: string;
   readonly selectionRequired?: boolean;
@@ -210,8 +210,8 @@ interface WorkspaceHeaderSlotProps {
   readonly githubAuth: GitHubAuthView;
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
-  readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly projectName: string;
+  readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;

@@ -33,8 +33,6 @@ const GRAPH_CANVAS_STYLE = {
   minHeight: 0,
   minWidth: 0,
   overflow: 'hidden',
-  paddingLeft: 32,
-  paddingRight: 32,
 } as const;
 
 const GRAPH_VIEWPORT_STYLE = {

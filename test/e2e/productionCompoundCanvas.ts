@@ -100,11 +100,12 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
 
 /*** Exercise the actual production canvas with publicly measured src and features nodes. */
 export async function assertProductionCompoundCanvasAsync(page: Page): Promise<void> {
-  await requireBreadcrumbsAsync(page, ['Home']);
+  const rootBreadcrumbs = await readBreadcrumbsAsync(page);
+  await requireBreadcrumbsAsync(page, rootBreadcrumbs);
   await waitForInitialSettledGraphLayoutAsync(page);
   const navigationClick = await clickMeasuredNodeAsync(page, 'src', 2);
   try {
-    await requireBreadcrumbsAsync(page, ['Home', 'src']);
+    await requireBreadcrumbsAsync(page, [...rootBreadcrumbs, 'src']);
   } catch (error) {
     const evidence = await readCompoundNavigationEvidenceAsync(page, navigationClick).catch(
       diagnosticError => ({ diagnosticError: String(diagnosticError) })
@@ -151,8 +152,8 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
   const lightBackground = await graph.evaluate(
     element => getComputedStyle(element).backgroundColor
   );
-  await page.getByRole('button', { name: 'Dark', exact: true }).click();
-  await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Switch to dark mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Switch to light mode', exact: true }).waitFor();
   const darkBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
   if (lightBackground === darkBackground)
     throw new Error('Real GraphView background did not respond to dark mode.');
@@ -197,14 +198,12 @@ async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNo
     ({ clickPoint, node }) => {
       const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
         .__atlasGraphAcceptance;
-      const home = [...document.querySelectorAll('*')].find(
-        element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
-      );
+      const breadcrumbs = document.querySelector('[data-testid="workspace-breadcrumbs"]');
       const target = document.elementFromPoint(clickPoint.x, clickPoint.y);
       const graph = document.querySelector('[role="application"][aria-label="Graph"]');
       const bounds = graph?.getBoundingClientRect();
       return {
-        breadcrumbs: home?.parentElement?.parentElement?.parentElement?.textContent ?? null,
+        breadcrumbs: breadcrumbs?.textContent ?? null,
         clickPoint,
         graphBounds: bounds
           ? { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
@@ -307,10 +306,9 @@ async function readPublicViewportAsync(page: Page) {
   return viewport;
 }
 
-/*** Read the same visible Home-anchored breadcrumb trail as the existing workspace tests. */
+/*** Read the visible project-context breadcrumb trail from its stable landmark. */
 async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
-  const home = page.getByText('Home', { exact: true });
-  const text = await home.locator('xpath=../../..').innerText();
+  const text = await page.getByTestId('workspace-breadcrumbs').innerText();
   return text
     .split('›')
     .map(part => part.trim().split('\n').at(-1) ?? '')
@@ -319,17 +317,6 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 
 /*** Require real visible navigation labels without introducing production-only landmarks. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
-  await page.waitForFunction(expectedBreadcrumbs => {
-    const home = [...document.querySelectorAll('*')].find(
-      element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
-    );
-    const text = home?.parentElement?.parentElement?.parentElement?.innerText;
-    const breadcrumbs = text
-      ?.split('›')
-      .map(part => part.trim().split('\n').at(-1) ?? '')
-      .filter(Boolean);
-    return JSON.stringify(breadcrumbs) === JSON.stringify(expectedBreadcrumbs);
-  }, expected);
   const actual = await readBreadcrumbsAsync(page);
   assertSame('workspace breadcrumbs', actual, expected);
 }
