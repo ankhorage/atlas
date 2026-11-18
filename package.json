@@ -97,7 +97,7 @@
     "@ankhorage/rules-architecture": "^0.8.0",
     "@ankhorage/surface": "^9.5.1",
     "@ankhorage/utility": "^1.9.85",
-    "@ankhorage/zora": "27.3.1",
+    "@ankhorage/zora": "27.3.5",
     "@artiphishle/testosterone": "^0.3.11",
     "ankh-hooks": "^1.5.2",
     "cytoscape": "^3.34.3",
