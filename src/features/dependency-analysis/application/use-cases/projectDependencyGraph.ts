@@ -129,16 +129,17 @@ function normalizeIdentityPath(path: string): string {
 }
 
 /***
- * Keep the semantic node kind in the leaf identity while visible hierarchy follows only real paths.
- * A module and package at the same path therefore remain distinct without introducing a `module`
- * or `package` compound ancestor.
+ * Keep module identities on their real source paths so graph scopes retain filesystem ancestry.
+ * Packages use their own stable namespace, keeping collisions distinct without a synthetic module
+ * compound ancestor. Semantic kind remains explicit metadata on every projected node.
  */
 function repositoryPathId(
   repositoryRoot: string,
   kind: DependencyGraphNodeData['kind'],
   path: string
 ): string {
-  return `${repositoryRoot}.${normalizeIdentityPath(path)}.${kind}`;
+  const namespace = kind === 'module' ? '' : `.${kind}`;
+  return `${repositoryRoot}${namespace}.${normalizeIdentityPath(path)}`;
 }
 
 /*** Resolve the dotted parent package used by Atlas compound-node projection. */

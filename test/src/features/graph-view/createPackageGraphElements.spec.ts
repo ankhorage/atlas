@@ -56,12 +56,8 @@ describe('[package graph Cytoscape presentation]', () => {
     );
 
     expect(firstClasses.get('repository.R_atlas')?.startsWith('repositoryColor')).toBe(true);
-    expect(firstClasses.get('repository.R_atlas.src.module')).toBe(
-      firstClasses.get('repository.R_atlas')
-    );
-    expect(firstClasses.get('repository.R_zora.src.module')).toBe(
-      firstClasses.get('repository.R_zora')
-    );
+    expect(firstClasses.get('repository.R_atlas.src')).toBe(firstClasses.get('repository.R_atlas'));
+    expect(firstClasses.get('repository.R_zora.src')).toBe(firstClasses.get('repository.R_zora'));
     expect(
       new Set(
         ['R_atlas', 'R_zora', 'R_disconnected'].map(id => firstClasses.get(`repository.${id}`))
@@ -106,7 +102,7 @@ function repositoryGraph(
       ...repositoryIds.flatMap(repositoryId => [
         repositoryNode(`repository.${repositoryId}`, repositoryId, '', labels[repositoryId]),
         repositoryNode(
-          `repository.${repositoryId}.src.module`,
+          `repository.${repositoryId}.src`,
           repositoryId,
           `repository.${repositoryId}`,
           labels[repositoryId]
@@ -148,7 +144,7 @@ function repositoryNode(id: string, repositoryId: string, parent: string, label 
     data: {
       classification: 'intrinsic' as const,
       isIntrinsic: true,
-      kind: id.endsWith('.module') ? ('module' as const) : ('package' as const),
+      kind: id.endsWith('.src') ? ('module' as const) : ('package' as const),
       label: id.endsWith('.src') ? `${label}/src` : label,
       name: id,
       parent,

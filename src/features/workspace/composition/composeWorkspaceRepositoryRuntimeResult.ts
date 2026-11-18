@@ -125,9 +125,7 @@ function prefixTree(
   return nodes.map(node => ({
     ...node,
     graphPackage:
-      node.graphPackage === ''
-        ? ''
-        : `${repositoryGraphId(repositoryId)}.${node.graphPackage}.module`,
+      node.graphPackage === '' ? '' : `${repositoryGraphId(repositoryId)}.${node.graphPackage}`,
     ...(node.children ? { children: prefixTree(node.children, repositoryId) } : {}),
   }));
 }

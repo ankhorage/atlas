@@ -108,18 +108,18 @@ describe('[canonical dependency package projection]', () => {
 
     expect(projected.nodes.map(node => node.id).sort()).toEqual([
       'repository.101',
-      'repository.101.src.shared.module',
+      'repository.101.src.shared',
       'repository.202',
-      'repository.202.src.shared.module',
+      'repository.202.src.shared',
     ]);
     expect(projected.nodes.find(node => node.id === 'repository.101')?.data.label).toBe(
       'renamed-first'
     );
     expect(projected.edges).toEqual([
       {
-        id: 'repository.101.src.shared.module->repository.202.src.shared.module',
-        source: 'repository.101.src.shared.module',
-        target: 'repository.202.src.shared.module',
+        id: 'repository.101.src.shared->repository.202.src.shared',
+        source: 'repository.101.src.shared',
+        target: 'repository.202.src.shared',
         data: {
           weight: 1,
           evidence: [dependencyEvidence('src/shared.ts', '@scope/second', 'intrinsic')],
@@ -156,26 +156,26 @@ describe('[canonical dependency package projection]', () => {
 
     expect(projected.nodes.map(node => node.id).sort()).toEqual([
       'repository.101',
-      'repository.101.src.module',
-      'repository.101.src.package',
-      'repository.101.src.shared.module',
+      'repository.101.package.src',
+      'repository.101.src',
+      'repository.101.src.shared',
     ]);
-    const module = projected.nodes.find(node => node.id === 'repository.101.src.module')?.data;
+    const module = projected.nodes.find(node => node.id === 'repository.101.src')?.data;
     const packageNode = projected.nodes.find(
-      node => node.id === 'repository.101.src.package'
+      node => node.id === 'repository.101.package.src'
     )?.data;
     expect(module?.kind).toBe('module');
     expect(module?.parent).toBe('repository.101');
     expect(packageNode?.kind).toBe('package');
     expect(packageNode?.parent).toBe('repository.101');
-    expect(
-      projected.nodes.find(node => node.id === 'repository.101.src.shared.module')?.data.parent
-    ).toBe('repository.101.src.module');
+    expect(projected.nodes.find(node => node.id === 'repository.101.src.shared')?.data.parent).toBe(
+      'repository.101.src'
+    );
     expect(projected.edges).toEqual([
       {
-        id: 'repository.101.src.module->repository.101.src.package',
-        source: 'repository.101.src.module',
-        target: 'repository.101.src.package',
+        id: 'repository.101.src->repository.101.package.src',
+        source: 'repository.101.src',
+        target: 'repository.101.package.src',
         data: {
           weight: 1,
           evidence: [dependencyEvidence('src/index.ts', './package', 'intrinsic')],

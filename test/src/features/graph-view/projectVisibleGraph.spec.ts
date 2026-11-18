@@ -78,7 +78,7 @@ describe('[graph view projection]', () => {
           { data: { id: 'repository.101', isIntrinsic: true, parent: '' } },
           {
             data: {
-              id: 'repository.101.src.module',
+              id: 'repository.101.src',
               isIntrinsic: true,
               parent: 'repository.101',
             },
@@ -86,7 +86,7 @@ describe('[graph view projection]', () => {
           { data: { id: 'repository.202', isIntrinsic: true, parent: '' } },
           {
             data: {
-              id: 'repository.202.src.module',
+              id: 'repository.202.src',
               isIntrinsic: true,
               parent: 'repository.202',
             },
@@ -102,9 +102,9 @@ describe('[graph view projection]', () => {
     expect(result.redirectPackage).toBeNull();
     expect(result.elements.nodes.map(node => node.data.id)).toEqual([
       'repository.101',
-      'repository.101.src.module',
+      'repository.101.src',
       'repository.202',
-      'repository.202.src.module',
+      'repository.202.src',
     ]);
   });
 
