@@ -1510,6 +1510,9 @@ async function waitForWorkspaceLoadingCompleteAsync(page: Page): Promise<void> {
 /*** Uses native Chromium input paths to prove source, overlay, graph, and keyboard interaction contracts. */
 async function exerciseMobileInteractionContractAsync(page: Page): Promise<void> {
   const sourceEntry = page.getByLabel('Open repository source and workspace');
+  const tools = page.getByRole('button', { name: 'Tools' });
+  await exerciseNativeGraphInteractionContractAsync(page, tools);
+
   await sourceEntry.click();
   await page.getByText('Repository source', { exact: true }).waitFor();
   const repositoryPickers = page.getByLabel('Choose repositories');
@@ -1545,7 +1548,6 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     'Repository dialog footer did not restore focus to its entry point.'
   );
 
-  const tools = page.getByRole('button', { name: 'Tools' });
   await tools.click();
   await page.getByText('Workspace tools', { exact: true }).waitFor();
   for (const name of ['Tree', 'Rules', 'Export'] as const) {
@@ -1575,7 +1577,13 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     await tools.evaluate(element => document.activeElement === element),
     'Tools dialog footer did not restore focus to its entry point.'
   );
+}
 
+/*** Exercises touch, pointer, and fit while the settled GraphView controller still owns the canvas. */
+async function exerciseNativeGraphInteractionContractAsync(
+  page: Page,
+  tools: Locator
+): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
