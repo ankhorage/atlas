@@ -1810,9 +1810,15 @@ async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promi
 
 /*** Captures canonical node, loading, and synchronized-selection state when touch targeting fails. */
 async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly string[]) {
-  const serializedNodeIds = Object.fromEntries(nodeIds.map((nodeId, index) => [index, nodeId]));
-  return page.evaluate<GraphTouchDiagnostics, Record<string, string>>(serializedNodeIds => {
-    const nodeIds = Object.values(serializedNodeIds);
+  const serializedNodeIds = JSON.stringify(nodeIds);
+  return page.evaluate<GraphTouchDiagnostics, string>(serializedNodeIds => {
+    const parsedNodeIds: unknown = JSON.parse(serializedNodeIds);
+    if (
+      !Array.isArray(parsedNodeIds) ||
+      !parsedNodeIds.every((nodeId): nodeId is string => typeof nodeId === 'string')
+    )
+      throw new Error('Graph touch diagnostics received invalid serialized node IDs.');
+    const nodeIds = parsedNodeIds;
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
     const loadingStatus = document.querySelector(
