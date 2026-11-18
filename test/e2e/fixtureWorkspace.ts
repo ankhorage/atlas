@@ -28,7 +28,11 @@ const repositories = [
 ] as const;
 const viewportRepositories = [5, 20, 87].flatMap(count =>
   Array.from({ length: count }, (_, index) =>
-    repository(`viewport-${count}-${index}`, 'viewport', `repository-${index}`)
+    repository(
+      `viewport-${count}-${index}`,
+      'viewport',
+      count === 87 && index === 0 ? 'akon taxi' : `repository-${index}`
+    )
   )
 );
 const pendingBulkRepositories = Array.from({ length: 87 }, (_, index) =>

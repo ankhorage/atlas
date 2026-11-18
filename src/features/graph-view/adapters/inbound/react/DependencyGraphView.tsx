@@ -191,6 +191,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           maxFitLabelSize={24}
           nodes={interactions.nodes}
           selectedNodeIds={interactions.selectedNodeIds}
+          topologyUpdatePolicy="preserve-positions"
           zoomMode="fit-relative"
           sizeNodesToLabels
           onLayoutComplete={controller => viewport.handleLayoutComplete(controller, visibleNodeIds)}
