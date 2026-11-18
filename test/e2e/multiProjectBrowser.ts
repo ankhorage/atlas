@@ -1301,9 +1301,7 @@ const scenarios: readonly Scenario[] = [
             { waitUntil: 'networkidle' }
           );
           await page.getByRole('application', { name: 'Graph' }).waitFor();
-          await page
-            .getByRole('status', { name: 'Repository loading status' })
-            .waitFor({ state: 'hidden', timeout: 20_000 });
+          await waitForWorkspaceLoadingCompleteAsync(page);
           await setThemeAsync(page, theme);
           const evidence = await captureResponsiveEvidenceAsync(page, viewport, theme);
           assertResponsiveEvidence(evidence, viewport, theme);
@@ -1324,6 +1322,7 @@ const scenarios: readonly Scenario[] = [
         waitUntil: 'networkidle',
       });
       await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await waitForWorkspaceLoadingCompleteAsync(page);
       await exerciseMobileInteractionContractAsync(page);
       return artifacts;
     },
@@ -1496,6 +1495,13 @@ function assertSeparatePointerTargets(first: Bounds, second: Bounds, message: st
     first.top < second.bottom &&
     first.bottom > second.top;
   assert(!overlaps, message);
+}
+
+/*** Waits for every intentionally delayed repository before sending native graph input. */
+async function waitForWorkspaceLoadingCompleteAsync(page: Page): Promise<void> {
+  await page
+    .getByRole('status', { name: 'Repository loading status' })
+    .waitFor({ state: 'hidden', timeout: 20_000 });
 }
 
 /*** Uses native Chromium input paths to prove source, overlay, graph, and keyboard interaction contracts. */
