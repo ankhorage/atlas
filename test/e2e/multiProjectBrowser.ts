@@ -1824,7 +1824,7 @@ async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly stri
       measuredNodeIds: probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [],
       selection: { selectedRepositoryCheckboxes, selectedTreeIds },
     };
-  }, nodeIds);
+  }, [...nodeIds]);
 }
 
 /*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
