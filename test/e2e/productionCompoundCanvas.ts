@@ -100,11 +100,12 @@ export async function installProductionGraphProbeAsync(page: Page): Promise<void
 
 /*** Exercise the actual production canvas with publicly measured src and features nodes. */
 export async function assertProductionCompoundCanvasAsync(page: Page): Promise<void> {
-  await requireBreadcrumbsAsync(page, ['Home']);
+  const rootBreadcrumbs = await readBreadcrumbsAsync(page);
+  await requireBreadcrumbsAsync(page, rootBreadcrumbs);
   await waitForInitialSettledGraphLayoutAsync(page);
   const navigationClick = await clickMeasuredNodeAsync(page, 'src', 2);
   try {
-    await requireBreadcrumbsAsync(page, ['Home', 'src']);
+    await requireBreadcrumbsAsync(page, [...rootBreadcrumbs, 'src']);
   } catch (error) {
     const evidence = await readCompoundNavigationEvidenceAsync(page, navigationClick).catch(
       diagnosticError => ({ diagnosticError: String(diagnosticError) })
@@ -197,14 +198,12 @@ async function readCompoundNavigationEvidenceAsync(page: Page, click: MeasuredNo
     ({ clickPoint, node }) => {
       const probe = (window as typeof window & { __atlasGraphAcceptance?: BrowserGraphProbe })
         .__atlasGraphAcceptance;
-      const home = [...document.querySelectorAll('*')].find(
-        element => element instanceof HTMLElement && element.innerText.trim() === 'Home'
-      );
+      const breadcrumbs = document.querySelector('[data-testid="workspace-breadcrumbs"]');
       const target = document.elementFromPoint(clickPoint.x, clickPoint.y);
       const graph = document.querySelector('[role="application"][aria-label="Graph"]');
       const bounds = graph?.getBoundingClientRect();
       return {
-        breadcrumbs: home?.parentElement?.parentElement?.parentElement?.textContent ?? null,
+        breadcrumbs: breadcrumbs?.textContent ?? null,
         clickPoint,
         graphBounds: bounds
           ? { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height }
