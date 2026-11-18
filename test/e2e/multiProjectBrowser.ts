@@ -1813,12 +1813,11 @@ async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly stri
   const serializedNodeIds = JSON.stringify(nodeIds);
   return page.evaluate<GraphTouchDiagnostics, string>(serializedNodeIds => {
     const parsedNodeIds: unknown = JSON.parse(serializedNodeIds);
-    if (
-      !Array.isArray(parsedNodeIds) ||
-      !parsedNodeIds.every((nodeId): nodeId is string => typeof nodeId === 'string')
-    )
+    if (!Array.isArray(parsedNodeIds))
       throw new Error('Graph touch diagnostics received invalid serialized node IDs.');
-    const nodeIds = parsedNodeIds;
+    const nodeIds = parsedNodeIds.filter((nodeId): nodeId is string => typeof nodeId === 'string');
+    if (nodeIds.length !== parsedNodeIds.length)
+      throw new Error('Graph touch diagnostics received invalid serialized node IDs.');
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
     const loadingStatus = document.querySelector(
