@@ -694,6 +694,11 @@ const scenarios: readonly Scenario[] = [
         !(await page.getByRole('checkbox', { name: 'Public only' }).isChecked()),
         'Public only must remain unchecked until explicitly selected.'
       );
+      const publicOnly = page.getByRole('checkbox', { name: 'Public only' });
+      await publicOnly.click();
+      assert(await publicOnly.isChecked(), 'Public only did not become checked after selection.');
+      await publicOnly.press('Space');
+      assert(!(await publicOnly.isChecked()), 'Public only remained checked after deselection.');
       await page.getByLabel('Choose repositories').click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
@@ -708,7 +713,10 @@ const scenarios: readonly Scenario[] = [
       );
       await assertGraphCanvasAsync(page);
       await openRepositoryPickerAsync(page);
-      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).waitFor();
+      assert(
+        await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked(),
+        'Shorthand repository was not selected.'
+      );
       return [];
     }
   ),
@@ -1034,6 +1042,10 @@ const scenarios: readonly Scenario[] = [
       assert(
         !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Saved exclusion was not restored.'
+      );
+      assert(
+        await page.getByRole('checkbox', { name: 'owner-a/shared' }).isChecked(),
+        'Saved repository selection was not restored.'
       );
       await page.screenshot({
         path: resolve(evidenceDirectory, 'saved-workspace-restored.png'),
@@ -1492,7 +1504,10 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     'Repository source dialog did not expose its focused repository picker.'
   );
   await repositoryPickers.last().click();
-  await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).waitFor();
+  assert(
+    await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).isChecked(),
+    'Repository selection was not retained in the mobile dialog.'
+  );
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
   await sourceEntry.waitFor({ state: 'visible' });
