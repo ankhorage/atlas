@@ -32,7 +32,7 @@ function getRepositoryLeafStyles(
       },
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
-      selector: `node:childless.repositoryOwned[repositoryId = "${repositoryId}"]`,
+      selector: `node:childless.repositoryOwned[repositoryId = ${JSON.stringify(repositoryId)}]`,
       style: { 'background-color': color },
     })),
   ];
@@ -48,7 +48,7 @@ function getSelectedRepositoryLeafStyles(
       style: { 'background-color': DEFAULT_REPOSITORY_COLOR },
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
-      selector: `node:childless.repositoryOwned[repositoryId = "${repositoryId}"]:selected`,
+      selector: `node:childless.repositoryOwned[repositoryId = ${JSON.stringify(repositoryId)}]:selected`,
       style: { 'background-color': color },
     })),
   ];
@@ -73,7 +73,7 @@ function getRepositoryCompoundStyles(
       },
     },
     ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
-      selector: `node:parent.repositoryOwned[repositoryId = "${repositoryId}"]`,
+      selector: `node:parent.repositoryOwned[repositoryId = ${JSON.stringify(repositoryId)}]`,
       style: { 'background-color': color },
     })),
     {
