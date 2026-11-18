@@ -4,6 +4,13 @@ import { resolve } from 'node:path';
 
 import { chromium, type Browser, type Locator, type Page, type Response } from 'playwright-core';
 
+import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
+import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/react/createGraphViewModel';
+import { projectVisibleGraph } from '@/features/graph-view/utils/projectVisibleGraph';
+import { readSettingsEnvironment } from '@/features/settings/utils/readSettingsEnvironment';
+
+import { loadFixtureWorkspaceAsync } from './fixtureWorkspace';
+
 const browserPath = process.env.ATLAS_CHROME;
 if (browserPath === undefined) throw new Error('Missing ENV: ATLAS_CHROME');
 const port = 4400 + Math.floor(Math.random() * 400);
@@ -1362,9 +1369,7 @@ const fixtureRepositoryIds = [
   'owner-b-failed',
 ] as const;
 const bulkSelectionIds = Array.from({ length: 7 }, (_, index) => `bulk-pending-${index}`);
-const responsiveTouchGraphNodeCandidates = bulkSelectionIds.map(
-  id => `repository.${encodeURIComponent(id).replaceAll('.', '%2E')}`
-);
+const responsiveTouchGraphNodeIds = await resolveResponsiveTouchGraphNodeIdsAsync();
 const responsiveViewports = [
   { height: 844, width: 390 },
   { height: 932, width: 430 },
@@ -1574,7 +1579,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeCandidates);
+  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeIds);
   await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
   await assertGraphTouchSelectionAsync(page, tools);
   const before = await readGraphViewportAsync(page);
@@ -1717,26 +1722,43 @@ async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe
   return probe;
 }
 
-/*** Reads a controller-measured graph node from one identity or a loaded fixture candidate set. */
-async function readGraphNodeAsync(page: Page, input: string | readonly string[]) {
-  const candidateIds = typeof input === 'string' ? [input] : input;
+/*** Resolves the touch target from the same Atlas projection that supplies the browser GraphView. */
+async function resolveResponsiveTouchGraphNodeIdsAsync(): Promise<readonly string[]> {
+  const workspace = await loadFixtureWorkspaceAsync(
+    `bulk-pending|include=${bulkSelectionIds.join(',')}`
+  );
+  assert(workspace.workspace.ok, 'Canonical bulk fixture workspace did not load.');
+  const settings = readSettingsEnvironment();
+  const elements = createPackageGraphElements(workspace.workspace.value.packageGraph);
+  const projection = projectVisibleGraph({
+    currentPackage: '',
+    elements,
+    showCompoundNodes: settings.showCompoundNodes,
+    showVendorPackages: settings.showVendorPackages,
+    subPackageDepth: settings.subPackageDepth,
+  });
+  return createGraphViewModel(elements, projection.elements, []).nodes.map(node => node.id);
+}
+
+/*** Reads a controller-measured node from the canonical Atlas GraphView projection. */
+async function readGraphNodeAsync(page: Page, nodeIds: readonly string[]) {
   try {
     await page.waitForFunction(nodeIds => {
       const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
         .__atlasViewportProbe;
       return (probe?.controller?.measureNodes?.(nodeIds)?.nodes.length ?? 0) > 0;
-    }, candidateIds);
+    }, nodeIds);
   } catch (error) {
-    const measuredIds = await readMeasuredGraphNodeIdsAsync(page, candidateIds);
+    const diagnostics = await readGraphTouchDiagnosticsAsync(page, nodeIds);
     throw new Error(
-      `No bulk repository node was measurable through the public GraphView controller; candidates: ${candidateIds.join(', ')}; measured IDs: ${measuredIds.join(', ') || 'none'}. ${String(error)}`
+      `No canonical bulk graph node was measurable through the public GraphView controller; canonical node IDs: ${nodeIds.join(', ')}; measured IDs: ${diagnostics.measuredNodeIds.join(', ') || 'none'}; loading state: ${JSON.stringify(diagnostics.loading)}; selection state: ${JSON.stringify(diagnostics.selection)}. ${String(error)}`
     );
   }
   const node = await page.evaluate(nodeIds => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
     return probe?.controller?.measureNodes?.(nodeIds)?.nodes[0] ?? null;
-  }, candidateIds);
+  }, nodeIds);
   assert(
     node !== null,
     'No measured graph node geometry was available for native touch acceptance.'
@@ -1763,16 +1785,34 @@ async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promi
   await closeWorkspaceToolsDialogAsync(page);
 }
 
-/*** Captures bounded public GraphView measurement diagnostics only when a node lookup fails. */
-async function readMeasuredGraphNodeIdsAsync(
-  page: Page,
-  ids: readonly string[]
-): Promise<readonly string[]> {
+/*** Captures canonical node, loading, and synchronized-selection state when touch targeting fails. */
+async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly string[]) {
   return page.evaluate(nodeIds => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [];
-  }, ids);
+    const loadingStatus = document.querySelector(
+      '[role="status"][aria-label="Repository loading status"]'
+    );
+    const selectedTreeIds = [
+      ...document.querySelectorAll('[role="treeitem"][aria-selected="true"]'),
+    ]
+      .map(item => item.getAttribute('id') ?? item.textContent?.trim() ?? '')
+      .filter(Boolean);
+    const selectedRepositoryCheckboxes = [...document.querySelectorAll('[role="checkbox"]')]
+      .filter(checkbox => checkbox.getAttribute('aria-label')?.startsWith('bulk-pending/') === true)
+      .map(checkbox => ({
+        checked: checkbox.getAttribute('aria-checked'),
+        id: checkbox.getAttribute('aria-label'),
+      }));
+    return {
+      loading: {
+        present: loadingStatus !== null,
+        text: loadingStatus?.textContent?.trim() ?? '',
+      },
+      measuredNodeIds: probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [],
+      selection: { selectedRepositoryCheckboxes, selectedTreeIds },
+    };
+  }, nodeIds);
 }
 
 /*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
