@@ -151,8 +151,8 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
   const lightBackground = await graph.evaluate(
     element => getComputedStyle(element).backgroundColor
   );
-  await page.getByRole('button', { name: 'Dark', exact: true }).click();
-  await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Switch to dark mode', exact: true }).click();
+  await page.getByRole('button', { name: 'Switch to light mode', exact: true }).waitFor();
   const darkBackground = await graph.evaluate(element => getComputedStyle(element).backgroundColor);
   if (lightBackground === darkBackground)
     throw new Error('Real GraphView background did not respond to dark mode.');

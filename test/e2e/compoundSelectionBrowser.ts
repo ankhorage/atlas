@@ -99,8 +99,8 @@ try {
     assertPresentation(await page.getByLabel('Graph presentation').innerText());
     await assertRenderedTheme(page, '#ffffff', '#111827');
 
-    await page.getByRole('button', { name: 'Dark', exact: true }).click();
-    await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Switch to dark mode', exact: true }).click();
+    await page.getByRole('button', { name: 'Switch to light mode', exact: true }).waitFor();
     assertPresentation(await page.getByLabel('Graph presentation').innerText());
     await assertRenderedTheme(page, '#111827', '#f9fafb');
     await page.screenshot({

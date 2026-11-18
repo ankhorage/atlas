@@ -171,9 +171,9 @@ async function assertRuleEvidence(page: Page): Promise<void> {
 
 /*** Enters dark mode and proves the workspace surface follows the selected theme. */
 async function assertDarkTheme(page: Page): Promise<void> {
-  const darkAction = page.getByRole('button', { name: 'Dark', exact: true });
+  const darkAction = page.getByRole('button', { name: 'Switch to dark mode', exact: true });
   if ((await darkAction.count()) === 0) {
-    await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Switch to light mode', exact: true }).waitFor();
     return;
   }
 
@@ -182,7 +182,7 @@ async function assertDarkTheme(page: Page): Promise<void> {
     element => getComputedStyle(element).backgroundColor
   );
   await darkAction.click();
-  await page.getByRole('button', { name: 'Light', exact: true }).waitFor();
+  await page.getByRole('button', { name: 'Switch to light mode', exact: true }).waitFor();
   const darkSurface = await workspace.evaluate(
     element => getComputedStyle(element).backgroundColor
   );
