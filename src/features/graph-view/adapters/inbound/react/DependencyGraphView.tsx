@@ -23,6 +23,8 @@ import { useSettings } from '@/features/settings/adapters/inbound/react/useSetti
 import type { CycleHighlight, CycleInspection } from '@/types/auditVisualization';
 import type { PackageDependencyGraph } from '@/types/dependencyAnalysis';
 
+import styles from './DependencyGraphView.module.css';
+
 const GRAPH_CANVAS_STYLE = {
   display: 'flex',
   flex: 1,
@@ -31,8 +33,6 @@ const GRAPH_CANVAS_STYLE = {
   minHeight: 0,
   minWidth: 0,
   overflow: 'hidden',
-  paddingLeft: 32,
-  paddingRight: 32,
 } as const;
 
 const GRAPH_VIEWPORT_STYLE = {
@@ -179,7 +179,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
 
   return (
-    <div style={GRAPH_CANVAS_STYLE}>
+    <div className={styles.canvas} style={GRAPH_CANVAS_STYLE}>
       <div style={GRAPH_VIEWPORT_STYLE}>
         <GraphView
           edges={interactions.edges}

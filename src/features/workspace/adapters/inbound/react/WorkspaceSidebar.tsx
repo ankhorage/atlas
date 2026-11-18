@@ -18,23 +18,27 @@ import type { Audit } from '@/types/audit';
 import type { CycleInspection, CycleSelection } from '@/types/auditVisualization';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
+import styles from './WorkspaceSidebar.module.css';
+
 /*** Compose workspace tools and persistent graph settings from generated ZORA elements. */
-export function WorkspaceSidebar(props: WorkspaceSidebarProps) {
+export function WorkspaceSidebar({ mobile = false, ...props }: WorkspaceSidebarProps) {
   const { theme } = useZoraTheme();
-  const [activeTool, setActiveTool] = React.useState('tree');
+  const [uncontrolledActiveTool, setUncontrolledActiveTool] = React.useState('tree');
+  const activeTool = props.activeTool ?? uncontrolledActiveTool;
 
   /*** Close cycle evidence when leaving the Rules tool and update the active tab. */
   const selectTool = (value: string) => {
     if (activeTool === 'rules' && value !== 'rules') props.onCycleInspectionChange(null);
-    setActiveTool(value);
+    if (props.onToolChange === undefined) setUncontrolledActiveTool(value);
+    props.onToolChange?.(value);
   };
 
   return (
     <aside
+      className={mobile ? styles.mobile : styles.desktop}
       style={{
         alignSelf: 'stretch',
         borderRight: `1px solid ${theme.semantics.border.subtle}`,
-        display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
         maxWidth: 288,
@@ -163,6 +167,7 @@ function countRuleFindings(evaluation: Audit['evaluation'] | null): number {
 
 interface WorkspaceSidebarProps {
   readonly auditExportActions?: AuditExportActions;
+  readonly activeTool?: string;
   readonly currentSource?: string;
   readonly inspectedCycleId: string | null;
   readonly evaluation: Audit['evaluation'] | null;
@@ -172,6 +177,8 @@ interface WorkspaceSidebarProps {
   readonly offline?: boolean;
   readonly cycleSelection: CycleSelection;
   readonly onCycleInspectionChange: (inspection: CycleInspection | null) => void;
+  readonly onToolChange?: (value: string) => void;
+  readonly mobile?: boolean;
 }
 
 interface WorkspaceToolTabsProps extends WorkspaceSidebarProps {

@@ -6,6 +6,8 @@ import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
 import React, { type ChangeEvent } from 'react';
 
+import styles from './GraphZoomControls.module.css';
+
 interface GraphZoomControlsProps {
   readonly controller: GraphViewController | null;
   readonly maxZoom: number;
@@ -32,7 +34,7 @@ export function GraphZoomControls({
   };
 
   return (
-    <View align="center" direction="row" gap="s" justify="center" p="m">
+    <View align="center" className={styles.controls} direction="row" gap="s" justify="center" p="m">
       <Text variant="bodySmall">Zoom:</Text>
       <IconButton
         color="neutral"
@@ -51,10 +53,10 @@ export function GraphZoomControls({
         value={zoom}
         onChange={handleSliderChange}
         aria-label="Zoom"
+        className={styles.slider}
         style={{
           accentColor: theme.semantics.brand.base,
           cursor: 'pointer',
-          width: 256,
         }}
       />
       <Text variant="caption">{(zoom * 100).toFixed(0)}%</Text>

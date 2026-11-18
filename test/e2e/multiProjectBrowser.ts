@@ -29,11 +29,16 @@ type Result = {
 };
 type Scenario = {
   readonly description: string;
+  readonly hasTouch?: boolean;
   readonly id: string;
   readonly run: (page: Page) => Promise<readonly string[]>;
 };
 type GraphViewportProbe = {
   controller: {
+    readonly getViewport: () => {
+      readonly pan: { readonly x: number; readonly y: number };
+      readonly zoom: number;
+    };
     readonly measureNodes?: (nodeIds: readonly string[]) => {
       readonly nodes: readonly {
         readonly id: string;
@@ -44,6 +49,11 @@ type GraphViewportProbe = {
     } | null;
   } | null;
   layoutCount: number;
+};
+type GraphGestureProbe = {
+  mouseDownCount: number;
+  mouseMoveCount: number;
+  mouseUpCount: number;
 };
 type Bounds = {
   readonly bottom: number;
@@ -57,7 +67,7 @@ type WorkspaceGeometry = {
   readonly graph: Bounds;
   readonly main: Bounds;
   readonly overlay: Bounds | null;
-  readonly sidebar: Bounds;
+  readonly sidebar: Bounds | null;
   readonly viewport: { readonly height: number; readonly width: number };
   readonly workspaceContent: Bounds;
 };
@@ -324,7 +334,10 @@ async function runScenarioAsync(browser: Browser, scenario: Scenario): Promise<R
   let context: Awaited<ReturnType<Browser['newContext']>> | undefined;
   let artifacts: readonly string[] = [];
   try {
-    context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    context = await browser.newContext({
+      hasTouch: scenario.hasTouch ?? false,
+      viewport: { width: 1440, height: 1000 },
+    });
     const page = await context.newPage();
     await installGraphViewportProbeAsync(page);
     Object.assign(diagnostics, collectDiagnostics(page));
@@ -432,16 +445,50 @@ async function openWorkspaceAsync(
 
 /*** Opens the workspace menu only when its action controls are not already visible. */
 async function openWorkspaceMenuAsync(page: Page): Promise<void> {
-  const saveAs = page.getByRole('button', { name: 'Save as' });
-  if (!(await saveAs.isVisible())) await page.getByLabel('Manage workspaces').click();
+  await openRepositorySourceDialogAsync(page);
+  await closeRepositoryPickerAsync(page);
+  const saveAs = page.getByRole('button', { name: 'Save as', exact: true });
+  if (!(await saveAs.isVisible()))
+    await page.locator('[aria-label="Manage workspaces"]:visible').click();
   await saveAs.waitFor();
 }
 
-/*** Opens the repository picker only when its repository controls are not already visible. */
-async function openRepositoryPickerAsync(page: Page): Promise<void> {
-  const catalog = page.getByLabel('owner-a/catalog');
-  if (!(await catalog.isVisible())) await page.getByLabel('Choose repositories').click();
-  await catalog.waitFor();
+/*** Opens the one visible picker, entering the mobile source dialog before its shared controls. */
+async function openRepositoryPickerAsync(
+  page: Page,
+  repositoryLabel = 'owner-a/catalog'
+): Promise<void> {
+  const repository = page.getByLabel(repositoryLabel);
+  if (!(await repository.isVisible())) {
+    await openRepositorySourceDialogAsync(page);
+    const picker = page.locator('[aria-label="Choose repositories"]:visible');
+    if (!(await repository.isVisible())) await picker.click();
+  }
+  await repository.waitFor();
+}
+
+/*** Opens the compact repository-source dialog before interacting with its shared controls. */
+async function openRepositorySourceDialogAsync(page: Page): Promise<void> {
+  const dialog = page.getByText('Repository source', { exact: true });
+  if (await dialog.isVisible()) return;
+  await page.getByLabel('Open repository source and workspace').click();
+  await dialog.waitFor();
+}
+
+/*** Closes the picker and then its mobile dialog so subsequent controls are no longer obscured. */
+async function closeMobileRepositorySourceDialogAsync(page: Page): Promise<void> {
+  await closeRepositoryPickerAsync(page);
+  await page.keyboard.press('Escape');
+  await page.getByText('Repository source', { exact: true }).waitFor({ state: 'hidden' });
+}
+
+/*** Closes the repository picker before targeting controls in its source dialog. */
+async function closeRepositoryPickerAsync(page: Page): Promise<void> {
+  const search = page.getByPlaceholder('Search repositories');
+  if (await search.isVisible()) {
+    await page.keyboard.press('Escape');
+    await search.waitFor({ state: 'hidden' });
+  }
 }
 
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */
@@ -483,10 +530,16 @@ async function captureWorkspaceGraphAsync(
 
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
 async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
-  const thumb = switchControl.locator(':scope > div > div:first-child > div');
-  assert(
-    (await thumb.evaluate(element => getComputedStyle(element).alignSelf)) === 'flex-end',
-    message
+  assert(await isSwitchCheckedAsync(switchControl), message);
+}
+
+/*** Reads the ZORA switch state across its semantic and visual renderings. */
+async function isSwitchCheckedAsync(switchControl: Locator): Promise<boolean> {
+  if ((await switchControl.getAttribute('aria-checked')) === 'true') return true;
+  return switchControl.evaluate(element =>
+    [...element.querySelectorAll<HTMLElement>('*')].some(
+      child => getComputedStyle(child).alignSelf === 'flex-end'
+    )
   );
 }
 
@@ -589,8 +642,12 @@ async function assertMeasuredViewportOccupancyAsync(
   );
 }
 
-/*** Verifies the production workspace consumes the canvas left after its visible 288px sidebar. */
-async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number) {
+/*** Verifies the production workspace fit against its desktop sidebar or mobile graph-first shell. */
+async function assertWorkspaceViewportAsync(
+  page: Page,
+  repositoryCount: number,
+  viewport: { readonly height: number; readonly width: number }
+) {
   const nodeIds = Array.from(
     { length: repositoryCount },
     (_, index) => `repository.viewport-${repositoryCount}-${index}`
@@ -606,14 +663,7 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
     const measurement = probe?.controller?.measureNodes?.(ids);
     const graph = document.querySelector('[role="application"][aria-label="Graph"]');
     const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
-    if (
-      measurement === undefined ||
-      measurement === null ||
-      graph === null ||
-      sidebar === null ||
-      sidebar === undefined
-    )
-      return null;
+    if (measurement === undefined || measurement === null || graph === null) return null;
     const canvas = graph.getBoundingClientRect();
     const nodes = measurement.nodes.map(node => ({
       x1: node.position.x - node.size.width / 2,
@@ -623,7 +673,7 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
     }));
     return {
       canvas,
-      sidebar: sidebar.getBoundingClientRect(),
+      sidebar: sidebar === null || sidebar === undefined ? null : sidebar.getBoundingClientRect(),
       viewport: measurement.viewport,
       x1: Math.min(...nodes.map(node => node.x1)),
       x2: Math.max(...nodes.map(node => node.x2)),
@@ -631,11 +681,16 @@ async function assertWorkspaceViewportAsync(page: Page, repositoryCount: number)
       y2: Math.max(...nodes.map(node => node.y2)),
     };
   }, nodeIds);
-  assert(result !== null, 'Real workspace sidebar or canvas was unavailable.');
-  assert(
-    result.sidebar.width === 288,
-    'Workspace sidebar is not visibly occupying its owned width.'
-  );
+  assert(result !== null, 'Real workspace canvas was unavailable.');
+  if (viewport.width <= 768)
+    assert(result.sidebar === null, 'Mobile workspace left the desktop sidebar mounted.');
+  else {
+    assert(result.sidebar !== null, 'Desktop workspace sidebar was unavailable.');
+    assert(
+      result.sidebar.width === 288,
+      'Workspace sidebar is not visibly occupying its owned width.'
+    );
+  }
   assert(
     result.canvas.width === result.viewport.width &&
       result.canvas.height === result.viewport.height,
@@ -656,6 +711,7 @@ const scenarios: readonly Scenario[] = [
     'Discovers a single owner through delayed and empty inventories without navigating the workspace.',
     async page => {
       await page.goto(url, { waitUntil: 'networkidle' });
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('GitHub owner').fill('owner-delayed');
       await page.getByLabel('GitHub owner').fill('owner-empty');
       await page.getByLabel('Choose repositories').click();
@@ -664,7 +720,7 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').check();
+      await page.getByLabel('owner-a/catalog').click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -689,6 +745,7 @@ const scenarios: readonly Scenario[] = [
     'Keeps a multi-owner graph visible while marking incremental selection unavailable.',
     async page => {
       await openWorkspaceAsync(page);
+      await openRepositorySourceDialogAsync(page);
       const picker = page.getByLabel('Choose repositories');
       await assertTopmostControlAsync(picker, 'Repository picker');
       assert(
@@ -707,22 +764,20 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'source-picker-immediate-selection',
-    'Applies a selection diff immediately without an Open action or document navigation.',
+    'Applies a selection diff immediately without a deferred source action or document navigation.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
           openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
+      await closeMobileRepositorySourceDialogAsync(page);
       assert(page.url() !== before, 'Selection did not update browser history.');
-      assert(
-        (await page.getByRole('button', { name: 'Open' }).count()) === 0,
-        'Open is still visible.'
-      );
       await assertGraphCanvasAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page
@@ -734,7 +789,7 @@ const scenarios: readonly Scenario[] = [
       await openRepositoryPickerAsync(page);
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
-        'Excluded repository was selected after Open.'
+        'Excluded repository was selected after the immediate selection update.'
       );
       return [];
     }
@@ -744,6 +799,7 @@ const scenarios: readonly Scenario[] = [
     'Recovers a current single-owner selection after the server evicts its incremental runtime.',
     async page => {
       await openWorkspaceAsync(page, 'owner-recovery', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       const recoveryRequest = page.waitForRequest(request => {
         if (!request.url().endsWith('/api/workspace/selection') || request.method() !== 'POST')
           return false;
@@ -751,7 +807,7 @@ const scenarios: readonly Scenario[] = [
         return body.runtimeId === undefined;
       });
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await recoveryRequest;
       await page.waitForURL(
         openedUrl =>
@@ -767,17 +823,18 @@ const scenarios: readonly Scenario[] = [
     'Applies the final repository choice during consecutive single-owner changes.',
     async page => {
       await openWorkspaceAsync(page, 'owner-rapid', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       const firstRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await firstRequest;
       const secondRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await openRepositoryPickerAsync(page);
-      await page.getByLabel('owner-a/catalog').check();
+      await page.getByLabel('owner-a/catalog').click();
       await secondRequest;
       await page.waitForURL(
         openedUrl =>
@@ -793,10 +850,12 @@ const scenarios: readonly Scenario[] = [
     'Preserves overlapping-owner topology without exposing it to a single-owner selection request.',
     async page => {
       await openWorkspaceAsync(page);
+      await openRepositorySourceDialogAsync(page);
       assert(
         await page.getByLabel('Choose repositories').isDisabled(),
         'Overlapping owners were exposed to the single-owner picker.'
       );
+      await closeMobileRepositorySourceDialogAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page.getByText('shared', { exact: true }).waitFor();
       return [];
@@ -807,12 +866,13 @@ const scenarios: readonly Scenario[] = [
     'Preserves multi-owner exclusions.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
+      await openRepositorySourceDialogAsync(page);
       const picker = page.getByLabel('Choose repositories');
       assert(
         await picker.isDisabled(),
         'Multi-owner exclusions were exposed to incremental selection.'
       );
-      await page.getByText('Repositories (4/5)', { exact: true }).waitFor();
+      await picker.getByText('Repositories (4/5)', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -865,8 +925,8 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page);
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page.getByText('catalog', { exact: true }).click();
-      await page.getByText('Home', { exact: true }).click();
-      await page.getByText('GitHub workspace', { exact: true }).waitFor();
+      await page.getByLabel('Home').click();
+      await page.getByText('Atlas', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -949,9 +1009,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await page.setViewportSize({ height: 1000, width: 1920 });
       await openWorkspaceAsync(page);
-      const menu = page.getByLabel('Manage workspaces');
-      await assertTopmostControlAsync(menu, 'Workspace management menu');
-      await menu.click();
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Acceptance workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=acceptance-workspace/u);
@@ -983,12 +1041,14 @@ const scenarios: readonly Scenario[] = [
     'Restores source exclusions and settings after reload.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
+      await closeMobileRepositorySourceDialogAsync(page);
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
-      await vendor.click();
+      if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
       await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
-      await page.getByLabel('Manage workspaces').click();
+      await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Restored workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=restored-workspace/u);
@@ -997,6 +1057,7 @@ const scenarios: readonly Scenario[] = [
       const restoredVendor = page.getByRole('switch', { name: 'Show Vendor' });
       await assertSwitchCheckedAsync(restoredVendor, 'Saved vendor setting was not restored.');
       await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
       assert(
         !(await page.getByLabel('owner-a/catalog').isChecked()),
@@ -1014,8 +1075,9 @@ const scenarios: readonly Scenario[] = [
     'Restores the current owner and exclusions after an auth-form redirect return.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').uncheck();
+      await page.getByLabel('owner-a/catalog').click();
       await page.waitForURL(
         openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
@@ -1027,6 +1089,7 @@ const scenarios: readonly Scenario[] = [
       });
       await page.goto(url, { waitUntil: 'networkidle' });
       await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await openRepositorySourceDialogAsync(page);
       assert(
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Owner was not restored after the auth redirect.'
@@ -1080,13 +1143,13 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario('theme-behavior', 'Switches ZORA light and dark themes.', async page => {
     await openWorkspaceAsync(page);
-    await page.getByRole('button', { name: 'Dark' }).click();
-    await page.getByRole('button', { name: 'Light' }).waitFor();
+    await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+    await page.getByRole('button', { name: 'Switch to light mode' }).waitFor();
     return [];
   }),
   scenario(
     'responsive-header',
-    'Keeps the wrapped header controls visible and operable on a mobile viewport.',
+    'Keeps the compact header actions visible and operable on a mobile viewport.',
     async page => {
       await page.setViewportSize({ height: 844, width: 390 });
       await page.goto(
@@ -1097,11 +1160,14 @@ const scenarios: readonly Scenario[] = [
       await actions.waitFor();
       assert(
         (await actions.evaluate(element => getComputedStyle(element).flexWrap)) === 'wrap',
-        'Header actions do not wrap on mobile.'
+        'Header actions do not retain their responsive layout policy.'
       );
-      await assertTopmostControlAsync(page.getByRole('button', { name: 'Dark' }), 'Theme control');
-      await page.getByRole('button', { name: 'Dark' }).click();
-      await page.getByRole('button', { name: 'Light' }).waitFor();
+      await assertTopmostControlAsync(
+        page.getByRole('button', { name: 'Switch to dark mode' }),
+        'Theme control'
+      );
+      await page.getByRole('button', { name: 'Switch to dark mode' }).click();
+      await page.getByRole('button', { name: 'Switch to light mode' }).waitFor();
       return [];
     }
   ),
@@ -1168,11 +1234,16 @@ const scenarios: readonly Scenario[] = [
         await page.goto(`${url}/?source=viewport-${repositoryCount}&repositories=${repositories}`, {
           waitUntil: 'networkidle',
         });
+        if (viewport.width <= 768) {
+          await page.getByRole('button', { name: 'Tools' }).click();
+          await page.getByText('Workspace tools', { exact: true }).waitFor();
+        }
         await page
           .getByTestId('cytoscape-layout-trigger')
           .getByText('Elk: Layered', { exact: true })
           .waitFor();
-        await assertWorkspaceViewportAsync(page, repositoryCount);
+        if (viewport.width <= 768) await closeWorkspaceToolsDialogAsync(page);
+        await assertWorkspaceViewportAsync(page, repositoryCount, viewport);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
         artifacts.push(artifact);
@@ -1217,8 +1288,9 @@ const scenarios: readonly Scenario[] = [
         });
         await page.getByRole('application', { name: 'Graph' }).waitFor();
         const beforeSelection = await captureWorkspaceGeometryAsync(page);
-        await page.getByLabel('Choose repositories').click();
+        await openRepositoryPickerAsync(page, 'bulk-pending/repository-0');
         await page.getByRole('button', { exact: true, name: 'Select all' }).click();
+        await closeMobileRepositorySourceDialogAsync(page);
         const hint = page.getByText(
           'Sign in with GitHub to analyze many repositories with authenticated GitHub limits.'
         );
@@ -1250,19 +1322,65 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'responsive-touch-acceptance-matrix',
+    'Exercises the responsive workspace with native touch, pointer, and keyboard input in both themes.',
+    async page => {
+      const artifacts: string[] = [];
+      for (const viewport of responsiveViewports)
+        for (const theme of ['light', 'dark'] as const) {
+          await page.setViewportSize(viewport);
+          await page.goto(
+            `${url}/?source=bulk-pending&repositories=${bulkSelectionIds.join(',')}`,
+            { waitUntil: 'networkidle' }
+          );
+          await page.getByRole('application', { name: 'Graph' }).waitFor();
+          await page
+            .getByRole('status', { name: 'Repository loading status' })
+            .waitFor({ state: 'hidden', timeout: 20_000 });
+          await setThemeAsync(page, theme);
+          const evidence = await captureResponsiveEvidenceAsync(page, viewport, theme);
+          assertResponsiveEvidence(evidence, viewport, theme);
+          const basename = `responsive-${viewport.width}x${viewport.height}-${theme}`;
+          await page.screenshot({
+            path: resolve(evidenceDirectory, `${basename}.png`),
+            fullPage: true,
+          });
+          await writeFile(
+            resolve(evidenceDirectory, `${basename}.json`),
+            JSON.stringify(evidence, null, 2)
+          );
+          artifacts.push(`${basename}.png`, `${basename}.json`);
+        }
+
+      await page.setViewportSize(responsiveViewports[0]);
+      await page.goto(`${url}/?source=bulk-pending&repositories=${bulkSelectionIds.join(',')}`, {
+        waitUntil: 'networkidle',
+      });
+      await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await exerciseMobileInteractionContractAsync(page);
+      return artifacts;
+    },
+    true
+  ),
+  scenario(
     'single-project-offline-parity',
     'Retains direct single-project browser behavior with no outbound requests.',
     async page => {
       await openWorkspaceAsync(page, encodeURIComponent('https://github.com/owner-a/catalog'));
-      await page.getByText('catalog', { exact: true }).waitFor();
+      await page.getByText('Atlas', { exact: true }).waitFor();
       return [];
     }
   ),
 ];
 
 /*** Names each independently reported browser workflow. */
-function scenario(id: string, description: string, run: Scenario['run']): Scenario {
-  return { description, id, run };
+function scenario(
+  id: string,
+  description: string,
+  run: Scenario['run'],
+  hasTouch = false
+): Scenario {
+  return { description, hasTouch, id, run };
 }
 const dependencyKinds = [
   'Runtime dependencies',
@@ -1277,6 +1395,414 @@ const fixtureRepositoryIds = [
   'owner-b-disconnected',
   'owner-b-failed',
 ] as const;
+const bulkSelectionIds = Array.from({ length: 7 }, (_, index) => `bulk-pending-${index}`);
+const responsiveTouchGraphNodeId = 'repository.bulk-pending-0';
+const responsiveTouchGraphNodeIds = bulkSelectionIds.flatMap(id => [
+  `repository.${id}`,
+  `repository.${id}.package.@fixture.${id}`,
+]);
+const responsiveViewports = [
+  { height: 844, width: 390 },
+  { height: 932, width: 430 },
+  { height: 390, width: 844 },
+  { height: 1024, width: 768 },
+  { height: 900, width: 1440 },
+] as const;
+
+/*** Captures the measured layout invariants rendered by Chromium for one responsive acceptance cell. */
+async function captureResponsiveEvidenceAsync(
+  page: Page,
+  viewport: { readonly height: number; readonly width: number },
+  theme: 'dark' | 'light'
+) {
+  const expectedThemeActionName = `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`;
+  const themeAction = page.getByRole('button', { exact: true, name: expectedThemeActionName });
+  await themeAction.waitFor();
+  const evidence = await page.evaluate(() => {
+    const bounds = (element: Element | null | undefined) => {
+      if (element == null) return null;
+      const { bottom, height, left, right, top, width } = element.getBoundingClientRect();
+      return { bottom, height, left, right, top, width };
+    };
+    const header = document.querySelector('[data-testid="workspace-header"]');
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
+    const tools = [...document.querySelectorAll('button')].find(button =>
+      button.textContent?.includes('Tools')
+    );
+    const fit = [...document.querySelectorAll('button')].find(
+      button =>
+        button.getAttribute('aria-label') === 'Fit graph and optimize spacing for readability'
+    );
+    const zoom = document.querySelector('[aria-label="Zoom"]');
+    const repositoryEntry = document.querySelector(
+      '[aria-label="Open repository source and workspace"]'
+    );
+    const selected = document.querySelector('[role="application"][aria-label="Graph"]');
+    return {
+      document: {
+        clientWidth: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      },
+      graph: bounds(graph),
+      header: bounds(header),
+      repositoryEntry: bounds(repositoryEntry ?? null),
+      sidebar: bounds(sidebar),
+      tools: bounds(tools ?? null),
+      fit: bounds(fit ?? null),
+      viewport: { height: window.innerHeight, width: window.innerWidth },
+      visibleGraph: selected !== null,
+      zoom: bounds(zoom),
+    };
+  });
+  return { ...evidence, themeAction: await themeAction.boundingBox() };
+}
+
+/*** Enforces the mobile graph-first and desktop split-pane geometry without relying on snapshots alone. */
+function assertResponsiveEvidence(
+  evidence: Awaited<ReturnType<typeof captureResponsiveEvidenceAsync>>,
+  viewport: { readonly height: number; readonly width: number },
+  theme: 'dark' | 'light'
+) {
+  assertDimensionsEqual(evidence.viewport, viewport, 'Responsive acceptance viewport drifted.');
+  assert(
+    evidence.document.scrollWidth <= evidence.document.clientWidth,
+    `Responsive acceptance has horizontal document overflow: ${JSON.stringify(evidence.document)}`
+  );
+  assert(
+    evidence.visibleGraph && evidence.graph !== null,
+    'Responsive acceptance did not render a graph.'
+  );
+  assert(
+    evidence.header !== null && evidence.header.height > 0,
+    'Responsive acceptance has an empty header.'
+  );
+  assert(
+    evidence.header.height < 180,
+    `Responsive acceptance header is too tall: ${evidence.header.height}.`
+  );
+  assert(evidence.themeAction !== null, `Responsive acceptance did not apply the ${theme} theme.`);
+  assert(
+    evidence.repositoryEntry !== null,
+    'Responsive acceptance does not show 7 of 87 repositories.'
+  );
+  if (viewport.width <= 768) {
+    assert(
+      evidence.sidebar === null,
+      'Responsive acceptance leaves the desktop sidebar visible on mobile.'
+    );
+    assert(evidence.tools !== null, 'Responsive acceptance lacks the mobile Tools entry point.');
+    assert(
+      evidence.graph.left <= 1 && Math.abs(evidence.graph.width - viewport.width) <= 1,
+      `Responsive graph does not occupy the allocated mobile width: ${JSON.stringify(evidence.graph)}.`
+    );
+    assert(
+      evidence.tools.left >= 0 &&
+        evidence.tools.top >= 0 &&
+        evidence.tools.right <= viewport.width &&
+        evidence.tools.bottom <= viewport.height,
+      `Mobile Tools control escaped the viewport: ${JSON.stringify(evidence.tools)}`
+    );
+    assert(
+      evidence.fit !== null && evidence.zoom !== null,
+      'Mobile graph zoom controls are unavailable for pointer interaction.'
+    );
+    assertSeparatePointerTargets(
+      evidence.tools,
+      evidence.fit,
+      'Tools overlaps the Fit graph control.'
+    );
+    assertSeparatePointerTargets(evidence.tools, evidence.zoom, 'Tools overlaps the Zoom control.');
+  } else {
+    assert(
+      evidence.sidebar !== null && evidence.sidebar.width === 288,
+      'Desktop sidebar changed width.'
+    );
+  }
+}
+
+/*** Rejects controls whose visible hit areas overlap, preventing ambiguous mobile pointer input. */
+function assertSeparatePointerTargets(first: Bounds, second: Bounds, message: string): void {
+  const overlaps =
+    first.left < second.right &&
+    first.right > second.left &&
+    first.top < second.bottom &&
+    first.bottom > second.top;
+  assert(!overlaps, message);
+}
+
+/*** Uses native Chromium input paths to prove source, overlay, graph, and keyboard interaction contracts. */
+async function exerciseMobileInteractionContractAsync(page: Page): Promise<void> {
+  const sourceEntry = page.getByLabel('Open repository source and workspace');
+  await sourceEntry.click();
+  await page.getByText('Repository source', { exact: true }).waitFor();
+  const repositoryPickers = page.getByLabel('Choose repositories');
+  assert(
+    (await repositoryPickers.count()) === 1,
+    'Repository source dialog did not expose its focused repository picker.'
+  );
+  await repositoryPickers.last().click();
+  assert(
+    await page.getByLabel('bulk-pending/repository-0').isChecked(),
+    'Repository selection was not retained in the mobile dialog.'
+  );
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+  await sourceEntry.waitFor({ state: 'visible' });
+  assert(
+    await sourceEntry.evaluate(element => document.activeElement === element),
+    'Repository dialog did not restore focus to its entry point.'
+  );
+  await sourceEntry.click();
+  await page.getByLabel('Close repository source').click();
+  await page.getByText('Repository source', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await sourceEntry.evaluate(element => document.activeElement === element),
+    'Repository dialog X did not restore focus to its entry point.'
+  );
+  await sourceEntry.click();
+  await page.getByRole('button', { name: 'Done' }).click();
+  await page.getByText('Repository source', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await sourceEntry.evaluate(element => document.activeElement === element),
+    'Repository dialog footer did not restore focus to its entry point.'
+  );
+
+  const tools = page.getByRole('button', { name: 'Tools' });
+  await tools.click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor();
+  for (const name of ['Tree', 'Rules', 'Export'] as const) {
+    const tab = page.getByRole('tab', { name });
+    await tab.click();
+    await tab.waitFor();
+  }
+  await page.getByLabel('Package prefix').fill('@fixture/catalog');
+  await closeWorkspaceToolsDialogAsync(page);
+  assert(
+    await tools.evaluate(element => document.activeElement === element),
+    'Tools dialog did not restore focus to its entry point.'
+  );
+  await tools.click();
+  await page.getByLabel('Close workspace tools').click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await tools.evaluate(element => document.activeElement === element),
+    'Tools dialog X did not restore focus to its entry point.'
+  );
+  await tools.click();
+  await page.getByRole('button', { exact: true, name: 'Close' }).click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor({ state: 'detached' });
+  assert(
+    await tools.evaluate(element => document.activeElement === element),
+    'Tools dialog footer did not restore focus to its entry point.'
+  );
+
+  const graph = page.getByRole('application', { name: 'Graph' });
+  const graphBox = await graph.boundingBox();
+  assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
+  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeId);
+  await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
+  await assertGraphTouchSelectionAsync(page, tools);
+  const before = await readGraphViewportAsync(page);
+  const panPoint = await findGraphPanPointAsync(page, graphBox);
+  await installGraphGestureProbeAsync(page);
+  await page.mouse.move(graphBox.x + panPoint.x, graphBox.y + panPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(graphBox.x + panPoint.x + 10, graphBox.y + panPoint.y + 7, { steps: 5 });
+  await page.mouse.move(graphBox.x + panPoint.x + 30, graphBox.y + panPoint.y + 20, { steps: 10 });
+  await page.mouse.up();
+  const afterPointerPan = await readGraphViewportAsync(page);
+  const gesture = await readGraphGestureProbeAsync(page);
+  assert(
+    gesture.mouseDownCount === 1 && gesture.mouseMoveCount > 1 && gesture.mouseUpCount === 1,
+    `Cytoscape did not receive the native multi-step mouse gesture: ${JSON.stringify(gesture)}.`
+  );
+  assert(
+    JSON.stringify(afterPointerPan.pan) !== JSON.stringify(before.pan),
+    `Pointer pan did not change the graph viewport after Cytoscape received the gesture: ${JSON.stringify(gesture)}.`
+  );
+  await pinchGraphAsync(page, graphBox);
+  const afterPinch = await readGraphViewportAsync(page);
+  assert(afterPinch.zoom > afterPointerPan.zoom, 'Native touch pinch did not zoom the graph.');
+  await page.getByLabel('Fit graph and optimize spacing for readability').click();
+  const afterFit = await readGraphViewportAsync(page);
+  assert(afterFit.zoom !== afterPinch.zoom, 'Fit did not update the graph viewport.');
+}
+
+/*** Closes the mobile tools dialog only after its portal unmounts and focus cleanup can complete.
+ */
+async function closeWorkspaceToolsDialogAsync(page: Page): Promise<void> {
+  const title = page.getByText('Workspace tools', { exact: true });
+  await page.keyboard.press('Escape');
+  await title.waitFor({ state: 'detached' });
+}
+
+/*** Reads the released GraphView controller rather than its private renderer for interaction assertions. */
+async function readGraphViewportAsync(page: Page) {
+  const viewport = await page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.getViewport() ?? null;
+  });
+  assert(viewport !== null, 'Graph controller was unavailable for interaction acceptance.');
+  return viewport;
+}
+
+/*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */
+async function findGraphPanPointAsync(
+  page: Page,
+  graph: { readonly height: number; readonly width: number; readonly x: number; readonly y: number }
+) {
+  const point = await page.evaluate(graph => {
+    const application = document.querySelector<HTMLElement>(
+      '[role="application"][aria-label="Graph"]'
+    );
+    const cytoscapeContainer = application?.querySelector('canvas')?.parentElement;
+    if (cytoscapeContainer === null || cytoscapeContainer === undefined)
+      return { candidates: [], point: null };
+    const candidates = [
+      { x: 24, y: 24 },
+      { x: graph.width - 24, y: 24 },
+      { x: 24, y: graph.height - 24 },
+      { x: graph.width - 24, y: graph.height - 24 },
+    ];
+    const candidatesWithTargets = candidates.map(candidate => {
+      const target = document.elementFromPoint(graph.x + candidate.x, graph.y + candidate.y);
+      return {
+        candidate,
+        isCytoscapeBackground:
+          target !== null &&
+          cytoscapeContainer.contains(target) &&
+          getComputedStyle(target).pointerEvents !== 'none',
+        target: target === null ? null : `${target.tagName}.${target.className}`,
+      };
+    });
+    return {
+      candidates: candidatesWithTargets,
+      point:
+        candidatesWithTargets.find(candidate => candidate.isCytoscapeBackground)?.candidate ?? null,
+    };
+  }, graph);
+  assert(
+    point !== null && point.point !== null,
+    `No Cytoscape background point receives pointer events without a graph overlay: ${JSON.stringify(point)}.`
+  );
+  return point.point;
+}
+
+/*** Records the actual native event path through the Cytoscape container without reaching into its runtime. */
+async function installGraphGestureProbeAsync(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const target = window as typeof window & { __atlasGraphGestureProbe?: GraphGestureProbe };
+    const application = document.querySelector<HTMLElement>(
+      '[role="application"][aria-label="Graph"]'
+    );
+    const cytoscapeContainer = application?.querySelector('canvas')?.parentElement;
+    if (cytoscapeContainer === null || cytoscapeContainer === undefined) return;
+    target.__atlasGraphGestureProbe = { mouseDownCount: 0, mouseMoveCount: 0, mouseUpCount: 0 };
+    cytoscapeContainer.addEventListener('mousedown', () => {
+      if (target.__atlasGraphGestureProbe !== undefined)
+        target.__atlasGraphGestureProbe.mouseDownCount += 1;
+    });
+    cytoscapeContainer.ownerDocument.defaultView?.addEventListener('mousemove', () => {
+      if (target.__atlasGraphGestureProbe !== undefined)
+        target.__atlasGraphGestureProbe.mouseMoveCount += 1;
+    });
+    cytoscapeContainer.ownerDocument.defaultView?.addEventListener('mouseup', () => {
+      if (target.__atlasGraphGestureProbe !== undefined)
+        target.__atlasGraphGestureProbe.mouseUpCount += 1;
+    });
+  });
+}
+
+/*** Reads only the test-owned native event counters installed around the public graph surface. */
+async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe> {
+  const probe = await page.evaluate(
+    () =>
+      (window as typeof window & { __atlasGraphGestureProbe?: GraphGestureProbe })
+        .__atlasGraphGestureProbe ?? null
+  );
+  assert(probe !== null, 'Cytoscape gesture probe was unavailable.');
+  return probe;
+}
+
+/*** Reads an actual projected GraphView node by its package identity for native touch input. */
+async function readGraphNodeAsync(page: Page, id: string) {
+  try {
+    await page.waitForFunction(nodeId => {
+      const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+        .__atlasViewportProbe;
+      return probe?.controller?.measureNodes?.([nodeId])?.nodes.length === 1;
+    }, id);
+  } catch (error) {
+    const measuredIds = await readMeasuredGraphNodeIdsAsync(page, responsiveTouchGraphNodeIds);
+    throw new Error(
+      `Projected GraphView node ${id} was unavailable; measured IDs: ${measuredIds.join(', ') || 'none'}. ${String(error)}`
+    );
+  }
+  const node = await page.evaluate(nodeId => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.([nodeId])?.nodes[0] ?? null;
+  }, id);
+  assert(node !== null, 'Graph node geometry was unavailable for native touch acceptance.');
+  return node;
+}
+
+/*** Verifies that a native GraphView tap updates the user-visible synchronized tree selection. */
+async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promise<void> {
+  await tools.click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor();
+  await page.getByRole('tab', { name: 'Tree' }).click();
+  const tree = page.getByRole('tree', { name: 'Project tree' });
+  try {
+    await tree.locator('[role="treeitem"][aria-selected="true"]').first().waitFor();
+  } catch (error) {
+    const selectedTreeItems = await tree
+      .locator('[role="treeitem"][aria-selected="true"]')
+      .allTextContents();
+    throw new Error(
+      `Native graph touch did not produce a visible tree selection; selected tree items: ${JSON.stringify(selectedTreeItems)}. ${String(error)}`
+    );
+  }
+  await closeWorkspaceToolsDialogAsync(page);
+}
+
+/*** Captures bounded public GraphView measurement diagnostics only when a node lookup fails. */
+async function readMeasuredGraphNodeIdsAsync(
+  page: Page,
+  ids: readonly string[]
+): Promise<readonly string[]> {
+  return page.evaluate(nodeIds => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [];
+  }, ids);
+}
+
+/*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
+async function pinchGraphAsync(
+  page: Page,
+  graph: { readonly height: number; readonly width: number; readonly x: number; readonly y: number }
+) {
+  const session = await page.context().newCDPSession(page);
+  const x = graph.x + graph.width / 2;
+  const y = graph.y + graph.height / 2;
+  const touchPoint = (offset: number) => [
+    { id: 1, x: x - offset, y },
+    { id: 2, x: x + offset, y },
+  ];
+  await session.send('Input.dispatchTouchEvent', {
+    touchPoints: touchPoint(20),
+    type: 'touchStart',
+  });
+  await session.send('Input.dispatchTouchEvent', {
+    touchPoints: touchPoint(70),
+    type: 'touchMove',
+  });
+  await session.send('Input.dispatchTouchEvent', { touchPoints: [], type: 'touchEnd' });
+  await session.detach();
+}
 
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
@@ -1302,26 +1828,19 @@ async function captureWorkspaceGeometryAsync(page: Page): Promise<WorkspaceGeome
     );
     const sidebar = document.querySelector('[data-testid="sidebar-tree-scroll"]')?.closest('aside');
     const workspaceContent = document.querySelector('[data-testid="workspace-content"]');
-    if (
-      graph === null ||
-      main === null ||
-      sidebar === null ||
-      sidebar === undefined ||
-      workspaceContent === null
-    )
-      return null;
+    if (graph === null || main === null || workspaceContent === null) return null;
     return {
       graph: bounds(graph),
       main: bounds(main),
       overlay: overlay === null ? null : bounds(overlay),
-      sidebar: bounds(sidebar),
+      sidebar: sidebar === null || sidebar === undefined ? null : bounds(sidebar),
       viewport: { height: window.innerHeight, width: window.innerWidth },
       workspaceContent: bounds(workspaceContent),
     };
   });
   assert(
     geometry !== null,
-    'Anonymous bulk workspace did not render its main, sidebar, content, and graph.'
+    'Anonymous bulk workspace did not render its main, content, and graph.'
   );
   return geometry;
 }
@@ -1372,8 +1891,23 @@ function assertWorkspaceGeometryBaseline(
     viewport,
     `Anonymous bulk ${phase} changed the viewport.`
   );
-  assert(geometry.sidebar.left === 0, `Anonymous bulk ${phase} shifted the sidebar.`);
-  assert(geometry.sidebar.width === 288, `Anonymous bulk ${phase} changed the sidebar width.`);
+  if (viewport.width <= 768) {
+    assert(
+      geometry.sidebar === null,
+      `Anonymous bulk ${phase} left the desktop sidebar visible on mobile.`
+    );
+    assert(
+      geometry.workspaceContent.left === 0 && geometry.workspaceContent.width === viewport.width,
+      `Anonymous bulk ${phase} did not allocate the full mobile width to workspace content.`
+    );
+  } else {
+    assert(
+      geometry.sidebar !== null,
+      `Anonymous bulk ${phase} did not render the desktop sidebar.`
+    );
+    assert(geometry.sidebar.left === 0, `Anonymous bulk ${phase} shifted the sidebar.`);
+    assert(geometry.sidebar.width === 288, `Anonymous bulk ${phase} changed the sidebar width.`);
+  }
   assertBoundsContained(
     geometry.graph,
     geometry.workspaceContent,
@@ -1405,14 +1939,27 @@ function assertDimensionsEqual(
 
 /*** Toggles whichever theme action is currently exposed without assuming the browser's initial color scheme. */
 async function toggleThemeAsync(page: Page) {
-  const darkAction = page.getByRole('button', { exact: true, name: 'Dark' });
+  const darkAction = page.getByRole('button', { exact: true, name: 'Switch to dark mode' });
   if (await darkAction.isVisible()) {
     await darkAction.click();
-    await page.getByRole('button', { exact: true, name: 'Light' }).waitFor();
+    await page.getByRole('button', { exact: true, name: 'Switch to light mode' }).waitFor();
     return;
   }
-  await page.getByRole('button', { exact: true, name: 'Light' }).click();
+  await page.getByRole('button', { exact: true, name: 'Switch to light mode' }).click();
   await darkAction.waitFor();
+}
+
+/*** Selects a concrete ZORA theme without depending on the context's initial color preference. */
+async function setThemeAsync(page: Page, theme: 'dark' | 'light') {
+  const currentAction = `Switch to ${theme === 'dark' ? 'dark' : 'light'} mode`;
+  const action = page.getByRole('button', { exact: true, name: currentAction });
+  if (await action.isVisible()) await action.click();
+  await page
+    .getByRole('button', {
+      exact: true,
+      name: `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`,
+    })
+    .waitFor();
 }
 
 /*** Rejects a graph or overlay that crosses the content allocation that owns it. */
