@@ -303,6 +303,17 @@ async function readMeasuredGraphNodesAsync(page: Page, nodeIds: readonly string[
       .__atlasGraphAcceptance;
     return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
   }, nodeIds);
+  await page.waitForFunction(async ids => {
+    const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
+      .__atlasGraphAcceptance;
+    const before = probe?.controller?.measureNodes?.(ids)?.nodes;
+    if (before === undefined || before.length !== ids.length) return false;
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+    const after = probe?.controller?.measureNodes?.(ids)?.nodes;
+    return JSON.stringify(after) === JSON.stringify(before);
+  }, nodeIds);
   const measurement = await page.evaluate(ids => {
     const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
       .__atlasGraphAcceptance;
