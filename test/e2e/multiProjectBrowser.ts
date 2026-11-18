@@ -62,6 +62,17 @@ type GraphGestureProbe = {
   mouseMoveCount: number;
   mouseUpCount: number;
 };
+type GraphTouchDiagnostics = {
+  readonly loading: { readonly present: boolean; readonly text: string };
+  readonly measuredNodeIds: readonly string[];
+  readonly selection: {
+    readonly selectedRepositoryCheckboxes: readonly {
+      readonly checked: string | null;
+      readonly id: string | null;
+    }[];
+    readonly selectedTreeIds: readonly string[];
+  };
+};
 type Bounds = {
   readonly bottom: number;
   readonly height: number;
@@ -1799,7 +1810,7 @@ async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promi
 
 /*** Captures canonical node, loading, and synchronized-selection state when touch targeting fails. */
 async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly string[]) {
-  return page.evaluate(({ nodeIds }: { readonly nodeIds: string[] }) => {
+  return page.evaluate<GraphTouchDiagnostics, string[]>(nodeIds => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
     const loadingStatus = document.querySelector(
@@ -1824,7 +1835,7 @@ async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly stri
       measuredNodeIds: probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [],
       selection: { selectedRepositoryCheckboxes, selectedTreeIds },
     };
-  }, { nodeIds: [...nodeIds] });
+  }, [...nodeIds]);
 }
 
 /*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
