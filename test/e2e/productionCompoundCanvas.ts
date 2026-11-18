@@ -319,7 +319,8 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 /*** Require real visible navigation labels without introducing production-only landmarks. */
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
   await page.waitForFunction(expectedBreadcrumbs => {
-    const text = document.querySelector('[data-testid="workspace-breadcrumbs"]')?.textContent;
+    const breadcrumbElement = document.querySelector('[data-testid="workspace-breadcrumbs"]');
+    const text = breadcrumbElement instanceof HTMLElement ? breadcrumbElement.innerText : undefined;
     const breadcrumbs = text
       ?.split('›')
       .map(part => part.trim().split('\n').at(-1) ?? '')
