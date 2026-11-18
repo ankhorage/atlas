@@ -52,6 +52,9 @@ describe('[WorkspaceView]', () => {
       '[aria-label="Open repository source and workspace"]'
     );
     await React.act(async () => sourceEntry?.click());
+    await React.act(async () => {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    });
     const workspaceMenu = document.querySelector<HTMLButtonElement>(
       '[aria-label="Manage workspaces"]'
     );
