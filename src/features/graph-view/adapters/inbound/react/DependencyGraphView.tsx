@@ -174,31 +174,40 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
 }
 
 /*** Retains equal projected element values so source updates do not present retained topology as replacements. */
-function useStableGraphViewModel(model: GraphViewModel | null): GraphViewModel | null {
+function useStableGraphViewModel(
+  model: ReturnType<typeof createGraphViewModel> | null
+): ReturnType<typeof createGraphViewModel> | null {
   const nodes = useStableGraphViewElements(model?.nodes ?? []);
   const edges = useStableGraphViewElements(model?.edges ?? []);
   if (model === null) return null;
   return { ...model, edges, nodes };
 }
 
-/*** Reuses an element only when its complete public GraphView value is unchanged. */
-function useStableGraphViewElements<Element extends { readonly id: string }>(
+/*** Reuses unchanged element and ordered-array identities so retained topology stays a no-op. */
+function useStableGraphViewElements<Element extends { readonly id?: string }>(
   elements: readonly Element[]
 ): readonly Element[] {
   const previousElements = useRef(new Map<string, Element>());
+  const previousArray = useRef<readonly Element[]>([]);
   return useMemo(() => {
     const nextElements = new Map<string, Element>();
     const stabilized = elements.map(element => {
-      const previous = previousElements.current.get(element.id);
+      const identity = element.id === undefined ? JSON.stringify(element) : element.id;
+      const previous = previousElements.current.get(identity);
       const next =
         previous !== undefined && JSON.stringify(previous) === JSON.stringify(element)
           ? previous
           : element;
-      nextElements.set(element.id, next);
+      nextElements.set(identity, next);
       return next;
     });
+    const retained =
+      previousArray.current.length === stabilized.length &&
+      previousArray.current.every((element, index) => element === stabilized[index]);
+    const result = retained ? previousArray.current : stabilized;
     previousElements.current = nextElements;
-    return stabilized;
+    previousArray.current = result;
+    return result;
   }, [elements]);
 }
 
