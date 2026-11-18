@@ -1318,6 +1318,11 @@ const fixtureRepositoryIds = [
   'owner-b-failed',
 ] as const;
 const bulkSelectionIds = Array.from({ length: 7 }, (_, index) => `bulk-pending-${index}`);
+const responsiveTouchGraphNodeId = 'repository.bulk-pending-0';
+const responsiveTouchGraphNodeIds = bulkSelectionIds.flatMap(id => [
+  `repository.${id}`,
+  `repository.${id}.package.@fixture.${id}`,
+]);
 const responsiveViewports = [
   { height: 844, width: 390 },
   { height: 932, width: 430 },
@@ -1489,12 +1494,9 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const node = await readFirstGraphNodeAsync(page);
+  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeId);
   await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
-  await page.waitForFunction(
-    id => document.querySelector(`[data-testid="graph-node-${id}"]`) !== null,
-    node.id
-  );
+  await assertGraphTouchSelectionAsync(page, tools);
   const before = await readGraphViewportAsync(page);
   const panPoint = await findGraphPanPointAsync(page, graphBox);
   await installGraphGestureProbeAsync(page);
@@ -1618,20 +1620,58 @@ async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe
   return probe;
 }
 
-/*** Selects one measured graph node for a native touch tap without coupling to renderer internals. */
-async function readFirstGraphNodeAsync(page: Page) {
-  await page.waitForFunction(() => {
+/*** Reads an actual projected GraphView node by its package identity for native touch input. */
+async function readGraphNodeAsync(page: Page, id: string) {
+  try {
+    await page.waitForFunction(nodeId => {
+      const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+        .__atlasViewportProbe;
+      return probe?.controller?.measureNodes?.([nodeId])?.nodes.length === 1;
+    }, id);
+  } catch (error) {
+    const measuredIds = await readMeasuredGraphNodeIdsAsync(page, responsiveTouchGraphNodeIds);
+    throw new Error(
+      `Projected GraphView node ${id} was unavailable; measured IDs: ${measuredIds.join(', ') || 'none'}. ${String(error)}`
+    );
+  }
+  const node = await page.evaluate(nodeId => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.(['bulk-pending-0'])?.nodes.length === 1;
-  });
-  const node = await page.evaluate(() => {
-    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
-      .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.(['bulk-pending-0'])?.nodes[0] ?? null;
-  });
+    return probe?.controller?.measureNodes?.([nodeId])?.nodes[0] ?? null;
+  }, id);
   assert(node !== null, 'Graph node geometry was unavailable for native touch acceptance.');
   return node;
+}
+
+/*** Verifies that a native GraphView tap updates the user-visible synchronized tree selection. */
+async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promise<void> {
+  await tools.click();
+  await page.getByText('Workspace tools', { exact: true }).waitFor();
+  await page.getByRole('tab', { name: 'Tree' }).click();
+  const tree = page.getByRole('tree', { name: 'Project tree' });
+  try {
+    await tree.locator('[role="treeitem"][aria-selected="true"]').first().waitFor();
+  } catch (error) {
+    const selectedTreeItems = await tree
+      .locator('[role="treeitem"][aria-selected="true"]')
+      .allTextContents();
+    throw new Error(
+      `Native graph touch did not produce a visible tree selection; selected tree items: ${JSON.stringify(selectedTreeItems)}. ${String(error)}`
+    );
+  }
+  await closeWorkspaceToolsDialogAsync(page);
+}
+
+/*** Captures bounded public GraphView measurement diagnostics only when a node lookup fails. */
+async function readMeasuredGraphNodeIdsAsync(
+  page: Page,
+  ids: readonly string[]
+): Promise<readonly string[]> {
+  return page.evaluate(nodeIds => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [];
+  }, ids);
 }
 
 /*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
