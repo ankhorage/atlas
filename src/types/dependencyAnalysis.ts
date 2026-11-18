@@ -6,6 +6,8 @@ import type { Graph } from '@ankhorage/graph';
 
 export interface PackageDependencyNodeData extends Readonly<Record<string, unknown>> {
   readonly classification: DependencyNodeClassification;
+  /** Semantic source-graph node kind; identity never turns this into a visible compound segment. */
+  readonly kind: 'module' | 'package';
   readonly path: string;
   readonly parent: string;
   readonly label: string;

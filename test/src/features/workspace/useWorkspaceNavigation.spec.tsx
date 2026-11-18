@@ -170,6 +170,7 @@ function createGraph(): PackageDependencyGraph {
       id,
       data: {
         classification: id === 'external' ? 'vendor' : 'intrinsic',
+        kind: id === 'external' ? 'package' : 'module',
         path: id,
         parent: id.includes('.') ? id.split('.').slice(0, -1).join('.') : '',
         label: id,

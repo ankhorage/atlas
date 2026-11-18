@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.21.3",
+      "value": "v0.21.4",
       "color": "cb3837"
     },
     {
@@ -3511,6 +3511,7 @@
       "path": "test/src/features/workspace/workspaceSnapshot.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
         "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
         "src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts",
         "src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts",
@@ -4913,7 +4914,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 96,
+        "line": 97,
         "column": 1
       }
     },
@@ -4924,7 +4925,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 108,
+        "line": 109,
         "column": 1
       }
     },
@@ -4935,7 +4936,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 116,
+        "line": 117,
         "column": 1
       }
     },
@@ -4946,7 +4947,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 121,
+        "line": 122,
         "column": 1
       }
     },
@@ -4957,7 +4958,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 126,
+        "line": 127,
+        "column": 1
+      }
+    },
+    {
+      "name": "repositoryPathId",
+      "description": "Keep module identities on their real source paths so graph scopes retain filesystem ancestry.\nPackages use their own stable namespace, keeping collisions distinct without a synthetic module\ncompound ancestor. Semantic kind remains explicit metadata on every projected node.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
+        "line": 136,
         "column": 1
       }
     },
@@ -4968,7 +4980,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 131,
+        "line": 146,
         "column": 1
       }
     },
@@ -4979,7 +4991,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
-        "line": 136,
+        "line": 151,
         "column": 1
       }
     },
@@ -6563,7 +6575,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/utils/projectVisibleGraph.ts",
-        "line": 155,
+        "line": 156,
         "column": 1
       }
     },
@@ -10253,13 +10265,24 @@
       }
     },
     {
+      "name": "isPackageGraphNodeKind",
+      "description": "Validates the additive semantic metadata emitted by current graph projections.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
+        "line": 195,
+        "column": 1
+      }
+    },
+    {
       "name": "isRuleDiagnostic",
       "description": "Validates one generic Rules diagnostic without closing its owner-controlled code.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 194,
+        "line": 200,
         "column": 1
       }
     },
@@ -10270,7 +10293,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 204,
+        "line": 210,
         "column": 1
       }
     },
@@ -10281,7 +10304,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 217,
+        "line": 223,
         "column": 1
       }
     },
@@ -10292,7 +10315,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 228,
+        "line": 234,
         "column": 1
       }
     },
@@ -10303,7 +10326,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 238,
+        "line": 244,
         "column": 1
       }
     },
@@ -10314,7 +10337,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 250,
+        "line": 256,
         "column": 1
       }
     },
@@ -10325,7 +10348,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 260,
+        "line": 266,
         "column": 1
       }
     },
@@ -10336,7 +10359,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 273,
+        "line": 279,
         "column": 1
       }
     },
@@ -10347,7 +10370,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 282,
+        "line": 288,
         "column": 1
       }
     },
@@ -10358,7 +10381,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 289,
+        "line": 295,
         "column": 1
       }
     },
@@ -10369,7 +10392,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 296,
+        "line": 302,
         "column": 1
       }
     },
@@ -10380,7 +10403,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
-        "line": 308,
+        "line": 314,
         "column": 1
       }
     },
@@ -10974,7 +10997,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 136,
+        "line": 134,
         "column": 1
       }
     },
@@ -10985,7 +11008,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 141,
+        "line": 139,
         "column": 1
       }
     },
@@ -10996,7 +11019,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 149,
+        "line": 147,
         "column": 1
       }
     },
@@ -11007,7 +11030,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 161,
+        "line": 159,
         "column": 1
       }
     },
@@ -13160,6 +13183,11 @@
         "fromPath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx",
         "toPath": "src/types/audit.ts",
         "sourcePath": "test/src/features/workspace/WorkspaceSidebar.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toPath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
       },
       {
         "fromPath": "test/src/features/workspace/workspaceSnapshot.spec.ts",
@@ -16342,14 +16370,32 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "openWorkspaceMenuAsync",
-        "callExpression": "openWorkspaceMenuAsync",
+        "toSymbol": "waitForGraphNodesAsync",
+        "callExpression": "waitForGraphNodesAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "doublePressGraphNodeAsync",
+        "callExpression": "doublePressGraphNodeAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "assertNoSyntheticModuleNodeAsync",
+        "callExpression": "assertNoSyntheticModuleNodeAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "isSwitchCheckedAsync",
         "callExpression": "isSwitchCheckedAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "openWorkspaceMenuAsync",
+        "callExpression": "openWorkspaceMenuAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16540,6 +16586,18 @@
       },
       {
         "fromSymbol": "readGraphNodeAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "doublePressGraphNodeAsync",
+        "toSymbol": "readGraphNodeAsync",
+        "callExpression": "readGraphNodeAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertNoSyntheticModuleNodeAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -19971,6 +20029,12 @@
         "sourcePath": "test/src/features/dependency-analysis/projectDependencyGraph.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/dependency-analysis/projectDependencyGraph.spec.ts",
+        "toSymbol": "repositoryPackage",
+        "callExpression": "repositoryPackage",
+        "sourcePath": "test/src/features/dependency-analysis/projectDependencyGraph.spec.ts"
+      },
+      {
         "fromSymbol": "createOwnerGraph",
         "toSymbol": "moduleNode",
         "callExpression": "moduleNode",
@@ -22474,6 +22538,18 @@
       },
       {
         "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "releasedV1OfflineSnapshot",
+        "callExpression": "releasedV1OfflineSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
+        "toSymbol": "createPackageGraphElements",
+        "callExpression": "createPackageGraphElements",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceSnapshot.spec.ts",
         "toSymbol": "corrupt",
         "callExpression": "corrupt",
         "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
@@ -22494,6 +22570,12 @@
         "fromSymbol": "serializeSnapshotWithGraph",
         "toSymbol": "serializeWorkspaceSnapshot",
         "callExpression": "serializeWorkspaceSnapshot",
+        "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
+      },
+      {
+        "fromSymbol": "releasedV1OfflineSnapshot",
+        "toSymbol": "gunzipSync",
+        "callExpression": "gunzipSync",
         "sourcePath": "test/src/features/workspace/workspaceSnapshot.spec.ts"
       },
       {
@@ -22894,8 +22976,8 @@
       },
       {
         "fromSymbol": "repositoryPackageId",
-        "toSymbol": "normalizeIdentityPath",
-        "callExpression": "normalizeIdentityPath",
+        "toSymbol": "repositoryPathId",
+        "callExpression": "repositoryPathId",
         "sourcePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts"
       },
       {
@@ -22918,6 +23000,12 @@
       },
       {
         "fromSymbol": "repositoryParentId",
+        "toSymbol": "repositoryPathId",
+        "callExpression": "repositoryPathId",
+        "sourcePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts"
+      },
+      {
+        "fromSymbol": "repositoryPathId",
         "toSymbol": "normalizeIdentityPath",
         "callExpression": "normalizeIdentityPath",
         "sourcePath": "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts"

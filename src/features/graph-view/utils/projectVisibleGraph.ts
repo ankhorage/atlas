@@ -143,12 +143,13 @@ function getVisibleNodeLabel(
       ? node.data.label
       : undefined;
 
-  return (
-    repositoryLabel ??
-    (parent && visibleNodeIds.has(parent) && id.startsWith(`${parent}.`)
-      ? id.slice(parent.length + 1)
-      : getRelativeNodeLabel(id, currentPackage))
-  );
+  if (repositoryLabel !== undefined) return repositoryLabel;
+  if (parent && visibleNodeIds.has(parent)) {
+    if (typeof node.data.kind === 'string' && typeof node.data.label === 'string')
+      return node.data.label;
+    if (id.startsWith(`${parent}.`)) return id.slice(parent.length + 1);
+  }
+  return getRelativeNodeLabel(id, currentPackage);
 }
 
 /*** Resolves a readable label for the active package itself and for its descendants. */
