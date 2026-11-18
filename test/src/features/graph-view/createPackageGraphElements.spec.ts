@@ -128,7 +128,7 @@ function repositoryNode(id: string, repositoryId: string, parent: string, label 
       classification: 'intrinsic' as const,
       isIntrinsic: true,
       kind: parent === '' ? ('package' as const) : ('module' as const),
-      label: parent === '' ? label : id.split('.').at(-1) ?? label,
+      label: parent === '' ? label : (id.split('.').at(-1) ?? label),
       name: id,
       parent,
       path: id,

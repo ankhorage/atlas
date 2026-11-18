@@ -19,7 +19,9 @@ export function getRepositoryColorStyles(repositoryColors: Readonly<Record<strin
  * Vendor nodes never receive a repository class. Repository identity remains visible during
  * selection while audit rules retain their stronger evidence border and outline signals.
  */
-function getRepositoryLeafStyles(repositoryColors: Readonly<Record<string, string>>): StylesheetJson {
+function getRepositoryLeafStyles(
+  repositoryColors: Readonly<Record<string, string>>
+): StylesheetJson {
   return [
     {
       selector: 'node:childless.repositoryOwned',
