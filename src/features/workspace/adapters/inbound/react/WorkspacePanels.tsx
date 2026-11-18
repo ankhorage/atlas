@@ -7,6 +7,7 @@ import React from 'react';
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import type { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
 import { MobileWorkspaceTools } from '@/features/workspace/adapters/inbound/react/MobileWorkspaceTools';
+import { RepositoryLoadFailures } from '@/features/workspace/adapters/inbound/react/RepositoryLoadFailures';
 import type { useWorkspaceCycleInspection } from '@/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection';
 import type { useWorkspaceNavigation } from '@/features/workspace/adapters/inbound/react/useWorkspaceNavigation';
 import { WorkspaceGraph } from '@/features/workspace/adapters/inbound/react/WorkspaceGraph';
@@ -182,42 +183,6 @@ function hasRepositoryLoadStatus(
   showProgress: boolean
 ) {
   return selectionError !== undefined || showAnonymousBulkLoginHint || showProgress;
-}
-
-/*** Reveal retry controls only for the terminal repository failures in the current operation. */
-function RepositoryLoadFailures({
-  failures,
-  onRetry,
-}: {
-  readonly failures: readonly WorkspaceRepositoryLoadStatus[];
-  readonly onRetry?: (repositoryId: string) => Promise<void>;
-}) {
-  if (failures.length === 0) return null;
-  return (
-    <details>
-      <summary>{failures.length} repositories failed</summary>
-      <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-        {failures.map(({ description, failure, repository, status }) => (
-          <div
-            key={repository.id}
-            style={{ alignItems: 'center', display: 'flex', gap: 8, paddingBlock: 4 }}
-          >
-            <span>
-              {repository.owner}/{repository.name}: {status}
-              {description === undefined ? '' : ` — ${description}`}
-              {failure?.stage === undefined ? '' : ` (${failure.stage})`}
-              {failure?.correlationId === undefined ? '' : ` [${failure.correlationId}]`}
-            </span>
-            {onRetry === undefined ? null : (
-              <Button size="s" variant="outline" onPress={() => void onRetry(repository.id)}>
-                Retry
-              </Button>
-            )}
-          </div>
-        ))}
-      </div>
-    </details>
-  );
 }
 
 const workspaceContentStyle = {

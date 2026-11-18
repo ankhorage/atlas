@@ -207,9 +207,7 @@ function RepositoryChoices(props: RepositoryPickerProps) {
       key={repository.id}
       size="s"
       onCheckedChange={(checked: boolean) =>
-        props.onSelectionChange(
-          setRepositorySelected(props.selectedIds, repository.id, checked)
-        )
+        props.onSelectionChange(setRepositorySelected(props.selectedIds, repository.id, checked))
       }
     >
       {repository.owner}/{repository.name}
