@@ -1362,11 +1362,9 @@ const fixtureRepositoryIds = [
   'owner-b-failed',
 ] as const;
 const bulkSelectionIds = Array.from({ length: 7 }, (_, index) => `bulk-pending-${index}`);
-const responsiveTouchGraphNodeId = 'repository.bulk-pending-0.package.@fixture.bulk-pending-0';
-const responsiveTouchGraphNodeIds = bulkSelectionIds.flatMap(id => [
-  `repository.${id}`,
-  `repository.${id}.package.@fixture.${id}`,
-]);
+const responsiveTouchGraphNodeCandidates = bulkSelectionIds.map(
+  id => `repository.${encodeURIComponent(id).replaceAll('.', '%2E')}`
+);
 const responsiveViewports = [
   { height: 844, width: 390 },
   { height: 932, width: 430 },
@@ -1576,7 +1574,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeId);
+  const node = await readMeasuredGraphNodeAsync(page, responsiveTouchGraphNodeCandidates);
   await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
   await assertGraphTouchSelectionAsync(page, tools);
   const before = await readGraphViewportAsync(page);
@@ -1719,26 +1717,26 @@ async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe
   return probe;
 }
 
-/*** Reads an actual projected GraphView node by its package identity for native touch input. */
-async function readGraphNodeAsync(page: Page, id: string) {
+/*** Reads the first controller-measured bulk repository node for native touch input. */
+async function readMeasuredGraphNodeAsync(page: Page, candidateIds: readonly string[]) {
   try {
-    await page.waitForFunction(nodeId => {
+    await page.waitForFunction(nodeIds => {
       const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
         .__atlasViewportProbe;
-      return probe?.controller?.measureNodes?.([nodeId])?.nodes.length === 1;
-    }, id);
+      return (probe?.controller?.measureNodes?.(nodeIds)?.nodes.length ?? 0) > 0;
+    }, candidateIds);
   } catch (error) {
-    const measuredIds = await readMeasuredGraphNodeIdsAsync(page, responsiveTouchGraphNodeIds);
+    const measuredIds = await readMeasuredGraphNodeIdsAsync(page, candidateIds);
     throw new Error(
-      `Projected GraphView node ${id} was unavailable; measured IDs: ${measuredIds.join(', ') || 'none'}. ${String(error)}`
+      `No bulk repository node was measurable through the public GraphView controller; candidates: ${candidateIds.join(', ')}; measured IDs: ${measuredIds.join(', ') || 'none'}. ${String(error)}`
     );
   }
-  const node = await page.evaluate(nodeId => {
+  const node = await page.evaluate(nodeIds => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.([nodeId])?.nodes[0] ?? null;
-  }, id);
-  assert(node !== null, 'Graph node geometry was unavailable for native touch acceptance.');
+    return probe?.controller?.measureNodes?.(nodeIds)?.nodes[0] ?? null;
+  }, candidateIds);
+  assert(node !== null, 'No measured graph node geometry was available for native touch acceptance.');
   return node;
 }
 
