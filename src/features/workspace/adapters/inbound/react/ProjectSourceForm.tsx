@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@ankhorage/zora/web/button';
 import { Dialog } from '@ankhorage/zora/web/dialog';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { View } from '@ankhorage/zora/web/view';
 import { type ReactNode, useMemo, useState } from 'react';
 
@@ -10,6 +11,7 @@ import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inboun
 import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
 import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { useRepositoryInventory } from '@/features/workspace/adapters/inbound/react/useRepositoryInventory';
+import { WorkspaceDialogTitle } from '@/features/workspace/adapters/inbound/react/WorkspaceDialogTitle';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
 import styles from './WorkspaceHeader.module.css';
@@ -18,7 +20,7 @@ import styles from './WorkspaceHeader.module.css';
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
   const [publicOnly, setPublicOnly] = useState(false);
-  const [mobileSourceOpen, setMobileSourceOpen] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const visibleRepositories = useVisibleRepositories(
     sourceForm.repositories,
     sourceForm.search,
@@ -27,50 +29,36 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
 
   return (
     <>
-      <View align="center" className={styles.sourceForm} direction="row" gap="xs">
-        <div className={styles.desktopSourceControls}>
-          <ProjectSourceControls
-            initiallyOpen={props.selectionRequired}
-            publicOnly={publicOnly}
-            sourceForm={sourceForm}
-            visibleRepositories={visibleRepositories}
-            onPublicOnlyChange={setPublicOnly}
-          />
-        </div>
-        <MobileSourceEntry sourceForm={sourceForm} onOpen={() => setMobileSourceOpen(true)} />
-      </View>
-      <MobileProjectSourceDialog
+      <RepositorySourceEntry onOpen={() => setSourceOpen(true)} />
+      <ProjectSourceDialog
         authControls={props.authControls}
         initiallyOpen={props.selectionRequired}
-        open={mobileSourceOpen}
+        open={sourceOpen}
         publicOnly={publicOnly}
         sourceForm={sourceForm}
         visibleRepositories={visibleRepositories}
-        onDismiss={() => setMobileSourceOpen(false)}
+        onDismiss={() => setSourceOpen(false)}
         onPublicOnlyChange={setPublicOnly}
       />
     </>
   );
 }
 
-/*** Opens the focused mobile source workflow without duplicating its workspace actions in the header. */
-function MobileSourceEntry({ sourceForm, onOpen }: MobileSourceEntryProps) {
+/*** Opens the repository workflow from the compact workspace header. */
+function RepositorySourceEntry({ onOpen }: RepositorySourceEntryProps) {
   return (
-    <div className={styles.mobileSourceControls}>
-      <Button
-        accessibilityLabel="Manage repository source and workspace"
-        size="s"
-        variant="outline"
-        onPress={onOpen}
-      >
-        Repositories ({sourceForm.selectedIds.size}/{sourceForm.repositories.length})
-      </Button>
-    </div>
+    <IconButton
+      icon={{ name: 'settings-outline' }}
+      label="Open repository source and workspace"
+      size="m"
+      variant="ghost"
+      onPress={onOpen}
+    />
   );
 }
 
-/*** Keeps mobile repository choices in a focused ZORA dialog while staging the same selection. */
-function MobileProjectSourceDialog({
+/*** Keeps repository choices in a focused ZORA dialog while staging the same selection. */
+function ProjectSourceDialog({
   authControls,
   initiallyOpen,
   open,
@@ -79,12 +67,19 @@ function MobileProjectSourceDialog({
   visibleRepositories,
   onDismiss,
   onPublicOnlyChange,
-}: MobileProjectSourceDialogProps) {
+}: ProjectSourceDialogProps) {
   return (
     <Dialog
       closeOnBackdrop
       description="Choose repositories, manage the saved workspace, and start analysis."
-      title="Repository source"
+      footer={<Button onPress={onDismiss}>Done</Button>}
+      title={
+        <WorkspaceDialogTitle
+          label="Close repository source"
+          title="Repository source"
+          onDismiss={onDismiss}
+        />
+      }
       visible={open}
       width="wide"
       onDismiss={onDismiss}
@@ -204,7 +199,7 @@ interface ProjectSourceFormProps {
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
 }
 
-interface MobileProjectSourceDialogProps {
+interface ProjectSourceDialogProps {
   readonly authControls?: ReactNode;
   readonly initiallyOpen?: boolean;
   readonly open: boolean;
@@ -215,8 +210,7 @@ interface MobileProjectSourceDialogProps {
   readonly onPublicOnlyChange: (checked: boolean) => void;
 }
 
-interface MobileSourceEntryProps {
-  readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
+interface RepositorySourceEntryProps {
   readonly onOpen: () => void;
 }
 

@@ -1,8 +1,9 @@
 'use client';
 import { AppHeader } from '@ankhorage/zora/web/app-header';
 import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
-import { Button } from '@ankhorage/zora/web/button';
 import { Heading } from '@ankhorage/zora/web/heading';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
+import { Image } from '@ankhorage/zora/web/image';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
@@ -16,50 +17,77 @@ import styles from './WorkspaceHeader.module.css';
 
 /*** Renders workspace breadcrumbs, source selection, and theme action. */
 export function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { mode, setMode, theme } = useZoraTheme();
+  const { theme } = useZoraTheme();
 
   return (
     <AppHeader inverted safeAreaTop={false} testID="workspace-header">
       <div className={styles.content}>
-        <div className={styles.identity}>
-          <Heading ellipsizeMode="tail" level={3} numberOfLines={1} size="h5">
-            {props.projectName}
-          </Heading>
-          <Breadcrumbs
-            compact
-            items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
-            separator="›"
-            onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
-          />
-        </div>
+        <WorkspaceIdentity {...props} />
         <div
           className={styles.actions}
           data-testid="workspace-header-actions"
           style={{ color: theme.semantics.content.default }}
         >
-          {props.offline ? (
-            <span aria-label="Offline snapshot">Offline snapshot</span>
-          ) : (
-            <ProjectSourceForm
-              activeWorkspaceId={props.workspaceScope}
-              currentSource={props.currentSource}
-              repositories={props.repositories}
-              selectionRequired={props.selectionRequired}
-              authControls={<GitHubAuthControls auth={props.githubAuth} />}
-              onSelection={props.onSelection}
-            />
-          )}
-          <Button
-            leadingIcon={{ name: mode === 'dark' ? 'sunny-outline' : 'moon-outline' }}
-            size="s"
-            variant="outline"
-            onPress={() => setMode(mode === 'dark' ? 'light' : 'dark')}
-          >
-            {mode === 'dark' ? 'Light' : 'Dark'}
-          </Button>
+          <WorkspaceHeaderActions {...props} />
         </div>
       </div>
     </AppHeader>
+  );
+}
+
+/*** Renders the fixed Atlas brand and navigable package context in the compact header. */
+function WorkspaceIdentity(props: WorkspaceHeaderProps) {
+  return (
+    <div className={styles.identity}>
+      <Image alt="Atlas" height={24} source="/favicon.ico" width={24} />
+      <Heading level={3} numberOfLines={1} size="h5">
+        Atlas
+      </Heading>
+      <IconButton
+        icon={{ name: 'home-outline' }}
+        label="Home"
+        size="m"
+        variant="ghost"
+        onPress={() => props.onNavigate('')}
+      />
+      <div className={styles.breadcrumbs}>
+        <Breadcrumbs
+          compact
+          items={createBreadcrumbItems(props.currentPackage, props.projectTree)}
+          maxItems={3}
+          separator="›"
+          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
+        />
+      </div>
+    </div>
+  );
+}
+
+/*** Renders repository access and theme controls without expanding the workspace header row. */
+function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
+  const { mode, setMode } = useZoraTheme();
+  return (
+    <>
+      {props.offline ? (
+        <span aria-label="Offline snapshot">Offline snapshot</span>
+      ) : (
+        <ProjectSourceForm
+          activeWorkspaceId={props.workspaceScope}
+          currentSource={props.currentSource}
+          repositories={props.repositories}
+          selectionRequired={props.selectionRequired}
+          authControls={<GitHubAuthControls auth={props.githubAuth} />}
+          onSelection={props.onSelection}
+        />
+      )}
+      <IconButton
+        icon={{ name: mode === 'dark' ? 'sunny-outline' : 'moon-outline' }}
+        label={`Switch to ${mode === 'dark' ? 'light' : 'dark'} mode`}
+        size="m"
+        variant="ghost"
+        onPress={() => setMode(mode === 'dark' ? 'light' : 'dark')}
+      />
+    </>
   );
 }
 
@@ -76,7 +104,7 @@ function createBreadcrumbItems(
     label,
   }));
 
-  return [{ id: '', label: 'Home', icon: { name: 'home-outline' } }, ...packageItems];
+  return packageItems;
 }
 
 /*** Present virtual owner and repository labels without leaking technical graph identities. */
@@ -101,7 +129,6 @@ function findRepositoryBreadcrumbs(
     .split('.')
     .filter(segment => segment && segment !== 'module' && segment !== 'package');
   return [
-    { id: '', label: 'Home', icon: { name: 'home-outline' } },
     { id: '', label: match.owner.label },
     { id: match.repository.graphPackage, label: match.repository.label },
     ...remainder.map((label, index) => ({
@@ -121,7 +148,6 @@ interface WorkspaceHeaderProps {
   readonly currentSource?: string;
   readonly githubAuth: GitHubAuthView;
   readonly offline?: boolean;
-  readonly projectName: string;
   readonly projectTree: readonly ProjectTreeNode[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;

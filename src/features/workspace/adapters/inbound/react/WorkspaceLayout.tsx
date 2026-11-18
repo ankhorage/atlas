@@ -37,7 +37,6 @@ export function WorkspaceLayout({
     githubAuth,
     navigation,
     offline,
-    projectName,
     repositories,
     selectionRequired,
     workspaceScope,
@@ -71,7 +70,6 @@ function WorkspaceHeaderSlot(props: WorkspaceHeaderSlotProps) {
         currentSource={props.currentSource}
         githubAuth={props.githubAuth}
         offline={props.offline}
-        projectName={props.projectName}
         projectTree={props.navigation.projectTree}
         repositories={props.repositories}
         selectionRequired={props.selectionRequired}
@@ -196,9 +194,9 @@ interface WorkspaceLayoutProps {
   readonly githubAuth: GitHubAuthView;
   readonly liveWorkspace: LiveWorkspace;
   readonly offline?: boolean;
+  readonly projectName: string;
   readonly onRetry?: (repositoryId: string) => Promise<void>;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
-  readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionError?: string;
   readonly selectionRequired?: boolean;
@@ -211,7 +209,6 @@ interface WorkspaceHeaderSlotProps {
   readonly navigation: ReturnType<typeof useWorkspaceNavigation>;
   readonly offline?: boolean;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
-  readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
