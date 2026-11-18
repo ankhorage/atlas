@@ -8,7 +8,7 @@ import {
 } from '@ankhorage/zora/web/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { LAYOUTS } from '@/features/graph-view/adapters/inbound/cytoscape/constants';
 import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
@@ -152,7 +152,6 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
         : createGraphViewModel(input.packageGraph, input.visibleElements, input.cycleHighlights),
     [input.cycleHighlights, input.packageGraph, input.visibleElements]
   );
-  const model = useStableGraphViewModel(projectedModel);
   const styles = useMemo(
     () =>
       input.visibleElements === null
@@ -168,47 +167,9 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
   return {
     layout: readGraphViewLayout(input.layout),
     layoutOptions,
-    model,
+    model: projectedModel,
     styles,
   };
-}
-
-/*** Retains equal projected element values so source updates do not present retained topology as replacements. */
-function useStableGraphViewModel(
-  model: ReturnType<typeof createGraphViewModel> | null
-): ReturnType<typeof createGraphViewModel> | null {
-  const nodes = useStableGraphViewElements(model?.nodes ?? []);
-  const edges = useStableGraphViewElements(model?.edges ?? []);
-  if (model === null) return null;
-  return { ...model, edges, nodes };
-}
-
-/*** Reuses unchanged element and ordered-array identities so retained topology stays a no-op. */
-function useStableGraphViewElements<Element extends { readonly id?: string }>(
-  elements: readonly Element[]
-): readonly Element[] {
-  const previousElements = useRef(new Map<string, Element>());
-  const previousArray = useRef<readonly Element[]>([]);
-  return useMemo(() => {
-    const nextElements = new Map<string, Element>();
-    const stabilized = elements.map(element => {
-      const identity = element.id === undefined ? JSON.stringify(element) : element.id;
-      const previous = previousElements.current.get(identity);
-      const next =
-        previous !== undefined && JSON.stringify(previous) === JSON.stringify(element)
-          ? previous
-          : element;
-      nextElements.set(identity, next);
-      return next;
-    });
-    const retained =
-      previousArray.current.length === stabilized.length &&
-      previousArray.current.every((element, index) => element === stabilized[index]);
-    const result = retained ? previousArray.current : stabilized;
-    previousElements.current = nextElements;
-    previousArray.current = result;
-    return result;
-  }, [elements]);
 }
 
 /*** Own GraphView controller callbacks and render the viewport plus zoom controls. */
