@@ -44,29 +44,41 @@ export function RepositoryColorControl({
         />
       )}
     >
-      <Surface style={{ padding: 8 }} variant="raised">
-        <ColorPicker
-          tabs={['wheel', 'tone']}
-          testID={`repository-color-picker-${repository.id}`}
-          tone={{ selectionMode: 'single', tones: repositoryColorTones }}
-          value={value}
-          wheel={{}}
-          onSelectionChange={(selection: ColorPickerSelection) =>
-            setRepositoryColor(settings, repository.id, selection)
-          }
-          onValueChange={(nextValue: ColorPickerValue) => setValue(nextValue)}
-        />
-        <Button
-          disabled={!hasOverride}
-          size="s"
-          variant="ghost"
-          onPress={() => settings.setRepositoryColor(repository.id, undefined)}
-        >
-          Reset color
-        </Button>
-      </Surface>
+      <div onPointerDown={event => event.stopPropagation()}>
+        <Surface style={COLOR_PICKER_STYLE} variant="raised">
+          <ColorPicker
+            tabs={['wheel', 'tone']}
+            testID={`repository-color-picker-${repository.id}`}
+            tone={{ selectionMode: 'single', tones: repositoryColorTones }}
+            value={value}
+            wheel={{}}
+            onSelectionChange={(selection: ColorPickerSelection) =>
+              setRepositoryColor(settings, repository.id, selection)
+            }
+            onValueChange={(nextValue: ColorPickerValue) => setValue(nextValue)}
+          />
+          <Button
+            disabled={!hasOverride}
+            size="s"
+            variant="ghost"
+            onPress={() => resetRepositoryColor(settings, repository.id, setValue)}
+          >
+            Reset color
+          </Button>
+        </Surface>
+      </div>
     </Popover>
   );
+}
+
+/*** Clear a saved repository color and return its controlled picker to the canonical default. */
+function resetRepositoryColor(
+  settings: SettingsContextValue,
+  repositoryId: string,
+  setValue: (value: ColorPickerValue) => void
+): void {
+  settings.setRepositoryColor(repositoryId, undefined);
+  setValue(createColorPickerValue(parseHexColorOrThrow(repositoryColor.default)));
 }
 
 /*** Create the controlled Wheel and Tone state from the current canonical repository color. */
@@ -93,3 +105,9 @@ function setRepositoryColor(
         : undefined;
   if (color !== undefined) settings.setRepositoryColor(repositoryId, color.toUpperCase());
 }
+
+const COLOR_PICKER_STYLE = {
+  maxHeight: 360,
+  overflowY: 'auto',
+  padding: 8,
+} as const;

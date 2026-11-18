@@ -476,7 +476,7 @@ async function openRepositoryPickerAsync(
   page: Page,
   repositoryLabel = 'owner-a/catalog'
 ): Promise<void> {
-  const repository = page.getByLabel(repositoryLabel);
+  const repository = page.getByRole('checkbox', { name: repositoryLabel });
   if (!(await repository.isVisible())) {
     await openRepositorySourceDialogAsync(page);
     const picker = page.locator('[aria-label="Choose repositories"]:visible');
@@ -801,14 +801,14 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositoryPickerAsync(page);
-      const repository = page.getByLabel('owner-a/catalog');
+      const repository = page.getByRole('checkbox', { name: 'owner-a/catalog' });
       assert(await repository.isChecked(), 'Repository was not selected before editing its color.');
       const before = await readGraphPresentationAsync(page);
       const requests: string[] = [];
       page.on('request', request => requests.push(request.url()));
       await page.getByLabel('Change color for owner-a/catalog').click();
       const picker = page.getByTestId('repository-color-picker-owner-a-catalog');
-      await picker.getByLabel('Color wheel').waitFor();
+      await picker.getByRole('slider', { name: /Color wheel/u }).waitFor();
       assert(
         (await picker.getByRole('tab').count()) === 2,
         'Repository color picker did not expose exactly Wheel and Tone.'
@@ -832,7 +832,7 @@ const scenarios: readonly Scenario[] = [
         (await picker.getByLabel(/Selected jewel color 1:/u).count()) === 1,
         'Tone picker did not retain exactly one selected color.'
       );
-      await picker.getByRole('button', { name: 'Reset color' }).click();
+      await page.getByRole('button', { name: 'Reset color' }).click();
       await page.waitForFunction(() =>
         Object.entries(localStorage).every(
           ([key, value]) =>

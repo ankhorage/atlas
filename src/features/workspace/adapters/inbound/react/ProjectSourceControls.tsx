@@ -220,7 +220,6 @@ function RepositoryChoices(props: RepositoryPickerProps) {
         {repository.owner}/{repository.name}
       </Checkbox>
       <RepositoryColorControl
-        key={props.settings.repositoryColors[repository.id]}
         repository={repository}
         repositoryColorTones={props.repositoryColorTones}
         settings={props.settings}
