@@ -846,6 +846,7 @@ const scenarios: readonly Scenario[] = [
       page.on('request', request => {
         if (request.url().endsWith('/api/workspace/selection')) selectionRequests.push(request);
       });
+      await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('Search repositories').fill('akon taxi');
       await page.getByLabel('viewport/akon taxi').waitFor();
@@ -1169,14 +1170,19 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'tree-graph-selection',
-    'Synchronizes TreeView selection with the workspace graph selection.',
+    'Synchronizes TreeView selection with the workspace graph selection without changing the viewport.',
     async page => {
       await openWorkspaceAsync(page);
+      const zoom = await page.getByLabel('Zoom').inputValue();
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page.getByText('catalog', { exact: true }).click();
       assert(
         (await page.getByText('catalog', { exact: true }).count()) > 0,
         'Tree selection was unavailable.'
+      );
+      assert(
+        (await page.getByLabel('Zoom').inputValue()) === zoom,
+        'Tree selection changed the settled viewport.'
       );
       return [];
     }
@@ -1468,21 +1474,6 @@ const scenarios: readonly Scenario[] = [
       );
       await page.getByRole('button', { name: 'Switch to dark mode' }).click();
       await page.getByRole('button', { name: 'Switch to light mode' }).waitFor();
-      return [];
-    }
-  ),
-  scenario(
-    'settled-selection-viewport',
-    'Selects without changing the settled viewport.',
-    async page => {
-      await openWorkspaceAsync(page);
-      const zoom = await page.getByLabel('Zoom').inputValue();
-      await page.getByRole('button', { name: 'Expand' }).first().click();
-      await page.getByText('catalog', { exact: true }).click();
-      assert(
-        (await page.getByLabel('Zoom').inputValue()) === zoom,
-        'Selection changed the settled viewport.'
-      );
       return [];
     }
   ),
