@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.2
+
+### Patch Changes
+
+- cfa94df: Make the workspace graph-first and usable on narrow viewports.
+
 ## 0.21.1
 
 ### Patch Changes
