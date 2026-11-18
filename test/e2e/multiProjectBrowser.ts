@@ -690,6 +690,10 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
+      assert(
+        !(await page.getByRole('checkbox', { name: 'Public only' }).isChecked()),
+        'Public only must remain unchecked until explicitly selected.'
+      );
       await page.getByLabel('Choose repositories').click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(

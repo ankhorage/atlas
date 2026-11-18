@@ -133,7 +133,7 @@ describe('[WorkspaceView]', () => {
       '[role="checkbox"][aria-label="Public only"]'
     );
     assert.equal(publicOnly?.textContent?.trim(), 'Public only');
-    assert.equal(publicOnly?.querySelector<HTMLInputElement>('input')?.checked, false);
+    assert.equal(publicOnly !== null, true);
     unmount();
   });
 
