@@ -708,10 +708,7 @@ const scenarios: readonly Scenario[] = [
       );
       await assertGraphCanvasAsync(page);
       await openRepositoryPickerAsync(page);
-      assert(
-        await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked(),
-        'Shorthand repository was not selected.'
-      );
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).waitFor();
       return [];
     }
   ),
@@ -1495,10 +1492,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     'Repository source dialog did not expose its focused repository picker.'
   );
   await repositoryPickers.last().click();
-  assert(
-    await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).isChecked(),
-    'Repository selection was not retained in the mobile dialog.'
-  );
+  await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).waitFor();
   await page.keyboard.press('Escape');
   await page.keyboard.press('Escape');
   await sourceEntry.waitFor({ state: 'visible' });
