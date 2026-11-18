@@ -691,7 +691,7 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -705,7 +705,7 @@ const scenarios: readonly Scenario[] = [
       await assertGraphCanvasAsync(page);
       await openRepositoryPickerAsync(page);
       assert(
-        await page.getByLabel('owner-a/catalog').isChecked(),
+        await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked(),
         'Shorthand repository was not selected.'
       );
       return [];
@@ -741,7 +741,7 @@ const scenarios: readonly Scenario[] = [
       await openRepositorySourceDialogAsync(page);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -759,7 +759,7 @@ const scenarios: readonly Scenario[] = [
         });
       await openRepositoryPickerAsync(page);
       assert(
-        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Excluded repository was selected after the immediate selection update.'
       );
       return [];
@@ -778,7 +778,7 @@ const scenarios: readonly Scenario[] = [
         return body.runtimeId === undefined;
       });
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await recoveryRequest;
       await page.waitForURL(
         openedUrl =>
@@ -799,13 +799,13 @@ const scenarios: readonly Scenario[] = [
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await firstRequest;
       const secondRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await openRepositoryPickerAsync(page);
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await secondRequest;
       await page.waitForURL(
         openedUrl =>
@@ -1014,7 +1014,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await closeMobileRepositorySourceDialogAsync(page);
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
       if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
@@ -1031,7 +1031,7 @@ const scenarios: readonly Scenario[] = [
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
       assert(
-        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Saved exclusion was not restored.'
       );
       await page.screenshot({
@@ -1048,7 +1048,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
@@ -1067,7 +1067,7 @@ const scenarios: readonly Scenario[] = [
       );
       await page.getByLabel('Choose repositories').click();
       assert(
-        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Excluded repository was not restored after the auth redirect.'
       );
       return [];
@@ -1492,7 +1492,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   );
   await repositoryPickers.last().click();
   assert(
-    await page.getByLabel('bulk-pending/repository-0').isChecked(),
+    await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).isChecked(),
     'Repository selection was not retained in the mobile dialog.'
   );
   await page.keyboard.press('Escape');

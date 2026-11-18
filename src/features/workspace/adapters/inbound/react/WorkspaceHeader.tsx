@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
 import { Heading } from '@ankhorage/zora/web/heading';
 import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Image } from '@ankhorage/zora/web/image';
+import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { GitHubAuthControls } from '@/features/github-auth/adapters/inbound/react/GitHubAuthControls';
