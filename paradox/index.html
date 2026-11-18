@@ -334,7 +334,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts">
       src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts
-      <small>10 functions</small>
+      <small>11 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/github-auth/adapters/inbound/next/createGitHubAuthCookieStores.ts">
@@ -934,7 +934,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/externalSnapshotContracts.ts">
       src/features/workspace/application/use-cases/externalSnapshotContracts.ts
-      <small>27 functions</small>
+      <small>28 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts">
@@ -2720,10 +2720,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/settings/adapters/inbound/react/SettingsProvider.tsx</code>, <code>src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx</code>, <code>src/types/audit.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/src/features/workspace/workspaceSnapshot.spec.ts src/features/project-analysis/composition/readProjectSnapshotAsync.ts src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts src/features/workspace/composition/loadWorkspaceAsync.ts">
+  </article><article class="item" data-search="test/src/features/workspace/workspaceSnapshot.spec.ts src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts src/features/project-analysis/composition/readProjectSnapshotAsync.ts src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts src/features/workspace/composition/loadWorkspaceAsync.ts">
     <h3>test/src/features/workspace/workspaceSnapshot.spec.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/project-analysis/composition/readProjectSnapshotAsync.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadWorkspaceAsync.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts</code>, <code>src/features/project-analysis/composition/readProjectSnapshotAsync.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/serializeWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadEmbeddedWorkspaceSnapshot.ts</code>, <code>src/features/workspace/composition/loadWorkspaceAsync.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/workspace/WorkspaceView.spec.tsx ankh.config.json src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx src/features/workspace/adapters/inbound/react/WorkspaceView.tsx">
     <h3>test/src/features/workspace/WorkspaceView.spec.tsx</h3>
@@ -4114,6 +4114,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_workspaceSnapshot_spec_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
@@ -5450,6 +5451,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts[&quot;test/src/features/workspace/workspaceSnapshot.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_workspace_workspaceSnapshot_spec_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
@@ -6469,6 +6471,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_settings_adapters_inbound_react_SettingsProvider_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
@@ -7468,6 +7471,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_settings_adapters_inbound_react_SettingsProvider_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceSidebar_tsx
   module_test_src_features_workspace_WorkspaceSidebar_spec_tsx --&gt; module_src_types_audit_ts
+  module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_graph_view_adapters_inbound_cytoscape_createPackageGraphElements_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts
   module_test_src_features_workspace_workspaceSnapshot_spec_ts --&gt; module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts
@@ -8960,37 +8964,44 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     
   </article><article class="item" data-search="repositoryPackageId src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Encode project-local owner nodes beneath their immutable repository identity.">
     <h3>repositoryPackageId</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:96:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:97:1</code></p>
     <p>Encode project-local owner nodes beneath their immutable repository identity.</p>
     
   </article><article class="item" data-search="repositoryParentId src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Keep compound depth relative to a repository rather than an installation directory.">
     <h3>repositoryParentId</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:108:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:109:1</code></p>
     <p>Keep compound depth relative to a repository rather than an installation directory.</p>
     
   </article><article class="item" data-search="isRepositoryRoot src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Identify the canonical focus package that represents a selected repository itself.">
     <h3>isRepositoryRoot</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:116:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:117:1</code></p>
     <p>Identify the canonical focus package that represents a selected repository itself.</p>
     
   </article><article class="item" data-search="repositoryGraphId src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Create an ID that is stable across checkout locations and repository renames.">
     <h3>repositoryGraphId</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:121:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:122:1</code></p>
     <p>Create an ID that is stable across checkout locations and repository renames.</p>
     
   </article><article class="item" data-search="normalizeIdentityPath src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Normalize semantic package paths without using temporary materialization paths.">
     <h3>normalizeIdentityPath</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:126:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:127:1</code></p>
     <p>Normalize semantic package paths without using temporary materialization paths.</p>
+    
+  </article><article class="item" data-search="repositoryPathId src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Keep module identities on their real source paths so graph scopes retain filesystem ancestry.&#10;Packages use their own stable namespace, keeping collisions distinct without a synthetic module&#10;compound ancestor. Semantic kind remains explicit metadata on every projected node.">
+    <h3>repositoryPathId</h3>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:136:1</code></p>
+    <p>Keep module identities on their real source paths so graph scopes retain filesystem ancestry.
+Packages use their own stable namespace, keeping collisions distinct without a synthetic module
+compound ancestor. Semantic kind remains explicit metadata on every projected node.</p>
     
   </article><article class="item" data-search="parentPackage src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Resolve the dotted parent package used by Atlas compound-node projection.">
     <h3>parentPackage</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:131:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:146:1</code></p>
     <p>Resolve the dotted parent package used by Atlas compound-node projection.</p>
     
   </article><article class="item" data-search="nonEmpty src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts Normalize optional owner identifiers before they become graph identities.">
     <h3>nonEmpty</h3>
-    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:136:1</code></p>
+    <p class="muted"><code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts:151:1</code></p>
     <p>Normalize optional owner identifiers before they become graph identities.</p>
     
   </article>
@@ -9966,7 +9977,7 @@ scope is preserved can cause an endless focus/redirect loop and repeatedly remou
     
   </article><article class="item" data-search="getRelativeNodeLabel src/features/graph-view/utils/projectVisibleGraph.ts Resolves a readable label for the active package itself and for its descendants.">
     <h3>getRelativeNodeLabel</h3>
-    <p class="muted"><code>src/features/graph-view/utils/projectVisibleGraph.ts:155:1</code></p>
+    <p class="muted"><code>src/features/graph-view/utils/projectVisibleGraph.ts:156:1</code></p>
     <p>Resolves a readable label for the active package itself and for its descendants.</p>
     
   </article>
@@ -12043,64 +12054,69 @@ Entries are removed after success or failure so later loads observe source chang
     <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:177:1</code></p>
     <p>Validates one package graph node.</p>
     
+  </article><article class="item" data-search="isPackageGraphNodeKind src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates the additive semantic metadata emitted by current graph projections.">
+    <h3>isPackageGraphNodeKind</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:195:1</code></p>
+    <p>Validates the additive semantic metadata emitted by current graph projections.</p>
+    
   </article><article class="item" data-search="isRuleDiagnostic src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one generic Rules diagnostic without closing its owner-controlled code.">
     <h3>isRuleDiagnostic</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:194:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:200:1</code></p>
     <p>Validates one generic Rules diagnostic without closing its owner-controlled code.</p>
     
   </article><article class="item" data-search="isRuleFinding src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one generic Rules finding without closing its owner-controlled severity.">
     <h3>isRuleFinding</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:204:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:210:1</code></p>
     <p>Validates one generic Rules finding without closing its owner-controlled severity.</p>
     
   </article><article class="item" data-search="isRuleEvaluation src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates generic Rules results rendered by the workspace.">
     <h3>isRuleEvaluation</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:217:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:223:1</code></p>
     <p>Validates generic Rules results rendered by the workspace.</p>
     
   </article><article class="item" data-search="isRuleEvaluationPlan src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates the evaluator-owned serializable plan that Atlas projects into the Rules DAG.">
     <h3>isRuleEvaluationPlan</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:228:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:234:1</code></p>
     <p>Validates the evaluator-owned serializable plan that Atlas projects into the Rules DAG.</p>
     
   </article><article class="item" data-search="isRulePlanNode src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one scoped plan instance without closing provider-owned rule or facet identities.">
     <h3>isRulePlanNode</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:238:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:244:1</code></p>
     <p>Validates one scoped plan instance without closing provider-owned rule or facet identities.</p>
     
   </article><article class="item" data-search="isRuleFacet src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one versioned facet that is safe to present as a controlled explorer filter.">
     <h3>isRuleFacet</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:250:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:256:1</code></p>
     <p>Validates one versioned facet that is safe to present as a controlled explorer filter.</p>
     
   </article><article class="item" data-search="isRuleResult src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one evaluated scoped result and preserves optional legacy provenance.">
     <h3>isRuleResult</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:260:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:266:1</code></p>
     <p>Validates one evaluated scoped result and preserves optional legacy provenance.</p>
     
   </article><article class="item" data-search="isRuleResultDiagnostic src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates evaluator diagnostics attached to one concrete scoped rule result.">
     <h3>isRuleResultDiagnostic</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:273:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:279:1</code></p>
     <p>Validates evaluator diagnostics attached to one concrete scoped rule result.</p>
     
   </article><article class="item" data-search="isRuleIdentity src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates a provider-owned versioned rule identity.">
     <h3>isRuleIdentity</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:282:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:288:1</code></p>
     <p>Validates a provider-owned versioned rule identity.</p>
     
   </article><article class="item" data-search="isRuleScope src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates the semantic scope that differentiates otherwise identical rule IDs.">
     <h3>isRuleScope</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:289:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:295:1</code></p>
     <p>Validates the semantic scope that differentiates otherwise identical rule IDs.</p>
     
   </article><article class="item" data-search="isRuleSourceLocation src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates optional source coordinates attached to a Rules finding.">
     <h3>isRuleSourceLocation</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:296:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:302:1</code></p>
     <p>Validates optional source coordinates attached to a Rules finding.</p>
     
   </article><article class="item" data-search="isRuleSubject src/features/workspace/application/use-cases/externalSnapshotContracts.ts Validates one Rules finding subject.">
     <h3>isRuleSubject</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:308:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/externalSnapshotContracts.ts:314:1</code></p>
     <p>Validates one Rules finding subject.</p>
     
   </article>
@@ -12420,22 +12436,22 @@ Entries are removed after success or failure so later loads observe source chang
     
   </article><article class="item" data-search="repositoryGraphId src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Keep identity stable across provider rename and materialization location changes.">
     <h3>repositoryGraphId</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:136:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:134:1</code></p>
     <p>Keep identity stable across provider rename and materialization location changes.</p>
     
   </article><article class="item" data-search="workspaceIdentity src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Keep browser preference scope stable when one failed repository becomes available.">
     <h3>workspaceIdentity</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:141:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:139:1</code></p>
     <p>Keep browser preference scope stable when one failed repository becomes available.</p>
     
   </article><article class="item" data-search="orderedStatuses src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Render operation state in selected-repository order without exposing provider or filesystem failures.">
     <h3>orderedStatuses</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:149:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:147:1</code></p>
     <p>Render operation state in selected-repository order without exposing provider or filesystem failures.</p>
     
   </article><article class="item" data-search="repositoryStatus src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Build a credential-free status record suitable for a browser response.">
     <h3>repositoryStatus</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:161:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:159:1</code></p>
     <p>Build a credential-free status record suitable for a browser response.</p>
     
   </article>

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.4
+
+### Patch Changes
+
+- 6663c6e: Fix multi-repository graph and tree identities so source modules follow real filesystem compounds.
+
 ## 0.21.3
 
 ### Patch Changes
