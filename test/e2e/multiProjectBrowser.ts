@@ -1550,7 +1550,9 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     await tab.click();
     await tab.waitFor();
   }
-  await page.getByLabel('Package prefix').fill('@fixture/catalog');
+  const packagePrefix = page.getByLabel('Package prefix');
+  await packagePrefix.fill('@fixture/catalog');
+  await packagePrefix.fill('');
   await closeWorkspaceToolsDialogAsync(page);
   assert(
     await tools.evaluate(element => document.activeElement === element),
