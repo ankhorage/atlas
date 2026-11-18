@@ -895,17 +895,15 @@ const scenarios: readonly Scenario[] = [
     async page => {
       const catalogRoot = 'repository.owner-a-catalog';
       const catalogSource = `${catalogRoot}.src`;
-      const catalogEntry = `${catalogSource}.index`;
-      const sharedEntry = 'repository.owner-a-shared.src.index';
+      const sharedSource = 'repository.owner-a-shared.src';
       await openWorkspaceAsync(page);
       await page.getByLabel('Subpackage depth').fill('3');
-      await waitForGraphNodesAsync(page, [catalogRoot, catalogEntry, sharedEntry]);
+      await waitForGraphNodesAsync(page, [catalogRoot, catalogSource, sharedSource]);
       const graph = page.getByRole('application', { name: 'Graph' });
       const graphBounds = await graph.boundingBox();
       assert(graphBounds !== null, 'Graph canvas has no bounds for source navigation.');
       await doublePressGraphNodeAsync(page, catalogRoot, graphBounds);
-      await doublePressGraphNodeAsync(page, catalogSource, graphBounds);
-      await page.getByTestId('workspace-breadcrumbs').getByText('src', { exact: true }).waitFor();
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
       const breadcrumbs = await page.getByTestId('workspace-breadcrumbs').innerText();
       assert(
         !breadcrumbs.includes('module'),
@@ -914,10 +912,10 @@ const scenarios: readonly Scenario[] = [
       await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
       const compound = page.getByLabel('Show Compound Nodes');
       if (await isSwitchCheckedAsync(compound)) await compound.click();
-      await waitForGraphNodesAsync(page, [catalogEntry, sharedEntry]);
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
       await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
       if (!(await isSwitchCheckedAsync(compound))) await compound.click();
-      await waitForGraphNodesAsync(page, [catalogEntry, sharedEntry]);
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
       await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
       return [];
     }
