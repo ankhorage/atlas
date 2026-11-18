@@ -1,8 +1,7 @@
 'use client';
 import { parseHexColorOrThrow } from '@ankhorage/color-theory';
 import { Popover } from '@ankhorage/surface/browser';
-import { TONE_PAIR_CATALOG } from '@ankhorage/templates';
-import type { ColorPickerSelection, ColorPickerValue } from '@ankhorage/zora';
+import type { ColorPickerSelection, ColorPickerValue, ColorToneDefinition } from '@ankhorage/zora';
 import { Button } from '@ankhorage/zora/web/button';
 import { Checkbox } from '@ankhorage/zora/web/checkbox';
 import { ColorPicker } from '@ankhorage/zora/web/color-picker';
@@ -38,6 +37,7 @@ export function ProjectSourceControls({
       />
       <RepositoryPicker
         repositories={visibleRepositories}
+        repositoryColorTones={sourceForm.repositoryColorTones}
         search={sourceForm.search}
         selectedIds={sourceForm.selectedIds}
         settings={sourceForm.settings}
@@ -140,6 +140,7 @@ interface ProjectSourceFormModel {
   readonly inventoryError?: string;
   readonly openWorkspace: (detail: WorkspaceOpenDetail) => void;
   readonly repositories: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones: readonly ColorToneDefinition[];
   readonly search: string;
   readonly selectedIds: ReadonlySet<string>;
   readonly selectedRepositories: readonly WorkspaceRepositoryOption[];
@@ -153,6 +154,7 @@ interface ProjectSourceFormModel {
 
 interface RepositoryPickerProps {
   readonly repositories: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones: readonly ColorToneDefinition[];
   readonly search: string;
   readonly selectedIds: ReadonlySet<string>;
   readonly settings: SettingsContextValue;
@@ -223,6 +225,7 @@ function RepositoryChoices(props: RepositoryPickerProps) {
       <RepositoryColorControl
         key={props.settings.repositoryColors[repository.id] ?? repositoryColor.default}
         repository={repository}
+        repositoryColorTones={props.repositoryColorTones}
         settings={props.settings}
       />
     </View>
@@ -232,9 +235,11 @@ function RepositoryChoices(props: RepositoryPickerProps) {
 /*** Edits one repository's persisted graph color without participating in repository selection. */
 function RepositoryColorControl({
   repository,
+  repositoryColorTones,
   settings,
 }: {
   readonly repository: WorkspaceRepositoryOption;
+  readonly repositoryColorTones: readonly ColorToneDefinition[];
   readonly settings: SettingsContextValue;
 }) {
   const hasOverride = Object.hasOwn(settings.repositoryColors, repository.id);
@@ -260,7 +265,7 @@ function RepositoryColorControl({
         <ColorPicker
           tabs={['wheel', 'tone']}
           testID={`repository-color-picker-${repository.id}`}
-          tone={{ selectionMode: 'single', tones: TONE_PAIR_CATALOG }}
+          tone={{ selectionMode: 'single', tones: repositoryColorTones }}
           value={value}
           wheel={{}}
           onSelectionChange={(selection: ColorPickerSelection) =>

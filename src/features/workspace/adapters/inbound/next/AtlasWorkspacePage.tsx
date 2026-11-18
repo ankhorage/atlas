@@ -1,3 +1,5 @@
+import { TONE_PAIR_CATALOG } from '@ankhorage/templates';
+import type { ColorToneDefinition } from '@ankhorage/zora';
 import { connection } from 'next/server';
 
 import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
@@ -39,12 +41,20 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
       projectName={result.projectName}
       repositories={result.repositories}
       repositoryStatuses={result.repositoryStatuses}
+      repositoryColorTones={createColorToneDefinitions(TONE_PAIR_CATALOG)}
       runtimeId={result.runtimeId}
       selectionRequired={result.selectionRequired}
       workspaceScope={readSearchParam(params.workspace)}
       workspace={result.workspace}
     />
   );
+}
+
+/*** Select the serializable Tone props required by ZORA from the published Templates catalog. */
+function createColorToneDefinitions(
+  catalog: typeof TONE_PAIR_CATALOG
+): readonly ColorToneDefinition[] {
+  return catalog.map(({ accent, accentTarget, id }) => ({ accent, accentTarget, id }));
 }
 
 /*** Open the current user's inventory after sign-in while anonymous visitors retain public-owner discovery. */
