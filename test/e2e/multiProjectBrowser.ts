@@ -1799,7 +1799,7 @@ async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promi
 
 /*** Captures canonical node, loading, and synchronized-selection state when touch targeting fails. */
 async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly string[]) {
-  return page.evaluate(nodeIds => {
+  return page.evaluate(({ nodeIds }: { readonly nodeIds: string[] }) => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
     const loadingStatus = document.querySelector(
@@ -1824,7 +1824,7 @@ async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly stri
       measuredNodeIds: probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [],
       selection: { selectedRepositoryCheckboxes, selectedTreeIds },
     };
-  }, [...nodeIds]);
+  }, { nodeIds: [...nodeIds] });
 }
 
 /*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
