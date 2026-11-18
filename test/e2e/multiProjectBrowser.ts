@@ -1736,7 +1736,10 @@ async function readMeasuredGraphNodeAsync(page: Page, candidateIds: readonly str
       .__atlasViewportProbe;
     return probe?.controller?.measureNodes?.(nodeIds)?.nodes[0] ?? null;
   }, candidateIds);
-  assert(node !== null, 'No measured graph node geometry was available for native touch acceptance.');
+  assert(
+    node !== null,
+    'No measured graph node geometry was available for native touch acceptance.'
+  );
   return node;
 }
 
