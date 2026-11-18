@@ -1737,7 +1737,11 @@ async function resolveResponsiveTouchGraphNodeIdsAsync(): Promise<readonly strin
     showVendorPackages: settings.showVendorPackages,
     subPackageDepth: settings.subPackageDepth,
   });
-  return createGraphViewModel(elements, projection.elements, []).nodes.map(node => node.id);
+  const visibleNodeIds = createGraphViewModel(elements, projection.elements, []).nodes.map(
+    node => node.id
+  );
+  const graphNodeIds = createGraphViewModel(elements, elements, []).nodes.map(node => node.id);
+  return [...new Set([...visibleNodeIds, ...graphNodeIds])];
 }
 
 /*** Reads a controller-measured node from the canonical Atlas GraphView projection. */
