@@ -1853,6 +1853,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const packagePrefix = page.getByLabel('Package prefix');
   await packagePrefix.fill('@fixture/catalog');
   await packagePrefix.fill('');
+  await waitForGraphNodesAsync(page, [responsiveTouchGraphNodeId]);
   await closeWorkspaceToolsDialogAsync(page);
   assert(
     await tools.evaluate(element => document.activeElement === element),
