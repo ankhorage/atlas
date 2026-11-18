@@ -182,6 +182,7 @@ function isPackageGraphNode(
     typeof value.id === 'string' &&
     validation.isRecord(value.data) &&
     typeof value.data.classification === 'string' &&
+    (value.data.kind === 'module' || value.data.kind === 'package') &&
     typeof value.data.path === 'string' &&
     typeof value.data.parent === 'string' &&
     typeof value.data.label === 'string' &&
