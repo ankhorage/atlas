@@ -1362,7 +1362,7 @@ const fixtureRepositoryIds = [
   'owner-b-failed',
 ] as const;
 const bulkSelectionIds = Array.from({ length: 7 }, (_, index) => `bulk-pending-${index}`);
-const responsiveTouchGraphNodeId = 'repository.bulk-pending-0';
+const responsiveTouchGraphNodeId = 'repository.bulk-pending-0.package.@fixture.bulk-pending-0';
 const responsiveTouchGraphNodeIds = bulkSelectionIds.flatMap(id => [
   `repository.${id}`,
   `repository.${id}.package.@fixture.${id}`,
