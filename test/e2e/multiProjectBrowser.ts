@@ -61,8 +61,6 @@ type GraphViewportProbe = {
       }[];
       readonly viewport: { readonly width: number; readonly height: number };
     } | null;
-    setPan: (pan: { readonly x: number; readonly y: number }) => void;
-    setZoom: (zoom: number) => void;
   } | null;
   layoutCount: number;
 };
@@ -796,6 +794,7 @@ const scenarios: readonly Scenario[] = [
       const allNodeIds = [removedNodeId, ...retainedNodeIds];
       await openWorkspaceAsync(page, 'viewport-87', repositoryIds);
       await waitForGraphNodesAsync(page, retainedNodeIds);
+      await panAndZoomGraphAsync(page);
       await page.evaluate(() => {
         const target = window as typeof window & {
           __atlasTopologyAcceptance?: {
@@ -835,8 +834,6 @@ const scenarios: readonly Scenario[] = [
           allMeasurement.nodes.length !== 87
         )
           throw new Error('Graph controller did not expose the retained-node measurements.');
-        controller.setPan({ x: 137, y: 83 });
-        controller.setZoom(controller.getViewport().zoom * 1.1);
         target.__atlasTopologyAcceptance = {
           controller,
           graph: document.querySelector('[role="application"][aria-label="Graph"]'),
@@ -940,15 +937,24 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('viewport/akon taxi').uncheck();
       await removalRequest;
       await removalResponse;
-      await page.waitForFunction(ids => {
+      await page.waitForFunction(async ids => {
         const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
           .__atlasViewportProbe;
         const measurement = probe?.controller?.measureNodes?.(ids);
-        return (
+        const removed =
           measurement?.nodes.length === ids.length - 1 &&
-          !measurement.nodes.some(node => node.id === ids[0])
+          !measurement.nodes.some(node => node.id === ids[0]);
+        if (!removed) return false;
+        const before = JSON.stringify(measurement);
+        await new Promise<void>(resolve =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
         );
+        return JSON.stringify(probe?.controller?.measureNodes?.(ids)) === before;
       }, allNodeIds);
+      assert(
+        !(await page.getByLabel('viewport/akon taxi').isChecked()),
+        'Repository picker did not commit the removal.'
+      );
       assert(
         getRequestCount(selectionRequests) === 1,
         `Expected one removal request, observed ${getRequestCount(selectionRequests)}.`
@@ -1957,6 +1963,29 @@ async function readGraphViewportAsync(page: Page) {
   });
   assert(viewport !== null, 'Graph controller was unavailable for interaction acceptance.');
   return viewport;
+}
+
+/*** Establishes a user-owned viewport baseline through native graph and control input. */
+async function panAndZoomGraphAsync(page: Page): Promise<void> {
+  const graph = page.getByRole('application', { name: 'Graph' });
+  const graphBox = await graph.boundingBox();
+  assert(graphBox !== null, 'Graph has no bounds for a native viewport baseline.');
+  const beforePan = await readGraphViewportAsync(page);
+  const panPoint = await findGraphPanPointAsync(page, graphBox);
+  await page.mouse.move(graphBox.x + panPoint.x, graphBox.y + panPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(graphBox.x + panPoint.x + 30, graphBox.y + panPoint.y + 20, { steps: 8 });
+  await page.mouse.up();
+  const afterPan = await readGraphViewportAsync(page);
+  assert(
+    JSON.stringify(afterPan.pan) !== JSON.stringify(beforePan.pan),
+    'Native graph pan did not change the viewport.'
+  );
+  const zoom = page.getByLabel('Zoom');
+  const previousZoom = await zoom.inputValue();
+  await zoom.focus();
+  await page.keyboard.press('ArrowRight');
+  assert((await zoom.inputValue()) !== previousZoom, 'Native zoom control did not change the viewport.');
 }
 
 /*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */

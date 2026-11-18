@@ -194,6 +194,8 @@ async function assertDarkTheme(page: Page): Promise<void> {
 async function selectGraphNodes(page: Page): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
   const nodeIds = ['com.example.myapp.a', 'com.example.myapp.b'];
+  const depth = page.getByLabel('Subpackage depth', { exact: true });
+  await depth.press('End');
   const nodes = await readMeasuredGraphNodesAsync(page, nodeIds);
   const box = await graph.boundingBox();
   if (box === null) throw new Error('Graph canvas is not visible.');
@@ -203,8 +205,8 @@ async function selectGraphNodes(page: Page): Promise<void> {
   await page.mouse.click(box.x + nodes[0]!.position.x, box.y + nodes[0]!.position.y);
   await page.getByRole('treeitem', { selected: true }).waitFor();
   const firstSelection = await readSelectedTreeItems(page);
-  if (firstSelection.length !== 1)
-    throw new Error(`Graph-node click selected ${firstSelection.length} tree items, expected one.`);
+  if (firstSelection.length !== 1 || !firstSelection[0]?.endsWith('a'))
+    throw new Error(`Graph-node click selected ${JSON.stringify(firstSelection)}, expected a.`);
 
   await page.keyboard.down(process.platform === 'darwin' ? 'Meta' : 'Control');
   await page.mouse.click(box.x + nodes[1]!.position.x, box.y + nodes[1]!.position.y);
@@ -213,9 +215,13 @@ async function selectGraphNodes(page: Page): Promise<void> {
     () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
   );
   const selection = await readSelectedTreeItems(page);
-  if (selection.length !== 2)
+  if (
+    selection.length !== 2 ||
+    !selection.some(item => item.endsWith('a')) ||
+    !selection.some(item => item.endsWith('b'))
+  )
     throw new Error(
-      `Modified GraphView click selected ${selection.length} tree items, expected two.`
+      `Modified GraphView click selected ${JSON.stringify(selection)}, expected a and b.`
     );
 }
 
@@ -304,7 +310,11 @@ async function readTree(page: Page): Promise<readonly string[]> {
 
 /*** Read selected tree labels produced by the real graph-node click interactions above. */
 async function readSelectedTreeItems(page: Page): Promise<readonly string[]> {
-  return page.getByRole('treeitem', { selected: true }).allTextContents();
+  return page
+    .getByRole('treeitem', { selected: true })
+    .evaluateAll(items =>
+      items.map(item => item.getAttribute('aria-label') ?? item.textContent ?? '')
+    );
 }
 
 /*** Read the visible navigation trail after synchronized graph and tree selection. */
