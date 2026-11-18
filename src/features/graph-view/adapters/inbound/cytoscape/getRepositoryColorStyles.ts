@@ -1,14 +1,14 @@
 import type { StylesheetJson } from 'cytoscape';
 
-import type { GraphPalette } from '@/features/graph-view/adapters/inbound/cytoscape/getGraphPalette';
-
 const DEFAULT_REPOSITORY_COLOR = '#DCEAFB';
+const DEFAULT_REPOSITORY_BORDER = '#496477';
+const DEFAULT_REPOSITORY_TEXT = '#102033';
 
 /*** Builds paint-only repository identity styles from the active ZORA semantic palette. */
-export function getRepositoryColorStyles(colors: GraphPalette) {
+export function getRepositoryColorStyles() {
   return {
-    compound: getRepositoryCompoundStyles(colors),
-    leaf: getRepositoryLeafStyles(colors),
+    compound: getRepositoryCompoundStyles(),
+    leaf: getRepositoryLeafStyles(),
   };
 }
 
@@ -18,15 +18,17 @@ export function getRepositoryColorStyles(colors: GraphPalette) {
  * Vendor nodes never receive a repository class. Hover, selected, and audit rules are emitted
  * later, so transient interaction and audit evidence remain the stronger signals.
  */
-function getRepositoryLeafStyles(colors: GraphPalette): StylesheetJson {
-  return [{
-    selector: 'node:childless.repositoryOwned',
-    style: {
-      'background-color': DEFAULT_REPOSITORY_COLOR,
-      'border-color': colors.nodeBorder,
-      color: colors.nodeText,
+function getRepositoryLeafStyles(): StylesheetJson {
+  return [
+    {
+      selector: 'node:childless.repositoryOwned',
+      style: {
+        'background-color': DEFAULT_REPOSITORY_COLOR,
+        'border-color': DEFAULT_REPOSITORY_BORDER,
+        color: DEFAULT_REPOSITORY_TEXT,
+      },
     },
-  }];
+  ];
 }
 
 /***
@@ -35,14 +37,14 @@ function getRepositoryLeafStyles(colors: GraphPalette): StylesheetJson {
  * These declarations change paint only. Padding, border widths, labels, and geometry remain
  * owned by the existing compound styles so repository identity cannot trigger graph re-layout.
  */
-function getRepositoryCompoundStyles(colors: GraphPalette): StylesheetJson {
+function getRepositoryCompoundStyles(): StylesheetJson {
   return [
     {
       selector: 'node:parent.repositoryOwned',
       style: {
         'background-color': DEFAULT_REPOSITORY_COLOR,
-        'border-color': colors.nodeBorder,
-        color: colors.nodeText,
+        'border-color': DEFAULT_REPOSITORY_BORDER,
+        color: DEFAULT_REPOSITORY_TEXT,
       },
     },
     {

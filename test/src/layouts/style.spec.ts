@@ -120,14 +120,14 @@ describe('[getStyle]', () => {
   it('colors selected repositories without changing dimensions or overriding vendor, audit, and selection states', () => {
     const elements = {
       nodes: [
-        { classes: 'repositoryColor0', data: { id: 'root', repositoryId: 'R_catalog' } },
+        { classes: 'repositoryOwned', data: { id: 'root', repositoryId: 'R_catalog' } },
         {
-          classes: 'repositoryColor0',
+          classes: 'repositoryOwned',
           data: { id: 'child', parent: 'root', repositoryId: 'R_catalog' },
         },
         { classes: 'isVendor', data: { id: 'vendor', repositoryId: 'R_catalog' } },
         {
-          classes: 'repositoryColor0 auditCycle',
+          classes: 'repositoryOwned auditCycle',
           data: { id: 'audit', auditCycleColor: '#dc2626', repositoryId: 'R_catalog' },
         },
       ],
@@ -148,17 +148,17 @@ describe('[getStyle]', () => {
       expect(cy.getElementById('vendor').style('background-color')).toBe('rgb(236,228,251)');
       expect(cy.getElementById('audit').style('border-color')).toBe('rgb(220,38,38)');
       root.select();
-      expect(root.style('background-color')).toBe('rgb(45,85,125)');
+      expect(root.style('background-color')).toBe('rgb(220,234,251)');
       expect(child.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
     } finally {
       cy.destroy();
     }
   });
 
-  it('keeps all seven repository roles distinct and readable in representative light and dark themes', () => {
+  it('keeps every repository on one theme-invariant default fill', () => {
     const elements = {
       nodes: Array.from({ length: 7 }, (_, index) => ({
-        classes: `repositoryColor${index}`,
+        classes: 'repositoryOwned',
         data: { id: `repository-${index}` },
       })),
       edges: [],
@@ -174,7 +174,7 @@ describe('[getStyle]', () => {
         const backgrounds = elements.nodes.map(node =>
           cy.getElementById(node.data.id).style('background-color')
         );
-        expect(new Set(backgrounds).size).toBe(7);
+        expect(new Set(backgrounds).size).toBe(1);
         for (const node of elements.nodes) {
           const rendered = cy.getElementById(node.data.id);
           expect(

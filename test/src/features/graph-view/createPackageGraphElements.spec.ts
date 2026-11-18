@@ -41,7 +41,7 @@ describe('[package graph Cytoscape presentation]', () => {
     ]);
   });
 
-  it('keeps repository colors stable across reordered sources without coloring vendors or owners', () => {
+  it('marks every source-owned repository node without coloring vendors or owners', () => {
     const first = createPackageGraphElements(
       repositoryGraph(['R_atlas', 'R_zora', 'R_disconnected'])
     );
@@ -56,39 +56,20 @@ describe('[package graph Cytoscape presentation]', () => {
     );
 
     expect(firstClasses.get('repository.R_atlas')?.startsWith('repositoryColor')).toBe(true);
-    expect(firstClasses.get('repository.R_atlas.src')).toBe(firstClasses.get('repository.R_atlas'));
-    expect(firstClasses.get('repository.R_zora.src')).toBe(firstClasses.get('repository.R_zora'));
+    expect(firstClasses.get('repository.R_atlas.module.src')).toBe(
+      firstClasses.get('repository.R_atlas')
+    );
+    expect(firstClasses.get('repository.R_zora.module.src')).toBe(
+      firstClasses.get('repository.R_zora')
+    );
     expect(
       new Set(
         ['R_atlas', 'R_zora', 'R_disconnected'].map(id => firstClasses.get(`repository.${id}`))
       ).size
-    ).toBe(3);
+    ).toBe(1);
     expect(firstClasses.get('react')).toBe('isVendor');
     expect(firstClasses.get('owner:example')).toBe('');
     expect(reorderedClasses).toEqual(firstClasses);
-  });
-
-  it('derives identity only from repository IDs, including predictable palette collisions', () => {
-    const [firstCollision, secondCollision] = findRepositoryColorCollision();
-    const baseline = repositoryClasses(
-      repositoryGraph(['R_stable', firstCollision, secondCollision])
-    );
-    const relabeled = repositoryClasses(
-      repositoryGraph(['R_stable', firstCollision, secondCollision], {
-        [firstCollision]: 'unrelated-package-label',
-        [secondCollision]: 'another-unrelated-slug',
-      })
-    );
-    const filtered = repositoryClasses(repositoryGraph(['R_stable', firstCollision]));
-
-    expect(baseline.get(`repository.${firstCollision}`)).toBe(
-      baseline.get(`repository.${secondCollision}`)
-    );
-    expect(relabeled).toEqual(baseline);
-    expect(filtered.get('repository.R_stable')).toBe(baseline.get('repository.R_stable'));
-    expect(filtered.get(`repository.${firstCollision}`)).toBe(
-      baseline.get(`repository.${firstCollision}`)
-    );
   });
 });
 
@@ -102,7 +83,7 @@ function repositoryGraph(
       ...repositoryIds.flatMap(repositoryId => [
         repositoryNode(`repository.${repositoryId}`, repositoryId, '', labels[repositoryId]),
         repositoryNode(
-          `repository.${repositoryId}.src`,
+          `repository.${repositoryId}.module.src`,
           repositoryId,
           `repository.${repositoryId}`,
           labels[repositoryId]
@@ -162,22 +143,6 @@ function repositoryClasses(graph: ReturnType<typeof repositoryGraph>): Map<strin
       return [node.data.id, normalizeClasses(node.classes)];
     })
   );
-}
-
-/*** Finds two stable test identities that deliberately share one of the seven public palette slots. */
-function findRepositoryColorCollision(): readonly [string, string] {
-  const byClass = new Map<string, string>();
-  for (let index = 0; index < 100; index += 1) {
-    const repositoryId = `R_collision_${index}`;
-    const colorClass = repositoryClasses(repositoryGraph([repositoryId])).get(
-      `repository.${repositoryId}`
-    );
-    if (colorClass === undefined) throw new Error('Repository root did not receive a color class.');
-    const first = byClass.get(colorClass);
-    if (first !== undefined) return [first, repositoryId];
-    byClass.set(colorClass, repositoryId);
-  }
-  throw new Error('Expected a collision within the seven-slot repository palette.');
 }
 
 /*** Normalizes Cytoscape's string-or-token-list class representation for assertions. */

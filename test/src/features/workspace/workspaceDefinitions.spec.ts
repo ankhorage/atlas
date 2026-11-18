@@ -34,6 +34,13 @@ const WORKSPACE: WorkspaceDefinition = {
 };
 
 describe('[workspace definitions]', () => {
+  it('accepts v1 workspaces without repository color overrides', () => {
+    const { repositoryColors: _, ...settings } = WORKSPACE.settings;
+    const legacy = { ...WORKSPACE, settings };
+
+    assert.deepEqual(validateWorkspaceDefinitions([legacy])?.[0]?.settings.repositoryColors, {});
+  });
+
   it('creates, saves, reopens, renames, and deletes independent named workspaces', () => {
     const storage = new MemoryStorage();
     const store = createBrowserWorkspaceStore(storage);

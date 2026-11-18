@@ -112,8 +112,9 @@ function isRepositoryColors(value: unknown): value is Readonly<Record<string, st
   return (
     isRecord(value) &&
     Object.keys(value).length <= 100 &&
-    Object.entries(value).every(([repositoryId, color]) =>
-      isRepositoryId(repositoryId) && typeof color === 'string' && /^#[0-9A-F]{6}$/u.test(color)
+    Object.entries(value).every(
+      ([repositoryId, color]) =>
+        isRepositoryId(repositoryId) && typeof color === 'string' && /^#[0-9A-F]{6}$/u.test(color)
     )
   );
 }

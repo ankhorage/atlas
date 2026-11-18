@@ -8,7 +8,8 @@ export function applyWorkspacePresentationSettings(
   workspace: WorkspacePresentationSettings
 ): void {
   for (const repositoryId of Object.keys(settings.repositoryColors))
-    if (!(repositoryId in workspace.repositoryColors)) settings.setRepositoryColor(repositoryId, undefined);
+    if (!(repositoryId in workspace.repositoryColors))
+      settings.setRepositoryColor(repositoryId, undefined);
   for (const [repositoryId, color] of Object.entries(workspace.repositoryColors))
     settings.setRepositoryColor(repositoryId, color);
   settings.setDependencyPackagePrefix(workspace.dependencyPrefix);
