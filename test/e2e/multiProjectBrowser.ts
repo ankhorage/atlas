@@ -898,6 +898,7 @@ const scenarios: readonly Scenario[] = [
       const catalogEntry = `${catalogSource}.index`;
       const sharedEntry = 'repository.owner-a-shared.src.index';
       await openWorkspaceAsync(page);
+      await page.getByLabel('Subpackage depth').fill('3');
       await waitForGraphNodesAsync(page, [catalogRoot, catalogEntry, sharedEntry]);
       const graph = page.getByRole('application', { name: 'Graph' });
       const graphBounds = await graph.boundingBox();
