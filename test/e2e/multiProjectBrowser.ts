@@ -1574,7 +1574,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const node = await readMeasuredGraphNodeAsync(page, responsiveTouchGraphNodeCandidates);
+  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeCandidates);
   await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
   await assertGraphTouchSelectionAsync(page, tools);
   const before = await readGraphViewportAsync(page);
@@ -1717,8 +1717,9 @@ async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe
   return probe;
 }
 
-/*** Reads the first controller-measured bulk repository node for native touch input. */
-async function readMeasuredGraphNodeAsync(page: Page, candidateIds: readonly string[]) {
+/*** Reads a controller-measured graph node from one identity or a loaded fixture candidate set. */
+async function readGraphNodeAsync(page: Page, input: string | readonly string[]) {
+  const candidateIds = typeof input === 'string' ? [input] : input;
   try {
     await page.waitForFunction(nodeIds => {
       const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
