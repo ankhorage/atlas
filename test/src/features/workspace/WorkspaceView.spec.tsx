@@ -129,9 +129,11 @@ describe('[WorkspaceView]', () => {
         .querySelector<HTMLButtonElement>('[aria-label="Open repository source and workspace"]')
         ?.click()
     );
-    const publicOnly = document.querySelector<HTMLInputElement>('input[type="checkbox"]');
-    assert.equal(publicOnly?.labels?.[0]?.textContent?.trim(), 'Public only');
-    assert.equal(publicOnly?.checked, false);
+    const publicOnly = document.querySelector<HTMLElement>(
+      '[role="checkbox"][aria-label="Public only"]'
+    );
+    assert.equal(publicOnly?.textContent?.trim(), 'Public only');
+    assert.equal(publicOnly !== null, true);
     unmount();
   });
 

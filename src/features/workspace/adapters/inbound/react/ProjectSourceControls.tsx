@@ -1,6 +1,8 @@
 'use client';
 import { Popover } from '@ankhorage/surface/browser';
 import { Button } from '@ankhorage/zora/web/button';
+import { Checkbox } from '@ankhorage/zora/web/checkbox';
+import { Surface } from '@ankhorage/zora/web/surface';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
 
@@ -88,10 +90,15 @@ function PublicOnlyFilter({
   readonly onChange: (checked: boolean) => void;
 }) {
   return (
-    <label className={styles.publicOnly}>
-      <input checked={checked} type="checkbox" onChange={event => onChange(event.target.checked)} />
+    <Checkbox
+      accessibilityLabel="Public only"
+      checked={checked}
+      className={styles.publicOnly}
+      size="s"
+      onCheckedChange={onChange}
+    >
       Public only
-    </label>
+    </Checkbox>
   );
 }
 
@@ -168,12 +175,13 @@ function RepositoryPicker(props: RepositoryPickerProps) {
         </Button>
       )}
     >
-      <div style={REPOSITORY_PICKER_STYLE}>
-        <input
-          aria-label="Search repositories"
+      <Surface style={REPOSITORY_PICKER_STYLE}>
+        <TextInput
+          accessibilityLabel="Search repositories"
           placeholder="Search repositories"
+          size="s"
           value={props.search}
-          onChange={event => props.onSearchChange(event.target.value)}
+          onChangeText={props.onSearchChange}
         />
         <View direction="row" gap="xs" style={{ marginBlock: 8 }}>
           <Button size="s" variant="ghost" onPress={props.onSelectAll}>
@@ -184,7 +192,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
           </Button>
         </View>
         <RepositoryChoices {...props} />
-      </div>
+      </Surface>
     </Popover>
   );
 }
@@ -193,28 +201,33 @@ function RepositoryPicker(props: RepositoryPickerProps) {
 function RepositoryChoices(props: RepositoryPickerProps) {
   if (props.repositories.length === 0) return <span>No repositories match this search.</span>;
   return props.repositories.map(repository => (
-    <label key={repository.id} style={{ display: 'block', paddingBlock: 3 }}>
-      <input
-        checked={props.selectedIds.has(repository.id)}
-        type="checkbox"
-        onChange={() => props.onSelectionChange(toggleRepository(props.selectedIds, repository.id))}
-      />{' '}
+    <Checkbox
+      accessibilityLabel={`${repository.owner}/${repository.name}`}
+      checked={props.selectedIds.has(repository.id)}
+      key={repository.id}
+      size="s"
+      onCheckedChange={(checked: boolean) =>
+        props.onSelectionChange(setRepositorySelected(props.selectedIds, repository.id, checked))
+      }
+    >
       {repository.owner}/{repository.name}
-    </label>
+    </Checkbox>
   ));
 }
 
-/*** Toggle a repository inclusion and pass the immediate selection to its workspace owner. */
-function toggleRepository(selectedIds: ReadonlySet<string>, repositoryId: string): Set<string> {
+/*** Apply the checkbox's resolved selection value to the staged repository identifiers. */
+function setRepositorySelected(
+  selectedIds: ReadonlySet<string>,
+  repositoryId: string,
+  checked: boolean
+): Set<string> {
   const next = new Set(selectedIds);
-  if (next.has(repositoryId)) next.delete(repositoryId);
-  else next.add(repositoryId);
+  if (checked) next.add(repositoryId);
+  else next.delete(repositoryId);
   return next;
 }
 
 const REPOSITORY_PICKER_STYLE = {
-  background: 'var(--zora-surface-default, white)',
-  border: '1px solid currentColor',
   maxHeight: 360,
   minWidth: 280,
   overflowY: 'auto',

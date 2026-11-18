@@ -20,17 +20,11 @@ const ATLAS_BRAND_ICON =
 
 /*** Renders workspace breadcrumbs, source selection, and theme action. */
 export function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { theme } = useZoraTheme();
-
   return (
     <AppHeader inverted safeAreaTop={false} testID="workspace-header">
       <div className={styles.content}>
         <WorkspaceIdentity {...props} />
-        <div
-          className={styles.actions}
-          data-testid="workspace-header-actions"
-          style={{ color: theme.semantics.content.default }}
-        >
+        <div className={styles.actions} data-testid="workspace-header-actions">
           <WorkspaceHeaderActions {...props} />
         </div>
       </div>

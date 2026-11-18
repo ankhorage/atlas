@@ -59,7 +59,8 @@ try {
     const breadcrumbs = await page.getByLabel('Breadcrumbs').innerText();
     const viewport = JSON.stringify(visibleLayout.viewport);
     await page.getByTestId('graph-node-src.features').click();
-    const selectedLayout = await waitForNextGraphLayout(page, visibleLayout.layoutSequence);
+    await page.getByRole('treeitem', { name: 'features', exact: true, selected: true }).waitFor();
+    const selectedState = await waitForGraphSelection(page, 'src.features');
 
     assertEqual(
       'breadcrumbs after GraphView selection',
@@ -73,20 +74,20 @@ try {
     );
     assertEqual(
       'selection did not change the settled GraphView viewport',
-      selectedLayout.viewport,
+      selectedState.viewport,
       visibleLayout.viewport
     );
     assertEqual(
-      'selection did not change graph container dimensions',
-      selectedLayout.container,
-      visibleLayout.container
+      'selection did not trigger another GraphView layout',
+      selectedState.layoutSequence,
+      visibleLayout.layoutSequence
     );
     assertEqual(
       'selection retained the compound visibility state',
-      selectedLayout.showCompoundNodes,
+      selectedState.showCompoundNodes,
       true
     );
-    assertEqual('selection state after GraphView selection', selectedLayout.selectedNodeIds, [
+    assertEqual('selection state after GraphView selection', selectedState.selectedNodeIds, [
       'src.features',
     ]);
     assertEqual(
@@ -164,7 +165,7 @@ function assertEqual(label: string, actual: unknown, expected: unknown): void {
     );
 }
 
-/*** Waits for GraphView's published layout completion snapshot instead of sampling an active transition. */
+/*** Waits for GraphView's published layout completion snapshot after a topology change. */
 async function waitForNextGraphLayout(
   page: Page,
   previousSequence: number
@@ -179,6 +180,17 @@ async function waitForNextGraphLayout(
     const lifecycle = JSON.parse(serialized) as GraphLifecycle;
     return lifecycle.layoutSequence > previous && lifecycle.viewport !== null;
   }, previousSequence);
+  return JSON.parse(await page.getByLabel('Graph lifecycle').innerText()) as GraphLifecycle;
+}
+
+/*** Waits for the controlled selection state without treating its paint-only update as a layout. */
+async function waitForGraphSelection(page: Page, nodeId: string): Promise<GraphLifecycle> {
+  await page.waitForFunction(id => {
+    const serialized = document.querySelector('[aria-label="Graph lifecycle"]')?.textContent;
+    if (serialized === null || serialized === undefined) return false;
+    const lifecycle = JSON.parse(serialized) as GraphLifecycle;
+    return lifecycle.selectedNodeIds.includes(id) && lifecycle.viewport !== null;
+  }, nodeId);
   return JSON.parse(await page.getByLabel('Graph lifecycle').innerText()) as GraphLifecycle;
 }
 
