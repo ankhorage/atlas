@@ -484,7 +484,7 @@ async function closeMobileRepositorySourceDialogAsync(page: Page): Promise<void>
 
 /*** Closes the repository picker before targeting controls in its source dialog. */
 async function closeRepositoryPickerAsync(page: Page): Promise<void> {
-  const search = page.getByLabel('Search repositories');
+  const search = page.getByPlaceholder('Search repositories');
   if (await search.isVisible()) {
     await page.keyboard.press('Escape');
     await search.waitFor({ state: 'hidden' });
