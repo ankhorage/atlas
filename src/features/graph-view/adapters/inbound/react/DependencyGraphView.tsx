@@ -72,6 +72,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
     cycleHighlights: props.cycleHighlights,
     layout: settings.cytoscapeLayout,
     packageGraph,
+    repositoryColors: settings.repositoryColors,
     theme,
     visibleElements,
   });
@@ -156,8 +157,13 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
     () =>
       input.visibleElements === null
         ? []
-        : createGraphViewStyles(input.visibleElements, input.theme, input.layout),
-    [input.layout, input.theme, input.visibleElements]
+        : createGraphViewStyles(
+            input.visibleElements,
+            input.theme,
+            input.layout,
+            input.repositoryColors
+          ),
+    [input.layout, input.repositoryColors, input.theme, input.visibleElements]
   );
   const layoutOptions = useMemo<Readonly<Record<string, unknown>>>(
     () => ({ ...LAYOUTS[input.layout] }),
@@ -280,6 +286,7 @@ interface GraphViewPresentationInput {
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly layout: LayoutOptions['name'];
   readonly packageGraph: ElementsDefinition;
+  readonly repositoryColors: Readonly<Record<string, string>>;
   readonly theme: ZoraRuntimeTheme;
   readonly visibleElements: ElementsDefinition | null;
 }

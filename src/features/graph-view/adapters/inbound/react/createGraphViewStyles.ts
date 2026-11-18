@@ -13,9 +13,12 @@ import { getStyle as getCommonStyle } from '@/features/graph-view/adapters/inbou
 export function createGraphViewStyles(
   elements: ElementsDefinition,
   theme: ZoraRuntimeTheme,
-  layout: LayoutOptions['name']
+  layout: LayoutOptions['name'],
+  repositoryColors: Readonly<Record<string, string>>
 ): readonly GraphViewStyleRule[] {
-  return [...getCommonStyle(elements, theme), ...getLayoutStyle(layout)].map(toGraphViewStyleRule);
+  return [...getCommonStyle(elements, theme, repositoryColors), ...getLayoutStyle(layout)].map(
+    toGraphViewStyleRule
+  );
 }
 
 /*** Converts one Cytoscape stylesheet rule into the GraphView presentation contract. */

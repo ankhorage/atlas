@@ -55,13 +55,9 @@ describe('[package graph Cytoscape presentation]', () => {
       reordered.nodes.map(node => [node.data.id, normalizeClasses(node.classes)])
     );
 
-    expect(firstClasses.get('repository.R_atlas')).toBe('repositoryOwned');
-    expect(firstClasses.get('repository.R_atlas.module.src')).toBe(
-      firstClasses.get('repository.R_atlas')
-    );
-    expect(firstClasses.get('repository.R_zora.module.src')).toBe(
-      firstClasses.get('repository.R_zora')
-    );
+    for (const repositoryId of ['R_atlas', 'R_zora', 'R_disconnected'])
+      for (const path of ['', '.src', '.src.features'])
+        expect(firstClasses.get(`repository.${repositoryId}${path}`)).toBe('repositoryOwned');
     expect(
       new Set(
         ['R_atlas', 'R_zora', 'R_disconnected'].map(id => firstClasses.get(`repository.${id}`))
@@ -83,9 +79,15 @@ function repositoryGraph(
       ...repositoryIds.flatMap(repositoryId => [
         repositoryNode(`repository.${repositoryId}`, repositoryId, '', labels[repositoryId]),
         repositoryNode(
-          `repository.${repositoryId}.module.src`,
+          `repository.${repositoryId}.src`,
           repositoryId,
           `repository.${repositoryId}`,
+          labels[repositoryId]
+        ),
+        repositoryNode(
+          `repository.${repositoryId}.src.features`,
+          repositoryId,
+          `repository.${repositoryId}.src`,
           labels[repositoryId]
         ),
       ]),
@@ -125,8 +127,8 @@ function repositoryNode(id: string, repositoryId: string, parent: string, label 
     data: {
       classification: 'intrinsic' as const,
       isIntrinsic: true,
-      kind: id.endsWith('.src') ? ('module' as const) : ('package' as const),
-      label: id.endsWith('.src') ? `${label}/src` : label,
+      kind: parent === '' ? ('package' as const) : ('module' as const),
+      label: parent === '' ? label : id.split('.').at(-1) ?? label,
       name: id,
       parent,
       path: id,

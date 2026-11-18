@@ -4,21 +4,21 @@ const DEFAULT_REPOSITORY_COLOR = '#DCEAFB';
 const DEFAULT_REPOSITORY_BORDER = '#496477';
 const DEFAULT_REPOSITORY_TEXT = '#102033';
 
-/*** Builds paint-only repository identity styles from the active ZORA semantic palette. */
-export function getRepositoryColorStyles() {
+/*** Builds paint-only repository identity styles from persisted workspace overrides. */
+export function getRepositoryColorStyles(repositoryColors: Readonly<Record<string, string>>) {
   return {
-    compound: getRepositoryCompoundStyles(),
-    leaf: getRepositoryLeafStyles(),
+    compound: getRepositoryCompoundStyles(repositoryColors),
+    leaf: getRepositoryLeafStyles(repositoryColors),
   };
 }
 
 /***
  * Paints first-party leaf nodes from their prepared immutable repository identity.
  *
- * Vendor nodes never receive a repository class. Hover, selected, and audit rules are emitted
- * later, so transient interaction and audit evidence remain the stronger signals.
+ * Vendor nodes never receive a repository class. Repository identity remains visible during
+ * selection while audit rules retain their stronger evidence border and outline signals.
  */
-function getRepositoryLeafStyles(): StylesheetJson {
+function getRepositoryLeafStyles(repositoryColors: Readonly<Record<string, string>>): StylesheetJson {
   return [
     {
       selector: 'node:childless.repositoryOwned',
@@ -28,16 +28,22 @@ function getRepositoryLeafStyles(): StylesheetJson {
         color: DEFAULT_REPOSITORY_TEXT,
       },
     },
+    ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
+      selector: `node:childless.repositoryOwned[repositoryId = "${repositoryId}"]`,
+      style: { 'background-color': color },
+    })),
   ];
 }
 
 /***
- * Preserves selected and audit compound priority while retaining repository identity at rest.
+ * Keeps repository identity visible for selected compounds while audit evidence retains priority.
  *
  * These declarations change paint only. Padding, border widths, labels, and geometry remain
  * owned by the existing compound styles so repository identity cannot trigger graph re-layout.
  */
-function getRepositoryCompoundStyles(): StylesheetJson {
+function getRepositoryCompoundStyles(
+  repositoryColors: Readonly<Record<string, string>>
+): StylesheetJson {
   return [
     {
       selector: 'node:parent.repositoryOwned',
@@ -47,6 +53,10 @@ function getRepositoryCompoundStyles(): StylesheetJson {
         color: DEFAULT_REPOSITORY_TEXT,
       },
     },
+    ...Object.entries(repositoryColors).map(([repositoryId, color]) => ({
+      selector: `node:parent.repositoryOwned[repositoryId = "${repositoryId}"]`,
+      style: { 'background-color': color },
+    })),
     {
       selector: 'node:parent.repositoryOwned.auditCycle',
       style: {

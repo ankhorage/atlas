@@ -117,14 +117,19 @@ describe('[getStyle]', () => {
     }
   });
 
-  it('colors selected repositories without changing dimensions or overriding vendor, audit, and selection states', () => {
+  it('applies repository overrides to every source-owned node and compound without changing layout', () => {
     const elements = {
       nodes: [
         { classes: 'repositoryOwned', data: { id: 'root', repositoryId: 'R_catalog' } },
         {
           classes: 'repositoryOwned',
-          data: { id: 'child', parent: 'root', repositoryId: 'R_catalog' },
+          data: { id: 'src', parent: 'root', repositoryId: 'R_catalog' },
         },
+        {
+          classes: 'repositoryOwned',
+          data: { id: 'src.features', parent: 'src', repositoryId: 'R_catalog' },
+        },
+        { classes: 'repositoryOwned', data: { id: 'other', repositoryId: 'R_other' } },
         { classes: 'isVendor', data: { id: 'vendor', repositoryId: 'R_catalog' } },
         {
           classes: 'repositoryOwned auditCycle',
@@ -137,25 +142,28 @@ describe('[getStyle]', () => {
       elements: toRenderableElements(elements),
       headless: true,
       styleEnabled: true,
-      style: getStyle(elements, createTheme('light')),
+      style: getStyle(elements, createTheme('light'), { R_catalog: '#AABBCC' }),
     });
     try {
       const root = cy.getElementById('root');
-      const child = cy.getElementById('child');
-      const before = child.layoutDimensions({ nodeDimensionsIncludeLabels: true });
-      expect(root.style('background-color')).toBe('rgb(220,234,251)');
-      expect(child.style('background-color')).toBe('rgb(220,234,251)');
+      const leaf = cy.getElementById('src.features');
+      const before = leaf.layoutDimensions({ nodeDimensionsIncludeLabels: true });
+      for (const nodeId of ['root', 'src', 'src.features'])
+        expect(cy.getElementById(nodeId).style('background-color')).toBe('rgb(170,187,204)');
+      expect(cy.getElementById('other').style('background-color')).toBe('rgb(220,234,251)');
       expect(cy.getElementById('vendor').style('background-color')).toBe('rgb(236,228,251)');
       expect(cy.getElementById('audit').style('border-color')).toBe('rgb(220,38,38)');
       root.select();
-      expect(root.style('background-color')).toBe('rgb(220,234,251)');
-      expect(child.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
+      leaf.select();
+      expect(root.style('background-color')).toBe('rgb(170,187,204)');
+      expect(leaf.style('background-color')).toBe('rgb(170,187,204)');
+      expect(leaf.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
     } finally {
       cy.destroy();
     }
   });
 
-  it('keeps every repository on one theme-invariant default fill', () => {
+  it('keeps every repository on one theme-invariant default HEX fill', () => {
     const elements = {
       nodes: Array.from({ length: 7 }, (_, index) => ({
         classes: 'repositoryOwned',
@@ -163,6 +171,7 @@ describe('[getStyle]', () => {
       })),
       edges: [],
     };
+    const fills = [];
     for (const theme of [createTheme('light'), createTheme('dark')]) {
       const cy = cytoscape({
         elements: toRenderableElements(elements),
@@ -174,6 +183,7 @@ describe('[getStyle]', () => {
         const backgrounds = elements.nodes.map(node =>
           cy.getElementById(node.data.id).style('background-color')
         );
+        fills.push(...backgrounds);
         expect(new Set(backgrounds).size).toBe(1);
         for (const node of elements.nodes) {
           const rendered = cy.getElementById(node.data.id);
@@ -186,6 +196,7 @@ describe('[getStyle]', () => {
         cy.destroy();
       }
     }
+    expect(new Set(fills)).toEqual(new Set(['rgb(220,234,251)']));
   });
 
   it('keeps node dimensions stable across repeated style and highlight updates', () => {
