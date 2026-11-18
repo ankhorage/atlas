@@ -578,15 +578,6 @@ async function installGraphViewportProbeAsync(page: Page): Promise<void> {
   });
 }
 
-/*** Wait for the public controller to report every requested retained graph node. */
-async function waitForGraphNodesAsync(page: Page, nodeIds: readonly string[]): Promise<void> {
-  await page.waitForFunction(ids => {
-    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
-      .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
-  }, nodeIds);
-}
-
 /*** Proves public node geometry occupies the actual graph canvas after the one measured initial fit. */
 async function assertMeasuredViewportOccupancyAsync(
   page: Page,
