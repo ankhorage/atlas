@@ -27,6 +27,7 @@ await cp(reportPath, copiedReportPath);
 const context = await chromium.launchPersistentContext(resolve(temporaryDirectory, 'profile'), {
   executablePath: browserPath,
   headless: true,
+  viewport: { height: 960, width: 1280 },
 });
 
 try {
