@@ -484,8 +484,11 @@ async function closeMobileRepositorySourceDialogAsync(page: Page): Promise<void>
 
 /*** Closes the repository picker before targeting controls in its source dialog. */
 async function closeRepositoryPickerAsync(page: Page): Promise<void> {
-  const closePopover = page.getByLabel('Close popover');
-  if (await closePopover.isVisible()) await closePopover.click();
+  const search = page.getByLabel('Search repositories');
+  if (await search.isVisible()) {
+    await page.keyboard.press('Escape');
+    await search.waitFor({ state: 'hidden' });
+  }
 }
 
 /*** Verifies the separate canvas has a rendered area without treating a canvas label as DOM text. */

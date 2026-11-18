@@ -11,6 +11,7 @@ import { useBrowserWorkspaceSession } from '@/features/workspace/adapters/inboun
 import { useProjectSourceFormActions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormActions';
 import { useProjectSourceFormState } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { useRepositoryInventory } from '@/features/workspace/adapters/inbound/react/useRepositoryInventory';
+import { WorkspaceSettingsRestore } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import { WorkspaceDialogTitle } from '@/features/workspace/adapters/inbound/react/WorkspaceDialogTitle';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
@@ -29,6 +30,10 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
 
   return (
     <>
+      <WorkspaceSettingsRestore
+        activeWorkspaceId={sourceForm.activeWorkspaceId}
+        settings={sourceForm.settings}
+      />
       <RepositorySourceEntry onOpen={() => setSourceOpen(true)} />
       <ProjectSourceDialog
         authControls={props.authControls}
