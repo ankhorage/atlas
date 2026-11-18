@@ -55,7 +55,7 @@ describe('[package graph Cytoscape presentation]', () => {
       reordered.nodes.map(node => [node.data.id, normalizeClasses(node.classes)])
     );
 
-    expect(firstClasses.get('repository.R_atlas')?.startsWith('repositoryColor')).toBe(true);
+    expect(firstClasses.get('repository.R_atlas')).toBe('repositoryOwned');
     expect(firstClasses.get('repository.R_atlas.module.src')).toBe(
       firstClasses.get('repository.R_atlas')
     );
