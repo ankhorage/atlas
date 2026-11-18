@@ -1007,7 +1007,7 @@ const scenarios: readonly Scenario[] = [
       );
       assert(
         stability.layoutCount === stability.previousLayoutCount,
-        'Repository removal ran a full graph layout or auto-fit.'
+        `Repository removal ran a full graph layout or auto-fit: ${JSON.stringify(stability)}.`
       );
       assert(
         JSON.stringify(stability.viewport) === JSON.stringify(stability.previousViewport),
