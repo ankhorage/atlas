@@ -92,7 +92,7 @@ function ProjectSourceDialog({
       <View className={styles.mobileSourceDialog} direction="column" gap="s">
         {authControls}
         <ProjectSourceControls
-          initiallyOpen={initiallyOpen}
+          initiallyOpen={initiallyOpen && sourceForm.selectionSupported}
           publicOnly={publicOnly}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
