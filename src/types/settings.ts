@@ -8,6 +8,7 @@ export interface SettingsContextValue {
   readonly showCompoundNodes: boolean;
   readonly showVendorPackages: boolean;
   readonly dependencyPackagePrefix: string;
+  readonly repositoryColors: Readonly<Record<string, string>>;
   readonly enabledDependencyKinds: ReadonlySet<DependencyFilterKind>;
   readonly setCytoscapeLayout: (layout: LayoutOptions['name']) => void;
   readonly setCytoscapeLayoutSpacing: (layoutSpacing: number) => void;
@@ -16,6 +17,7 @@ export interface SettingsContextValue {
   readonly toggleShowCompoundNodes: () => void;
   readonly toggleShowVendorPackages: () => void;
   readonly setDependencyPackagePrefix: (prefix: string) => void;
+  readonly setRepositoryColor: (repositoryId: string, color: string | undefined) => void;
   readonly toggleDependencyKind: (kind: DependencyFilterKind) => void;
 }
 

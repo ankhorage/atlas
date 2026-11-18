@@ -2,6 +2,8 @@ import type { StylesheetJson } from 'cytoscape';
 
 import type { GraphPalette } from '@/features/graph-view/adapters/inbound/cytoscape/getGraphPalette';
 
+const DEFAULT_REPOSITORY_COLOR = '#DCEAFB';
+
 /*** Builds paint-only repository identity styles from the active ZORA semantic palette. */
 export function getRepositoryColorStyles(colors: GraphPalette) {
   return {
@@ -17,14 +19,14 @@ export function getRepositoryColorStyles(colors: GraphPalette) {
  * later, so transient interaction and audit evidence remain the stronger signals.
  */
 function getRepositoryLeafStyles(colors: GraphPalette): StylesheetJson {
-  return colors.repositoryColors.map((color, index) => ({
-    selector: `node:childless.repositoryColor${index}`,
+  return [{
+    selector: 'node:childless.repositoryOwned',
     style: {
-      'background-color': color.background,
-      'border-color': color.border,
-      color: color.text,
+      'background-color': DEFAULT_REPOSITORY_COLOR,
+      'border-color': colors.nodeBorder,
+      color: colors.nodeText,
     },
-  }));
+  }];
 }
 
 /***
@@ -34,27 +36,17 @@ function getRepositoryLeafStyles(colors: GraphPalette): StylesheetJson {
  * owned by the existing compound styles so repository identity cannot trigger graph re-layout.
  */
 function getRepositoryCompoundStyles(colors: GraphPalette): StylesheetJson {
-  return colors.repositoryColors.flatMap((color, index) => [
+  return [
     {
-      selector: `node:parent.repositoryColor${index}`,
+      selector: 'node:parent.repositoryOwned',
       style: {
-        'background-color': color.background,
-        'border-color': color.border,
-        color: color.text,
+        'background-color': DEFAULT_REPOSITORY_COLOR,
+        'border-color': colors.nodeBorder,
+        color: colors.nodeText,
       },
     },
     {
-      selector: `node:parent.repositoryColor${index}:selected`,
-      style: {
-        'background-color': colors.selectedFill,
-        'border-color': colors.selectedRing,
-        'outline-color': colors.selectedRing,
-        'outline-width': 2,
-        color: colors.selectedText,
-      },
-    },
-    {
-      selector: `node:parent.repositoryColor${index}.auditCycle`,
+      selector: 'node:parent.repositoryOwned.auditCycle',
       style: {
         'underlay-opacity': 0,
         'border-color': 'data(auditCycleColor)',
@@ -64,5 +56,5 @@ function getRepositoryCompoundStyles(colors: GraphPalette): StylesheetJson {
         color: 'data(auditCycleColor)',
       },
     },
-  ]);
+  ];
 }

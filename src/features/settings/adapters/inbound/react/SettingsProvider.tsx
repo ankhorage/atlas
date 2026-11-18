@@ -9,6 +9,10 @@ import type { DependencyFilterKind } from '@/types/settings';
 export function SettingsProvider({ children, workspaceScope = 'default' }: SettingsProviderProps) {
   const environment = readSettingsEnvironment();
   const dependencyFilters = useDependencyFilterSettings(workspaceScope);
+  const [repositoryColors, setRepositoryColors] = useLocalStorage<Readonly<Record<string, string>>>(
+    `atlas.workspace.${encodeURIComponent(workspaceScope)}.repository-colors`,
+    {}
+  );
   const [maxSubPackageDepth, setMaxSubPackageDepth] = useMaxSubPackageDepthSetting();
   const [showCompoundNodes, setShowCompoundNodes] = useLocalStorage<boolean>(
     'showCompoundNodes',
@@ -41,10 +45,16 @@ export function SettingsProvider({ children, workspaceScope = 'default' }: Setti
         showCompoundNodes,
         showVendorPackages,
         ...dependencyFilters,
+        repositoryColors,
         subPackageDepth,
         setCytoscapeLayout,
         setCytoscapeLayoutSpacing,
         setMaxSubPackageDepth,
+        setRepositoryColor: (repositoryId, color) =>
+          setRepositoryColors(previous => {
+            const { [repositoryId]: _, ...remaining } = previous;
+            return color === undefined ? remaining : { ...remaining, [repositoryId]: color };
+          }),
         setSubPackageDepth,
         toggleShowCompoundNodes: () => setShowCompoundNodes(previous => !previous),
         toggleShowVendorPackages: () => setShowVendorPackages(previous => !previous),

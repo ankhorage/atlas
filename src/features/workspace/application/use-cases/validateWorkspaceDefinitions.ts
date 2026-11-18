@@ -77,6 +77,7 @@ function validateSettings(value: unknown): WorkspacePresentationSettings | null 
     showVendorPackages,
     spacing,
     subPackageDepth,
+    repositoryColors,
   } = value;
   if (
     typeof dependencyPrefix !== 'string' ||
@@ -85,7 +86,8 @@ function validateSettings(value: unknown): WorkspacePresentationSettings | null 
     typeof layout !== 'string' ||
     !isFiniteNumber(spacing) ||
     !isNonNegativeInteger(subPackageDepth) ||
-    !Array.isArray(dependencyKinds)
+    !Array.isArray(dependencyKinds) ||
+    !isRepositoryColors(repositoryColors)
   )
     return null;
   const validKinds = new Set(['runtime', 'dev', 'peer', 'optional']);
@@ -99,8 +101,21 @@ function validateSettings(value: unknown): WorkspacePresentationSettings | null 
         subPackageDepth,
         layout,
         spacing,
+        repositoryColors: repositoryColors ?? {},
       }
     : null;
+}
+
+/** Accept only canonical repository IDs and normalized opaque RGB overrides. */
+function isRepositoryColors(value: unknown): value is Readonly<Record<string, string>> | undefined {
+  if (value === undefined) return true;
+  return (
+    isRecord(value) &&
+    Object.keys(value).length <= 100 &&
+    Object.entries(value).every(([repositoryId, color]) =>
+      isRepositoryId(repositoryId) && typeof color === 'string' && /^#[0-9A-F]{6}$/u.test(color)
+    )
+  );
 }
 
 /*** Recognize an object record without accepting arrays or null. */

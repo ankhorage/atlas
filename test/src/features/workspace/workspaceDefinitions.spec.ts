@@ -29,6 +29,7 @@ const WORKSPACE: WorkspaceDefinition = {
     showVendorPackages: false,
     spacing: 80,
     subPackageDepth: 2,
+    repositoryColors: {},
   },
 };
 
