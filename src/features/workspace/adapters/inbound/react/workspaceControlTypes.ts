@@ -1,4 +1,5 @@
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
+import type { SettingsContextValue } from '@/types/settings';
 import type { WorkspaceDefinition } from '@/types/workspace';
 
 export interface WorkspaceControlsProps {
@@ -7,6 +8,7 @@ export interface WorkspaceControlsProps {
   readonly onOpenWorkspace: (detail: WorkspaceOpenDetail) => void;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly selectedIds: ReadonlySet<string>;
+  readonly settings: SettingsContextValue;
   readonly source: string;
 }
 

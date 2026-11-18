@@ -19,7 +19,7 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
   const { mode, setMode, theme } = useZoraTheme();
 
   return (
-    <AppHeader inverted safeAreaTop={false}>
+    <AppHeader inverted safeAreaTop={false} testID="workspace-header">
       <div className={styles.content}>
         <div className={styles.identity}>
           <Heading ellipsizeMode="tail" level={3} numberOfLines={1} size="h5">
@@ -45,10 +45,10 @@ export function WorkspaceHeader(props: WorkspaceHeaderProps) {
               currentSource={props.currentSource}
               repositories={props.repositories}
               selectionRequired={props.selectionRequired}
+              authControls={<GitHubAuthControls auth={props.githubAuth} />}
               onSelection={props.onSelection}
             />
           )}
-          {props.offline ? null : <GitHubAuthControls auth={props.githubAuth} />}
           <Button
             leadingIcon={{ name: mode === 'dark' ? 'sunny-outline' : 'moon-outline' }}
             size="s"
