@@ -202,15 +202,34 @@ async function selectGraphNodes(page: Page): Promise<void> {
   if (nodes.some(node => node.position.x <= 0 || node.position.y <= 0))
     throw new Error(`GraphView reported unusable node geometry: ${JSON.stringify(nodes)}`);
 
-  await page.mouse.click(box.x + nodes[0]!.position.x, box.y + nodes[0]!.position.y);
+  const firstTarget = {
+    x: box.x + nodes[0]!.position.x,
+    y: box.y + nodes[0]!.position.y,
+  };
+  const secondTarget = {
+    x: box.x + nodes[1]!.position.x,
+    y: box.y + nodes[1]!.position.y,
+  };
+  await installGraphInputProbeAsync(page);
+  await assertGraphHitTargetAsync(page, firstTarget);
+  await page.mouse.click(firstTarget.x, firstTarget.y);
   await page.getByRole('treeitem', { selected: true }).waitFor();
   const firstSelection = await readSelectedTreeItems(page);
   if (firstSelection.length !== 1 || !firstSelection[0]?.endsWith('a'))
     throw new Error(`Graph-node click selected ${JSON.stringify(firstSelection)}, expected a.`);
 
-  await page.keyboard.down(process.platform === 'darwin' ? 'Meta' : 'Control');
-  await page.mouse.click(box.x + nodes[1]!.position.x, box.y + nodes[1]!.position.y);
-  await page.keyboard.up(process.platform === 'darwin' ? 'Meta' : 'Control');
+  const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+  await assertGraphHitTargetAsync(page, secondTarget);
+  await page.keyboard.down(modifier);
+  await page.mouse.click(secondTarget.x, secondTarget.y);
+  await page.keyboard.up(modifier);
+  await page.waitForFunction(expectedModifier => {
+    const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
+      .__atlasGraphInputProbe;
+    return expectedModifier === 'ctrlKey'
+      ? probe?.events.some(event => event.graphTarget && event.ctrlKey)
+      : probe?.events.some(event => event.graphTarget && event.metaKey);
+  }, modifier === 'Meta' ? 'metaKey' : 'ctrlKey');
   await page.waitForFunction(
     () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
   );
@@ -223,6 +242,53 @@ async function selectGraphNodes(page: Page): Promise<void> {
     throw new Error(
       `Modified GraphView click selected ${JSON.stringify(selection)}, expected a and b.`
     );
+}
+
+/*** Records native pointer modifiers at the graph boundary without inspecting GraphView internals. */
+async function installGraphInputProbeAsync(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    if (graph === null) throw new Error('Graph application was unavailable for input probing.');
+    const target = window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe };
+    target.__atlasGraphInputProbe = { events: [] };
+    graph.addEventListener(
+      'pointerup',
+      event => {
+        const current = target.__atlasGraphInputProbe;
+        if (current === undefined) return;
+        const pointerEvent = event as PointerEvent;
+        target.__atlasGraphInputProbe = {
+          events: [
+            ...current.events,
+            {
+              ctrlKey: pointerEvent.ctrlKey,
+              graphTarget: event.target instanceof Node && graph.contains(event.target),
+              metaKey: pointerEvent.metaKey,
+            },
+          ],
+        };
+      },
+      { capture: true }
+    );
+  });
+}
+
+/*** Verifies that a controller-measured coordinate resolves to a pointer-enabled GraphView target. */
+async function assertGraphHitTargetAsync(
+  page: Page,
+  point: { readonly x: number; readonly y: number }
+): Promise<void> {
+  const hitTarget = await page.evaluate(({ x, y }) => {
+    const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+    const target = document.elementFromPoint(x, y);
+    return {
+      graphTarget: graph !== null && target !== null && graph.contains(target),
+      pointerEvents: target === null ? null : getComputedStyle(target).pointerEvents,
+      tagName: target?.tagName ?? null,
+    };
+  }, point);
+  if (!hitTarget.graphTarget || hitTarget.pointerEvents === 'none')
+    throw new Error(`Measured GraphView coordinate missed a pointer target: ${JSON.stringify(hitTarget)}`);
 }
 
 /*** Reads exact public GraphView hit geometry so native clicks target two distinct rendered nodes. */
@@ -246,6 +312,14 @@ async function readMeasuredGraphNodesAsync(page: Page, nodeIds: readonly string[
 
 interface GraphProbe {
   readonly controller: GraphViewController | null;
+}
+
+interface GraphInputProbe {
+  readonly events: readonly {
+    readonly ctrlKey: boolean;
+    readonly graphTarget: boolean;
+    readonly metaKey: boolean;
+  }[];
 }
 
 async function assertUnavailableOfflineActions(page: Page): Promise<void> {
