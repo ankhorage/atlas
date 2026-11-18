@@ -73,6 +73,7 @@ function node(
     data: {
       classification: 'intrinsic',
       isIntrinsic: true,
+      kind: 'module',
       label,
       name: label,
       parent: '',

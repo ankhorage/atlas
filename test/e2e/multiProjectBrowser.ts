@@ -890,6 +890,37 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'multi-repository-real-source-compounds',
+    'Navigates a real source hierarchy without synthetic module groups while compounds are both enabled and disabled.',
+    async page => {
+      const catalogRoot = 'repository.owner-a-catalog';
+      const catalogSource = `${catalogRoot}.src`;
+      const sharedSource = 'repository.owner-a-shared.src';
+      await openWorkspaceAsync(page);
+      await page.getByLabel('Subpackage depth').fill('3');
+      await waitForGraphNodesAsync(page, [catalogRoot, catalogSource, sharedSource]);
+      const graph = page.getByRole('application', { name: 'Graph' });
+      const graphBounds = await graph.boundingBox();
+      assert(graphBounds !== null, 'Graph canvas has no bounds for source navigation.');
+      await doublePressGraphNodeAsync(page, catalogRoot, graphBounds);
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
+      const breadcrumbs = await page.getByTestId('workspace-breadcrumbs').innerText();
+      assert(
+        !breadcrumbs.includes('module'),
+        `Breadcrumb navigation exposed a synthetic module segment: ${breadcrumbs}.`
+      );
+      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
+      const compound = page.getByLabel('Show Compound Nodes');
+      if (await isSwitchCheckedAsync(compound)) await compound.click();
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
+      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
+      if (!(await isSwitchCheckedAsync(compound))) await compound.click();
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
+      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
+      return [];
+    }
+  ),
+  scenario(
     'breadcrumb-home-restoration',
     'Restores Home navigation from breadcrumbs.',
     async page => {
@@ -1698,6 +1729,36 @@ async function readGraphNodeAsync(page: Page, id: string) {
   return node;
 }
 
+/*** Wait for the released controller to expose every requested projected graph node. */
+async function waitForGraphNodesAsync(page: Page, nodeIds: readonly string[]): Promise<void> {
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
+  }, nodeIds);
+}
+
+/*** Drives GraphView's public double-press interaction at the measured node center. */
+async function doublePressGraphNodeAsync(
+  page: Page,
+  id: string,
+  graphBounds: { readonly x: number; readonly y: number }
+): Promise<void> {
+  const node = await readGraphNodeAsync(page, id);
+  await page.mouse.dblclick(graphBounds.x + node.position.x, graphBounds.y + node.position.y);
+}
+
+/*** Rejects the legacy identity that would render a phantom module/src compound. */
+async function assertNoSyntheticModuleNodeAsync(page: Page, repositoryRoot: string): Promise<void> {
+  const legacyId = `${repositoryRoot}.module.src`;
+  const count = await page.evaluate(id => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.([id])?.nodes.length ?? 0;
+  }, legacyId);
+  assert(count === 0, `GraphView retained synthetic module identity ${legacyId}.`);
+}
+
 /*** Verifies that a native GraphView tap updates the user-visible synchronized tree selection. */
 async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promise<void> {
   await tools.click();
@@ -1756,7 +1817,7 @@ async function pinchGraphAsync(
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 28, `Expected exactly 28 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 29, `Expected exactly 29 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'
