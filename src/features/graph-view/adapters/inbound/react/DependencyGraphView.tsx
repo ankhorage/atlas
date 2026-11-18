@@ -8,7 +8,7 @@ import {
 } from '@ankhorage/zora/web/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
 import { LAYOUTS } from '@/features/graph-view/adapters/inbound/cytoscape/constants';
 import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
@@ -145,13 +145,14 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
  * layout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.
  */
 function useGraphViewPresentation(input: GraphViewPresentationInput) {
-  const model = useMemo(
+  const projectedModel = useMemo(
     () =>
       input.visibleElements === null
         ? null
         : createGraphViewModel(input.packageGraph, input.visibleElements, input.cycleHighlights),
     [input.cycleHighlights, input.packageGraph, input.visibleElements]
   );
+  const model = useStableGraphViewModel(projectedModel);
   const styles = useMemo(
     () =>
       input.visibleElements === null
@@ -170,6 +171,35 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
     model,
     styles,
   };
+}
+
+/*** Retains equal projected element values so source updates do not present retained topology as replacements. */
+function useStableGraphViewModel(model: GraphViewModel | null): GraphViewModel | null {
+  const nodes = useStableGraphViewElements(model?.nodes ?? []);
+  const edges = useStableGraphViewElements(model?.edges ?? []);
+  if (model === null) return null;
+  return { ...model, edges, nodes };
+}
+
+/*** Reuses an element only when its complete public GraphView value is unchanged. */
+function useStableGraphViewElements<Element extends { readonly id: string }>(
+  elements: readonly Element[]
+): readonly Element[] {
+  const previousElements = useRef(new Map<string, Element>());
+  return useMemo(() => {
+    const nextElements = new Map<string, Element>();
+    const stabilized = elements.map(element => {
+      const previous = previousElements.current.get(element.id);
+      const next =
+        previous !== undefined && JSON.stringify(previous) === JSON.stringify(element)
+          ? previous
+          : element;
+      nextElements.set(element.id, next);
+      return next;
+    });
+    previousElements.current = nextElements;
+    return stabilized;
+  }, [elements]);
 }
 
 /*** Own GraphView controller callbacks and render the viewport plus zoom controls. */
