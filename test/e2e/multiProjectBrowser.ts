@@ -2,7 +2,14 @@ import { access, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises
 import { spawn, type ChildProcess } from 'node:child_process';
 import { resolve } from 'node:path';
 
-import { chromium, type Browser, type Locator, type Page, type Response } from 'playwright-core';
+import {
+  chromium,
+  type Browser,
+  type Locator,
+  type Page,
+  type Request,
+  type Response,
+} from 'playwright-core';
 
 import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
 import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/react/createGraphViewModel';
@@ -537,6 +544,11 @@ function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
 }
 
+/*** Read event-owned request cardinality after the browser has processed an interaction. */
+function getRequestCount(requests: readonly Request[]): number {
+  return requests.length;
+}
+
 /*** Proves that a visible control, rather than the graph canvas, owns its pointer interaction point. */
 async function assertTopmostControlAsync(control: Locator, name: string): Promise<void> {
   const receivesPointerEvents = await control.evaluate(element => {
@@ -764,6 +776,257 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'source-picker-preserves-87-repository-topology',
+    'Keeps the GraphView controller, viewport, and retained-node coordinates stable when one filtered repository is removed.',
+    async page => {
+      const repositoryIds = Array.from({ length: 87 }, (_, index) => `viewport-87-${index}`);
+      const removedNodeId = 'repository.viewport-87-0';
+      const retainedNodeIds = repositoryIds.slice(1).map(id => `repository.${id}`);
+      const allNodeIds = [removedNodeId, ...retainedNodeIds];
+      await openWorkspaceAsync(page, 'viewport-87', repositoryIds);
+      await waitForGraphNodesAsync(page, retainedNodeIds);
+      await panAndZoomGraphAsync(page);
+      await page.evaluate(() => {
+        const target = window as typeof window & {
+          __atlasTopologyAcceptance?: {
+            readonly controller: GraphViewportProbe['controller'];
+            readonly graph: Element | null;
+            readonly layoutCount: number;
+            readonly viewport: ReturnType<
+              NonNullable<GraphViewportProbe['controller']>['getViewport']
+            >;
+            readonly positions: readonly {
+              readonly id: string;
+              readonly x: number;
+              readonly y: number;
+            }[];
+            readonly allPositions: readonly {
+              readonly id: string;
+              readonly x: number;
+              readonly y: number;
+            }[];
+          };
+          __atlasViewportProbe?: GraphViewportProbe;
+        };
+        const controller = target.__atlasViewportProbe?.controller;
+        const measurement = controller?.measureNodes?.(
+          Array.from({ length: 86 }, (_, index) => `repository.viewport-87-${index + 1}`)
+        );
+        const allMeasurement = controller?.measureNodes?.(
+          Array.from({ length: 87 }, (_, index) => `repository.viewport-87-${index}`)
+        );
+        if (
+          controller === null ||
+          controller === undefined ||
+          measurement === null ||
+          measurement === undefined ||
+          allMeasurement === null ||
+          allMeasurement === undefined ||
+          allMeasurement.nodes.length !== 87
+        )
+          throw new Error('Graph controller did not expose the retained-node measurements.');
+        target.__atlasTopologyAcceptance = {
+          controller,
+          graph: document.querySelector('[role="application"][aria-label="Graph"]'),
+          layoutCount: target.__atlasViewportProbe?.layoutCount ?? 0,
+          positions: measurement.nodes.map(node => ({
+            id: node.id,
+            x: node.position.x,
+            y: node.position.y,
+          })),
+          allPositions: allMeasurement.nodes.map(node => ({
+            id: node.id,
+            x: node.position.x,
+            y: node.position.y,
+          })),
+          viewport: controller.getViewport(),
+        };
+      });
+      const selectionRequests: Request[] = [];
+      page.on('request', request => {
+        if (request.url().endsWith('/api/workspace/selection')) selectionRequests.push(request);
+      });
+      await openRepositorySourceDialogAsync(page);
+      await page.getByLabel('Choose repositories').click();
+      await page.getByLabel('Search repositories').fill('akon taxi');
+      await page.getByLabel('viewport/akon taxi').waitFor();
+      assert(
+        getRequestCount(selectionRequests) === 0,
+        'Searching repositories sent a selection request.'
+      );
+      const searchStability = await page.evaluate(() => {
+        const target = window as typeof window & {
+          __atlasTopologyAcceptance?: {
+            readonly controller: GraphViewportProbe['controller'];
+            readonly graph: Element | null;
+            readonly allPositions: readonly {
+              readonly id: string;
+              readonly x: number;
+              readonly y: number;
+            }[];
+            readonly layoutCount: number;
+            readonly viewport: ReturnType<
+              NonNullable<GraphViewportProbe['controller']>['getViewport']
+            >;
+          };
+          __atlasViewportProbe?: GraphViewportProbe;
+        };
+        const baseline = target.__atlasTopologyAcceptance;
+        const controller = target.__atlasViewportProbe?.controller;
+        return {
+          controllerRetained: baseline?.controller === controller,
+          graphRetained:
+            baseline?.graph === document.querySelector('[role="application"][aria-label="Graph"]'),
+          layoutCount: target.__atlasViewportProbe?.layoutCount,
+          positions: controller
+            ?.measureNodes?.(baseline?.allPositions.map(node => node.id) ?? [])
+            ?.nodes.map(node => ({ id: node.id, x: node.position.x, y: node.position.y })),
+          previousLayoutCount: baseline?.layoutCount,
+          previousPositions: baseline?.allPositions,
+          previousViewport: baseline?.viewport,
+          viewport: controller?.getViewport(),
+        };
+      });
+      assert(
+        searchStability.controllerRetained,
+        'Repository search remounted the GraphView controller.'
+      );
+      assert(searchStability.graphRetained, 'Repository search remounted the graph canvas.');
+      assert(
+        searchStability.layoutCount === searchStability.previousLayoutCount,
+        'Repository search ran a graph layout.'
+      );
+      assert(
+        JSON.stringify(searchStability.viewport) ===
+          JSON.stringify(searchStability.previousViewport),
+        'Repository search changed the user viewport.'
+      );
+      assert(
+        JSON.stringify(searchStability.positions) ===
+          JSON.stringify(searchStability.previousPositions),
+        'Repository search changed graph geometry.'
+      );
+      const removalRequest = page.waitForRequest(request => {
+        if (!request.url().endsWith('/api/workspace/selection') || request.method() !== 'POST')
+          return false;
+        const body = JSON.parse(request.postData() ?? '{}') as {
+          readonly addedRepositoryIds?: unknown;
+          readonly removedRepositoryIds?: unknown;
+          readonly runtimeId?: unknown;
+        };
+        return (
+          Array.isArray(body.addedRepositoryIds) &&
+          body.addedRepositoryIds.length === 0 &&
+          Array.isArray(body.removedRepositoryIds) &&
+          body.removedRepositoryIds.length === 1 &&
+          body.removedRepositoryIds[0] === 'viewport-87-0' &&
+          typeof body.runtimeId === 'string'
+        );
+      });
+      const removalResponse = page.waitForResponse(
+        response => response.url().endsWith('/api/workspace/selection') && response.status() === 200
+      );
+      await page.getByLabel('viewport/akon taxi').uncheck();
+      await removalRequest;
+      await removalResponse;
+      await page.waitForFunction(async ids => {
+        const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+          .__atlasViewportProbe;
+        const measurement = probe?.controller?.measureNodes?.(ids);
+        const removed =
+          measurement?.nodes.length === ids.length - 1 &&
+          !measurement.nodes.some(node => node.id === ids[0]);
+        if (!removed) return false;
+        const before = JSON.stringify(measurement);
+        await new Promise<void>(resolve =>
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+        );
+        return JSON.stringify(probe?.controller?.measureNodes?.(ids)) === before;
+      }, allNodeIds);
+      assert(
+        !(await page.getByLabel('viewport/akon taxi').isChecked()),
+        'Repository picker did not commit the removal.'
+      );
+      assert(
+        getRequestCount(selectionRequests) === 1,
+        `Expected one removal request, observed ${getRequestCount(selectionRequests)}.`
+      );
+      const stability = await page.evaluate(() => {
+        const target = window as typeof window & {
+          __atlasTopologyAcceptance?: {
+            readonly controller: GraphViewportProbe['controller'];
+            readonly graph: Element | null;
+            readonly layoutCount: number;
+            readonly viewport: ReturnType<
+              NonNullable<GraphViewportProbe['controller']>['getViewport']
+            >;
+            readonly positions: readonly {
+              readonly id: string;
+              readonly x: number;
+              readonly y: number;
+            }[];
+            readonly allPositions: readonly {
+              readonly id: string;
+              readonly x: number;
+              readonly y: number;
+            }[];
+          };
+          __atlasViewportProbe?: GraphViewportProbe;
+        };
+        const baseline = target.__atlasTopologyAcceptance;
+        const controller = target.__atlasViewportProbe?.controller;
+        const measurement = controller?.measureNodes?.(
+          baseline?.positions.map(node => node.id) ?? []
+        );
+        const allMeasurement = controller?.measureNodes?.([
+          'repository.viewport-87-0',
+          ...Array.from({ length: 86 }, (_, index) => `repository.viewport-87-${index + 1}`),
+        ]);
+        return {
+          controllerRetained: baseline?.controller === controller,
+          graphRetained:
+            baseline?.graph === document.querySelector('[role="application"][aria-label="Graph"]'),
+          layoutCount: target.__atlasViewportProbe?.layoutCount,
+          measurement,
+          allMeasurement,
+          previousLayoutCount: baseline?.layoutCount,
+          previousPositions: baseline?.positions,
+          previousViewport: baseline?.viewport,
+          viewport: controller?.getViewport(),
+        };
+      });
+      assert(
+        stability.controllerRetained,
+        'Repository removal remounted the GraphView controller.'
+      );
+      assert(stability.graphRetained, 'Repository removal remounted the graph canvas.');
+      assert(
+        stability.allMeasurement?.nodes.length === 86 &&
+          !stability.allMeasurement.nodes.some(node => node.id === removedNodeId),
+        'Repository removal did not commit an exact 87 to 86 graph-node transition.'
+      );
+      assert(
+        stability.layoutCount === stability.previousLayoutCount,
+        `Repository removal ran a full graph layout or auto-fit: ${JSON.stringify(stability)}.`
+      );
+      assert(
+        JSON.stringify(stability.viewport) === JSON.stringify(stability.previousViewport),
+        'Repository removal changed the user viewport.'
+      );
+      assert(
+        JSON.stringify(
+          stability.measurement?.nodes.map(node => ({
+            id: node.id,
+            x: node.position.x,
+            y: node.position.y,
+          }))
+        ) === JSON.stringify(stability.previousPositions),
+        'Repository removal changed retained-node coordinates.'
+      );
+      return [];
+    }
+  ),
+  scenario(
     'source-picker-immediate-selection',
     'Applies a selection diff immediately without a deferred source action or document navigation.',
     async page => {
@@ -907,14 +1170,19 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'tree-graph-selection',
-    'Synchronizes TreeView selection with the workspace graph selection.',
+    'Synchronizes TreeView selection with the workspace graph selection without changing the viewport.',
     async page => {
       await openWorkspaceAsync(page);
+      const zoom = await page.getByLabel('Zoom').inputValue();
       await page.getByRole('button', { name: 'Expand' }).first().click();
       await page.getByText('catalog', { exact: true }).click();
       assert(
         (await page.getByText('catalog', { exact: true }).count()) > 0,
         'Tree selection was unavailable.'
+      );
+      assert(
+        (await page.getByLabel('Zoom').inputValue()) === zoom,
+        'Tree selection changed the settled viewport.'
       );
       return [];
     }
@@ -1206,21 +1474,6 @@ const scenarios: readonly Scenario[] = [
       );
       await page.getByRole('button', { name: 'Switch to dark mode' }).click();
       await page.getByRole('button', { name: 'Switch to light mode' }).waitFor();
-      return [];
-    }
-  ),
-  scenario(
-    'settled-selection-viewport',
-    'Selects without changing the settled viewport.',
-    async page => {
-      await openWorkspaceAsync(page);
-      const zoom = await page.getByLabel('Zoom').inputValue();
-      await page.getByRole('button', { name: 'Expand' }).first().click();
-      await page.getByText('catalog', { exact: true }).click();
-      assert(
-        (await page.getByLabel('Zoom').inputValue()) === zoom,
-        'Selection changed the settled viewport.'
-      );
       return [];
     }
   ),
@@ -1597,9 +1850,6 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     await tab.click();
     await tab.waitFor();
   }
-  const packagePrefix = page.getByLabel('Package prefix');
-  await packagePrefix.fill('@fixture/catalog');
-  await packagePrefix.fill('');
   await closeWorkspaceToolsDialogAsync(page);
   assert(
     await tools.evaluate(element => document.activeElement === element),
@@ -1626,6 +1876,7 @@ async function exerciseNativeGraphInteractionContractAsync(
   page: Page,
   tools: Locator
 ): Promise<void> {
+  await waitForGraphNodesAsync(page, responsiveTouchGraphNodeIds);
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
@@ -1692,6 +1943,32 @@ async function readGraphViewportAsync(page: Page) {
   });
   assert(viewport !== null, 'Graph controller was unavailable for interaction acceptance.');
   return viewport;
+}
+
+/*** Establishes a user-owned viewport baseline through native graph and control input. */
+async function panAndZoomGraphAsync(page: Page): Promise<void> {
+  const graph = page.getByRole('application', { name: 'Graph' });
+  const graphBox = await graph.boundingBox();
+  assert(graphBox !== null, 'Graph has no bounds for a native viewport baseline.');
+  const beforePan = await readGraphViewportAsync(page);
+  const panPoint = await findGraphPanPointAsync(page, graphBox);
+  await page.mouse.move(graphBox.x + panPoint.x, graphBox.y + panPoint.y);
+  await page.mouse.down();
+  await page.mouse.move(graphBox.x + panPoint.x + 30, graphBox.y + panPoint.y + 20, { steps: 8 });
+  await page.mouse.up();
+  const afterPan = await readGraphViewportAsync(page);
+  assert(
+    JSON.stringify(afterPan.pan) !== JSON.stringify(beforePan.pan),
+    'Native graph pan did not change the viewport.'
+  );
+  const zoom = page.getByLabel('Zoom');
+  const previousZoom = await zoom.inputValue();
+  await zoom.focus();
+  await page.keyboard.press('ArrowRight');
+  assert(
+    (await zoom.inputValue()) !== previousZoom,
+    'Native zoom control did not change the viewport.'
+  );
 }
 
 /*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */

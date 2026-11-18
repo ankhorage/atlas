@@ -145,7 +145,7 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
  * layout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.
  */
 function useGraphViewPresentation(input: GraphViewPresentationInput) {
-  const model = useMemo(
+  const projectedModel = useMemo(
     () =>
       input.visibleElements === null
         ? null
@@ -167,7 +167,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
   return {
     layout: readGraphViewLayout(input.layout),
     layoutOptions,
-    model,
+    model: projectedModel,
     styles,
   };
 }
@@ -191,6 +191,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           maxFitLabelSize={24}
           nodes={interactions.nodes}
           selectedNodeIds={interactions.selectedNodeIds}
+          topologyUpdatePolicy="preserve-positions"
           zoomMode="fit-relative"
           sizeNodesToLabels
           onLayoutComplete={controller => viewport.handleLayoutComplete(controller, visibleNodeIds)}
