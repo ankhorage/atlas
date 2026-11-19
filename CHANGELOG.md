@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.5
+
+### Patch Changes
+
+- 46e09a6: Let repository colors be selected from the published ZORA picker while validating their persisted overrides.
+
 ## 0.21.4
 
 ### Patch Changes

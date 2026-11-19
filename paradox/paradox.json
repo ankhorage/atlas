@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.21.4",
+      "value": "v0.21.5",
       "color": "cb3837"
     },
     {
@@ -431,6 +431,14 @@
       ],
       "exports": [
         "startViewerSourceAsync"
+      ]
+    },
+    {
+      "path": "src/constants/repositoryColor.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "repositoryColor"
       ]
     },
     {
@@ -859,7 +867,7 @@
       "path": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts"
+        "src/constants/repositoryColor.ts"
       ],
       "exports": [
         "getRepositoryColorStyles"
@@ -917,6 +925,7 @@
       "path": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/constants/repositoryColor.ts",
         "src/features/graph-view/utils/createCompoundOpacityIndex.ts",
         "src/features/graph-view/utils/readNodeDefinitionId.ts",
         "src/types/auditVisualization.ts"
@@ -1601,7 +1610,9 @@
       "dependencies": [
         "src/features/settings/adapters/inbound/react/SettingsContext.ts",
         "src/features/settings/utils/readSettingsEnvironment.ts",
-        "src/types/settings.ts"
+        "src/types/settings.ts",
+        "src/utils/isRepositoryColors.ts",
+        "src/utils/isRepositoryId.ts"
       ],
       "exports": [
         "SettingsProvider"
@@ -1744,6 +1755,7 @@
       "path": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
@@ -1770,6 +1782,28 @@
       "exports": [
         "ProjectSourceForm",
         "WorkspaceSelectionEventDetail"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/constants/repositoryColor.ts",
+        "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "src/types/settings.ts"
+      ],
+      "exports": [
+        "RepositoryColorControl"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "RepositoryLoadFailures"
       ]
     },
     {
@@ -1960,6 +1994,7 @@
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/workspace/adapters/inbound/react/MobileWorkspaceTools.tsx",
+        "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
         "src/features/workspace/adapters/inbound/react/useWorkspaceCycleInspection.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceNavigation.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
@@ -2152,7 +2187,9 @@
       "path": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/types/workspace.ts"
+        "src/types/workspace.ts",
+        "src/utils/isRepositoryColors.ts",
+        "src/utils/isRepositoryId.ts"
       ],
       "exports": [
         "validateWorkspaceDefinitions"
@@ -2540,6 +2577,24 @@
       ]
     },
     {
+      "path": "src/utils/isRepositoryColors.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/utils/isRepositoryId.ts"
+      ],
+      "exports": [
+        "isRepositoryColors"
+      ]
+    },
+    {
+      "path": "src/utils/isRepositoryId.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "isRepositoryId"
+      ]
+    },
+    {
       "path": "src/utils/parseProjectPath.ts",
       "isEntrypoint": false,
       "dependencies": [],
@@ -2599,7 +2654,13 @@
     {
       "path": "test/e2e/multiProjectBrowser.ts",
       "isEntrypoint": false,
-      "dependencies": [],
+      "dependencies": [
+        "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
+        "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
+        "src/features/graph-view/utils/projectVisibleGraph.ts",
+        "src/features/settings/utils/readSettingsEnvironment.ts",
+        "test/e2e/fixtureWorkspace.ts"
+      ],
       "exports": []
     },
     {
@@ -3359,6 +3420,15 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/rule-explorer/domain/projectRuleDag.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/settings/SettingsProvider.spec.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "src/features/settings/adapters/inbound/react/useSettings.ts"
       ],
       "exports": []
     },
@@ -5315,28 +5385,6 @@
       }
     },
     {
-      "name": "repositoryColorClass",
-      "description": "Maps an immutable repository identity onto a stable ZORA palette slot.\n\nHashing each ID independently keeps existing repositories visually stable when sources are\nreordered, filtered, retried, or added. Seven semantic roles make collisions uncommon in the\nintended multi-project workspace size; a collision remains legible through the repository root\nlabel instead of causing unrelated repositories to reshuffle.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
-        "line": 25,
-        "column": 1
-      }
-    },
-    {
-      "name": "hashRepositoryId",
-      "description": "Produces one deterministic unsigned hash without deriving identity from a display label.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
-        "line": 31,
-        "column": 1
-      }
-    },
-    {
       "name": "getStyle",
       "description": "Returns Cytoscape style overrides for this layout.",
       "see": [],
@@ -5354,13 +5402,13 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
-        "line": 32,
+        "line": 25,
         "column": 1
       }
     },
     {
       "name": "getRepositoryColorStyles",
-      "description": "Builds paint-only repository identity styles from the active ZORA semantic palette.",
+      "description": "Builds stable paint-only repository identity styles from prepared node presentation data.",
       "see": [],
       "security": [],
       "sourceLocation": {
@@ -5371,23 +5419,34 @@
     },
     {
       "name": "getRepositoryLeafStyles",
-      "description": "Paints first-party leaf nodes from their prepared immutable repository identity.\n\nVendor nodes never receive a repository class. Hover, selected, and audit rules are emitted\nlater, so transient interaction and audit evidence remain the stronger signals.",
+      "description": "Paints first-party leaf nodes from their prepared immutable repository identity.\n\nVendor nodes never receive a repository class. Repository identity remains visible during\nselection while audit rules retain their stronger evidence border and outline signals.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
-        "line": 19,
+        "line": 20,
+        "column": 1
+      }
+    },
+    {
+      "name": "getSelectedRepositoryLeafStyles",
+      "description": "Preserves the repository fill for selected leaf nodes without replacing selection evidence.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
+        "line": 34,
         "column": 1
       }
     },
     {
       "name": "getRepositoryCompoundStyles",
-      "description": "Preserves selected and audit compound priority while retaining repository identity at rest.\n\nThese declarations change paint only. Padding, border widths, labels, and geometry remain\nowned by the existing compound styles so repository identity cannot trigger graph re-layout.",
+      "description": "Keeps repository identity visible for selected compounds while audit evidence retains priority.\n\nThese declarations change paint only. Padding, border widths, labels, and geometry remain\nowned by the existing compound styles so repository identity cannot trigger graph re-layout.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
-        "line": 36,
+        "line": 49,
         "column": 1
       }
     },
@@ -5464,7 +5523,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 39,
+        "line": 40,
         "column": 1
       }
     },
@@ -5475,7 +5534,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 61,
+        "line": 62,
         "column": 1
       }
     },
@@ -5486,7 +5545,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 98,
+        "line": 99,
         "column": 1
       }
     },
@@ -5497,7 +5556,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 133,
+        "line": 134,
         "column": 1
       }
     },
@@ -5508,7 +5567,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 184,
+        "line": 185,
         "column": 1
       }
     },
@@ -5519,7 +5578,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 199,
+        "line": 200,
         "column": 1
       }
     },
@@ -5530,7 +5589,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 223,
+        "line": 224,
         "column": 1
       }
     },
@@ -5541,7 +5600,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 262,
+        "line": 263,
         "column": 1
       }
     },
@@ -5552,7 +5611,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/cytoscape/style.ts",
-        "line": 294,
+        "line": 295,
         "column": 1
       }
     },
@@ -5574,7 +5633,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 16,
+        "line": 17,
         "column": 1
       }
     },
@@ -5585,7 +5644,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 61,
+        "line": 71,
         "column": 1
       }
     },
@@ -5596,7 +5655,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 85,
+        "line": 95,
         "column": 1
       }
     },
@@ -5607,7 +5666,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 102,
+        "line": 112,
         "column": 1
       }
     },
@@ -5618,7 +5677,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 116,
+        "line": 126,
         "column": 1
       }
     },
@@ -5629,7 +5688,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 135,
+        "line": 145,
         "column": 1
       }
     },
@@ -5640,7 +5699,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 158,
+        "line": 168,
         "column": 1
       }
     },
@@ -5651,7 +5710,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 196,
+        "line": 213,
         "column": 1
       }
     },
@@ -5662,7 +5721,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 225,
+        "line": 242,
         "column": 1
       }
     },
@@ -5673,7 +5732,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 232,
+        "line": 249,
         "column": 1
       }
     },
@@ -5684,7 +5743,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
-        "line": 240,
+        "line": 257,
         "column": 1
       }
     },
@@ -5739,7 +5798,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 95,
+        "line": 96,
         "column": 1
       }
     },
@@ -5750,7 +5809,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 117,
+        "line": 118,
         "column": 1
       }
     },
@@ -5761,7 +5820,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 136,
+        "line": 137,
         "column": 1
       }
     },
@@ -5772,7 +5831,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 147,
+        "line": 148,
         "column": 1
       }
     },
@@ -5783,7 +5842,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 176,
+        "line": 182,
         "column": 1
       }
     },
@@ -5794,7 +5853,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 219,
+        "line": 225,
         "column": 1
       }
     },
@@ -5805,7 +5864,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 238,
+        "line": 244,
         "column": 1
       }
     },
@@ -5816,7 +5875,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 251,
+        "line": 257,
         "column": 1
       }
     },
@@ -7653,7 +7712,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 14,
+        "line": 15,
         "column": 1
       }
     },
@@ -7664,7 +7723,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 37,
+        "line": 39,
         "column": 1
       }
     },
@@ -8170,7 +8229,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
-        "line": 9,
+        "line": 11,
+        "column": 1
+      }
+    },
+    {
+      "name": "useRepositoryColorSettings",
+      "description": "Owns validated repository color overrides for one portable workspace scope.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "line": 62,
         "column": 1
       }
     },
@@ -8181,7 +8251,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
-        "line": 58,
+        "line": 83,
         "column": 1
       }
     },
@@ -8192,7 +8262,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
-        "line": 82,
+        "line": 107,
         "column": 1
       }
     },
@@ -8203,7 +8273,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
-        "line": 87,
+        "line": 112,
         "column": 1
       }
     },
@@ -8258,7 +8328,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 13,
+        "line": 15,
+        "column": 1
+      }
+    },
+    {
+      "name": "createColorToneDefinitions",
+      "description": "Select the serializable Tone props required by ZORA from the published Templates catalog.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "line": 54,
         "column": 1
       }
     },
@@ -8269,7 +8350,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 51,
+        "line": 61,
         "column": 1
       }
     },
@@ -8280,7 +8361,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 59,
+        "line": 69,
         "column": 1
       }
     },
@@ -8291,7 +8372,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 64,
+        "line": 74,
         "column": 1
       }
     },
@@ -8489,7 +8570,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
-        "line": 30,
+        "line": 35,
         "column": 1
       }
     },
@@ -8500,7 +8581,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
-        "line": 45,
+        "line": 51,
         "column": 1
       }
     },
@@ -8511,7 +8592,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
-        "line": 57,
+        "line": 63,
         "column": 1
       }
     },
@@ -8522,7 +8603,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts",
-        "line": 70,
+        "line": 76,
         "column": 1
       }
     },
@@ -8599,7 +8680,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 15,
+        "line": 19,
         "column": 1
       }
     },
@@ -8610,7 +8691,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 57,
+        "line": 63,
         "column": 1
       }
     },
@@ -8621,7 +8702,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 72,
+        "line": 78,
         "column": 1
       }
     },
@@ -8632,7 +8713,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 83,
+        "line": 89,
         "column": 1
       }
     },
@@ -8643,7 +8724,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 99,
+        "line": 110,
         "column": 1
       }
     },
@@ -8654,7 +8735,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 154,
+        "line": 168,
         "column": 1
       }
     },
@@ -8665,18 +8746,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 193,
+        "line": 208,
         "column": 1
       }
     },
     {
-      "name": "toggleRepository",
-      "description": "Toggle a repository inclusion and pass the immediate selection to its workspace owner.",
+      "name": "setRepositorySelected",
+      "description": "Apply the checkbox's resolved selection value to the staged repository identifiers.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 208,
+        "line": 231,
         "column": 1
       }
     },
@@ -8687,7 +8768,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 21,
+        "line": 22,
         "column": 1
       }
     },
@@ -8698,7 +8779,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 53,
+        "line": 54,
         "column": 1
       }
     },
@@ -8709,7 +8790,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 66,
+        "line": 67,
         "column": 1
       }
     },
@@ -8720,7 +8801,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 107,
+        "line": 108,
         "column": 1
       }
     },
@@ -8731,7 +8812,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 126,
+        "line": 127,
         "column": 1
       }
     },
@@ -8742,7 +8823,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 176,
+        "line": 178,
         "column": 1
       }
     },
@@ -8753,7 +8834,62 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 187,
+        "line": 189,
+        "column": 1
+      }
+    },
+    {
+      "name": "RepositoryColorControl",
+      "description": "Edits one repository's persisted graph color without participating in repository selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "line": 23,
+        "column": 1
+      }
+    },
+    {
+      "name": "resetRepositoryColor",
+      "description": "Clear a saved repository color and return its controlled picker to the canonical default.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "line": 75,
+        "column": 1
+      }
+    },
+    {
+      "name": "createColorPickerValue",
+      "description": "Create the controlled Wheel and Tone state from the current canonical repository color.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "line": 85,
+        "column": 1
+      }
+    },
+    {
+      "name": "setRepositoryColor",
+      "description": "Persist the Picker's one active Wheel or single Tone color as a canonical uppercase override.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "line": 95,
+        "column": 1
+      }
+    },
+    {
+      "name": "RepositoryLoadFailures",
+      "description": "Render retry controls only for the terminal repository failures in the current operation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
+        "line": 8,
         "column": 1
       }
     },
@@ -9358,7 +9494,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 22,
+        "line": 23,
         "column": 1
       }
     },
@@ -9369,7 +9505,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 42,
+        "line": 37,
         "column": 1
       }
     },
@@ -9380,7 +9516,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 71,
+        "line": 66,
         "column": 1
       }
     },
@@ -9391,7 +9527,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 99,
+        "line": 95,
         "column": 1
       }
     },
@@ -9402,7 +9538,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 117,
+        "line": 113,
         "column": 1
       }
     },
@@ -9413,7 +9549,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 148,
+        "line": 144,
         "column": 1
       }
     },
@@ -9424,7 +9560,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 20,
+        "line": 21,
         "column": 1
       }
     },
@@ -9435,7 +9571,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 66,
+        "line": 69,
         "column": 1
       }
     },
@@ -9446,7 +9582,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 87,
+        "line": 91,
         "column": 1
       }
     },
@@ -9457,7 +9593,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 133,
+        "line": 137,
         "column": 1
       }
     },
@@ -9468,7 +9604,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 147,
+        "line": 151,
         "column": 1
       }
     },
@@ -9479,7 +9615,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 156,
+        "line": 160,
         "column": 1
       }
     },
@@ -9490,7 +9626,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 174,
+        "line": 178,
         "column": 1
       }
     },
@@ -9501,7 +9637,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 186,
+        "line": 190,
         "column": 1
       }
     },
@@ -9512,7 +9648,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 19,
+        "line": 21,
         "column": 1
       }
     },
@@ -9523,7 +9659,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 69,
+        "line": 71,
         "column": 1
       }
     },
@@ -9534,7 +9670,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 78,
+        "line": 80,
         "column": 1
       }
     },
@@ -9545,7 +9681,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 86,
+        "line": 88,
         "column": 1
       }
     },
@@ -9556,7 +9692,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 92,
+        "line": 94,
         "column": 1
       }
     },
@@ -9567,7 +9703,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 97,
+        "line": 99,
         "column": 1
       }
     },
@@ -9578,7 +9714,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 139,
+        "line": 141,
         "column": 1
       }
     },
@@ -9589,18 +9725,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 175,
-        "column": 1
-      }
-    },
-    {
-      "name": "RepositoryLoadFailures",
-      "description": "Reveal retry controls only for the terminal repository failures in the current operation.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 184,
+        "line": 180,
         "column": 1
       }
     },
@@ -9611,7 +9736,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 238,
+        "line": 207,
         "column": 1
       }
     },
@@ -9622,7 +9747,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 251,
+        "line": 220,
         "column": 1
       }
     },
@@ -9633,7 +9758,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 268,
+        "line": 237,
         "column": 1
       }
     },
@@ -9721,7 +9846,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 17,
+        "line": 18,
         "column": 1
       }
     },
@@ -9732,7 +9857,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 65,
+        "line": 68,
         "column": 1
       }
     },
@@ -9743,7 +9868,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 74,
+        "line": 77,
         "column": 1
       }
     },
@@ -9754,7 +9879,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 85,
+        "line": 88,
         "column": 1
       }
     },
@@ -9765,7 +9890,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 111,
+        "line": 114,
         "column": 1
       }
     },
@@ -9776,7 +9901,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 128,
+        "line": 131,
         "column": 1
       }
     },
@@ -10645,7 +10770,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 8,
+        "line": 12,
         "column": 1
       }
     },
@@ -10656,7 +10781,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 20,
+        "line": 24,
         "column": 1
       }
     },
@@ -10667,7 +10792,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 37,
+        "line": 41,
         "column": 1
       }
     },
@@ -10678,7 +10803,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 51,
+        "line": 55,
         "column": 1
       }
     },
@@ -10689,18 +10814,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 70,
-        "column": 1
-      }
-    },
-    {
-      "name": "isRecord",
-      "description": "Recognize an object record without accepting arrays or null.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 107,
+        "line": 74,
         "column": 1
       }
     },
@@ -10711,7 +10825,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 112,
+        "line": 114,
         "column": 1
       }
     },
@@ -10722,7 +10836,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 117,
+        "line": 119,
         "column": 1
       }
     },
@@ -10733,18 +10847,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 122,
-        "column": 1
-      }
-    },
-    {
-      "name": "isRepositoryId",
-      "description": "Reject repository identities that can become filesystem paths.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 127,
+        "line": 124,
         "column": 1
       }
     },
@@ -10755,7 +10858,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 134,
+        "line": 129,
         "column": 1
       }
     },
@@ -10766,7 +10869,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 153,
+        "line": 148,
         "column": 1
       }
     },
@@ -10777,7 +10880,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
-        "line": 158,
+        "line": 153,
         "column": 1
       }
     },
@@ -11431,6 +11534,28 @@
       }
     },
     {
+      "name": "isRepositoryColors",
+      "description": "Return whether a value is a bounded map of canonical repository RGB color overrides.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/utils/isRepositoryColors.ts",
+        "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRepositoryId",
+      "description": "Return whether a repository identity is safe to persist outside a filesystem path.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/utils/isRepositoryId.ts",
+        "line": 2,
+        "column": 1
+      }
+    },
+    {
       "name": "parseProjectPath",
       "description": "Returns the configured project path in portable POSIX form.",
       "see": [],
@@ -11690,6 +11815,11 @@
         "sourcePath": "src/utils/getProjectName.ts"
       },
       {
+        "fromPath": "src/utils/isRepositoryColors.ts",
+        "toPath": "src/utils/isRepositoryId.ts",
+        "sourcePath": "src/utils/isRepositoryColors.ts"
+      },
+      {
         "fromPath": "test/benchmarks/graphPresentation.ts",
         "toPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
         "sourcePath": "test/benchmarks/graphPresentation.ts"
@@ -11738,6 +11868,31 @@
         "fromPath": "test/e2e/githubLogoutBrowser.ts",
         "toPath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
         "sourcePath": "test/e2e/githubLogoutBrowser.ts"
+      },
+      {
+        "fromPath": "test/e2e/multiProjectBrowser.ts",
+        "toPath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromPath": "test/e2e/multiProjectBrowser.ts",
+        "toPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromPath": "test/e2e/multiProjectBrowser.ts",
+        "toPath": "src/features/graph-view/utils/projectVisibleGraph.ts",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromPath": "test/e2e/multiProjectBrowser.ts",
+        "toPath": "src/features/settings/utils/readSettingsEnvironment.ts",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromPath": "test/e2e/multiProjectBrowser.ts",
+        "toPath": "test/e2e/fixtureWorkspace.ts",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
         "fromPath": "test/e2e/offlineWorkspace.ts",
@@ -13025,6 +13180,16 @@
         "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
       },
       {
+        "fromPath": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toPath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toPath": "src/features/settings/adapters/inbound/react/useSettings.ts",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
         "fromPath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
         "toPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
         "sourcePath": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts"
@@ -13525,6 +13690,16 @@
         "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts"
       },
       {
+        "fromPath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
+        "toPath": "src/utils/isRepositoryColors.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts",
+        "toPath": "src/utils/isRepositoryId.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts"
+      },
+      {
         "fromPath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts",
         "toPath": "src/features/workspace/application/use-cases/validateAuditSnapshot.ts",
         "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
@@ -13806,7 +13981,7 @@
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts",
-        "toPath": "src/features/graph-view/adapters/inbound/cytoscape/getGraphPalette.ts",
+        "toPath": "src/constants/repositoryColor.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
       },
       {
@@ -13838,6 +14013,11 @@
         "fromPath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts",
         "toPath": "src/types/graphInteraction.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/applyGraphInteractionPresentation.ts"
+      },
+      {
+        "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
+        "toPath": "src/constants/repositoryColor.ts",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts"
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts",
@@ -14135,6 +14315,16 @@
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
       },
       {
+        "fromPath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "toPath": "src/utils/isRepositoryColors.ts",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromPath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "toPath": "src/utils/isRepositoryId.ts",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
         "fromPath": "src/features/settings/adapters/inbound/react/useSettings.ts",
         "toPath": "src/features/settings/adapters/inbound/react/SettingsContext.ts",
         "sourcePath": "src/features/settings/adapters/inbound/react/useSettings.ts"
@@ -14261,6 +14451,11 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
       },
@@ -14323,6 +14518,26 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
         "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toPath": "src/constants/repositoryColor.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toPath": "src/types/settings.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx"
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
@@ -14592,6 +14807,11 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/MobileWorkspaceTools.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
       },
       {
@@ -15211,6 +15431,12 @@
         "sourcePath": "src/cli/startViewerSourceAsync.ts"
       },
       {
+        "fromSymbol": "src/constants/repositoryColor.ts",
+        "toSymbol": "parseHexColorOrThrow",
+        "callExpression": "parseHexColorOrThrow",
+        "sourcePath": "src/constants/repositoryColor.ts"
+      },
+      {
         "fromSymbol": "getProjectName",
         "toSymbol": "parseProjectPath",
         "callExpression": "parseProjectPath",
@@ -15221,6 +15447,18 @@
         "toSymbol": "toPortablePath",
         "callExpression": "toPortablePath",
         "sourcePath": "src/utils/getProjectName.ts"
+      },
+      {
+        "fromSymbol": "isRepositoryColors",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/utils/isRepositoryColors.ts"
+      },
+      {
+        "fromSymbol": "src/utils/isRepositoryColors.ts",
+        "toSymbol": "isRepositoryId",
+        "callExpression": "isRepositoryId",
+        "sourcePath": "src/utils/isRepositoryColors.ts"
       },
       {
         "fromSymbol": "parseProjectPath",
@@ -15304,6 +15542,12 @@
         "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
         "toSymbol": "waitForNextGraphLayout",
         "callExpression": "waitForNextGraphLayout",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
+        "toSymbol": "waitForGraphSelection",
+        "callExpression": "waitForGraphSelection",
         "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
       },
       {
@@ -16340,6 +16584,12 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "waitForCheckboxStateAsync",
+        "callExpression": "waitForCheckboxStateAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assertGraphCanvasAsync",
         "callExpression": "assertGraphCanvasAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -16366,6 +16616,24 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "closeMobileRepositorySourceDialogAsync",
         "callExpression": "closeMobileRepositorySourceDialogAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "readGraphPresentationAsync",
+        "callExpression": "readGraphPresentationAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "settleGraphPresentationAsync",
+        "callExpression": "settleGraphPresentationAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "toggleThemeAsync",
+        "callExpression": "toggleThemeAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16430,12 +16698,6 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "toggleThemeAsync",
-        "callExpression": "toggleThemeAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "writeFile",
         "callExpression": "writeFile",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -16444,6 +16706,12 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assertAnonymousBulkWorkspaceGeometry",
         "callExpression": "assertAnonymousBulkWorkspaceGeometry",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "waitForWorkspaceLoadingCompleteAsync",
+        "callExpression": "waitForWorkspaceLoadingCompleteAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16468,6 +16736,12 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "exerciseMobileInteractionContractAsync",
         "callExpression": "exerciseMobileInteractionContractAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "callExpression": "resolveResponsiveTouchGraphNodeIdsAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16502,8 +16776,20 @@
       },
       {
         "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "toSymbol": "exerciseNativeGraphInteractionContractAsync",
+        "callExpression": "exerciseNativeGraphInteractionContractAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "exerciseMobileInteractionContractAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "toSymbol": "waitForCheckboxStateAsync",
+        "callExpression": "waitForCheckboxStateAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16513,43 +16799,49 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "readGraphNodeAsync",
         "callExpression": "readGraphNodeAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "assertGraphTouchSelectionAsync",
         "callExpression": "assertGraphTouchSelectionAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "readGraphViewportAsync",
         "callExpression": "readGraphViewportAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "findGraphPanPointAsync",
         "callExpression": "findGraphPanPointAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "installGraphGestureProbeAsync",
         "callExpression": "installGraphGestureProbeAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "readGraphGestureProbeAsync",
         "callExpression": "readGraphGestureProbeAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
         "toSymbol": "pinchGraphAsync",
         "callExpression": "pinchGraphAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -16567,6 +16859,18 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "getViewport",
+        "callExpression": "probe.controller.getViewport",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "readGraphPresentationAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
         "fromSymbol": "findGraphPanPointAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
@@ -16579,9 +16883,45 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
+        "fromSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "toSymbol": "loadFixtureWorkspaceAsync",
+        "callExpression": "loadFixtureWorkspaceAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "toSymbol": "readSettingsEnvironment",
+        "callExpression": "readSettingsEnvironment",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "toSymbol": "createPackageGraphElements",
+        "callExpression": "createPackageGraphElements",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "toSymbol": "projectVisibleGraph",
+        "callExpression": "projectVisibleGraph",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "resolveResponsiveTouchGraphNodeIdsAsync",
+        "toSymbol": "createGraphViewModel",
+        "callExpression": "createGraphViewModel",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
         "fromSymbol": "readGraphNodeAsync",
-        "toSymbol": "readMeasuredGraphNodeIdsAsync",
-        "callExpression": "readMeasuredGraphNodeIdsAsync",
+        "toSymbol": "readGraphTouchDiagnosticsAsync",
+        "callExpression": "readGraphTouchDiagnosticsAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -20444,18 +20784,6 @@
       },
       {
         "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
-        "toSymbol": "findRepositoryColorCollision",
-        "callExpression": "findRepositoryColorCollision",
-        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
-        "toSymbol": "repositoryClasses",
-        "callExpression": "repositoryClasses",
-        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/graph-view/createPackageGraphElements.spec.ts",
         "toSymbol": "repositoryNode",
         "callExpression": "repositoryNode",
         "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
@@ -20464,18 +20792,6 @@
         "fromSymbol": "repositoryClasses",
         "toSymbol": "createPackageGraphElements",
         "callExpression": "createPackageGraphElements",
-        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
-      },
-      {
-        "fromSymbol": "findRepositoryColorCollision",
-        "toSymbol": "repositoryClasses",
-        "callExpression": "repositoryClasses",
-        "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
-      },
-      {
-        "fromSymbol": "findRepositoryColorCollision",
-        "toSymbol": "repositoryGraph",
-        "callExpression": "repositoryGraph",
         "sourcePath": "test/src/features/graph-view/createPackageGraphElements.spec.ts"
       },
       {
@@ -21697,6 +22013,84 @@
         "sourcePath": "test/src/features/rule-explorer/projectRuleDag.spec.ts"
       },
       {
+        "fromSymbol": "SettingsHarness",
+        "toSymbol": "useSettings",
+        "callExpression": "useSettings",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "setRepositoryColor",
+        "callExpression": "settings.setRepositoryColor",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "withStorage",
+        "callExpression": "withStorage",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "renderSettings",
+        "callExpression": "renderSettings",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "act",
+        "callExpression": "act",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/settings/SettingsProvider.spec.tsx",
+        "toSymbol": "button",
+        "callExpression": "button",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "renderSettings",
+        "toSymbol": "render",
+        "callExpression": "render",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "renderSettings",
+        "toSymbol": "createRoot",
+        "callExpression": "createRoot",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "renderSettings",
+        "toSymbol": "act",
+        "callExpression": "act",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
+        "fromSymbol": "withStorage",
+        "toSymbol": "run",
+        "callExpression": "run",
+        "sourcePath": "test/src/features/settings/SettingsProvider.spec.tsx"
+      },
+      {
         "fromSymbol": "test/src/features/workspace/classifyWorkspaceRepositoryFailure.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -22310,6 +22704,12 @@
       },
       {
         "fromSymbol": "test/src/features/workspace/workspaceDefinitions.spec.ts",
+        "toSymbol": "validateWorkspaceDefinitions",
+        "callExpression": "validateWorkspaceDefinitions",
+        "sourcePath": "test/src/features/workspace/workspaceDefinitions.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/workspace/workspaceDefinitions.spec.ts",
         "toSymbol": "createBrowserWorkspaceStore",
         "callExpression": "createBrowserWorkspaceStore",
         "sourcePath": "test/src/features/workspace/workspaceDefinitions.spec.ts"
@@ -22330,12 +22730,6 @@
         "fromSymbol": "test/src/features/workspace/workspaceDefinitions.spec.ts",
         "toSymbol": "reconcileWorkspaceDefinitions",
         "callExpression": "reconcileWorkspaceDefinitions",
-        "sourcePath": "test/src/features/workspace/workspaceDefinitions.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/workspace/workspaceDefinitions.spec.ts",
-        "toSymbol": "validateWorkspaceDefinitions",
-        "callExpression": "validateWorkspaceDefinitions",
         "sourcePath": "test/src/features/workspace/workspaceDefinitions.spec.ts"
       },
       {
@@ -24001,6 +24395,12 @@
         "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts"
       },
       {
+        "fromSymbol": "validateSettings",
+        "toSymbol": "isRepositoryColors",
+        "callExpression": "isRepositoryColors",
+        "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceDefinitions.ts"
+      },
+      {
         "fromSymbol": "isNonNegativeInteger",
         "toSymbol": "isFiniteNumber",
         "callExpression": "isFiniteNumber",
@@ -24805,18 +25205,6 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
       },
       {
-        "fromSymbol": "nodeClasses",
-        "toSymbol": "repositoryColorClass",
-        "callExpression": "repositoryColorClass",
-        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
-      },
-      {
-        "fromSymbol": "repositoryColorClass",
-        "toSymbol": "hashRepositoryId",
-        "callExpression": "hashRepositoryId",
-        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements.ts"
-      },
-      {
         "fromSymbol": "getRepositoryColorStyles",
         "toSymbol": "getRepositoryCompoundStyles",
         "callExpression": "getRepositoryCompoundStyles",
@@ -24826,6 +25214,12 @@
         "fromSymbol": "getRepositoryColorStyles",
         "toSymbol": "getRepositoryLeafStyles",
         "callExpression": "getRepositoryLeafStyles",
+        "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
+      },
+      {
+        "fromSymbol": "getRepositoryColorStyles",
+        "toSymbol": "getSelectedRepositoryLeafStyles",
+        "callExpression": "getSelectedRepositoryLeafStyles",
         "sourcePath": "src/features/graph-view/adapters/inbound/cytoscape/getRepositoryColorStyles.ts"
       },
       {
@@ -26035,6 +26429,12 @@
         "sourcePath": "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts"
       },
       {
+        "fromSymbol": "ProjectTreePanel",
+        "toSymbol": "useZoraTheme",
+        "callExpression": "useZoraTheme",
+        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
+      },
+      {
         "fromSymbol": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
         "toSymbol": "toTreeItemNode",
         "callExpression": "toTreeItemNode",
@@ -26276,6 +26676,12 @@
       },
       {
         "fromSymbol": "SettingsProvider",
+        "toSymbol": "useRepositoryColorSettings",
+        "callExpression": "useRepositoryColorSettings",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromSymbol": "SettingsProvider",
         "toSymbol": "useMaxSubPackageDepthSetting",
         "callExpression": "useMaxSubPackageDepthSetting",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
@@ -26302,6 +26708,36 @@
         "fromSymbol": "toggleShowVendorPackages",
         "toSymbol": "setShowVendorPackages",
         "callExpression": "setShowVendorPackages",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromSymbol": "useRepositoryColorSettings",
+        "toSymbol": "useLocalStorage",
+        "callExpression": "useLocalStorage",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromSymbol": "useRepositoryColorSettings",
+        "toSymbol": "isRepositoryColors",
+        "callExpression": "isRepositoryColors",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromSymbol": "setRepositoryColor",
+        "toSymbol": "setStoredRepositoryColors",
+        "callExpression": "setStoredRepositoryColors",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "toSymbol": "isRepositoryColors",
+        "callExpression": "isRepositoryColors",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
+      },
+      {
+        "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "toSymbol": "isRepositoryId",
+        "callExpression": "isRepositoryId",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsProvider.tsx"
       },
       {
@@ -26380,6 +26816,12 @@
         "fromSymbol": "AtlasWorkspacePage",
         "toSymbol": "readSearchParam",
         "callExpression": "readSearchParam",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "createColorToneDefinitions",
+        "callExpression": "createColorToneDefinitions",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {
@@ -26516,6 +26958,12 @@
       },
       {
         "fromSymbol": "applyWorkspacePresentationSettings",
+        "toSymbol": "setRepositoryColor",
+        "callExpression": "settings.setRepositoryColor",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
+      },
+      {
+        "fromSymbol": "applyWorkspacePresentationSettings",
         "toSymbol": "setDependencyPackagePrefix",
         "callExpression": "settings.setDependencyPackagePrefix",
         "sourcePath": "src/features/workspace/adapters/inbound/react/applyWorkspacePresentationSettings.ts"
@@ -26594,26 +27042,14 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "toSymbol": "onChange",
-        "callExpression": "onChange",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "toSymbol": "onSearchChange",
-        "callExpression": "props.onSearchChange",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
         "toSymbol": "onSelectionChange",
         "callExpression": "props.onSelectionChange",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "toSymbol": "toggleRepository",
-        "callExpression": "toggleRepository",
+        "toSymbol": "setRepositorySelected",
+        "callExpression": "setRepositorySelected",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
       },
       {
@@ -26687,6 +27123,78 @@
         "toSymbol": "useProjectSourceFormActions",
         "callExpression": "useProjectSourceFormActions",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "RepositoryColorControl",
+        "toSymbol": "parseHexColorOrThrow",
+        "callExpression": "parseHexColorOrThrow",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "RepositoryColorControl",
+        "toSymbol": "useState",
+        "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toSymbol": "createColorPickerValue",
+        "callExpression": "createColorPickerValue",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toSymbol": "setRepositoryColor",
+        "callExpression": "setRepositoryColor",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toSymbol": "setValue",
+        "callExpression": "setValue",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "toSymbol": "resetRepositoryColor",
+        "callExpression": "resetRepositoryColor",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "resetRepositoryColor",
+        "toSymbol": "setRepositoryColor",
+        "callExpression": "settings.setRepositoryColor",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "resetRepositoryColor",
+        "toSymbol": "setValue",
+        "callExpression": "setValue",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "resetRepositoryColor",
+        "toSymbol": "createColorPickerValue",
+        "callExpression": "createColorPickerValue",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "resetRepositoryColor",
+        "toSymbol": "parseHexColorOrThrow",
+        "callExpression": "parseHexColorOrThrow",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "setRepositoryColor",
+        "toSymbol": "setRepositoryColor",
+        "callExpression": "settings.setRepositoryColor",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
+        "toSymbol": "onRetry",
+        "callExpression": "onRetry",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx"
       },
       {
         "fromSymbol": "useBrowserWorkspaceSession",
@@ -27451,12 +27959,6 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
-        "fromSymbol": "WorkspaceHeader",
-        "toSymbol": "useZoraTheme",
-        "callExpression": "useZoraTheme",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
-      },
-      {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
         "toSymbol": "onNavigate",
         "callExpression": "props.onNavigate",
@@ -27568,12 +28070,6 @@
         "fromSymbol": "RepositoryLoadStatus",
         "toSymbol": "hasRepositoryLoadStatus",
         "callExpression": "hasRepositoryLoadStatus",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "toSymbol": "onRetry",
-        "callExpression": "onRetry",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
       },
       {
