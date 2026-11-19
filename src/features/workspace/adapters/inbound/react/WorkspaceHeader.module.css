@@ -50,6 +50,21 @@
   white-space: nowrap;
 }
 
+.repositoryChoice {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.repositoryColorSwatch {
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  cursor: pointer;
+  flex: 0 0 20px;
+  height: 20px;
+  padding: 0;
+  width: 20px;
+}
+
 @media (max-width: 768px) {
   .content {
     gap: 4px;

@@ -1,8 +1,12 @@
+import { isRecord } from '@ankhorage/utility/object';
+
 import type {
   WorkspaceDefinition,
   WorkspacePresentationSettings,
   WorkspaceSource,
 } from '@/types/workspace';
+import { isRepositoryColors } from '@/utils/isRepositoryColors';
+import { isRepositoryId } from '@/utils/isRepositoryId';
 
 /*** Validate the browser-persisted workspace contract before it influences discovery or presentation. */
 export function validateWorkspaceDefinitions(
@@ -77,6 +81,7 @@ function validateSettings(value: unknown): WorkspacePresentationSettings | null 
     showVendorPackages,
     spacing,
     subPackageDepth,
+    repositoryColors,
   } = value;
   if (
     typeof dependencyPrefix !== 'string' ||
@@ -85,7 +90,8 @@ function validateSettings(value: unknown): WorkspacePresentationSettings | null 
     typeof layout !== 'string' ||
     !isFiniteNumber(spacing) ||
     !isNonNegativeInteger(subPackageDepth) ||
-    !Array.isArray(dependencyKinds)
+    !Array.isArray(dependencyKinds) ||
+    !(repositoryColors === undefined || isRepositoryColors(repositoryColors))
   )
     return null;
   const validKinds = new Set(['runtime', 'dev', 'peer', 'optional']);
@@ -99,13 +105,9 @@ function validateSettings(value: unknown): WorkspacePresentationSettings | null 
         subPackageDepth,
         layout,
         spacing,
+        repositoryColors: repositoryColors ?? {},
       }
     : null;
-}
-
-/*** Recognize an object record without accepting arrays or null. */
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /*** Restrict browser-local workspace identities to stable safe tokens. */
@@ -121,13 +123,6 @@ function isWorkspaceName(value: unknown): value is string {
 /*** Accept GitHub owner syntax while keeping it independent from any local path. */
 function isGitHubOwner(value: unknown): value is string {
   return typeof value === 'string' && /^[A-Za-z\d](?:[A-Za-z\d-]{0,37}[A-Za-z\d])?$/u.test(value);
-}
-
-/*** Reject repository identities that can become filesystem paths. */
-function isRepositoryId(value: unknown): value is string {
-  return (
-    typeof value === 'string' && value.length > 0 && value.length <= 128 && !/[\\/\s]/u.test(value)
-  );
 }
 
 /*** Accept only canonical public GitHub repository URLs without credentials or query state. */

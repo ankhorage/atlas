@@ -1,6 +1,7 @@
 import type { GraphViewEdge, GraphViewNode } from '@ankhorage/zora/web/graph-view';
 import type { ElementsDefinition } from 'cytoscape';
 
+import { repositoryColor } from '@/constants/repositoryColor';
 import { createCompoundOpacityIndex } from '@/features/graph-view/utils/createCompoundOpacityIndex';
 import { readNodeDefinitionId } from '@/features/graph-view/utils/readNodeDefinitionId';
 import type { CycleHighlight } from '@/types/auditVisualization';
@@ -16,7 +17,8 @@ import type { CycleHighlight } from '@/types/auditVisualization';
 export function createGraphViewModel(
   allElements: ElementsDefinition,
   visibleElements: ElementsDefinition,
-  cycleHighlights: readonly CycleHighlight[]
+  cycleHighlights: readonly CycleHighlight[],
+  repositoryColors: Readonly<Record<string, string>> = {}
 ): GraphViewModel {
   const visibleNodeIds = new Set(
     visibleElements.nodes
@@ -28,6 +30,7 @@ export function createGraphViewModel(
   const packageParents = indexPackageParents(allElements);
   const parentNodeIds = new Set([...visibleNodeIds].filter(id => packageParents.has(id)));
   const cycles = indexCyclePresentation(cycleHighlights);
+  const repositoryColorById = new Map(Object.entries(repositoryColors));
   const appearance = {
     cycles: cycles.nodes,
     opacity: createCompoundOpacityIndex(parentById, detachedNodeIds),
@@ -36,7 +39,14 @@ export function createGraphViewModel(
   return {
     edges: visibleElements.edges.flatMap(edge => createGraphViewEdge(edge, cycles.edges)),
     nodes: visibleElements.nodes.flatMap(node =>
-      createGraphViewNode(node, parentById, detachedNodeIds, parentNodeIds, appearance)
+      createGraphViewNode(
+        node,
+        parentById,
+        detachedNodeIds,
+        parentNodeIds,
+        appearance,
+        repositoryColorById
+      )
     ),
     parentNodeIds,
     parentById,
@@ -163,7 +173,8 @@ function createGraphViewNode(
   appearance: {
     readonly cycles: ReadonlyMap<string, string>;
     readonly opacity: ReadonlyMap<string, number>;
-  }
+  },
+  repositoryColorById: ReadonlyMap<string, string>
 ): GraphViewNode[] {
   const id = readNodeDefinitionId(node);
   if (id === null) return [];
@@ -171,6 +182,9 @@ function createGraphViewNode(
   const cycleColor = appearance.cycles.get(id);
   const parentId = detachedNodeIds.has(id) ? undefined : parentById.get(id);
   const label = readString(node.data.label) ?? readString(node.data.name) ?? id;
+  const repositoryId = readString(node.data.repositoryId);
+  const repositoryOverride =
+    repositoryId === undefined ? undefined : repositoryColorById.get(repositoryId);
 
   return [
     {
@@ -186,6 +200,9 @@ function createGraphViewNode(
         ...node.data,
         compoundFillOpacity: appearance.opacity.get(id) ?? 0.04,
         parent: parentId,
+        ...(repositoryId === undefined
+          ? {}
+          : { repositoryColor: repositoryOverride ?? repositoryColor.default }),
         ...(cycleColor !== undefined ? { auditCycleColor: cycleColor } : {}),
       },
     },

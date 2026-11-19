@@ -7,6 +7,11 @@ export function applyWorkspacePresentationSettings(
   settings: ReturnType<typeof useSettings>,
   workspace: WorkspacePresentationSettings
 ): void {
+  for (const repositoryId of Object.keys(settings.repositoryColors))
+    if (!(repositoryId in workspace.repositoryColors))
+      settings.setRepositoryColor(repositoryId, undefined);
+  for (const [repositoryId, color] of Object.entries(workspace.repositoryColors))
+    settings.setRepositoryColor(repositoryId, color);
   settings.setDependencyPackagePrefix(workspace.dependencyPrefix);
   setWorkspaceLayout(settings, workspace.layout);
   settings.setCytoscapeLayoutSpacing(workspace.spacing);
@@ -34,6 +39,7 @@ export function readWorkspacePresentationSettings(
     dependencyPrefix: settings.dependencyPackagePrefix,
     dependencyKinds: [...settings.enabledDependencyKinds].map(toWorkspaceDependencyKind),
     layout: settings.cytoscapeLayout,
+    repositoryColors: settings.repositoryColors,
     showCompoundNodes: settings.showCompoundNodes,
     showVendorPackages: settings.showVendorPackages,
     spacing: settings.cytoscapeLayoutSpacing,
