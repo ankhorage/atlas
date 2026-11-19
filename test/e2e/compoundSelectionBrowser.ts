@@ -186,7 +186,11 @@ async function waitForGraphSelectionWithoutRelayout(
       )
   );
   const state = JSON.parse(await page.getByLabel('Graph lifecycle').innerText()) as GraphLifecycle;
-  assertEqual('selection must not trigger graph layout', state.layoutSequence, expectedLayoutSequence);
+  assertEqual(
+    'selection must not trigger graph layout',
+    state.layoutSequence,
+    expectedLayoutSequence
+  );
   return state;
 }
 
