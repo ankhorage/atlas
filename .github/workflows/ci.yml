@@ -9,13 +9,10 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
 
     steps:
       - name: Checkout repository
@@ -23,98 +20,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Classify expensive acceptance
-        id: changes
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            configurations:
-              - added|modified|deleted:
-                  - '.github/workflows/**'
-                  - 'ankh.config.json'
-                  - 'next.config.*'
-                  - 'tsconfig*.json'
-                  - 'package.json'
-                  - 'bun.lock'
-            jvm:
-              - added|modified|deleted:
-                  - 'bin/**'
-                  - 'src/cli/**'
-                  - 'src/features/audit/application/**'
-                  - 'src/features/audit/composition/**'
-                  - 'src/features/audit/domain/**'
-                  - 'src/features/dependency-analysis/**'
-                  - 'src/features/project-analysis/**'
-                  - 'src/features/project-source/**'
-                  - 'src/types/audit.ts'
-                  - 'src/types/cli.ts'
-                  - 'src/utils/getProjectName.ts'
-                  - 'src/utils/parseProjectPath.ts'
-                  - 'maven-plugin/**'
-                  - 'gradle-plugin/**'
-            offline_browser:
-              - added|modified|deleted:
-                  - 'bin/**'
-                  - 'src/**'
-                  - 'test/e2e/offlineWorkspace.ts'
-                  - 'examples/java/my-app/**'
-                  - 'test/fixtures/**'
-            compound_browser:
-              - added|modified|deleted:
-                  - 'bin/**'
-                  - 'src/app/**'
-                  - 'src/features/graph-view/**'
-                  - 'src/features/offline-export/**'
-                  - 'src/features/settings/**'
-                  - 'src/features/theme/**'
-                  - 'src/features/workspace/**'
-                  - 'src/i18n/**'
-                  - 'src/types/**'
-                  - 'test/e2e/compoundSelectionBrowser.ts'
-                  - 'test/e2e/compoundSelectionHarness.tsx'
-                  - 'test/e2e/offlineWorkspace.ts'
-                  - 'test/fixtures/typescript/compound-selection/**'
-            github_auth_browser:
-              - added|modified|deleted:
-                  - 'src/app/api/auth/github/**'
-                  - 'src/features/github-auth/**'
-                  - 'test/e2e/githubLogoutBrowser.ts'
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: '1.4.2'
-
-      - name: Restore Bun cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.bun/install/cache
-          key: ${{ runner.os }}-bun-1.4.2-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-1.4.2-
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Setup Java
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-          cache: maven
-          cache-dependency-path: maven-plugin/pom.xml
-
-      - name: Setup Gradle
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.10'
-
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Reject package version rollback
+        if: github.event_name == 'pull_request'
+        run: |
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          base_version="$(git show "${base_sha}:package.json" | node -e "let source=''; process.stdin.on('data',(chunk)=>source+=chunk); process.stdin.on('end',()=>process.stdout.write(JSON.parse(source).version ?? ''))")"
+          candidate_version="$(node -p "require('./package.json').version")"
+          BASE_VERSION="$base_version" CANDIDATE_VERSION="$candidate_version" node -e '
+            const parse = (value) => {
+              const match = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u.exec(value);
+              if (!match) throw new Error(`Expected a stable semantic version, received ${value}.`);
+              return match.slice(1).map(Number);
+            };
+            const base = parse(process.env.BASE_VERSION);
+            const candidate = parse(process.env.CANDIDATE_VERSION);
+            const index = candidate.findIndex((part, candidateIndex) => part !== base[candidateIndex]);
+            if (index !== -1 && candidate[index] < base[index]) {
+              throw new Error(`Package version rollback: ${process.env.CANDIDATE_VERSION} is lower than base ${process.env.BASE_VERSION}. Rebase and retain at least the base version before merging.`);
+            }
+          '
 
       - name: Run build
         run: |
@@ -132,10 +69,12 @@ jobs:
           fi
 
       - name: Validate Ankhorage repository
-        run: BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.13.1 validate .
-
-      - name: Validate generated documentation
-        run: bun run docs
+        run: |
+          if node -e "const p=require('./package.json'); process.exit(p.name === '@ankhorage/doctor' ? 0 : 1)"; then
+            bun ./dist/cli/standalone.js validate . --enforce-repository-metadata
+          else
+            BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.15.1 validate . --enforce-repository-metadata
+          fi
 
       - name: Run lint
         run: |
@@ -161,68 +100,23 @@ jobs:
             echo "No knip:check script found; skipping."
           fi
 
-      - name: Run tests
-        run: bun run test:unit
-
-      - name: Run Maven adapter tests
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
-        run: bun run test:maven
-
-      - name: Run Gradle adapter tests
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.jvm == 'true'
-        run: bun run test:gradle
-
-      - name: Verify offline workspace in an isolated browser
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.offline_browser == 'true'
+      - name: Analyze test impact
+        id: impact
         env:
-          ATLAS_PROJECT_PATH: ${{ github.workspace }}/examples/java/my-app
-        run: |
-          bun bin/atlas.ts examples/java/my-app --offline --out offline-smoke.html
-          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          test -n "$ATLAS_CHROME"
-          bun run start > next.log 2>&1 &
-          next_pid=$!
-          trap 'kill "$next_pid"; rm -f offline-smoke.html next.log' EXIT
-          for attempt in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then break; fi
-            sleep 1
-          done
-          curl --fail --silent http://127.0.0.1:3000/ > /dev/null
-          ATLAS_ONLINE_URL=http://127.0.0.1:3000/ bun run test:offline-browser
+          ANKH_CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bun .github/scripts/ci-impact.ts plan
 
-      - name: Verify compound selection browser acceptance
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.compound_browser == 'true'
-        env:
-          ATLAS_PROJECT_PATH: ${{ github.workspace }}/test/fixtures/typescript/compound-selection
-          ATLAS_PROJECT_NAME: compound-selection
-        run: |
-          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          test -n "$ATLAS_CHROME"
-          bun run test:compound-selection-browser
-          bun bin/atlas.ts test/fixtures/typescript/compound-selection --offline --out compound-selection.html
-          ATLAS_OFFLINE_REPORT=compound-selection.html ATLAS_PROJECT_NAME=compound-selection ATLAS_REQUIRE_COMPOUND_NODES=true bun run test:offline-browser
-          rm -f compound-selection.html
+      - name: Run unit tests
+        if: steps.impact.outputs.unit != 'skip'
+        run: bun .github/scripts/ci-impact.ts unit
 
-      - name: Verify GitHub logout browser acceptance
-        if: github.event_name == 'workflow_dispatch' || steps.changes.outputs.configurations == 'true' || steps.changes.outputs.github_auth_browser == 'true'
-        run: |
-          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          test -n "$ATLAS_CHROME"
-          bun run test:github-logout-browser
+      - name: Run E2E tests
+        if: steps.impact.outputs.e2e != 'skip'
+        run: bun .github/scripts/ci-impact.ts e2e
 
-      - name: Verify multi-project browser acceptance
-        run: |
-          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          test -n "$ATLAS_CHROME"
-          bun run test:multi-project-browser
-
-      - name: Retain multi-project browser acceptance diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: multi-project-browser-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
-          path: artifacts/browser-acceptance/
-          if-no-files-found: warn
+      - name: Run Smoke tests
+        if: steps.impact.outputs.smoke != 'skip'
+        run: bun .github/scripts/ci-impact.ts smoke
 
       - name: Run typecheck
         run: |
@@ -237,6 +131,7 @@ jobs:
         run: |
           base_sha='${{ github.event.pull_request.base.sha }}'
           head_sha='${{ github.event.pull_request.head.sha }}'
+          git branch --force main "$base_sha"
           export ANKH_PR_CHANGESET_FILES
           ANKH_PR_CHANGESET_FILES="$(git diff --name-only --diff-filter=AMCR "$base_sha" "$head_sha" -- .changeset)"
           if [ -z "$ANKH_PR_CHANGESET_FILES" ]; then
@@ -260,3 +155,13 @@ jobs:
           else
             echo "No changeset:status script found; skipping validation."
           fi
+
+      - name: Enforce Atlas cyclic-dependencies rule
+        run: cd src && bunx @ankhorage/atlas@0.14.1 --out atlas-audit.json --rule cyclic-dependencies=block
+
+      - name: Upload Atlas audit
+        if: always() && hashFiles('src/atlas-audit.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-audit
+          path: src/atlas-audit.json
