@@ -99,7 +99,7 @@
     "@ankhorage/surface": "^9.5.1",
     "@ankhorage/templates": "12.6.49",
     "@ankhorage/utility": "^1.9.85",
-    "@ankhorage/zora": "27.4.0",
+    "@ankhorage/zora": "27.4.3",
     "@artiphishle/testosterone": "^0.3.11",
     "ankh-hooks": "^1.5.2",
     "cytoscape": "^3.34.3",
