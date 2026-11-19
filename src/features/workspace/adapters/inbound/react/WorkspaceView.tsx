@@ -1,4 +1,5 @@
 'use client';
+import type { ColorToneDefinition } from '@ankhorage/zora';
 import { useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
@@ -21,6 +22,7 @@ export function WorkspaceView({
   offline,
   projectName,
   repositories,
+  repositoryColorTones,
   repositoryStatuses,
   runtimeId,
   selectionRequired,
@@ -51,6 +53,7 @@ export function WorkspaceView({
         offline={offline}
         projectName={projectName}
         repositories={repositories}
+        repositoryColorTones={repositoryColorTones}
         selectionError={liveWorkspace.error}
         selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
         workspaceScope={workspaceScope}
@@ -139,6 +142,7 @@ interface WorkspaceViewProps {
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones?: readonly ColorToneDefinition[];
   readonly repositoryStatuses?: readonly WorkspaceRepositoryLoadStatus[];
   readonly selectionRequired?: boolean;
   readonly runtimeId?: string;

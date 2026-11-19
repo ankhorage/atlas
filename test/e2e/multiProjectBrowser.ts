@@ -4,6 +4,13 @@ import { resolve } from 'node:path';
 
 import { chromium, type Browser, type Locator, type Page, type Response } from 'playwright-core';
 
+import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
+import { createGraphViewModel } from '@/features/graph-view/adapters/inbound/react/createGraphViewModel';
+import { projectVisibleGraph } from '@/features/graph-view/utils/projectVisibleGraph';
+import { readSettingsEnvironment } from '@/features/settings/utils/readSettingsEnvironment';
+
+import { loadFixtureWorkspaceAsync } from './fixtureWorkspace';
+
 const browserPath = process.env.ATLAS_CHROME;
 if (browserPath === undefined) throw new Error('Missing ENV: ATLAS_CHROME');
 const port = 4400 + Math.floor(Math.random() * 400);
@@ -54,6 +61,17 @@ type GraphGestureProbe = {
   mouseDownCount: number;
   mouseMoveCount: number;
   mouseUpCount: number;
+};
+type GraphTouchDiagnostics = {
+  readonly loading: { readonly present: boolean; readonly text: string };
+  readonly measuredNodeIds: readonly string[];
+  readonly selection: {
+    readonly selectedRepositoryCheckboxes: readonly {
+      readonly checked: string | null;
+      readonly id: string | null;
+    }[];
+    readonly selectedTreeIds: readonly string[];
+  };
 };
 type Bounds = {
   readonly bottom: number;
@@ -458,7 +476,7 @@ async function openRepositoryPickerAsync(
   page: Page,
   repositoryLabel = 'owner-a/catalog'
 ): Promise<void> {
-  const repository = page.getByLabel(repositoryLabel);
+  const repository = page.getByRole('checkbox', { name: repositoryLabel });
   if (!(await repository.isVisible())) {
     await openRepositorySourceDialogAsync(page);
     const picker = page.locator('[aria-label="Choose repositories"]:visible');
@@ -719,8 +737,19 @@ const scenarios: readonly Scenario[] = [
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('GitHub owner').fill('owner-a');
       await page.getByLabel('Choose repositories').waitFor();
+      assert(
+        !(await page.getByRole('checkbox', { name: 'Public only' }).isChecked()),
+        'Public only must remain unchecked until explicitly selected.'
+      );
+      const publicOnly = page.getByRole('checkbox', { name: 'Public only' });
+      await publicOnly.click();
+      await waitForCheckboxStateAsync(page, 'Public only', true);
+      assert(await publicOnly.isChecked(), 'Public only did not become checked after selection.');
+      await publicOnly.press('Space');
+      await waitForCheckboxStateAsync(page, 'Public only', false);
+      assert(!(await publicOnly.isChecked()), 'Public only remained checked after deselection.');
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -733,8 +762,9 @@ const scenarios: readonly Scenario[] = [
       );
       await assertGraphCanvasAsync(page);
       await openRepositoryPickerAsync(page);
+      await waitForCheckboxStateAsync(page, 'owner-a/catalog', true);
       assert(
-        await page.getByLabel('owner-a/catalog').isChecked(),
+        await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked(),
         'Shorthand repository was not selected.'
       );
       return [];
@@ -770,7 +800,7 @@ const scenarios: readonly Scenario[] = [
       await openRepositorySourceDialogAsync(page);
       const before = page.url();
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl =>
           openedUrl.searchParams.get('source') === 'owner-a' &&
@@ -788,8 +818,96 @@ const scenarios: readonly Scenario[] = [
         });
       await openRepositoryPickerAsync(page);
       assert(
-        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Excluded repository was selected after the immediate selection update.'
+      );
+      return [];
+    }
+  ),
+  scenario(
+    'source-picker-repository-color',
+    'Edits and resets one repository color without changing repository selection, graph geometry, or requests.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositoryPickerAsync(page);
+      const repository = page.getByRole('checkbox', { name: 'owner-a/catalog' });
+      assert(await repository.isChecked(), 'Repository was not selected before editing its color.');
+      const before = await readGraphPresentationAsync(page);
+      const requests: string[] = [];
+      page.on('request', request => requests.push(request.url()));
+      await page.getByLabel('Change color for owner-a/catalog').click();
+      const picker = page.getByTestId('repository-color-picker-owner-a-catalog');
+      await picker.getByRole('slider', { name: /Color wheel/u }).waitFor();
+      assert(
+        (await picker.getByRole('tab').count()) === 2,
+        'Repository color picker did not expose exactly Wheel and Tone.'
+      );
+      assert(
+        (await picker.getByRole('button', { name: 'None' }).count()) === 0,
+        'Repository color picker exposed Harmony controls.'
+      );
+      await picker.getByRole('tab', { name: 'tone' }).click();
+      await picker.getByLabel('jewel').first().click();
+      await page.waitForFunction(() =>
+        Object.entries(localStorage).some(
+          ([key, value]) =>
+            key.endsWith('.repository-colors') &&
+            /^#[0-9A-F]{6}$/u.test(
+              (JSON.parse(value) as Record<string, unknown>)['owner-a-catalog'] as string
+            )
+        )
+      );
+      assert(
+        (await picker.getByLabel(/Selected jewel color 1:/u).count()) === 1,
+        'Tone picker did not retain exactly one selected color.'
+      );
+      await settleGraphPresentationAsync(page);
+      const afterColor = await readGraphPresentationAsync(page);
+      assert(
+        afterColor.layoutCount === 1,
+        `Repository color update recomputed graph layout: expected 1, received ${afterColor.layoutCount}.`
+      );
+      // The source dialog correctly blocks background header actions while open.
+      await page.keyboard.press('Escape');
+      await picker.waitFor({ state: 'hidden' });
+      await closeMobileRepositorySourceDialogAsync(page);
+      await toggleThemeAsync(page);
+      await settleGraphPresentationAsync(page);
+      const afterThemeChange = await readGraphPresentationAsync(page);
+      assert(
+        afterThemeChange.layoutCount === 1,
+        `Repository color theme switch recomputed graph layout: expected 1, received ${afterThemeChange.layoutCount}.`
+      );
+      await openRepositoryPickerAsync(page);
+      await page.getByLabel('Change color for owner-a/catalog').click();
+      await page.getByRole('button', { name: 'Reset color' }).click();
+      await page.waitForFunction(() =>
+        Object.entries(localStorage).every(
+          ([key, value]) =>
+            !key.endsWith('.repository-colors') ||
+            !Object.hasOwn(JSON.parse(value) as Record<string, unknown>, 'owner-a-catalog')
+        )
+      );
+      const after = await readGraphPresentationAsync(page);
+      assert(
+        await repository.isChecked(),
+        'Color swatch interaction changed repository selection.'
+      );
+      assert(
+        before.layoutCount === after.layoutCount,
+        `Repository color interaction recomputed graph layout: ${before.layoutCount} -> ${after.layoutCount}.`
+      );
+      assert(
+        JSON.stringify(before.viewport) === JSON.stringify(after.viewport),
+        'Repository color interaction changed the graph viewport.'
+      );
+      assert(
+        requests.every(request => !request.includes('/api/workspace/selection')),
+        `Repository color interaction issued a selection request: ${requests.join(', ')}`
+      );
+      assert(
+        requests.every(request => !request.includes('github')),
+        `Repository color interaction issued a GitHub request: ${requests.join(', ')}`
       );
       return [];
     }
@@ -807,7 +925,7 @@ const scenarios: readonly Scenario[] = [
         return body.runtimeId === undefined;
       });
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await recoveryRequest;
       await page.waitForURL(
         openedUrl =>
@@ -828,13 +946,13 @@ const scenarios: readonly Scenario[] = [
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await firstRequest;
       const secondRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
       await openRepositoryPickerAsync(page);
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await secondRequest;
       await page.waitForURL(
         openedUrl =>
@@ -915,6 +1033,37 @@ const scenarios: readonly Scenario[] = [
         (await page.getByText('catalog', { exact: true }).count()) > 0,
         'Tree selection was unavailable.'
       );
+      return [];
+    }
+  ),
+  scenario(
+    'multi-repository-real-source-compounds',
+    'Navigates a real source hierarchy without synthetic module groups while compounds are both enabled and disabled.',
+    async page => {
+      const catalogRoot = 'repository.owner-a-catalog';
+      const catalogSource = `${catalogRoot}.src`;
+      const sharedSource = 'repository.owner-a-shared.src';
+      await openWorkspaceAsync(page);
+      await page.getByLabel('Subpackage depth').fill('3');
+      await waitForGraphNodesAsync(page, [catalogRoot, catalogSource, sharedSource]);
+      const graph = page.getByRole('application', { name: 'Graph' });
+      const graphBounds = await graph.boundingBox();
+      assert(graphBounds !== null, 'Graph canvas has no bounds for source navigation.');
+      await doublePressGraphNodeAsync(page, catalogRoot, graphBounds);
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
+      const breadcrumbs = await page.getByTestId('workspace-breadcrumbs').innerText();
+      assert(
+        !breadcrumbs.includes('module'),
+        `Breadcrumb navigation exposed a synthetic module segment: ${breadcrumbs}.`
+      );
+      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
+      const compound = page.getByLabel('Show Compound Nodes');
+      if (await isSwitchCheckedAsync(compound)) await compound.click();
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
+      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
+      if (!(await isSwitchCheckedAsync(compound))) await compound.click();
+      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
+      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
       return [];
     }
   ),
@@ -1043,7 +1192,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await closeMobileRepositorySourceDialogAsync(page);
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
       if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
@@ -1059,9 +1208,15 @@ const scenarios: readonly Scenario[] = [
       await page.getByRole('application', { name: 'Graph' }).waitFor();
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
+      await waitForCheckboxStateAsync(page, 'owner-a/catalog', false);
+      await waitForCheckboxStateAsync(page, 'owner-a/shared', true);
       assert(
-        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Saved exclusion was not restored.'
+      );
+      assert(
+        await page.getByRole('checkbox', { name: 'owner-a/shared' }).isChecked(),
+        'Saved repository selection was not restored.'
       );
       await page.screenshot({
         path: resolve(evidenceDirectory, 'saved-workspace-restored.png'),
@@ -1077,7 +1232,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
-      await page.getByLabel('owner-a/catalog').click();
+      await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
       );
@@ -1096,7 +1251,7 @@ const scenarios: readonly Scenario[] = [
       );
       await page.getByLabel('Choose repositories').click();
       assert(
-        !(await page.getByLabel('owner-a/catalog').isChecked()),
+        !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Excluded repository was not restored after the auth redirect.'
       );
       return [];
@@ -1334,9 +1489,7 @@ const scenarios: readonly Scenario[] = [
             { waitUntil: 'networkidle' }
           );
           await page.getByRole('application', { name: 'Graph' }).waitFor();
-          await page
-            .getByRole('status', { name: 'Repository loading status' })
-            .waitFor({ state: 'hidden', timeout: 20_000 });
+          await waitForWorkspaceLoadingCompleteAsync(page);
           await setThemeAsync(page, theme);
           const evidence = await captureResponsiveEvidenceAsync(page, viewport, theme);
           assertResponsiveEvidence(evidence, viewport, theme);
@@ -1357,6 +1510,7 @@ const scenarios: readonly Scenario[] = [
         waitUntil: 'networkidle',
       });
       await page.getByRole('application', { name: 'Graph' }).waitFor();
+      await waitForWorkspaceLoadingCompleteAsync(page);
       await exerciseMobileInteractionContractAsync(page);
       return artifacts;
     },
@@ -1396,11 +1550,7 @@ const fixtureRepositoryIds = [
   'owner-b-failed',
 ] as const;
 const bulkSelectionIds = Array.from({ length: 7 }, (_, index) => `bulk-pending-${index}`);
-const responsiveTouchGraphNodeId = 'repository.bulk-pending-0';
-const responsiveTouchGraphNodeIds = bulkSelectionIds.flatMap(id => [
-  `repository.${id}`,
-  `repository.${id}.package.@fixture.${id}`,
-]);
+const responsiveTouchGraphNodeIds = await resolveResponsiveTouchGraphNodeIdsAsync();
 const responsiveViewports = [
   { height: 844, width: 390 },
   { height: 932, width: 430 },
@@ -1531,9 +1681,19 @@ function assertSeparatePointerTargets(first: Bounds, second: Bounds, message: st
   assert(!overlaps, message);
 }
 
+/*** Waits for every intentionally delayed repository before sending native graph input. */
+async function waitForWorkspaceLoadingCompleteAsync(page: Page): Promise<void> {
+  await page
+    .getByRole('status', { name: 'Repository loading status' })
+    .waitFor({ state: 'hidden', timeout: 20_000 });
+}
+
 /*** Uses native Chromium input paths to prove source, overlay, graph, and keyboard interaction contracts. */
 async function exerciseMobileInteractionContractAsync(page: Page): Promise<void> {
   const sourceEntry = page.getByLabel('Open repository source and workspace');
+  const tools = page.getByRole('button', { name: 'Tools' });
+  await exerciseNativeGraphInteractionContractAsync(page, tools);
+
   await sourceEntry.click();
   await page.getByText('Repository source', { exact: true }).waitFor();
   const repositoryPickers = page.getByLabel('Choose repositories');
@@ -1542,8 +1702,9 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     'Repository source dialog did not expose its focused repository picker.'
   );
   await repositoryPickers.last().click();
+  await waitForCheckboxStateAsync(page, 'bulk-pending/repository-0', true);
   assert(
-    await page.getByLabel('bulk-pending/repository-0').isChecked(),
+    await page.getByRole('checkbox', { name: 'bulk-pending/repository-0' }).isChecked(),
     'Repository selection was not retained in the mobile dialog.'
   );
   await page.keyboard.press('Escape');
@@ -1568,7 +1729,6 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     'Repository dialog footer did not restore focus to its entry point.'
   );
 
-  const tools = page.getByRole('button', { name: 'Tools' });
   await tools.click();
   await page.getByText('Workspace tools', { exact: true }).waitFor();
   for (const name of ['Tree', 'Rules', 'Export'] as const) {
@@ -1576,7 +1736,9 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     await tab.click();
     await tab.waitFor();
   }
-  await page.getByLabel('Package prefix').fill('@fixture/catalog');
+  const packagePrefix = page.getByLabel('Package prefix');
+  await packagePrefix.fill('@fixture/catalog');
+  await packagePrefix.fill('');
   await closeWorkspaceToolsDialogAsync(page);
   assert(
     await tools.evaluate(element => document.activeElement === element),
@@ -1596,11 +1758,17 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
     await tools.evaluate(element => document.activeElement === element),
     'Tools dialog footer did not restore focus to its entry point.'
   );
+}
 
+/*** Exercises touch, pointer, and fit while the settled GraphView controller still owns the canvas. */
+async function exerciseNativeGraphInteractionContractAsync(
+  page: Page,
+  tools: Locator
+): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
   const graphBox = await graph.boundingBox();
   assert(graphBox !== null, 'Graph has no bounds for native input acceptance.');
-  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeId);
+  const node = await readGraphNodeAsync(page, responsiveTouchGraphNodeIds);
   await page.touchscreen.tap(graphBox.x + node.position.x, graphBox.y + node.position.y);
   await assertGraphTouchSelectionAsync(page, tools);
   const before = await readGraphViewportAsync(page);
@@ -1629,6 +1797,23 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
   assert(afterFit.zoom !== afterPinch.zoom, 'Fit did not update the graph viewport.');
 }
 
+/*** Waits for ZORA's public checkbox ARIA state before asserting its checked value. */
+async function waitForCheckboxStateAsync(
+  page: Page,
+  accessibilityLabel: string,
+  checked: boolean
+): Promise<void> {
+  await page.waitForFunction(
+    ({ accessibilityLabel: label, checked: expectedChecked }) =>
+      [...document.querySelectorAll('[role="checkbox"]')].some(
+        checkbox =>
+          checkbox.getAttribute('aria-label') === label &&
+          checkbox.getAttribute('aria-checked') === String(expectedChecked)
+      ),
+    { accessibilityLabel, checked }
+  );
+}
+
 /*** Closes the mobile tools dialog only after its portal unmounts and focus cleanup can complete.
  */
 async function closeWorkspaceToolsDialogAsync(page: Page): Promise<void> {
@@ -1646,6 +1831,29 @@ async function readGraphViewportAsync(page: Page) {
   });
   assert(viewport !== null, 'Graph controller was unavailable for interaction acceptance.');
   return viewport;
+}
+
+/*** Capture public graph presentation state to reject color edits that re-layout or auto-fit. */
+async function readGraphPresentationAsync(page: Page) {
+  const presentation = await page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller === null || probe?.controller === undefined
+      ? null
+      : { layoutCount: probe.layoutCount, viewport: probe.controller.getViewport() };
+  });
+  assert(presentation !== null, 'Graph presentation probe was unavailable.');
+  return presentation;
+}
+
+/*** Allows the public GraphView runtime to reconcile paint before reading its lifecycle counter. */
+async function settleGraphPresentationAsync(page: Page): Promise<void> {
+  await page.evaluate(
+    () =>
+      new Promise<void>(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      )
+  );
 }
 
 /*** Finds an uncovered Cytoscape background point so native mouse input cannot be captured by a graph overlay. */
@@ -1726,27 +1934,82 @@ async function readGraphGestureProbeAsync(page: Page): Promise<GraphGestureProbe
   return probe;
 }
 
-/*** Reads an actual projected GraphView node by its package identity for native touch input. */
-async function readGraphNodeAsync(page: Page, id: string) {
+/*** Resolves the touch target from the same Atlas projection that supplies the browser GraphView. */
+async function resolveResponsiveTouchGraphNodeIdsAsync(): Promise<readonly string[]> {
+  const workspace = await loadFixtureWorkspaceAsync(
+    `bulk-pending|include=${bulkSelectionIds.join(',')}`
+  );
+  assert(workspace.workspace.ok, 'Canonical bulk fixture workspace did not load.');
+  const settings = readSettingsEnvironment();
+  const elements = createPackageGraphElements(workspace.workspace.value.packageGraph);
+  const projection = projectVisibleGraph({
+    currentPackage: '',
+    elements,
+    showCompoundNodes: settings.showCompoundNodes,
+    showVendorPackages: settings.showVendorPackages,
+    subPackageDepth: settings.subPackageDepth,
+  });
+  const visibleNodeIds = createGraphViewModel(elements, projection.elements, []).nodes.map(
+    node => node.id
+  );
+  const graphNodeIds = createGraphViewModel(elements, elements, []).nodes.map(node => node.id);
+  return [...new Set([...visibleNodeIds, ...graphNodeIds])];
+}
+
+/*** Reads a controller-measured node from the canonical Atlas GraphView projection. */
+async function readGraphNodeAsync(page: Page, nodeIds: readonly string[]) {
   try {
-    await page.waitForFunction(nodeId => {
+    await page.waitForFunction(nodeIds => {
       const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
         .__atlasViewportProbe;
-      return probe?.controller?.measureNodes?.([nodeId])?.nodes.length === 1;
-    }, id);
+      return (probe?.controller?.measureNodes?.(nodeIds)?.nodes.length ?? 0) > 0;
+    }, nodeIds);
   } catch (error) {
-    const measuredIds = await readMeasuredGraphNodeIdsAsync(page, responsiveTouchGraphNodeIds);
+    const diagnostics = await readGraphTouchDiagnosticsAsync(page, nodeIds);
     throw new Error(
-      `Projected GraphView node ${id} was unavailable; measured IDs: ${measuredIds.join(', ') || 'none'}. ${String(error)}`
+      `No canonical bulk graph node was measurable through the public GraphView controller; canonical node IDs: ${nodeIds.join(', ')}; measured IDs: ${diagnostics.measuredNodeIds.join(', ') || 'none'}; loading state: ${JSON.stringify(diagnostics.loading)}; selection state: ${JSON.stringify(diagnostics.selection)}. ${String(error)}`
     );
   }
-  const node = await page.evaluate(nodeId => {
+  const node = await page.evaluate(nodeIds => {
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.([nodeId])?.nodes[0] ?? null;
-  }, id);
-  assert(node !== null, 'Graph node geometry was unavailable for native touch acceptance.');
+    return probe?.controller?.measureNodes?.(nodeIds)?.nodes[0] ?? null;
+  }, nodeIds);
+  assert(
+    node !== null,
+    'No measured graph node geometry was available for native touch acceptance.'
+  );
   return node;
+}
+
+/*** Wait for the released controller to expose every requested projected graph node. */
+async function waitForGraphNodesAsync(page: Page, nodeIds: readonly string[]): Promise<void> {
+  await page.waitForFunction(ids => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
+  }, nodeIds);
+}
+
+/*** Drives GraphView's public double-press interaction at the measured node center. */
+async function doublePressGraphNodeAsync(
+  page: Page,
+  id: string,
+  graphBounds: { readonly x: number; readonly y: number }
+): Promise<void> {
+  const node = await readGraphNodeAsync(page, [id]);
+  await page.mouse.dblclick(graphBounds.x + node.position.x, graphBounds.y + node.position.y);
+}
+
+/*** Rejects the legacy identity that would render a phantom module/src compound. */
+async function assertNoSyntheticModuleNodeAsync(page: Page, repositoryRoot: string): Promise<void> {
+  const legacyId = `${repositoryRoot}.module.src`;
+  const count = await page.evaluate(id => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller?.measureNodes?.([id])?.nodes.length ?? 0;
+  }, legacyId);
+  assert(count === 0, `GraphView retained synthetic module identity ${legacyId}.`);
 }
 
 /*** Verifies that a native GraphView tap updates the user-visible synchronized tree selection. */
@@ -1768,16 +2031,43 @@ async function assertGraphTouchSelectionAsync(page: Page, tools: Locator): Promi
   await closeWorkspaceToolsDialogAsync(page);
 }
 
-/*** Captures bounded public GraphView measurement diagnostics only when a node lookup fails. */
-async function readMeasuredGraphNodeIdsAsync(
-  page: Page,
-  ids: readonly string[]
-): Promise<readonly string[]> {
-  return page.evaluate(nodeIds => {
+/*** Captures canonical node, loading, and synchronized-selection state when touch targeting fails. */
+async function readGraphTouchDiagnosticsAsync(page: Page, nodeIds: readonly string[]) {
+  const serializedNodeIds = JSON.stringify(nodeIds);
+  return page.evaluate<GraphTouchDiagnostics, string>(serializedNodeIds => {
+    const parsedNodeIds: unknown = JSON.parse(serializedNodeIds);
+    if (!Array.isArray(parsedNodeIds))
+      throw new Error('Graph touch diagnostics received invalid serialized node IDs.');
+    const nodeIds: readonly string[] = parsedNodeIds.filter(
+      (nodeId): nodeId is string => typeof nodeId === 'string'
+    );
+    if (nodeIds.length !== parsedNodeIds.length)
+      throw new Error('Graph touch diagnostics received invalid serialized node IDs.');
     const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
       .__atlasViewportProbe;
-    return probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [];
-  }, ids);
+    const loadingStatus = document.querySelector(
+      '[role="status"][aria-label="Repository loading status"]'
+    );
+    const selectedTreeIds = [
+      ...document.querySelectorAll('[role="treeitem"][aria-selected="true"]'),
+    ]
+      .map(item => item.getAttribute('id') ?? item.textContent?.trim() ?? '')
+      .filter(Boolean);
+    const selectedRepositoryCheckboxes = [...document.querySelectorAll('[role="checkbox"]')]
+      .filter(checkbox => checkbox.getAttribute('aria-label')?.startsWith('bulk-pending/') === true)
+      .map(checkbox => ({
+        checked: checkbox.getAttribute('aria-checked'),
+        id: checkbox.getAttribute('aria-label'),
+      }));
+    return {
+      loading: {
+        present: loadingStatus !== null,
+        text: loadingStatus?.textContent?.trim() ?? '',
+      },
+      measuredNodeIds: probe?.controller?.measureNodes?.(nodeIds)?.nodes.map(node => node.id) ?? [],
+      selection: { selectedRepositoryCheckboxes, selectedTreeIds },
+    };
+  }, serializedNodeIds);
 }
 
 /*** Dispatches a two-finger Chromium touch sequence at the graph center to exercise pinch zoom. */
@@ -1807,7 +2097,7 @@ async function pinchGraphAsync(
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 29, `Expected exactly 29 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 30, `Expected exactly 30 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'

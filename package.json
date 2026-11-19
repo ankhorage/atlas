@@ -26,7 +26,7 @@
     "bun": ">=1.2.18",
     "npm": ">=10.9.2"
   },
-  "version": "0.21.3",
+  "version": "0.21.5",
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
   "repository": {
     "type": "git",
@@ -85,6 +85,7 @@
     "@ankhorage/auth": "^0.1.3",
     "@ankhorage/auth-github": "^0.2.0",
     "@ankhorage/capability": "^0.2.1",
+    "@ankhorage/color-theory": "^0.3.3",
     "@ankhorage/contracts": "^25.0.0",
     "@ankhorage/dependency-graph": "1.4.0",
     "@ankhorage/graph": "^0.3.0",
@@ -97,6 +98,7 @@
     "@ankhorage/rules": "^0.5.1",
     "@ankhorage/rules-architecture": "^0.8.0",
     "@ankhorage/surface": "9.5.19",
+    "@ankhorage/templates": "12.6.49",
     "@ankhorage/utility": "^1.9.85",
     "@ankhorage/zora": "27.4.3",
     "@artiphishle/testosterone": "^0.3.11",

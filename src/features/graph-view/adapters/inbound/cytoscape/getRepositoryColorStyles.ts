@@ -1,60 +1,63 @@
 import type { StylesheetJson } from 'cytoscape';
 
-import type { GraphPalette } from '@/features/graph-view/adapters/inbound/cytoscape/getGraphPalette';
+import { repositoryColor } from '@/constants/repositoryColor';
 
-/*** Builds paint-only repository identity styles from the active ZORA semantic palette. */
-export function getRepositoryColorStyles(colors: GraphPalette) {
+/*** Builds stable paint-only repository identity styles from prepared node presentation data. */
+export function getRepositoryColorStyles() {
   return {
-    compound: getRepositoryCompoundStyles(colors),
-    leaf: getRepositoryLeafStyles(colors),
+    compound: getRepositoryCompoundStyles(),
+    leaf: getRepositoryLeafStyles(),
+    selectedLeaf: getSelectedRepositoryLeafStyles(),
   };
 }
 
 /***
  * Paints first-party leaf nodes from their prepared immutable repository identity.
  *
- * Vendor nodes never receive a repository class. Hover, selected, and audit rules are emitted
- * later, so transient interaction and audit evidence remain the stronger signals.
+ * Vendor nodes never receive a repository class. Repository identity remains visible during
+ * selection while audit rules retain their stronger evidence border and outline signals.
  */
-function getRepositoryLeafStyles(colors: GraphPalette): StylesheetJson {
-  return colors.repositoryColors.map((color, index) => ({
-    selector: `node:childless.repositoryColor${index}`,
-    style: {
-      'background-color': color.background,
-      'border-color': color.border,
-      color: color.text,
+function getRepositoryLeafStyles(): StylesheetJson {
+  return [
+    {
+      selector: 'node:childless.repositoryOwned',
+      style: {
+        'background-color': 'data(repositoryColor)',
+        'border-color': repositoryColor.border,
+        color: repositoryColor.text,
+      },
     },
-  }));
+  ];
+}
+
+/*** Preserves the repository fill for selected leaf nodes without replacing selection evidence. */
+function getSelectedRepositoryLeafStyles(): StylesheetJson {
+  return [
+    {
+      selector: 'node:childless.repositoryOwned:selected',
+      style: { 'background-color': 'data(repositoryColor)' },
+    },
+  ];
 }
 
 /***
- * Preserves selected and audit compound priority while retaining repository identity at rest.
+ * Keeps repository identity visible for selected compounds while audit evidence retains priority.
  *
  * These declarations change paint only. Padding, border widths, labels, and geometry remain
  * owned by the existing compound styles so repository identity cannot trigger graph re-layout.
  */
-function getRepositoryCompoundStyles(colors: GraphPalette): StylesheetJson {
-  return colors.repositoryColors.flatMap((color, index) => [
+function getRepositoryCompoundStyles(): StylesheetJson {
+  return [
     {
-      selector: `node:parent.repositoryColor${index}`,
+      selector: 'node:parent.repositoryOwned',
       style: {
-        'background-color': color.background,
-        'border-color': color.border,
-        color: color.text,
+        'background-color': 'data(repositoryColor)',
+        'border-color': repositoryColor.border,
+        color: repositoryColor.text,
       },
     },
     {
-      selector: `node:parent.repositoryColor${index}:selected`,
-      style: {
-        'background-color': colors.selectedFill,
-        'border-color': colors.selectedRing,
-        'outline-color': colors.selectedRing,
-        'outline-width': 2,
-        color: colors.selectedText,
-      },
-    },
-    {
-      selector: `node:parent.repositoryColor${index}.auditCycle`,
+      selector: 'node:parent.repositoryOwned.auditCycle',
       style: {
         'underlay-opacity': 0,
         'border-color': 'data(auditCycleColor)',
@@ -64,5 +67,5 @@ function getRepositoryCompoundStyles(colors: GraphPalette): StylesheetJson {
         color: 'data(auditCycleColor)',
       },
     },
-  ]);
+  ];
 }

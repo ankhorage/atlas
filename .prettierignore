@@ -4,3 +4,4 @@ README.md
 paradox/
 .ankh/
 .agents/skills/
+test/e2e/next-fixture-app/build/

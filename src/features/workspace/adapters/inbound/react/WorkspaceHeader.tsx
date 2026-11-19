@@ -1,4 +1,5 @@
 'use client';
+import type { ColorToneDefinition } from '@ankhorage/zora';
 import { AppHeader } from '@ankhorage/zora/web/app-header';
 import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
 import { Heading } from '@ankhorage/zora/web/heading';
@@ -20,17 +21,11 @@ const ATLAS_BRAND_ICON =
 
 /*** Renders workspace breadcrumbs, source selection, and theme action. */
 export function WorkspaceHeader(props: WorkspaceHeaderProps) {
-  const { theme } = useZoraTheme();
-
   return (
     <AppHeader inverted safeAreaTop={false} testID="workspace-header">
       <div className={styles.content}>
         <WorkspaceIdentity {...props} />
-        <div
-          className={styles.actions}
-          data-testid="workspace-header-actions"
-          style={{ color: theme.semantics.content.default }}
-        >
+        <div className={styles.actions} data-testid="workspace-header-actions">
           <WorkspaceHeaderActions {...props} />
         </div>
       </div>
@@ -79,6 +74,7 @@ function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
           activeWorkspaceId={props.workspaceScope}
           currentSource={props.currentSource}
           repositories={props.repositories}
+          repositoryColorTones={props.repositoryColorTones}
           selectionRequired={props.selectionRequired}
           authControls={<GitHubAuthControls auth={props.githubAuth} />}
           onSelection={props.onSelection}
@@ -157,6 +153,7 @@ interface WorkspaceHeaderProps {
   readonly projectName: string;
   readonly projectTree: readonly ProjectTreeNode[];
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones?: readonly ColorToneDefinition[];
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
   readonly onNavigate: (path: string) => void;

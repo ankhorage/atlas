@@ -120,7 +120,7 @@ function WorkspaceMenu(props: WorkspaceMenuProps) {
         </Button>
       )}
     >
-      <Surface style={{ border: '1px solid currentColor', padding: 8 }}>
+      <Surface style={{ padding: 8 }} variant="raised">
         <label>
           Saved workspace{' '}
           <select

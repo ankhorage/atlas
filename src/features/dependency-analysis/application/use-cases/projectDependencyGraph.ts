@@ -79,6 +79,7 @@ function projectNode(
     id,
     data: {
       classification: data.classification,
+      kind: data.kind,
       path: id,
       parent,
       label,
@@ -101,7 +102,7 @@ function repositoryPackageId(
   if (isRepositoryRoot(data)) return root;
   const path = nonEmpty(data.path) ?? nonEmpty(data.packageName) ?? nonEmpty(data.label);
   if (path === undefined) return undefined;
-  return `${root}.${data.kind}.${normalizeIdentityPath(path)}`;
+  return repositoryPathId(root, data.kind, path);
 }
 
 /*** Keep compound depth relative to a repository rather than an installation directory. */
@@ -109,7 +110,7 @@ function repositoryParentId(repositoryId: string, data: DependencyGraphNodeData)
   const root = repositoryGraphId(repositoryId);
   if (isRepositoryRoot(data)) return '';
   const path = data.kind === 'module' ? data.parentPath : parentPackage(data.path ?? '');
-  return path ? `${root}.${data.kind}.${normalizeIdentityPath(path)}` : root;
+  return path ? repositoryPathId(root, data.kind, path) : root;
 }
 
 /*** Identify the canonical focus package that represents a selected repository itself. */
@@ -125,6 +126,20 @@ function repositoryGraphId(repositoryId: string): string {
 /*** Normalize semantic package paths without using temporary materialization paths. */
 function normalizeIdentityPath(path: string): string {
   return path.replaceAll('/', '.').replace(/^\.+|\.+$/g, '');
+}
+
+/***
+ * Keep module identities on their real source paths so graph scopes retain filesystem ancestry.
+ * Packages use their own stable namespace, keeping collisions distinct without a synthetic module
+ * compound ancestor. Semantic kind remains explicit metadata on every projected node.
+ */
+function repositoryPathId(
+  repositoryRoot: string,
+  kind: DependencyGraphNodeData['kind'],
+  path: string
+): string {
+  const namespace = kind === 'module' ? '' : `.${kind}`;
+  return `${repositoryRoot}${namespace}.${normalizeIdentityPath(path)}`;
 }
 
 /*** Resolve the dotted parent package used by Atlas compound-node projection. */

@@ -15,7 +15,7 @@ export function getStyle(
   theme: ZoraRuntimeTheme
 ): StylesheetJson {
   const colors = getGraphPalette(theme);
-  const repositoryStyles = getRepositoryColorStyles(colors);
+  const repositoryStyles = getRepositoryColorStyles();
   const { thresholds } = getWeightBuckets(3, 'linear', filteredElements);
 
   return [
@@ -24,6 +24,7 @@ export function getStyle(
     ...getNodeInteractionStyles(colors),
     ...getNodeStateStyles(colors),
     ...getCompoundStyles(colors),
+    ...repositoryStyles.selectedLeaf,
     ...repositoryStyles.compound,
     ...getCompoundOpacityStyles(filteredElements),
     ...getEdgeBaseStyles(colors),

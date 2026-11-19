@@ -1,5 +1,6 @@
 'use client';
 
+import type { ColorToneDefinition } from '@ankhorage/zora';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { AppShell } from '@ankhorage/zora/web/view';
 
@@ -25,6 +26,7 @@ export function WorkspaceLayout({
   offline,
   projectName,
   repositories,
+  repositoryColorTones,
   selectionError,
   selectionRequired,
   workspaceScope,
@@ -39,6 +41,7 @@ export function WorkspaceLayout({
     offline,
     projectName,
     repositories,
+    repositoryColorTones,
     selectionRequired,
     workspaceScope,
     onSelection,
@@ -74,6 +77,7 @@ function WorkspaceHeaderSlot(props: WorkspaceHeaderSlotProps) {
         projectName={props.projectName}
         projectTree={props.navigation.projectTree}
         repositories={props.repositories}
+        repositoryColorTones={props.repositoryColorTones}
         selectionRequired={props.selectionRequired}
         workspaceScope={props.workspaceScope}
         onNavigate={props.navigation.navigateToPackage}
@@ -200,6 +204,7 @@ interface WorkspaceLayoutProps {
   readonly onRetry?: (repositoryId: string) => Promise<void>;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones?: readonly ColorToneDefinition[];
   readonly selectionError?: string;
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
@@ -213,6 +218,7 @@ interface WorkspaceHeaderSlotProps {
   readonly projectName: string;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones?: readonly ColorToneDefinition[];
   readonly selectionRequired?: boolean;
   readonly workspaceScope?: string;
 }

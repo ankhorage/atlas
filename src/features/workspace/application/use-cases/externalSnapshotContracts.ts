@@ -182,12 +182,18 @@ function isPackageGraphNode(
     typeof value.id === 'string' &&
     validation.isRecord(value.data) &&
     typeof value.data.classification === 'string' &&
+    validation.isOptional(value.data.kind, isPackageGraphNodeKind) &&
     typeof value.data.path === 'string' &&
     typeof value.data.parent === 'string' &&
     typeof value.data.label === 'string' &&
     typeof value.data.name === 'string' &&
     validation.isOptional(value.data.isIntrinsic, validation.isBoolean)
   );
+}
+
+/*** Validates the additive semantic metadata emitted by current graph projections. */
+function isPackageGraphNodeKind(value: unknown): boolean {
+  return value === 'module' || value === 'package';
 }
 
 /*** Validates one generic Rules diagnostic without closing its owner-controlled code. */

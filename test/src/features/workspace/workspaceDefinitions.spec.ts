@@ -29,10 +29,59 @@ const WORKSPACE: WorkspaceDefinition = {
     showVendorPackages: false,
     spacing: 80,
     subPackageDepth: 2,
+    repositoryColors: {},
   },
 };
 
 describe('[workspace definitions]', () => {
+  it('accepts v1 workspaces without repository color overrides', () => {
+    const { repositoryColors: _, ...settings } = WORKSPACE.settings;
+    const legacy = { ...WORKSPACE, settings };
+
+    assert.deepEqual(validateWorkspaceDefinitions([legacy])?.[0]?.settings.repositoryColors, {});
+  });
+
+  it('accepts only bounded canonical repository color overrides', () => {
+    const repositoryColors = { R_atlas: '#AABBCC' };
+    const oversizedRepositoryColors = Object.fromEntries(
+      Array.from({ length: 101 }, (_, index) => [`R_${index}`, '#AABBCC'])
+    );
+
+    assert.deepEqual(
+      validateWorkspaceDefinitions([
+        { ...WORKSPACE, settings: { ...WORKSPACE.settings, repositoryColors } },
+      ])?.[0]?.settings.repositoryColors,
+      repositoryColors
+    );
+    assert.equal(
+      validateWorkspaceDefinitions([
+        {
+          ...WORKSPACE,
+          settings: { ...WORKSPACE.settings, repositoryColors: { 'R/atlas': '#AABBCC' } },
+        },
+      ]),
+      null
+    );
+    assert.equal(
+      validateWorkspaceDefinitions([
+        {
+          ...WORKSPACE,
+          settings: { ...WORKSPACE.settings, repositoryColors: { R_atlas: '#aabbcc' } },
+        },
+      ]),
+      null
+    );
+    assert.equal(
+      validateWorkspaceDefinitions([
+        {
+          ...WORKSPACE,
+          settings: { ...WORKSPACE.settings, repositoryColors: oversizedRepositoryColors },
+        },
+      ]),
+      null
+    );
+  });
+
   it('creates, saves, reopens, renames, and deletes independent named workspaces', () => {
     const storage = new MemoryStorage();
     const store = createBrowserWorkspaceStore(storage);

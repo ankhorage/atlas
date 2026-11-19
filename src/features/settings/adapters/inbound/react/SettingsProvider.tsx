@@ -4,11 +4,14 @@ import { createElement, type PropsWithChildren, useMemo } from 'react';
 import { SettingsContext } from '@/features/settings/adapters/inbound/react/SettingsContext';
 import { readSettingsEnvironment } from '@/features/settings/utils/readSettingsEnvironment';
 import type { DependencyFilterKind } from '@/types/settings';
+import { isRepositoryColors } from '@/utils/isRepositoryColors';
+import { isRepositoryId } from '@/utils/isRepositoryId';
 
 /*** Provides persisted graph settings to the application. */
 export function SettingsProvider({ children, workspaceScope = 'default' }: SettingsProviderProps) {
   const environment = readSettingsEnvironment();
   const dependencyFilters = useDependencyFilterSettings(workspaceScope);
+  const repositoryColorSettings = useRepositoryColorSettings(workspaceScope);
   const [maxSubPackageDepth, setMaxSubPackageDepth] = useMaxSubPackageDepthSetting();
   const [showCompoundNodes, setShowCompoundNodes] = useLocalStorage<boolean>(
     'showCompoundNodes',
@@ -41,6 +44,7 @@ export function SettingsProvider({ children, workspaceScope = 'default' }: Setti
         showCompoundNodes,
         showVendorPackages,
         ...dependencyFilters,
+        ...repositoryColorSettings,
         subPackageDepth,
         setCytoscapeLayout,
         setCytoscapeLayoutSpacing,
@@ -52,6 +56,27 @@ export function SettingsProvider({ children, workspaceScope = 'default' }: Setti
     },
     children
   );
+}
+
+/*** Owns validated repository color overrides for one portable workspace scope. */
+function useRepositoryColorSettings(workspaceScope: string) {
+  const [storedRepositoryColors, setStoredRepositoryColors] = useLocalStorage<unknown>(
+    `atlas.workspace.${encodeURIComponent(workspaceScope)}.repository-colors`,
+    {}
+  );
+  const repositoryColors = isRepositoryColors(storedRepositoryColors) ? storedRepositoryColors : {};
+
+  return {
+    repositoryColors,
+    setRepositoryColor: (repositoryId: string, color: string | undefined) =>
+      setStoredRepositoryColors((previous: unknown) => {
+        const colors = isRepositoryColors(previous) ? previous : {};
+        const { [repositoryId]: _, ...remaining } = colors;
+        if (color === undefined) return isRepositoryId(repositoryId) ? remaining : colors;
+        const next = { ...colors, [repositoryId]: color };
+        return isRepositoryColors(next) ? next : colors;
+      }),
+  };
 }
 
 /*** Owns persisted dependency-visibility preferences for one portable workspace scope. */

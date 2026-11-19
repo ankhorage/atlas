@@ -117,52 +117,61 @@ describe('[getStyle]', () => {
     }
   });
 
-  it('colors selected repositories without changing dimensions or overriding vendor, audit, and selection states', () => {
+  it('applies repository overrides to every source-owned node and compound without changing layout', () => {
     const elements = {
       nodes: [
-        { classes: 'repositoryColor0', data: { id: 'root', repositoryId: 'R_catalog' } },
+        { classes: 'repositoryOwned', data: { id: 'root', repositoryId: 'R_catalog' } },
         {
-          classes: 'repositoryColor0',
-          data: { id: 'child', parent: 'root', repositoryId: 'R_catalog' },
+          classes: 'repositoryOwned',
+          data: { id: 'src', parent: 'root', repositoryId: 'R_catalog' },
         },
+        {
+          classes: 'repositoryOwned',
+          data: { id: 'src.features', parent: 'src', repositoryId: 'R_catalog' },
+        },
+        { classes: 'repositoryOwned', data: { id: 'other', repositoryId: 'R_other' } },
         { classes: 'isVendor', data: { id: 'vendor', repositoryId: 'R_catalog' } },
         {
-          classes: 'repositoryColor0 auditCycle',
+          classes: 'repositoryOwned auditCycle',
           data: { id: 'audit', auditCycleColor: '#dc2626', repositoryId: 'R_catalog' },
         },
       ],
       edges: [],
     };
     const cy = cytoscape({
-      elements: toRenderableElements(elements),
+      elements: toRenderableElements(elements, { R_catalog: '#AABBCC' }),
       headless: true,
       styleEnabled: true,
       style: getStyle(elements, createTheme('light')),
     });
     try {
       const root = cy.getElementById('root');
-      const child = cy.getElementById('child');
-      const before = child.layoutDimensions({ nodeDimensionsIncludeLabels: true });
-      expect(root.style('background-color')).toBe('rgb(220,234,251)');
-      expect(child.style('background-color')).toBe('rgb(220,234,251)');
+      const leaf = cy.getElementById('src.features');
+      const before = leaf.layoutDimensions({ nodeDimensionsIncludeLabels: true });
+      for (const nodeId of ['root', 'src', 'src.features'])
+        expect(cy.getElementById(nodeId).style('background-color')).toBe('rgb(170,187,204)');
+      expect(cy.getElementById('other').style('background-color')).toBe('rgb(220,234,251)');
       expect(cy.getElementById('vendor').style('background-color')).toBe('rgb(236,228,251)');
       expect(cy.getElementById('audit').style('border-color')).toBe('rgb(220,38,38)');
       root.select();
-      expect(root.style('background-color')).toBe('rgb(45,85,125)');
-      expect(child.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
+      leaf.select();
+      expect(root.style('background-color')).toBe('rgb(170,187,204)');
+      expect(leaf.style('background-color')).toBe('rgb(170,187,204)');
+      expect(leaf.layoutDimensions({ nodeDimensionsIncludeLabels: true })).toEqual(before);
     } finally {
       cy.destroy();
     }
   });
 
-  it('keeps all seven repository roles distinct and readable in representative light and dark themes', () => {
+  it('keeps every repository on one theme-invariant default HEX fill', () => {
     const elements = {
       nodes: Array.from({ length: 7 }, (_, index) => ({
-        classes: `repositoryColor${index}`,
-        data: { id: `repository-${index}` },
+        classes: 'repositoryOwned',
+        data: { id: `repository-${index}`, repositoryId: `repository-${index}` },
       })),
       edges: [],
     };
+    const fills = [];
     for (const theme of [createTheme('light'), createTheme('dark')]) {
       const cy = cytoscape({
         elements: toRenderableElements(elements),
@@ -174,7 +183,8 @@ describe('[getStyle]', () => {
         const backgrounds = elements.nodes.map(node =>
           cy.getElementById(node.data.id).style('background-color')
         );
-        expect(new Set(backgrounds).size).toBe(7);
+        fills.push(...backgrounds);
+        expect(new Set(backgrounds).size).toBe(1);
         for (const node of elements.nodes) {
           const rendered = cy.getElementById(node.data.id);
           expect(
@@ -186,6 +196,7 @@ describe('[getStyle]', () => {
         cy.destroy();
       }
     }
+    expect(new Set(fills)).toEqual(new Set(['rgb(220,234,251)']));
   });
 
   it('keeps node dimensions stable across repeated style and highlight updates', () => {
@@ -403,8 +414,11 @@ function rgb(hex: string): string {
   return `rgb(${channels.join(',')})`;
 }
 
-function toRenderableElements(elements: ElementsDefinition): ElementsDefinition {
-  const model = createGraphViewModel(elements, elements, []);
+function toRenderableElements(
+  elements: ElementsDefinition,
+  repositoryColors: Readonly<Record<string, string>> = {}
+): ElementsDefinition {
+  const model = createGraphViewModel(elements, elements, [], repositoryColors);
   return {
     nodes: model.nodes.map(node => ({
       classes: node.classes,
