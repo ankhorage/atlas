@@ -535,17 +535,6 @@ async function assertWorkspaceGraphShellAsync(
   );
 }
 
-/*** Captures one independently named real-workspace graph frame for acceptance diagnosis. */
-async function captureWorkspaceGraphAsync(
-  page: Page,
-  viewport: string,
-  themePhase: 'initial' | 'toggled'
-): Promise<string> {
-  const artifact = `workspace-graph-e2e-${viewport}-${themePhase}.png`;
-  await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
-  return artifact;
-}
-
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
 async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
   assert(await isSwitchCheckedAsync(switchControl), message);
@@ -1399,31 +1388,10 @@ const scenarios: readonly Scenario[] = [
           .waitFor();
         if (viewport.width <= 768) await closeWorkspaceToolsDialogAsync(page);
         await assertWorkspaceViewportAsync(page, repositoryCount, viewport);
+        await assertWorkspaceGraphShellAsync(page, viewport);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
         artifacts.push(artifact);
-      }
-      return artifacts;
-    }
-  ),
-  scenario(
-    'workspace-graph-e2e',
-    'Renders the real WorkspaceGraph in both themes and supported viewports outside the loading fixture.',
-    async page => {
-      const artifacts: string[] = [];
-      for (const viewport of [
-        { height: 900, name: 'desktop', width: 1440 },
-        { height: 844, name: 'mobile', width: 390 },
-      ]) {
-        await page.setViewportSize(viewport);
-        await openWorkspaceAsync(page);
-        await assertGraphCanvasAsync(page);
-        await assertWorkspaceGraphShellAsync(page, viewport);
-        artifacts.push(await captureWorkspaceGraphAsync(page, viewport.name, 'initial'));
-        await toggleThemeAsync(page);
-        await assertGraphCanvasAsync(page);
-        await assertWorkspaceGraphShellAsync(page, viewport);
-        artifacts.push(await captureWorkspaceGraphAsync(page, viewport.name, 'toggled'));
       }
       return artifacts;
     }
