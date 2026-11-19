@@ -36,6 +36,9 @@ type ScenarioResult = {
 };
 type LoadingDiagnostics = {
   readonly indicator: Bounds;
+  readonly indicatorCount: number;
+  readonly loaderStyleElementCount: number;
+  readonly reactNativeWebStyleSheetCount: number;
   readonly region: Bounds;
   readonly styleElementCount: number;
   readonly styleSheetCount: number;
@@ -200,6 +203,12 @@ function readDiagnosticsAsync(page: Page): Promise<LoadingDiagnostics> {
     };
     return {
       indicator: toBounds(indicator),
+      indicatorCount: document.querySelectorAll('[data-testid="loader"]').length,
+      loaderStyleElementCount: [...document.querySelectorAll('style')].filter(style =>
+        style.textContent?.includes('loader')
+      ).length,
+      reactNativeWebStyleSheetCount: document.querySelectorAll('style#react-native-stylesheet')
+        .length,
       region: toBounds(region),
       styleElementCount: document.querySelectorAll('style').length,
       styleSheetCount: document.styleSheets.length,
@@ -209,7 +218,13 @@ function readDiagnosticsAsync(page: Page): Promise<LoadingDiagnostics> {
 
 /*** Enforces the published consumer contract: a compact, centered spinner in the available graph region. */
 function validateDiagnostics(diagnostics: LoadingDiagnostics): string | undefined {
-  const { indicator, region } = diagnostics;
+  const {
+    indicator,
+    indicatorCount,
+    loaderStyleElementCount,
+    reactNativeWebStyleSheetCount,
+    region,
+  } = diagnostics;
   const expectedIndicatorSize = 20;
   const centerTolerance = 1;
   const horizontalOffset = Math.abs(
@@ -230,6 +245,13 @@ function validateDiagnostics(diagnostics: LoadingDiagnostics): string | undefine
     issues.push(
       `Indicator is not centered: horizontal ${horizontalOffset}px, vertical ${verticalOffset}px.`
     );
+  if (indicatorCount !== 1) issues.push(`Expected one indicator, found ${indicatorCount}.`);
+  if (reactNativeWebStyleSheetCount !== 1)
+    issues.push(
+      `Expected one React Native Web stylesheet, found ${reactNativeWebStyleSheetCount}.`
+    );
+  if (loaderStyleElementCount !== 0)
+    issues.push(`Found ${loaderStyleElementCount} CSS override(s) for the indicator.`);
   return issues.length === 0 ? undefined : issues.join(' ');
 }
 

@@ -1,8 +1,8 @@
 'use client';
 import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { ActivityIndicator } from '@ankhorage/zora/web/activity-indicator';
-import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
+import { View } from 'react-native-web';
 
 import { CycleInspector } from '@/features/audit/adapters/inbound/react/CycleInspector';
 import { DependencyGraphView } from '@/features/graph-view/adapters/inbound/react/DependencyGraphView';
@@ -26,7 +26,7 @@ export function WorkspaceGraph({
 }: WorkspaceGraphProps) {
   if (packageGraph === null) {
     return (
-      <View align="center" flex={1} justify="center">
+      <View style={loadingContainerStyle}>
         <ActivityIndicator testID="loader" />
       </View>
     );
@@ -56,6 +56,13 @@ export function WorkspaceGraph({
     />
   );
 }
+
+const loadingContainerStyle = {
+  alignItems: 'center' as const,
+  display: 'flex' as const,
+  flex: 1,
+  justifyContent: 'center' as const,
+};
 
 interface WorkspaceGraphProps {
   readonly currentPackage: string;

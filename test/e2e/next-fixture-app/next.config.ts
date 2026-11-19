@@ -5,6 +5,7 @@ import type { NextConfig } from 'next';
 const root = resolve(__dirname, '../../..');
 const aliases = {
   '@': resolve(root, 'src'),
+  'react-native$': 'react-native-web',
 };
 
 const nextConfig: NextConfig = {
@@ -17,7 +18,11 @@ const nextConfig: NextConfig = {
   turbopack: { root, resolveAlias: aliases },
   webpack: configuration => ({
     ...configuration,
-    resolve: { ...configuration.resolve, alias: { ...configuration.resolve.alias, ...aliases } },
+    resolve: {
+      ...configuration.resolve,
+      alias: { ...configuration.resolve.alias, ...aliases },
+      extensions: ['.web.tsx', '.web.ts', '.web.js', ...(configuration.resolve.extensions ?? [])],
+    },
   }),
 };
 
