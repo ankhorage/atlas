@@ -59,7 +59,10 @@ try {
     const breadcrumbs = await page.getByLabel('Breadcrumbs').innerText();
     const viewport = JSON.stringify(visibleLayout.viewport);
     await page.getByTestId('graph-node-src.features').click();
-    const selectedLayout = await waitForNextGraphLayout(page, visibleLayout.layoutSequence);
+    const selectedLayout = await waitForGraphSelectionWithoutRelayout(
+      page,
+      visibleLayout.layoutSequence
+    );
 
     assertEqual(
       'breadcrumbs after GraphView selection',
@@ -162,6 +165,28 @@ function assertEqual(label: string, actual: unknown, expected: unknown): void {
     throw new Error(
       `${label}: expected ${JSON.stringify(expected)}, received ${JSON.stringify(actual)}.`
     );
+}
+
+/*** Waits for controlled selection and proves it does not schedule another graph layout. */
+async function waitForGraphSelectionWithoutRelayout(
+  page: Page,
+  expectedLayoutSequence: number
+): Promise<GraphLifecycle> {
+  await page.waitForFunction(() => {
+    const serialized = document.querySelector('[aria-label="Graph lifecycle"]')?.textContent;
+    if (serialized === null || serialized === undefined) return false;
+    const state = JSON.parse(serialized) as GraphLifecycle;
+    return state.selectedNodeIds.length === 1 && state.selectedNodeIds[0] === 'src.features';
+  });
+  await page.evaluate(
+    () =>
+      new Promise<void>(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      )
+  );
+  const state = JSON.parse(await page.getByLabel('Graph lifecycle').innerText()) as GraphLifecycle;
+  assertEqual('selection must not trigger graph layout', state.layoutSequence, expectedLayoutSequence);
+  return state;
 }
 
 /*** Waits for GraphView's published layout completion snapshot instead of sampling an active transition. */
