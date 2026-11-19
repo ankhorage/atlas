@@ -838,6 +838,10 @@ const scenarios: readonly Scenario[] = [
         afterColor.layoutCount === 1,
         `Repository color update recomputed graph layout: expected 1, received ${afterColor.layoutCount}.`
       );
+      // The source dialog correctly blocks background header actions while open.
+      await page.keyboard.press('Escape');
+      await picker.waitFor({ state: 'hidden' });
+      await closeMobileRepositorySourceDialogAsync(page);
       await toggleThemeAsync(page);
       await settleGraphPresentationAsync(page);
       const afterThemeChange = await readGraphPresentationAsync(page);
@@ -845,6 +849,8 @@ const scenarios: readonly Scenario[] = [
         afterThemeChange.layoutCount === 1,
         `Repository color theme switch recomputed graph layout: expected 1, received ${afterThemeChange.layoutCount}.`
       );
+      await openRepositoryPickerAsync(page);
+      await page.getByLabel('Change color for owner-a/catalog').click();
       await page.getByRole('button', { name: 'Reset color' }).click();
       await page.waitForFunction(() =>
         Object.entries(localStorage).every(
