@@ -51,7 +51,7 @@
     "lint": "ankhorage-eslint . --max-warnings=0",
     "format:check": "ankhorage-prettier --check .",
     "format:write": "ankhorage-prettier --write \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml,mjs,cjs,html,css,scss,mdx}\"",
-    "test": "bun run test:unit && bun run test:maven && bun run test:gradle",
+    "test": "bun run test:unit",
     "test:unit": "testosterone",
     "test:rule-explorer": "bun test test/src/features/audit/*.spec.ts",
     "test:cov": "testosterone --coverage",
@@ -113,7 +113,7 @@
     "yauzl": "^3.4.0"
   },
   "devDependencies": {
-    "@ankhorage/devtools": "^2.1.7",
+    "@ankhorage/devtools": "2.1.7",
     "@ankhorage/paradox": "^0.2.28",
     "@types/bun": "^1.4.2",
     "@types/node": "^24.19.1",

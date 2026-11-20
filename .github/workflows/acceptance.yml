@@ -1,0 +1,106 @@
+name: Atlas acceptance
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: maven-plugin/pom.xml
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10'
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build Atlas
+        run: bun run build
+
+      - name: Validate generated documentation
+        run: bun run docs
+
+      - name: Run JVM adapter tests
+        run: bun run test:maven && bun run test:gradle
+
+      - name: Resolve Chromium
+        run: |
+          export ATLAS_CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          test -n "$ATLAS_CHROME"
+          echo "ATLAS_CHROME=$ATLAS_CHROME" >> "$GITHUB_ENV"
+
+      - name: Verify offline workspace in an isolated browser
+        env:
+          ATLAS_PROJECT_PATH: ${{ github.workspace }}/examples/java/my-app
+        run: |
+          bun bin/atlas.ts examples/java/my-app --offline --out offline-smoke.html
+          bun run start > next.log 2>&1 &
+          next_pid=$!
+          trap 'kill "$next_pid"; rm -f offline-smoke.html next.log' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:3000/ > /dev/null
+          ATLAS_ONLINE_URL=http://127.0.0.1:3000/ bun run test:offline-browser
+
+      - name: Verify compound selection browser acceptance
+        env:
+          ATLAS_PROJECT_PATH: ${{ github.workspace }}/test/fixtures/typescript/compound-selection
+          ATLAS_PROJECT_NAME: compound-selection
+        run: |
+          bun run test:compound-selection-browser
+          bun bin/atlas.ts test/fixtures/typescript/compound-selection --offline --out compound-selection.html
+          ATLAS_OFFLINE_REPORT=compound-selection.html ATLAS_PROJECT_NAME=compound-selection ATLAS_REQUIRE_COMPOUND_NODES=true bun run test:offline-browser
+          rm -f compound-selection.html
+
+      - name: Verify GitHub logout browser acceptance
+        run: bun run test:github-logout-browser
+
+      - name: Verify workspace loading first frame
+        run: bun run test:workspace-loading-browser
+
+      - name: Verify multi-project browser acceptance
+        run: bun run test:multi-project-browser
+
+      - name: Retain browser acceptance diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-browser-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/workspace-loading-browser/
+            artifacts/browser-acceptance/
+          if-no-files-found: warn
