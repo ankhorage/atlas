@@ -517,6 +517,24 @@ async function assertGraphCanvasAsync(page: Page): Promise<void> {
   assert(box !== null && box.width > 0 && box.height > 0, 'Graph canvas has no rendered area.');
 }
 
+/*** Verifies the production workspace shell contains the resolved WorkspaceGraph at the requested viewport. */
+async function assertWorkspaceGraphShellAsync(
+  page: Page,
+  viewport: { readonly height: number; readonly width: number }
+): Promise<void> {
+  const geometry = await captureWorkspaceGeometryAsync(page);
+  assertDimensionsEqual(
+    geometry.viewport,
+    viewport,
+    'WorkspaceGraph changed the browser viewport.'
+  );
+  assertBoundsContained(
+    geometry.graph,
+    geometry.workspaceContent,
+    'WorkspaceGraph escaped the workspace content region.'
+  );
+}
+
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
 async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
   assert(await isSwitchCheckedAsync(switchControl), message);
@@ -1370,6 +1388,7 @@ const scenarios: readonly Scenario[] = [
           .waitFor();
         if (viewport.width <= 768) await closeWorkspaceToolsDialogAsync(page);
         await assertWorkspaceViewportAsync(page, repositoryCount, viewport);
+        await assertWorkspaceGraphShellAsync(page, viewport);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
         artifacts.push(artifact);

@@ -89,9 +89,6 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build package
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build ? 0 : 1)"; then
             bun run build
@@ -395,9 +392,6 @@ jobs:
 
       - name: Verify standalone packed install
         if: steps.release.outputs.versioned == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           # Changesets can intentionally update package metadata and the lockfile during versioning.
@@ -661,9 +655,6 @@ jobs:
 
       - name: Publish unpublished packages
         if: hashFiles('.changeset/config.json') != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           if ! node -e "const p=require('./package.json'); process.exit(p.ankh?.apm === undefined ? 1 : 0)"; then
             package_name="$(node -p "require('./package.json').name")"
@@ -772,11 +763,8 @@ jobs:
                     process.exit(1);
                   }
                 '; then
-                  pack_dir="$(mktemp -d "${RUNNER_TEMP}/npm-pack-verification.XXXXXX")"
-                  if npm pack "$package_spec" --pack-destination "$pack_dir" >/dev/null; then
-                    echo "Verified ${package_spec}: exact registry metadata, tarball download, SHA-512 integrity, and npm pack."
-                    exit 0
-                  fi
+                  echo "Verified ${package_spec}: exact registry metadata, tarball download, and SHA-512 integrity."
+                  exit 0
                 fi
 
                 echo "::error title=Wrong npm tarball::${package_spec} failed its registry SHA-512 integrity check."

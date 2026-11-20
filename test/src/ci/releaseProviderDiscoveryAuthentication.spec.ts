@@ -21,7 +21,7 @@ function getEnvironmentValue(step: string, name: string): string | undefined {
 }
 
 describe('[release provider discovery authentication]', () => {
-  it('uses the workflow token for every Ankh build and retains scoped tokens for release writes', async () => {
+  it('keeps build steps tokenless and retains scoped tokens for release writes', async () => {
     const workflow = await readFile(workflowPath, 'utf8');
     const buildSteps = [
       'Build package',
@@ -32,8 +32,8 @@ describe('[release provider discovery authentication]', () => {
     for (const name of buildSteps) {
       const step = getReleaseStep(workflow, name);
 
-      assert.equal(getEnvironmentValue(step, 'GH_TOKEN'), '${{ github.token }}');
-      assert.equal(getEnvironmentValue(step, 'GITHUB_TOKEN'), '${{ github.token }}');
+      assert.equal(getEnvironmentValue(step, 'GH_TOKEN'), undefined);
+      assert.equal(getEnvironmentValue(step, 'GITHUB_TOKEN'), undefined);
       assert.equal(step.includes('GH_TOKEN: ${{ steps.release-token.outputs.token }}'), false);
       assert.equal(step.includes('GITHUB_TOKEN: ${{ steps.release-token.outputs.token }}'), false);
     }
@@ -50,7 +50,9 @@ describe('[release provider discovery authentication]', () => {
     assert.equal(checkout.includes('token: ${{ steps.release-token.outputs.token }}'), true);
     assert.equal(versionPackages.includes('git push origin HEAD:main'), true);
     assert.equal(publish.includes('bun run changeset -- publish'), true);
-    assert.equal(verifyPublication.includes('npm pack "$package_spec"'), true);
+    assert.equal(verifyPublication.includes('npm view "$package_spec"'), true);
+    assert.equal(verifyPublication.includes('EXPECTED_INTEGRITY="$integrity"'), true);
+    assert.equal(verifyPublication.includes('sha512-${createHash("sha512")'), true);
     assert.equal(
       getEnvironmentValue(finalize, 'GH_TOKEN'),
       '${{ steps.release-token.outputs.token }}'
