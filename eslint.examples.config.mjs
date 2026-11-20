@@ -6,8 +6,8 @@ import localConfig from './eslint.local.config.mjs';
 
 const exampleFiles = ['examples/**/*.{ts,tsx}'];
 const localEntries = Array.isArray(localConfig) ? localConfig : [localConfig];
-const rootProjects = ['./tsconfig.eslint.json', './tsconfig.json'].filter((project) =>
-  existsSync(new URL(project, import.meta.url)),
+const rootProjects = ['./tsconfig.eslint.json', './tsconfig.json'].filter(project =>
+  existsSync(new URL(project, import.meta.url))
 );
 
 export default [
