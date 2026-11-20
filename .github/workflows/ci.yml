@@ -31,7 +31,27 @@ jobs:
           node-version: '24'
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
+
+      - name: Reject package version rollback
+        if: github.event_name == 'pull_request'
+        run: |
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          base_version="$(git show "${base_sha}:package.json" | node -e "let source=''; process.stdin.on('data',(chunk)=>source+=chunk); process.stdin.on('end',()=>process.stdout.write(JSON.parse(source).version ?? ''))")"
+          candidate_version="$(node -p "require('./package.json').version")"
+          BASE_VERSION="$base_version" CANDIDATE_VERSION="$candidate_version" node -e '
+            const parse = (value) => {
+              const match = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u.exec(value);
+              if (!match) throw new Error(`Expected a stable semantic version, received ${value}.`);
+              return match.slice(1).map(Number);
+            };
+            const base = parse(process.env.BASE_VERSION);
+            const candidate = parse(process.env.CANDIDATE_VERSION);
+            const index = candidate.findIndex((part, candidateIndex) => part !== base[candidateIndex]);
+            if (index !== -1 && candidate[index] < base[index]) {
+              throw new Error(`Package version rollback: ${process.env.CANDIDATE_VERSION} is lower than base ${process.env.BASE_VERSION}. Rebase and retain at least the base version before merging.`);
+            }
+          '
 
       - name: Run build
         run: |
@@ -49,7 +69,12 @@ jobs:
           fi
 
       - name: Validate Ankhorage repository
-        run: BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.12.6 validate .
+        run: |
+          if node -e "const p=require('./package.json'); process.exit(p.name === '@ankhorage/doctor' ? 0 : 1)"; then
+            bun ./dist/cli/standalone.js validate . --enforce-repository-metadata
+          else
+            BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.15.1 validate . --enforce-repository-metadata
+          fi
 
       - name: Run lint
         run: |
@@ -75,13 +100,23 @@ jobs:
             echo "No knip:check script found; skipping."
           fi
 
-      - name: Run tests
-        run: |
-          if node -e "const p=require('./package.json'); process.exit(p.scripts?.test ? 0 : 1)"; then
-            bun run test
-          else
-            echo "No test script found; skipping."
-          fi
+      - name: Analyze test impact
+        id: impact
+        env:
+          ANKH_CI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: bun .github/scripts/ci-impact.ts plan
+
+      - name: Run unit tests
+        if: steps.impact.outputs.unit != 'skip'
+        run: bun .github/scripts/ci-impact.ts unit
+
+      - name: Run E2E tests
+        if: steps.impact.outputs.e2e != 'skip'
+        run: bun .github/scripts/ci-impact.ts e2e
+
+      - name: Run Smoke tests
+        if: steps.impact.outputs.smoke != 'skip'
+        run: bun .github/scripts/ci-impact.ts smoke
 
       - name: Run typecheck
         run: |
@@ -96,6 +131,7 @@ jobs:
         run: |
           base_sha='${{ github.event.pull_request.base.sha }}'
           head_sha='${{ github.event.pull_request.head.sha }}'
+          git branch --force main "$base_sha"
           export ANKH_PR_CHANGESET_FILES
           ANKH_PR_CHANGESET_FILES="$(git diff --name-only --diff-filter=AMCR "$base_sha" "$head_sha" -- .changeset)"
           if [ -z "$ANKH_PR_CHANGESET_FILES" ]; then
@@ -120,12 +156,12 @@ jobs:
             echo "No changeset:status script found; skipping validation."
           fi
 
-      - name: Enforce PKGViz cyclic-dependencies rule
-        run: cd src && bunx pkgviz@0.8.1 --out pkgviz-audit.json --rule cyclic-dependencies=block
+      - name: Enforce Atlas cyclic-dependencies rule
+        run: cd src && bunx @ankhorage/atlas@0.14.1 --out atlas-audit.json --rule cyclic-dependencies=block
 
-      - name: Upload PKGViz audit
-        if: always() && hashFiles('src/pkgviz-audit.json') != ''
+      - name: Upload Atlas audit
+        if: always() && hashFiles('src/atlas-audit.json') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: pkgviz-audit
-          path: src/pkgviz-audit.json
+          name: atlas-audit
+          path: src/atlas-audit.json
