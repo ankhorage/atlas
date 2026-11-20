@@ -33,11 +33,30 @@ jobs:
           owner: ankhorage
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
+          permission-workflows: write
 
       - name: Diagnose unavailable scoped release token
         if: steps.release-token.outcome == 'failure'
         run: |
           echo "::error title=Renovate Sync App repository access required::Could not create the scoped Ankhorage release token for ${GITHUB_REPOSITORY}. Ensure the ankhorage-renovate-sync GitHub App is installed and authorized for this repository, then rerun Release. Bootstrap policy: https://github.com/ankhorage/renovate/issues/115"
+          exit 1
+
+      - name: Create the Renovate snapshot token
+        id: renovate-snapshot-token
+        if: vars.ANKHORAGE_PRE_PUBLISH_SNAPSHOT_GATE_ENABLED == 'true'
+        continue-on-error: true
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.ANKHORAGE_RENOVATE_SYNC_CLIENT_ID }}
+          private-key: ${{ secrets.ANKHORAGE_RENOVATE_SYNC_PRIVATE_KEY }}
+          owner: ankhorage
+          repositories: renovate
+          permission-contents: write
+
+      - name: Diagnose unavailable Renovate snapshot token
+        if: vars.ANKHORAGE_PRE_PUBLISH_SNAPSHOT_GATE_ENABLED == 'true' && steps.renovate-snapshot-token.outcome == 'failure'
+        run: |
+          echo "::error title=Renovate snapshot access required::Could not create the Renovate-scoped token needed to dispatch and read the durable release-wave ACK. Ensure the ankhorage-renovate-sync GitHub App has Contents: write access to ankhorage/renovate, then rerun Release."
           exit 1
 
       - name: Checkout repository
@@ -57,24 +76,22 @@ jobs:
           bun-version: '1.4.2'
 
       - name: Setup Node for npm publishing
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           registry-url: https://registry.npmjs.org
+          package-manager-cache: false
 
       - name: Update npm
-        run: npm install -g npm@latest
+        run: npm install -g npm@11.5.1
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Build package
         env:
-          # Public organization discovery requires the workflow token, not the
-          # repository-scoped App token retained for release writes.
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
-          ATLAS_PROJECT_PATH: ${{ github.workspace }}
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build ? 0 : 1)"; then
             bun run build
@@ -82,12 +99,195 @@ jobs:
             echo "No build script found; skipping."
           fi
 
+      - name: Validate owner-defined packed consumer
+        run: |
+          if node -e "const p=require('./package.json'); process.exit(p.scripts?.['test:packed-consumer'] ? 0 : 1)"; then
+            bun run test:packed-consumer
+          else
+            echo "No packed consumer test declared; skipping."
+          fi
+
+      - name: Verify npm release baseline
+        id: release-baseline
+        if: hashFiles('.changeset/config.json') != ''
+        run: |
+          package_name="$(node -p "require('./package.json').name")"
+          current_version="$(node -p "require('./package.json').version")"
+          registry_evidence="${RUNNER_TEMP}/npm-release-versions.json"
+          registry_error="${RUNNER_TEMP}/npm-release-versions.error"
+
+          if npm view "$package_name" versions --json > "$registry_evidence" 2> "$registry_error"; then
+            highest_published_version="$(node -e '
+              const raw = JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8"));
+              const parse = (value) => /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/u.exec(value)?.slice(1).map(Number);
+              const compare = (left, right) => {
+                const index = left.findIndex((part, candidate) => part !== right[candidate]);
+                return index === -1 ? 0 : left[index] - right[index];
+              };
+              const versions = Array.isArray(raw) ? raw : typeof raw === "string" ? [raw] : undefined;
+              if (versions === undefined || versions.length === 0 || versions.some((value) => typeof value !== "string")) {
+                throw new Error("npm registry returned an invalid version list.");
+              }
+              const stable = versions.filter((value) => parse(value));
+              if (stable.length === 0) throw new Error("npm registry returned no stable published version.");
+              stable.sort((left, right) => compare(parse(left), parse(right)));
+              process.stdout.write(stable.at(-1) ?? "");
+            ' "$registry_evidence")"
+          elif PACKAGE_NAME="$package_name" node -e '
+            const { readFileSync } = require("node:fs");
+            const error = readFileSync(process.argv[1], "utf8");
+            const packageName = process.env.PACKAGE_NAME;
+            const notFoundRequest = /^npm error 404 Not Found - GET (https:\/\/registry\.npmjs\.org\/[^\s?#]+) - Not found$/mu.exec(error);
+            const requestedPackage = notFoundRequest === null ? undefined : decodeURIComponent(new URL(notFoundRequest[1]).pathname.slice(1));
+            const packageNotFound =
+              /^npm error code E404$/mu.test(error) &&
+              requestedPackage === packageName;
+            process.exit(packageNotFound ? 0 : 1);
+          ' "$registry_error"; then
+            highest_published_version=""
+          else
+            echo "::error title=npm release baseline unavailable::Could not determine the highest published version for $package_name. Refusing to version or publish without registry evidence."
+            exit 1
+          fi
+
+          if [ -n "$highest_published_version" ]; then
+            CURRENT_VERSION="$current_version" HIGHEST_PUBLISHED_VERSION="$highest_published_version" node -e '
+              const parse = (value) => value.split(".").map(Number);
+              const current = parse(process.env.CURRENT_VERSION);
+              const highest = parse(process.env.HIGHEST_PUBLISHED_VERSION);
+              const index = current.findIndex((part, candidate) => part !== highest[candidate]);
+              if (index !== -1 && current[index] < highest[index]) {
+                throw new Error(`Package version rollback: ${process.env.CURRENT_VERSION} is lower than published npm version ${process.env.HIGHEST_PUBLISHED_VERSION}. Restore main to the published baseline before applying pending Changesets.`);
+              }
+            '
+          fi
+          echo "highest_published_version=$highest_published_version" >> "$GITHUB_OUTPUT"
+
+      - name: Detect published release recovery
+        id: published-release-recovery
+        if: hashFiles('.changeset/config.json') != ''
+        env:
+          HIGHEST_PUBLISHED_VERSION: ${{ steps.release-baseline.outputs.highest_published_version }}
+        run: |
+          echo "recovery=false" >> "$GITHUB_OUTPUT"
+          if [ -n "$(find .changeset -maxdepth 1 -type f -name '*.md' ! -name README.md -print -quit)" ]; then
+            exit 0
+          fi
+
+          current_version="$(node -p "require('./package.json').version")"
+          release_sha=""
+          for candidate_sha in $(git rev-list HEAD); do
+            candidate_subject="$(git show -s --format=%s "$candidate_sha")"
+            if [ "$candidate_subject" != "chore(release): version packages [skip ci]" ]; then
+              continue
+            fi
+            candidate_version="$(git show "${candidate_sha}:package.json" | node -e "let s=''; process.stdin.on('data',(d)=>s+=d); process.stdin.on('end',()=>process.stdout.write(JSON.parse(s).version ?? ''))")"
+            if [ "$candidate_version" = "$current_version" ]; then
+              release_sha="$candidate_sha"
+              break
+            fi
+          done
+
+          if [ -z "$release_sha" ]; then
+            exit 0
+          fi
+
+          release_tag="v$current_version"
+          tagged_sha="$(git rev-parse -q --verify "refs/tags/${release_tag}^{commit}" 2>/dev/null || true)"
+          if [ -n "$tagged_sha" ] && [ "$tagged_sha" != "$release_sha" ]; then
+            echo "::error title=Release tag mismatch::${release_tag} points to ${tagged_sha}, expected ${release_sha}."
+            exit 1
+          fi
+
+          if [ "$HIGHEST_PUBLISHED_VERSION" = "$current_version" ]; then
+            echo "Validated published release recovery for ${release_tag} at ${release_sha}; skipping package capability synchronization."
+            echo "recovery=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Synchronize package capability metadata
+        if: steps.published-release-recovery.outputs.recovery != 'true'
+        run: |
+          if node -e "const p=require('./package.json'); process.exit(p.ankh === undefined ? 1 : 0)"; then
+            if node -e "const p=require('./package.json'); process.exit(p.name === '@ankhorage/devtools' ? 0 : 1)"; then
+              bun ./dist/cli/bin/repository.js package sync .
+              bun ./dist/cli/bin/repository.js package status .
+            else
+              bun ./node_modules/.bin/ankhorage-repository package sync .
+              bun ./node_modules/.bin/ankhorage-repository package status .
+            fi
+          else
+            echo "No Ankh package metadata found; skipping capability materialization."
+          fi
+
       - name: Validate release contract
-        run: BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.13.1 validate .
+        run: |
+          if node -e "const p=require('./package.json'); process.exit(p.name === '@ankhorage/doctor' ? 0 : 1)"; then
+            bun ./dist/cli/standalone.js validate . --enforce-repository-metadata
+          else
+            BUN_INSTALL_CACHE_DIR="${RUNNER_TEMP}/doctor-cache" bunx @ankhorage/doctor@0.15.1 validate . --enforce-repository-metadata
+          fi
+
+      - name: Determine immutable pre-publish release intent
+        id: pre-publish-release-intent
+        if: hashFiles('.changeset/config.json') != '' && vars.ANKHORAGE_PRE_PUBLISH_SNAPSHOT_GATE_ENABLED == 'true' && steps.published-release-recovery.outputs.recovery != 'true'
+        run: |
+          changesets_status_path="$RUNNER_TEMP/changesets-status.json"
+          bun ./node_modules/.bin/changeset status --output="$changesets_status_path" >/dev/null
+          release_intent="$(CHANGESETS_STATUS_PATH="$changesets_status_path" node -e '
+            const { readFileSync } = require("node:fs");
+            const status = JSON.parse(readFileSync(process.env.CHANGESETS_STATUS_PATH, "utf8"));
+            if (!Array.isArray(status.releases)) {
+              throw new Error("Changesets status is missing an explicit releases list.");
+            }
+            if (status.releases.length > 1) {
+              throw new Error("Changesets status must contain exactly one release or an explicit empty list.");
+            }
+            process.stdout.write(status.releases.length === 0 ? "false" : "true");
+          '")"
+          echo "release_intent=$release_intent" >> "$GITHUB_OUTPUT"
+
+      - name: Acknowledge immutable pre-publish release-wave snapshot
+        if: hashFiles('.changeset/config.json') != '' && vars.ANKHORAGE_PRE_PUBLISH_SNAPSHOT_GATE_ENABLED == 'true' && steps.published-release-recovery.outputs.recovery != 'true' && steps.pre-publish-release-intent.outputs.release_intent == 'true'
+        env:
+          GITHUB_TOKEN: ${{ steps.renovate-snapshot-token.outputs.token }}
+          RELEASE_WAVE_STATE_BRANCH: ${{ vars.ANKHORAGE_RELEASE_WAVE_STATE_BRANCH }}
+        run: |
+          test -n "$RELEASE_WAVE_STATE_BRANCH" || { echo "::error title=Release-wave state branch required::Provision the Renovate state branch before enabling the pre-publish gate."; exit 1; }
+          source_sha="$(git rev-parse HEAD)"
+          changesets_status_path="$RUNNER_TEMP/changesets-status.json"
+          test -f "$changesets_status_path" || { echo '::error title=Changesets status missing::Release intent evidence was not retained.'; exit 1; }
+          changesets_status_hash="$(sha256sum "$changesets_status_path" | cut -d ' ' -f 1)"
+          request_id="${GITHUB_REPOSITORY//\//-}-${source_sha}-${changesets_status_hash}"
+          payload="$(REQUEST_ID="$request_id" SOURCE_SHA="$source_sha" CHANGESETS_STATUS_HASH="$changesets_status_hash" node -e 'console.log(JSON.stringify({event_type:"pre-publish-release-wave-snapshot",client_payload:{requestId:process.env.REQUEST_ID,sourceRepository:process.env.GITHUB_REPOSITORY,sourceSha:process.env.SOURCE_SHA,changesetsStatusHash:process.env.CHANGESETS_STATUS_HASH}}))')"
+          REQUEST_ID="$request_id" SOURCE_SHA="$source_sha" CHANGESETS_STATUS_HASH="$changesets_status_hash" \
+            curl --fail-with-body --retry 3 --retry-all-errors -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28' "https://api.github.com/repos/ankhorage/renovate/dispatches" -d "$payload"
+          for attempt in $(seq 1 30); do
+            ack_path="$RUNNER_TEMP/release-wave-ack.json"
+            ack_status="$(curl --silent --show-error --output "$ack_path" --write-out '%{http_code}' -H "Authorization: Bearer $GITHUB_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/ankhorage/renovate/contents/.github/release-wave-publisher-snapshot-acks/${request_id}.json?ref=${RELEASE_WAVE_STATE_BRANCH}")" || { echo '::error title=Release-wave ACK read failed::Could not read the durable Renovate ACK.'; exit 1; }
+            if [ "$ack_status" = 200 ]; then
+              ack="$(cat "$ack_path")"
+            elif [ "$ack_status" = 404 ]; then
+              ack=""
+            else
+              cat "$ack_path"
+              echo "::error title=Release-wave ACK read rejected::Renovate returned HTTP ${ack_status} while reading the durable ACK."
+              exit 1
+            fi
+            if [ -n "$ack" ] && ACK="$ack" REQUEST_ID="$request_id" SOURCE_SHA="$source_sha" CHANGESETS_STATUS_HASH="$changesets_status_hash" node -e 'const ack=JSON.parse(Buffer.from(JSON.parse(process.env.ACK).content,"base64").toString("utf8")); if (ack.requestId!==process.env.REQUEST_ID || ack.sourceSha!==process.env.SOURCE_SHA || ack.changesetsStatusHash!==process.env.CHANGESETS_STATUS_HASH || !/^[a-f0-9]{64}$/.test(ack.epochId)) process.exit(1);'; then break; fi
+            [ "$attempt" = 30 ] && { echo "::error title=Release-wave ACK timeout::No matching durable Renovate ACK arrived."; exit 1; }
+            sleep 2
+          done
+          test "$(git rev-parse HEAD)" = "$source_sha" || { echo '::error title=Source changed::Release source changed while awaiting ACK.'; exit 1; }
+          changesets_recheck_path="$RUNNER_TEMP/changesets-status-recheck.json"
+          bun ./node_modules/.bin/changeset status --output="$changesets_recheck_path" >/dev/null
+          latest_hash="$(sha256sum "$changesets_recheck_path" | cut -d ' ' -f 1)"
+          test "$latest_hash" = "$changesets_status_hash" || { echo '::error title=Changesets changed::Release intent changed while awaiting ACK.'; exit 1; }
 
       - name: Version packages directly on main
         id: release
         if: hashFiles('.changeset/config.json') != ''
+        env:
+          HIGHEST_PUBLISHED_VERSION: ${{ steps.release-baseline.outputs.highest_published_version }}
         run: |
           if [ -z "$(find .changeset -maxdepth 1 -type f -name '*.md' ! -name README.md -print -quit)" ]; then
             current_version="$(node -p "require('./package.json').version")"
@@ -112,12 +312,24 @@ jobs:
                 exit 1
               fi
 
-              if [ -n "$tagged_sha" ]; then
+              if [ "$HIGHEST_PUBLISHED_VERSION" != "$current_version" ]; then
+                release_sha="$(git rev-parse HEAD)"
+                echo "Completing unpublished ${release_tag} from current main ${release_sha} without another version bump."
+              elif [ -n "$tagged_sha" ]; then
                 echo "Release tag ${release_tag} already points to ${release_sha}; resuming idempotent finalization."
               else
                 echo "Recovering canonical release commit $release_sha for version $current_version without another version bump."
               fi
-              git checkout --detach "$release_sha"
+
+              if [ "$HIGHEST_PUBLISHED_VERSION" = "$current_version" ] && (! git diff --quiet || ! git diff --cached --quiet || [ -n "$(git ls-files --others --exclude-standard)" ]); then
+                git status --short
+                echo "::error title=Release recovery requires a clean worktree::A release preparation step modified the checkout before recovery. Refusing to discard changes while switching to canonical release commit $release_sha."
+                exit 1
+              fi
+
+              if [ "$HIGHEST_PUBLISHED_VERSION" = "$current_version" ]; then
+                git checkout --detach "$release_sha"
+              fi
               echo "versioned=true" >> "$GITHUB_OUTPUT"
               echo "package_name=$(node -p "require('./package.json').name")" >> "$GITHUB_OUTPUT"
               echo "package_version=$current_version" >> "$GITHUB_OUTPUT"
@@ -133,6 +345,18 @@ jobs:
             ./node_modules/.bin/ankhorage-apm-release sync .
           fi
           after_version="$(node -p "require('./package.json').version")"
+
+          if [ -n "$HIGHEST_PUBLISHED_VERSION" ]; then
+            CANDIDATE_VERSION="$after_version" HIGHEST_PUBLISHED_VERSION="$HIGHEST_PUBLISHED_VERSION" node -e '
+              const parse = (value) => value.split(".").map(Number);
+              const candidate = parse(process.env.CANDIDATE_VERSION);
+              const highest = parse(process.env.HIGHEST_PUBLISHED_VERSION);
+              const index = candidate.findIndex((part, candidateIndex) => part !== highest[candidateIndex]);
+              if (index === -1 || candidate[index] < highest[index]) {
+                throw new Error(`Release version ${process.env.CANDIDATE_VERSION} must be strictly greater than published npm version ${process.env.HIGHEST_PUBLISHED_VERSION}. Refusing to create a duplicate or rollback release.`);
+              }
+            '
+          fi
 
           if [ "$before_version" != "$after_version" ]; then
             if node -e "const p=require('./package.json'); process.exit(p.ankh?.structure === undefined ? 1 : 0)"; then
@@ -172,19 +396,18 @@ jobs:
       - name: Verify standalone packed install
         if: steps.release.outputs.versioned == 'true'
         env:
-          # Keep Ankh's preferred GH_TOKEN and fallback GITHUB_TOKEN aligned for
-          # public provider discovery during the versioned, fresh install build.
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
-          ATLAS_PROJECT_PATH: ${{ github.workspace }}
         run: |
           set -euo pipefail
+          # Changesets can intentionally update package metadata and the lockfile during versioning.
           bun install --ignore-scripts
           if node -e "const p=require('./package.json'); process.exit(p.scripts?.build?0:1)"; then
             bun run build
           fi
           pack_dir="$(mktemp -d "${RUNNER_TEMP}/standalone-pack.XXXXXX")"
           install_dir="$(mktemp -d "${RUNNER_TEMP}/standalone-install.XXXXXX")"
+          optional_install_dir="$(mktemp -d "${RUNNER_TEMP}/standalone-optional-install.XXXXXX")"
           npm pack --ignore-scripts --pack-destination "$pack_dir" >/dev/null
           artifact="$(find "$pack_dir" -maxdepth 1 -type f -name '*.tgz' -print -quit)"
           if [ -z "$artifact" ]; then
@@ -193,9 +416,17 @@ jobs:
           fi
           printf '{"name":"standalone-consumer","private":true,"version":"0.0.0"}\n' > "$install_dir/package.json"
           package_name="$(node -p "require('./package.json').name")"
+          capability_module_path="$(node --input-type=module -e "import { createRequire } from 'node:module'; console.log(createRequire(import.meta.resolve('@ankhorage/devtools/cli')).resolve('@ankhorage/capability'))")"
           (
             cd "$install_dir"
             bun add "$artifact" --ignore-scripts
+            if [ -f node_modules/react/package.json ] && [ -f node_modules/react-dom/package.json ]; then
+              react_version="$(node -p "require('./node_modules/react/package.json').version")"
+              react_dom_version="$(node -p "require('./node_modules/react-dom/package.json').version")"
+              if [ "$react_version" != "$react_dom_version" ]; then
+                bun add "react-dom@$react_version" --ignore-scripts
+              fi
+            fi
 
             PACKAGE_NAME="$package_name" node - <<'NODE' > runtime-entrypoints.txt
           const { readFileSync } = require('node:fs');
@@ -229,16 +460,20 @@ jobs:
           const isPlatformOnlyRuntimeTarget = (target) =>
             declaresCondition(target, platformConditions) &&
             !declaresCondition(target, explicitServerConditions);
-          const selectLoader = (target) => {
-            if (isPlatformOnlyRuntimeTarget(target)) return undefined;
-            if (supportsLoader(target, importConditions)) return 'import';
-            if (supportsLoader(target, requireConditions)) return 'require';
-            return undefined;
+          const selectLoaders = (target) => {
+            if (isPlatformOnlyRuntimeTarget(target)) return [];
+            return [
+              ['import', importConditions],
+              ['require', requireConditions],
+            ].flatMap(([loader, conditions]) =>
+              supportsLoader(target, conditions) ? [loader] : [],
+            );
           };
           const records = [];
           const addEntrypoint = (specifier, target) => {
-            const loader = selectLoader(target);
-            if (loader !== undefined) records.push(`${loader}|${specifier}`);
+            for (const loader of selectLoaders(target)) {
+              records.push(`${loader}|${specifier}`);
+            }
           };
           const exportsMap = pkg.exports;
           if (exportsMap === undefined) {
@@ -263,13 +498,102 @@ jobs:
           process.stdout.write(output.length === 0 ? '' : `${output.join('\n')}\n`);
           NODE
 
+            root_runtime_entrypoints="$(awk -F '|' -v package_name="$package_name" '$2 == package_name { print }' runtime-entrypoints.txt)"
+            if [ -n "$root_runtime_entrypoints" ]; then
+              (
+                cd "$optional_install_dir"
+                printf '{"name":"standalone-optional-consumer","private":true,"version":"0.0.0"}\n' > package.json
+                bun add "$artifact" --ignore-scripts --omit optional
+                printf '%s\n' "$root_runtime_entrypoints" | while IFS='|' read -r root_runtime_loader root_runtime_specifier; do
+                  case "$root_runtime_loader" in
+                    import)
+                      PACKAGE_SPECIFIER="$root_runtime_specifier" bun -e 'await import(process.env.PACKAGE_SPECIFIER)'
+                      ;;
+                    require)
+                      PACKAGE_SPECIFIER="$root_runtime_specifier" node -e 'require(process.env.PACKAGE_SPECIFIER)'
+                      ;;
+                    *)
+                      echo "::error title=Unsupported packed root loader::Unexpected loader '$root_runtime_loader' for $root_runtime_specifier."
+                      exit 1
+                      ;;
+                  esac
+                done
+              )
+            fi
+
+            PACKAGE_NAME="$package_name" CAPABILITY_MODULE_PATH="$capability_module_path" node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          import { pathToFileURL } from 'node:url';
+          const name = process.env.PACKAGE_NAME;
+          const packageDir = join(process.cwd(), 'node_modules', ...name.split('/'));
+          const manifest = JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8'));
+          if (
+            !manifest.ankh ||
+            typeof manifest.ankh !== 'object' ||
+            !Object.hasOwn(manifest.ankh, 'capabilities')
+          ) process.exit(0);
+          const capabilityPath = process.env.CAPABILITY_MODULE_PATH;
+          if (typeof capabilityPath !== 'string' || capabilityPath.length === 0) {
+            throw new Error('The release capability validator module path is required.');
+          }
+          const { areCapabilitiesEqual, isCapability, normalizeCapability } = await import(pathToFileURL(capabilityPath).href);
+          const { CAPABILITIES } = await import(`${name}/capabilities`);
+          const metadata = manifest.ankh.capabilities;
+          if (!Array.isArray(CAPABILITIES) || !Array.isArray(metadata) ||
+              !CAPABILITIES.every(isCapability) || !metadata.every(isCapability) ||
+              CAPABILITIES.length !== metadata.length ||
+              !CAPABILITIES.every((capability, index) => areCapabilitiesEqual(normalizeCapability(capability), metadata[index]))) {
+            throw new Error('Packed package.json ankh.capabilities must exactly match the public CAPABILITIES catalog.');
+          }
+          NODE
+
             while IFS='|' read -r loader specifier; do
               if [ -z "$specifier" ]; then
                 continue
               fi
               case "$loader" in
                 import)
-                  PACKAGE_SPECIFIER="$specifier" bun -e 'await import(process.env.PACKAGE_SPECIFIER)'
+                  runtime_log="$(mktemp "${RUNNER_TEMP}/standalone-runtime.XXXXXX")"
+                  if PACKAGE_SPECIFIER="$specifier" bun -e 'await import(process.env.PACKAGE_SPECIFIER)' >"$runtime_log" 2>&1; then
+                    continue
+                  fi
+
+                  if grep -Fq 'react-native/index.js' "$runtime_log" && grep -Fq 'Unexpected typeof' "$runtime_log"; then
+                    platform_dir="$(mktemp -d "${install_dir}/packed-platform.XXXXXX")"
+                    platform_output_dir="$(mktemp -d "${RUNNER_TEMP}/standalone-platform-output.XXXXXX")"
+                    printf '{"expo":{"name":"packed-platform-verification","slug":"packed-platform-verification"}}\n' > "$platform_dir/app.json"
+                    APP_DIR="$platform_dir" PACKAGE_SPECIFIER="$specifier" node - <<'NODE'
+          const { writeFileSync } = require('node:fs');
+          const { join } = require('node:path');
+          const appDir = process.env.APP_DIR;
+          const specifier = process.env.PACKAGE_SPECIFIER;
+          if (typeof appDir !== 'string' || typeof specifier !== 'string') {
+            throw new Error('The platform verification app and package specifier are required.');
+          }
+          writeFileSync(
+            join(appDir, 'package.json'),
+            `${JSON.stringify({
+              main: './App.tsx',
+              name: 'packed-platform-verification',
+              private: true,
+              version: '0.0.0',
+            })}\n`,
+          );
+          writeFileSync(join(appDir, 'App.tsx'), `export * from ${JSON.stringify(specifier)};\n`);
+          NODE
+                    if (
+                      cd "$platform_dir"
+                      "$install_dir/node_modules/.bin/expo" export --platform ios --output-dir "$platform_output_dir"
+                    ); then
+                      echo "Verified React Native export $specifier with Expo."
+                      continue
+                    fi
+                  fi
+
+                  cat "$runtime_log"
+                  echo "::error title=Packed runtime export failed::$specifier could not load with Bun or compile with Expo."
+                  exit 1
                   ;;
                 require)
                   PACKAGE_SPECIFIER="$specifier" node -e 'require(process.env.PACKAGE_SPECIFIER)'
@@ -338,8 +662,6 @@ jobs:
       - name: Publish unpublished packages
         if: hashFiles('.changeset/config.json') != ''
         env:
-          # The APM fallback builds the package before publishing, so it has the
-          # same public provider-discovery boundary as the other release builds.
           GH_TOKEN: ${{ github.token }}
           GITHUB_TOKEN: ${{ github.token }}
         run: |
@@ -390,16 +712,17 @@ jobs:
     needs: release
     if: needs.release.outputs.versioned == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 40
 
     steps:
       - name: Setup Node for npm verification
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
           registry-url: https://registry.npmjs.org
 
       - name: Update npm
-        run: npm install -g npm@latest
+        run: npm install -g npm@11.5.1
 
       - name: Verify published npm artifact from a fresh runner
         env:
@@ -409,47 +732,85 @@ jobs:
           set -euo pipefail
           package_spec="${PUBLISHED_PACKAGE_NAME}@${PUBLISHED_PACKAGE_VERSION}"
           registry_evidence="${RUNNER_TEMP}/npm-publish-verification.json"
+          registry_error="${RUNNER_TEMP}/npm-publish-verification.error"
+          metadata_values="${RUNNER_TEMP}/npm-publish-verification.values"
           artifact="${RUNNER_TEMP}/npm-publish-verification.tgz"
-          pack_dir="${RUNNER_TEMP}/npm-pack-verification"
+          download_error="${RUNNER_TEMP}/npm-publish-verification.download.error"
           max_attempts=60
           retry_seconds=30
-          mkdir -p "$pack_dir"
 
-          last_stage="registry-metadata"
           for attempt in $(seq 1 "$max_attempts"); do
             echo "Verifying ${package_spec} on npm (attempt ${attempt}/${max_attempts})..."
-            last_stage="registry-metadata"
+            if npm view "$package_spec" name version dist.tarball dist.integrity --json >"$registry_evidence" 2>"$registry_error"; then
+              if ! node -e '
+                const metadata = require(process.argv[1]);
+                const fields = [metadata.name, metadata.version, metadata["dist.tarball"], metadata["dist.integrity"]];
+                if (fields.some((field) => typeof field !== "string" || field.length === 0)) process.exit(1);
+                for (const field of fields) console.log(field);
+              ' "$registry_evidence" >"$metadata_values"; then
+                echo "::error title=Invalid npm registry metadata::${package_spec} returned incomplete metadata."
+                cat "$registry_evidence"
+                exit 1
+              fi
 
-            if npm view "$package_spec" version dist.tarball dist.integrity --json > "$registry_evidence"; then
-              resolved_version="$(node -e "const raw=require(process.argv[1]); const p=Array.isArray(raw)&&raw.length===1?raw[0]:raw; process.stdout.write(typeof p?.version==='string'?p.version:'')" "$registry_evidence")"
-              tarball="$(node -e "const raw=require(process.argv[1]); const p=Array.isArray(raw)&&raw.length===1?raw[0]:raw; process.stdout.write(typeof p?.['dist.tarball']==='string'?p['dist.tarball']:'')" "$registry_evidence")"
-              integrity="$(node -e "const raw=require(process.argv[1]); const p=Array.isArray(raw)&&raw.length===1?raw[0]:raw; process.stdout.write(typeof p?.['dist.integrity']==='string'?p['dist.integrity']:'')" "$registry_evidence")"
+              package_name="$(sed -n '1p' "$metadata_values")"
+              resolved_version="$(sed -n '2p' "$metadata_values")"
+              tarball="$(sed -n '3p' "$metadata_values")"
+              integrity="$(sed -n '4p' "$metadata_values")"
+              if [ "$package_name" != "$PUBLISHED_PACKAGE_NAME" ] || [ "$resolved_version" != "$PUBLISHED_PACKAGE_VERSION" ] || [[ "$integrity" != sha512-* ]]; then
+                echo "::error title=Wrong npm publication metadata::Expected ${package_spec} with SHA-512 integrity, received ${package_name}@${resolved_version}."
+                exit 1
+              fi
 
-              if [ "$resolved_version" = "$PUBLISHED_PACKAGE_VERSION" ] && [ -n "$tarball" ] && [ -n "$integrity" ]; then
-                last_stage="tarball-download"
-                if curl --fail --location --silent --show-error --output "$artifact" "$tarball"; then
-                  last_stage="integrity"
-                  if EXPECTED_INTEGRITY="$integrity" ARTIFACT="$artifact" node -e "const { createHash }=require('node:crypto'); const { readFileSync }=require('node:fs'); const actual='sha512-'+createHash('sha512').update(readFileSync(process.env.ARTIFACT)).digest('base64'); if(actual!==process.env.EXPECTED_INTEGRITY){console.error('Downloaded npm tarball integrity mismatch.'); process.exit(1)}"; then
-                    last_stage="npm-pack"
-                    attempt_pack_dir="$pack_dir/attempt-${attempt}"
-                    mkdir -p "$attempt_pack_dir"
-                    if npm pack "$package_spec" --pack-destination "$attempt_pack_dir" >/dev/null; then
-                      echo "Verified ${package_spec}: metadata, integrity, tarball download, and npm pack are available."
-                      exit 0
-                    fi
+              if curl --fail --location --silent --show-error --output "$artifact" "$tarball" 2>"$download_error"; then
+                if EXPECTED_INTEGRITY="$integrity" ARTIFACT="$artifact" node -e '
+                  const { createHash } = require("node:crypto");
+                  const { readFileSync } = require("node:fs");
+                  const actual = `sha512-${createHash("sha512").update(readFileSync(process.env.ARTIFACT)).digest("base64")}`;
+                  if (actual !== process.env.EXPECTED_INTEGRITY) {
+                    console.error(`Expected ${process.env.EXPECTED_INTEGRITY}, received ${actual}.`);
+                    process.exit(1);
+                  }
+                '; then
+                  pack_dir="$(mktemp -d "${RUNNER_TEMP}/npm-pack-verification.XXXXXX")"
+                  if npm pack "$package_spec" --pack-destination "$pack_dir" >/dev/null; then
+                    echo "Verified ${package_spec}: exact registry metadata, tarball download, SHA-512 integrity, and npm pack."
+                    exit 0
                   fi
                 fi
+
+                echo "::error title=Wrong npm tarball::${package_spec} failed its registry SHA-512 integrity check."
+                exit 1
               fi
+
+              if grep -Eq '(^|[^0-9])40[13]([^0-9]|$)' "$download_error"; then
+                echo "::error title=npm tarball authorization failed::Could not download ${package_spec}; verify registry credentials and access."
+                cat "$download_error"
+                exit 1
+              fi
+              if grep -Eq '(^|[^0-9])404([^0-9]|$)' "$download_error"; then
+                echo "Tarball propagation is still pending for ${package_spec}."
+              else
+                echo "Tarball download failed due to a network or registry error."
+                cat "$download_error"
+              fi
+            elif grep -Eq 'npm error code E(401|403)' "$registry_error"; then
+              echo "::error title=npm registry authorization failed::Could not read ${package_spec}; verify registry credentials and access."
+              cat "$registry_error"
+              exit 1
+            elif grep -Eq 'npm error code E404' "$registry_error"; then
+              echo "Registry propagation is still pending for ${package_spec}."
+            else
+              echo "Registry metadata lookup failed due to a network or registry error."
+              cat "$registry_error"
             fi
 
-            echo "Published npm artifact not ready at stage: ${last_stage}."
             if [ "$attempt" -lt "$max_attempts" ]; then
               sleep "$retry_seconds"
             fi
           done
 
-          echo "Published npm artifact did not become retrievable after ${max_attempts} attempts; last stage: ${last_stage}."
-          cat "$registry_evidence" 2>/dev/null || true
+          echo "::error title=npm publication propagation timeout::${package_spec} did not become independently retrievable after ${max_attempts} attempts."
           exit 1
 
   finalize:
@@ -469,6 +830,7 @@ jobs:
           owner: ankhorage
           repositories: ${{ github.event.repository.name }}
           permission-contents: write
+          permission-workflows: write
 
       - name: Checkout exact release commit
         uses: actions/checkout@v4
