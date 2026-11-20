@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.6
+
+### Patch Changes
+
+- 044162f: Render the workspace graph loading indicator centered from the server-rendered first frame.
+
 ## 0.21.5
 
 ### Patch Changes

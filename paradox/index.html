@@ -1078,7 +1078,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>341</strong><span class="muted">modules</span></div>
+        <div><strong>344</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -2280,6 +2280,16 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>default</code>, <code>metadata</code></p>
+  </article><article class="item" data-search="test/e2e/next-fixture-app/app/loading/page.tsx test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx default">
+    <h3>test/e2e/next-fixture-app/app/loading/page.tsx</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx</code></p>
+    <p><strong>Exports:</strong> <code>default</code></p>
+  </article><article class="item" data-search="test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx ankh.config.json src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx WorkspaceLoadingAcceptance">
+    <h3>test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>ankh.config.json</code>, <code>src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx</code></p>
+    <p><strong>Exports:</strong> <code>WorkspaceLoadingAcceptance</code></p>
   </article><article class="item" data-search="test/e2e/next-fixture-app/app/page.tsx src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx test/e2e/fixtureWorkspace.ts default">
     <h3>test/e2e/next-fixture-app/app/page.tsx</h3>
     <p class="muted">Referenced module</p>
@@ -2310,6 +2320,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>assertProductionCompoundCanvasAsync</code>, <code>installProductionGraphProbeAsync</code></p>
+  </article><article class="item" data-search="test/e2e/workspaceLoadingBrowser.ts">
+    <h3>test/e2e/workspaceLoadingBrowser.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/fixtures/typescript/compound-selection/src/features/feature.ts test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts test/fixtures/typescript/compound-selection/support/auxiliary.ts feature">
     <h3>test/fixtures/typescript/compound-selection/src/features/feature.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2395,8 +2410,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/src/ci/ciPathFilters.spec.ts">
-    <h3>test/src/ci/ciPathFilters.spec.ts</h3>
+  </article><article class="item" data-search="test/src/ci/ciOwnership.spec.ts">
+    <h3>test/src/ci/ciOwnership.spec.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
@@ -3834,6 +3849,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_layout_tsx
+  module_test_e2e_next_fixture_app_app_loading_page_tsx[&quot;test/e2e/next-fixture-app/app/loading/page.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_loading_page_tsx
+  module_test_e2e_next_fixture_app_app_loading_page_tsx --&gt; module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx[&quot;test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_ankh_config_json
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_page_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
@@ -3852,6 +3874,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_workspaceLoadingBrowser_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
@@ -3897,8 +3921,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts[&quot;test/src/ci/canonicalZoraPackageAcceptance.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts
-  module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
-  package__ankhorage_atlas -.-&gt; module_test_src_ci_ciPathFilters_spec_ts
+  module_test_src_ci_ciOwnership_spec_ts[&quot;test/src/ci/ciOwnership.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_ci_ciOwnership_spec_ts
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
@@ -5202,6 +5226,13 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_layout_tsx
+  module_test_e2e_next_fixture_app_app_loading_page_tsx[&quot;test/e2e/next-fixture-app/app/loading/page.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_loading_page_tsx
+  module_test_e2e_next_fixture_app_app_loading_page_tsx --&gt; module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx[&quot;test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_ankh_config_json
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_next_fixture_app_app_page_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
@@ -5220,6 +5251,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_workspaceLoadingBrowser_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --&gt; module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
@@ -5265,8 +5298,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_capabilities_spec_ts --&gt; module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts[&quot;test/src/ci/canonicalZoraPackageAcceptance.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts
-  module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
-  package__ankhorage_atlas -.-&gt; module_test_src_ci_ciPathFilters_spec_ts
+  module_test_src_ci_ciOwnership_spec_ts[&quot;test/src/ci/ciOwnership.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_ci_ciOwnership_spec_ts
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
@@ -5840,12 +5873,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/selection/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_page_tsx[&quot;test/e2e/next-fixture-app/app/loading/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx[&quot;test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
+  module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
@@ -5863,7 +5899,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts[&quot;test/src/ci/canonicalZoraPackageAcceptance.spec.ts&quot;]
-  module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_ciOwnership_spec_ts[&quot;test/src/ci/ciOwnership.spec.ts&quot;]
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
@@ -6445,6 +6481,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --&gt; module_src_features_workspace_adapters_inbound_next_createWorkspaceSelectionRoute_ts
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_loading_page_tsx --&gt; module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_ankh_config_json
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
@@ -6865,12 +6904,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/selection/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_page_tsx[&quot;test/e2e/next-fixture-app/app/loading/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx[&quot;test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
+  module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
@@ -6888,7 +6930,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts[&quot;test/src/ci/canonicalZoraPackageAcceptance.spec.ts&quot;]
-  module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_ciOwnership_spec_ts[&quot;test/src/ci/ciOwnership.spec.ts&quot;]
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
@@ -7470,6 +7512,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --&gt; module_src_features_workspace_adapters_inbound_next_createWorkspaceSelectionRoute_ts
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --&gt; module_test_e2e_fixtureWorkspace_ts
+  module_test_e2e_next_fixture_app_app_loading_page_tsx --&gt; module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_ankh_config_json
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --&gt; module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_src_features_workspace_adapters_inbound_next_AtlasWorkspacePage_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --&gt; module_test_e2e_fixtureWorkspace_ts
@@ -7892,12 +7937,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/selection/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_page_tsx[&quot;test/e2e/next-fixture-app/app/loading/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx[&quot;test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
+  module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
@@ -7915,7 +7963,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts[&quot;test/src/ci/canonicalZoraPackageAcceptance.spec.ts&quot;]
-  module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_ciOwnership_spec_ts[&quot;test/src/ci/ciOwnership.spec.ts&quot;]
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
@@ -8241,12 +8289,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_api_workspace_retry_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/retry/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts[&quot;test/e2e/next-fixture-app/app/api/workspace/selection/route.ts&quot;]
   module_test_e2e_next_fixture_app_app_layout_tsx[&quot;test/e2e/next-fixture-app/app/layout.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_page_tsx[&quot;test/e2e/next-fixture-app/app/loading/page.tsx&quot;]
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx[&quot;test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx&quot;]
   module_test_e2e_next_fixture_app_app_page_tsx[&quot;test/e2e/next-fixture-app/app/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_page_tsx[&quot;test/e2e/next-fixture-app/app/viewport/page.tsx&quot;]
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
+  module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/nested/nestedFeature.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_index_ts[&quot;test/fixtures/typescript/compound-selection/src/index.ts&quot;]
@@ -8264,7 +8315,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_app_api_dependency_graph_route_spec_ts[&quot;test/src/app/api/dependency-graph/route.spec.ts&quot;]
   module_test_src_capabilities_spec_ts[&quot;test/src/capabilities.spec.ts&quot;]
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts[&quot;test/src/ci/canonicalZoraPackageAcceptance.spec.ts&quot;]
-  module_test_src_ci_ciPathFilters_spec_ts[&quot;test/src/ci/ciPathFilters.spec.ts&quot;]
+  module_test_src_ci_ciOwnership_spec_ts[&quot;test/src/ci/ciOwnership.spec.ts&quot;]
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts[&quot;test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts&quot;]
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts[&quot;test/src/cli/createAtlasRuntimeProvider.spec.ts&quot;]
   module_test_src_cli_formatAuditRuleFailures_spec_ts[&quot;test/src/cli/formatAuditRuleFailures.spec.ts&quot;]
@@ -8428,7 +8479,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
       <h2>src/app/layout.tsx</h2>
       <article class="item" data-search="RootLayout src/app/layout.tsx Renders the application root layout under the single ZORA theme runtime.">
     <h3>RootLayout</h3>
-    <p class="muted"><code>src/app/layout.tsx:16:1</code></p>
+    <p class="muted"><code>src/app/layout.tsx:17:1</code></p>
     <p>Renders the application root layout under the single ZORA theme runtime.</p>
     
   </article>

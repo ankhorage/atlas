@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.21.5",
+      "value": "v0.21.6",
       "color": "cb3837"
     },
     {
@@ -2706,6 +2706,27 @@
       ]
     },
     {
+      "path": "test/e2e/next-fixture-app/app/loading/page.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx"
+      ],
+      "exports": [
+        "default"
+      ]
+    },
+    {
+      "path": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "ankh.config.json",
+        "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx"
+      ],
+      "exports": [
+        "WorkspaceLoadingAcceptance"
+      ]
+    },
+    {
       "path": "test/e2e/next-fixture-app/app/page.tsx",
       "isEntrypoint": false,
       "dependencies": [
@@ -2761,6 +2782,12 @@
         "assertProductionCompoundCanvasAsync",
         "installProductionGraphProbeAsync"
       ]
+    },
+    {
+      "path": "test/e2e/workspaceLoadingBrowser.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": []
     },
     {
       "path": "test/fixtures/typescript/compound-selection/src/features/feature.ts",
@@ -2909,7 +2936,7 @@
       "exports": []
     },
     {
-      "path": "test/src/ci/ciPathFilters.spec.ts",
+      "path": "test/src/ci/ciOwnership.spec.ts",
       "isEntrypoint": false,
       "dependencies": [],
       "exports": []
@@ -3829,7 +3856,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/layout.tsx",
-        "line": 16,
+        "line": 17,
         "column": 1
       }
     },
@@ -13710,6 +13737,21 @@
         "sourcePath": "src/features/workspace/application/use-cases/validateWorkspaceSnapshot.ts"
       },
       {
+        "fromPath": "test/e2e/next-fixture-app/app/loading/page.tsx",
+        "toPath": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx",
+        "sourcePath": "test/e2e/next-fixture-app/app/loading/page.tsx"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx",
+        "toPath": "ankh.config.json",
+        "sourcePath": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx"
+      },
+      {
+        "fromPath": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
+        "sourcePath": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx"
+      },
+      {
         "fromPath": "test/e2e/next-fixture-app/app/viewport/page.tsx",
         "toPath": "test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx",
         "sourcePath": "test/e2e/next-fixture-app/app/viewport/page.tsx"
@@ -15546,8 +15588,8 @@
       },
       {
         "fromSymbol": "test/e2e/compoundSelectionBrowser.ts",
-        "toSymbol": "waitForGraphSelection",
-        "callExpression": "waitForGraphSelection",
+        "toSymbol": "waitForGraphSelectionWithoutRelayout",
+        "callExpression": "waitForGraphSelectionWithoutRelayout",
         "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
       },
       {
@@ -15590,6 +15632,12 @@
         "fromSymbol": "assertRenderedTheme",
         "toSymbol": "toRgb",
         "callExpression": "toRgb",
+        "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
+      },
+      {
+        "fromSymbol": "waitForGraphSelectionWithoutRelayout",
+        "toSymbol": "assertEqual",
+        "callExpression": "assertEqual",
         "sourcePath": "test/e2e/compoundSelectionBrowser.ts"
       },
       {
@@ -16529,6 +16577,24 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
+        "fromSymbol": "assertWorkspaceGraphShellAsync",
+        "toSymbol": "captureWorkspaceGeometryAsync",
+        "callExpression": "captureWorkspaceGeometryAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspaceGraphShellAsync",
+        "toSymbol": "assertDimensionsEqual",
+        "callExpression": "assertDimensionsEqual",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertWorkspaceGraphShellAsync",
+        "toSymbol": "assertBoundsContained",
+        "callExpression": "assertBoundsContained",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
         "fromSymbol": "assertSwitchCheckedAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
@@ -16688,6 +16754,12 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assertWorkspaceViewportAsync",
         "callExpression": "assertWorkspaceViewportAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "assertWorkspaceGraphShellAsync",
+        "callExpression": "assertWorkspaceGraphShellAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -17399,6 +17471,144 @@
         "sourcePath": "test/e2e/productionCompoundCanvas.ts"
       },
       {
+        "fromSymbol": "test/e2e/workspaceLoadingBrowser.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/workspaceLoadingBrowser.ts",
+        "toSymbol": "createScenarios",
+        "callExpression": "createScenarios",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/workspaceLoadingBrowser.ts",
+        "toSymbol": "runAcceptanceAsync",
+        "callExpression": "runAcceptanceAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "assertFixtureBuildAsync",
+        "callExpression": "assertFixtureBuildAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "startFixtureServerAsync",
+        "callExpression": "startFixtureServerAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "waitForServerAsync",
+        "callExpression": "waitForServerAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "runScenarioAsync",
+        "callExpression": "runScenarioAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "markTransitionFailures",
+        "callExpression": "markTransitionFailures",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "stopFixtureServerAsync",
+        "callExpression": "stopFixtureServerAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runAcceptanceAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertFixtureBuildAsync",
+        "toSymbol": "access",
+        "callExpression": "access",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "assertFixtureBuildAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "startFixtureServerAsync",
+        "toSymbol": "spawn",
+        "callExpression": "spawn",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runScenarioAsync",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runScenarioAsync",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runScenarioAsync",
+        "toSymbol": "readDiagnosticsAsync",
+        "callExpression": "readDiagnosticsAsync",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "runScenarioAsync",
+        "toSymbol": "validateDiagnostics",
+        "callExpression": "validateDiagnostics",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "markTransitionFailures",
+        "toSymbol": "boundsDifference",
+        "callExpression": "boundsDifference",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "markTransitionFailures",
+        "toSymbol": "markFailure",
+        "callExpression": "markFailure",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/workspaceLoadingBrowser.ts",
+        "toSymbol": "toBounds",
+        "callExpression": "toBounds",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
+        "fromSymbol": "stopFixtureServerAsync",
+        "toSymbol": "isMissingProcessError",
+        "callExpression": "isMissingProcessError",
+        "sourcePath": "test/e2e/workspaceLoadingBrowser.ts"
+      },
+      {
         "fromSymbol": "test/src/capabilities.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -17603,28 +17813,28 @@
         "sourcePath": "test/src/ci/canonicalZoraPackageAcceptance.spec.ts"
       },
       {
-        "fromSymbol": "test/src/ci/ciPathFilters.spec.ts",
+        "fromSymbol": "test/src/ci/ciOwnership.spec.ts",
         "toSymbol": "resolve",
         "callExpression": "resolve",
-        "sourcePath": "test/src/ci/ciPathFilters.spec.ts"
+        "sourcePath": "test/src/ci/ciOwnership.spec.ts"
       },
       {
-        "fromSymbol": "test/src/ci/ciPathFilters.spec.ts",
+        "fromSymbol": "test/src/ci/ciOwnership.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
-        "sourcePath": "test/src/ci/ciPathFilters.spec.ts"
+        "sourcePath": "test/src/ci/ciOwnership.spec.ts"
       },
       {
-        "fromSymbol": "test/src/ci/ciPathFilters.spec.ts",
+        "fromSymbol": "test/src/ci/ciOwnership.spec.ts",
         "toSymbol": "it",
         "callExpression": "it",
-        "sourcePath": "test/src/ci/ciPathFilters.spec.ts"
+        "sourcePath": "test/src/ci/ciOwnership.spec.ts"
       },
       {
-        "fromSymbol": "test/src/ci/ciPathFilters.spec.ts",
+        "fromSymbol": "test/src/ci/ciOwnership.spec.ts",
         "toSymbol": "readFile",
         "callExpression": "readFile",
-        "sourcePath": "test/src/ci/ciPathFilters.spec.ts"
+        "sourcePath": "test/src/ci/ciOwnership.spec.ts"
       },
       {
         "fromSymbol": "test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts",
@@ -24435,6 +24645,12 @@
         "toSymbol": "predicate",
         "callExpression": "predicate",
         "sourcePath": "src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts"
+      },
+      {
+        "fromSymbol": "WorkspaceLoadingAcceptance",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx"
       },
       {
         "fromSymbol": "ViewportAcceptanceGraph",

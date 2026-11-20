@@ -964,6 +964,13 @@ graph TD
   module_test_e2e_next_fixture_app_app_api_workspace_selection_route_ts --> module_test_e2e_fixtureWorkspace_ts
   module_test_e2e_next_fixture_app_app_layout_tsx["test/e2e/next-fixture-app/app/layout.tsx"]
   package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_app_layout_tsx
+  module_test_e2e_next_fixture_app_app_loading_page_tsx["test/e2e/next-fixture-app/app/loading/page.tsx"]
+  package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_app_loading_page_tsx
+  module_test_e2e_next_fixture_app_app_loading_page_tsx --> module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx["test/e2e/next-fixture-app/app/loading/WorkspaceLoadingAcceptance.tsx"]
+  package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --> module_ankh_config_json
+  module_test_e2e_next_fixture_app_app_loading_WorkspaceLoadingAcceptance_tsx --> module_src_features_workspace_adapters_inbound_react_WorkspaceGraph_tsx
   module_test_e2e_next_fixture_app_app_page_tsx["test/e2e/next-fixture-app/app/page.tsx"]
   package__ankhorage_atlas -.-> module_test_e2e_next_fixture_app_app_page_tsx
   module_test_e2e_next_fixture_app_app_page_tsx --> module_src_features_github_auth_adapters_inbound_next_readGitHubAuthViewAsync_ts
@@ -982,6 +989,8 @@ graph TD
   module_test_e2e_offlineWorkspace_ts --> module_test_e2e_productionCompoundCanvas_ts
   module_test_e2e_productionCompoundCanvas_ts["test/e2e/productionCompoundCanvas.ts"]
   package__ankhorage_atlas -.-> module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_workspaceLoadingBrowser_ts["test/e2e/workspaceLoadingBrowser.ts"]
+  package__ankhorage_atlas -.-> module_test_e2e_workspaceLoadingBrowser_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts["test/fixtures/typescript/compound-selection/src/features/feature.ts"]
   package__ankhorage_atlas -.-> module_test_fixtures_typescript_compound_selection_src_features_feature_ts
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts --> module_test_fixtures_typescript_compound_selection_src_features_nested_nestedFeature_ts
@@ -1027,8 +1036,8 @@ graph TD
   module_test_src_capabilities_spec_ts --> module_src_cli_provider_createAtlasRuntimeProvider_ts
   module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts["test/src/ci/canonicalZoraPackageAcceptance.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_ci_canonicalZoraPackageAcceptance_spec_ts
-  module_test_src_ci_ciPathFilters_spec_ts["test/src/ci/ciPathFilters.spec.ts"]
-  package__ankhorage_atlas -.-> module_test_src_ci_ciPathFilters_spec_ts
+  module_test_src_ci_ciOwnership_spec_ts["test/src/ci/ciOwnership.spec.ts"]
+  package__ankhorage_atlas -.-> module_test_src_ci_ciOwnership_spec_ts
   module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts["test/src/ci/releaseProviderDiscoveryAuthentication.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_ci_releaseProviderDiscoveryAuthentication_spec_ts
   module_test_src_cli_createAtlasRuntimeProvider_spec_ts["test/src/cli/createAtlasRuntimeProvider.spec.ts"]
