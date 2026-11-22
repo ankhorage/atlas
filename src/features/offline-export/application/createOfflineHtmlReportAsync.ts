@@ -1,12 +1,12 @@
 import { readFile } from 'node:fs/promises';
-import { dirname, isAbsolute, resolve, win32 } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { isAbsolute, resolve, win32 } from 'node:path';
 
 import { deserializeSourceGraph } from '@ankhorage/dependency-graph';
 
 import type { Audit } from '@/types/audit';
 import type { ProjectFileMetadata, ProjectFileTree } from '@/types/projectFiles';
 import type { WorkspaceSnapshot } from '@/types/workspace';
+import { resolveAtlasPackageRoot } from '@/utils/resolveAtlasPackageRoot';
 
 /*** Creates one CSP-protected HTML file containing the real Atlas workspace and one validated snapshot. */
 export async function createOfflineHtmlReportAsync(audit: Audit): Promise<string> {
@@ -44,7 +44,7 @@ export async function createOfflineHtmlReportAsync(audit: Audit): Promise<string
 
 /*** Reads the release-built browser bundle rather than depending on the export host at runtime. */
 async function readOfflineWorkspaceBundleAsync(): Promise<OfflineWorkspaceBundle> {
-  const bundleDirectory = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../offline');
+  const bundleDirectory = resolve(resolveAtlasPackageRoot(), 'offline');
   try {
     const [css, javascript] = await Promise.all([
       readFile(resolve(bundleDirectory, 'atlas-workspace.css'), 'utf8'),

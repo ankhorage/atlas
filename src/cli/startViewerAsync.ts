@@ -1,12 +1,12 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import * as net from 'node:net';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 import { openBrowser, stopProcess } from '@ankhorage/utility/node/process';
 
 import type { AtlasCliOptions } from '@/types/cli';
+import { resolveAtlasPackageRoot } from '@/utils/resolveAtlasPackageRoot';
 
 /*** Starts the packaged Next viewer and owns its browser and child-process lifecycle. */
 export async function startViewerAsync(
@@ -15,7 +15,7 @@ export async function startViewerAsync(
   cleanupAsync: () => Promise<void> = () => Promise.resolve()
 ): Promise<void> {
   const port = await findFreePortAsync(options.port);
-  const packageRoot = resolvePackageRoot();
+  const packageRoot = resolveAtlasPackageRoot();
   const nextBin = resolveNextBin(packageRoot);
   const hasBuild = existsSync(resolve(packageRoot, '.next'));
   const mode = options.prod || hasBuild ? 'start' : 'dev';
@@ -84,12 +84,6 @@ async function claimAvailablePortAsync(port: number): Promise<number | null> {
       server.close(() => resolvePort(resolvedPort));
     });
   });
-}
-
-/*** Resolves the installed Atlas package root from this CLI module. */
-function resolvePackageRoot(): string {
-  const here = fileURLToPath(new URL(import.meta.url));
-  return resolve(dirname(here), '../..');
 }
 
 /*** Resolves the packaged Next executable with a PATH fallback. */

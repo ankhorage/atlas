@@ -64,6 +64,7 @@
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
     "test:offline-browser": "bun test/e2e/offlineWorkspace.ts",
+    "test:packed-offline": "bun test/e2e/packedOfflineWorkspace.ts",
     "test:compound-selection-browser": "bun test/e2e/compoundSelectionBrowser.ts",
     "test:github-logout-browser": "bun test/e2e/githubLogoutBrowser.ts",
     "test:multi-project-browser": "bun ./test/e2e/multiProjectBrowser.ts",
