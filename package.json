@@ -44,7 +44,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build && bun run build:package",
+    "build": "bun run build:package && bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build",
     "build:package": "bun build --target=node --format=esm --outdir dist --bundle src/capabilities/index.ts src/cli/index.ts bin/atlas.ts && bun x tsc -p tsconfig.package.json",
     "start": "next start",
     "lint": "ankhorage-eslint . --max-warnings=0",
