@@ -44,7 +44,7 @@ try {
 
   if (process.env.ATLAS_ONLINE_URL !== undefined) {
     const online = await context.newPage();
-    if (requireCompoundNodes) await installProductionGraphProbeAsync(online);
+    await installProductionGraphProbeAsync(online);
     await online.goto(process.env.ATLAS_ONLINE_URL, { waitUntil: 'networkidle' });
     await assertWorkspace(online, []);
     await assertParity(offline, online);
