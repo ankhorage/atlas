@@ -4,7 +4,10 @@ import { Badge } from '@ankhorage/zora/web/badge';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { ScrollView } from '@ankhorage/zora/web/scroll-view';
 import { Surface } from '@ankhorage/zora/web/surface';
-import { Tab, TabList, TabPanel, Tabs } from '@ankhorage/zora/web/tabs';
+import { Tab } from '@ankhorage/zora/web/tab';
+import { TabList } from '@ankhorage/zora/web/tab-list';
+import { TabPanel } from '@ankhorage/zora/web/tab-panel';
+import { Tabs } from '@ankhorage/zora/web/tabs';
 import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 

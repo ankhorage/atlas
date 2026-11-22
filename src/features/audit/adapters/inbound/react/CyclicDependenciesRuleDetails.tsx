@@ -1,6 +1,6 @@
 'use client';
 import { Badge } from '@ankhorage/zora/web/badge';
-import { ListItem } from '@ankhorage/zora/web/list';
+import { List, type ListItemProps } from '@ankhorage/zora/web/list';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Switch } from '@ankhorage/zora/web/switch';
 import { Text } from '@ankhorage/zora/web/text';
@@ -92,70 +92,52 @@ function groupCycles(cycles: readonly PackageCycleDetail[]): readonly CycleGroup
 /*** Render a non-empty ownership group while retaining the audit-wide deterministic cycle index. */
 function CycleGroup(props: CycleGroupProps) {
   return (
-    <View gap="none">
+    <>
       {props.group.label === null ? null : (
         <Text emphasis="muted" variant="caption">
           {props.group.label} ({props.group.entries.length})
         </Text>
       )}
-      {props.group.entries.map(({ cycle, index }) => {
-        const cycleId = getCycleId(cycle);
-        return (
-          <CycleRow
-            cycle={cycle}
-            index={index}
-            inspected={props.inspectedCycleId === cycleId}
-            key={cycleId}
-            selected={props.cycleSelection.selectedIds.includes(cycleId)}
-            onInspect={() =>
-              props.onCycleInspectionChange(
-                props.inspectedCycleId === cycleId
-                  ? null
-                  : createCycleInspection(
-                      cycle,
-                      index,
-                      t('audit.cycle') + ' ' + (index + 1),
-                      props.cycleColors
-                    )
-              )
-            }
-            onSelectedChange={selected => {
-              props.cycleSelection.setSelected(cycleId, selected);
-              if (!selected && props.inspectedCycleId === cycleId) {
-                props.onCycleInspectionChange(null);
-              }
-            }}
-          />
-        );
-      })}
-    </View>
+      <List compact items={props.group.entries.map(entry => createCycleRow(entry, props))} />
+    </>
   );
 }
 
-/*** Renders one compact single-line cycle row with the selection switch in the trailing slot. */
-function CycleRow(props: CycleRowProps) {
-  const route = getCycleDisplayPath(props.cycle).join(' → ');
-  const label = `C${props.index + 1}: ${route}`;
-
-  return (
-    <ListItem
-      compact
-      selected={props.inspected}
-      testID={`cycle-row-${props.index}`}
-      title={label}
-      trailing={
-        <Switch
-          accessibilityLabel={t('audit.cycle') + ' ' + (props.index + 1)}
-          checked={props.selected}
-          color="danger"
-          size="s"
-          testID={`cycle-switch-${props.index}`}
-          onCheckedChange={props.onSelectedChange}
-        />
-      }
-      onPress={props.onInspect}
-    />
-  );
+/*** Builds one compact ZORA list item while preserving cycle inspection and selection behavior. */
+function createCycleRow(
+  { cycle, index }: { readonly cycle: PackageCycleDetail; readonly index: number },
+  props: CycleGroupProps
+): ListItemProps {
+  const cycleId = getCycleId(cycle);
+  return {
+    selected: props.inspectedCycleId === cycleId,
+    testID: `cycle-row-${index}`,
+    title: `C${index + 1}: ${getCycleDisplayPath(cycle).join(' → ')}`,
+    trailing: (
+      <Switch
+        accessibilityLabel={t('audit.cycle') + ' ' + (index + 1)}
+        checked={props.cycleSelection.selectedIds.includes(cycleId)}
+        color="danger"
+        size="s"
+        testID={`cycle-switch-${index}`}
+        onCheckedChange={selected => {
+          props.cycleSelection.setSelected(cycleId, selected);
+          if (!selected && props.inspectedCycleId === cycleId) props.onCycleInspectionChange(null);
+        }}
+      />
+    ),
+    onPress: () =>
+      props.onCycleInspectionChange(
+        props.inspectedCycleId === cycleId
+          ? null
+          : createCycleInspection(
+              cycle,
+              index,
+              t('audit.cycle') + ' ' + (index + 1),
+              props.cycleColors
+            )
+      ),
+  };
 }
 
 interface CyclicDependenciesRuleDetailsProps {
@@ -181,13 +163,4 @@ interface CycleGroupProps {
   readonly group: CycleGroup;
   readonly inspectedCycleId: string | null | undefined;
   readonly onCycleInspectionChange: (inspection: CycleInspection | null) => void;
-}
-
-interface CycleRowProps {
-  readonly inspected: boolean;
-  readonly cycle: PackageCycleDetail;
-  readonly index: number;
-  readonly onInspect: () => void;
-  readonly onSelectedChange: (selected: boolean) => void;
-  readonly selected: boolean;
 }

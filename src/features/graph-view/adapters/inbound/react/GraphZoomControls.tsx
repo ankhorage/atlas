@@ -1,6 +1,6 @@
 'use client';
-import { IconButton } from '@ankhorage/zora/web/button';
 import type { GraphViewController } from '@ankhorage/zora/web/graph-view';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
