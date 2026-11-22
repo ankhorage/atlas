@@ -207,10 +207,6 @@ async function selectGraphNodes(page: Page): Promise<void> {
     x: box.x + nodes[0]!.position.x,
     y: box.y + nodes[0]!.position.y,
   };
-  const secondTarget = {
-    x: box.x + nodes[1]!.position.x,
-    y: box.y + nodes[1]!.position.y,
-  };
   await installGraphInputProbeAsync(page);
   await assertGraphHitTargetAsync(page, firstTarget);
   await page.mouse.click(firstTarget.x, firstTarget.y);
@@ -220,6 +216,13 @@ async function selectGraphNodes(page: Page): Promise<void> {
     throw new Error(`Graph-node click selected ${JSON.stringify(firstSelection)}, expected a.`);
 
   const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+  const selectedNodes = await readMeasuredGraphNodesAsync(page, nodeIds);
+  const selectedBox = await graph.boundingBox();
+  if (selectedBox === null) throw new Error('Graph canvas disappeared after first selection.');
+  const secondTarget = {
+    x: selectedBox.x + selectedNodes[1]!.position.x,
+    y: selectedBox.y + selectedNodes[1]!.position.y,
+  };
   await assertGraphHitTargetAsync(page, secondTarget);
   await page.keyboard.down(modifier);
   try {
