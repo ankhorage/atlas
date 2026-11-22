@@ -30,16 +30,16 @@ describe('[package manifest]', () => {
     assert.equal(manifest.files.includes('.next'), false);
     assert.equal(manifest.name, '@ankhorage/atlas');
     assert.equal(manifest.bin.atlas, 'dist/bin/atlas.js');
-    assert.equal(manifest.ankh.provider, './dist/src/cli/index.js');
+    assert.equal(manifest.ankh.provider, './dist/cli/index.js');
     assert.equal(manifest.scripts['build:package'] !== undefined, true);
     assert.equal(manifest.scripts.build.includes('bun run build:package'), true);
     assert.deepEqual(manifest.exports['./cli'], {
-      types: './dist/src/cli/index.d.ts',
-      import: './dist/src/cli/index.js',
+      types: './dist/cli/index.d.ts',
+      import: './dist/cli/index.js',
     });
     assert.deepEqual(manifest.exports['./capabilities'], {
-      types: './dist/src/capabilities/index.d.ts',
-      import: './dist/src/capabilities/index.js',
+      types: './dist/capabilities/index.d.ts',
+      import: './dist/capabilities/index.js',
     });
     const runtimeEntrypoints = [
       manifest.bin.atlas,

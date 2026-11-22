@@ -45,7 +45,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "bun run build:package && bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build",
-    "build:package": "bun build --target=node --format=esm --outdir dist --bundle src/capabilities/index.ts src/cli/index.ts bin/atlas.ts && bun x tsc -p tsconfig.package.json",
+    "build:package": "rm -rf dist && bun build --target=node --format=esm --outdir dist --root src --bundle src/capabilities/index.ts src/cli/index.ts && bun build --target=node --format=esm --outdir dist --root . --bundle bin/atlas.ts && bun x tsc -p tsconfig.package.json",
     "start": "next start",
     "lint": "ankhorage-eslint . --max-warnings=0",
     "format:check": "ankhorage-prettier --check .",
@@ -127,7 +127,7 @@
   "packageManager": "bun@1.4.2",
   "ankh": {
     "category": "atlas",
-    "provider": "./dist/src/cli/index.js",
+    "provider": "./dist/cli/index.js",
     "capabilities": [
       {
         "id": "atlas.audit",
@@ -183,12 +183,12 @@
   },
   "exports": {
     "./capabilities": {
-      "types": "./dist/src/capabilities/index.d.ts",
-      "import": "./dist/src/capabilities/index.js"
+      "types": "./dist/capabilities/index.d.ts",
+      "import": "./dist/capabilities/index.js"
     },
     "./cli": {
-      "types": "./dist/src/cli/index.d.ts",
-      "import": "./dist/src/cli/index.js"
+      "types": "./dist/cli/index.d.ts",
+      "import": "./dist/cli/index.js"
     },
     "./package.json": "./package.json"
   },

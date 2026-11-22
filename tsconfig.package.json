@@ -4,9 +4,10 @@
     "declaration": true,
     "declarationMap": false,
     "emitDeclarationOnly": true,
+    "incremental": false,
     "noEmit": false,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": "src"
   },
   "include": ["src/capabilities/index.ts", "src/cli/index.ts"]
 }
