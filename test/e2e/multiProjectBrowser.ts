@@ -483,7 +483,7 @@ async function openRepositoryPickerAsync(
   page: Page,
   repositoryLabel = 'owner-a/catalog'
 ): Promise<void> {
-  const repository = page.getByLabel(repositoryLabel);
+  const repository = page.getByRole('checkbox', { name: repositoryLabel });
   if (!(await repository.isVisible())) {
     await openRepositorySourceDialogAsync(page);
     const picker = page.locator('[aria-label="Choose repositories"]:visible');
@@ -522,6 +522,24 @@ async function assertGraphCanvasAsync(page: Page): Promise<void> {
   await graph.waitFor();
   const box = await graph.boundingBox();
   assert(box !== null && box.width > 0 && box.height > 0, 'Graph canvas has no rendered area.');
+}
+
+/*** Verifies the production workspace shell contains the resolved WorkspaceGraph at the requested viewport. */
+async function assertWorkspaceGraphShellAsync(
+  page: Page,
+  viewport: { readonly height: number; readonly width: number }
+): Promise<void> {
+  const geometry = await captureWorkspaceGeometryAsync(page);
+  assertDimensionsEqual(
+    geometry.viewport,
+    viewport,
+    'WorkspaceGraph changed the browser viewport.'
+  );
+  assertBoundsContained(
+    geometry.graph,
+    geometry.workspaceContent,
+    'WorkspaceGraph escaped the workspace content region.'
+  );
 }
 
 /*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
@@ -1059,6 +1077,94 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
+    'source-picker-repository-color',
+    'Edits and resets one repository color without changing repository selection, graph geometry, or requests.',
+    async page => {
+      await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
+      await openRepositoryPickerAsync(page);
+      const repository = page.getByRole('checkbox', { name: 'owner-a/catalog' });
+      assert(await repository.isChecked(), 'Repository was not selected before editing its color.');
+      const before = await readGraphPresentationAsync(page);
+      const requests: string[] = [];
+      page.on('request', request => requests.push(request.url()));
+      await page.getByLabel('Change color for owner-a/catalog').click();
+      const picker = page.getByTestId('repository-color-picker-owner-a-catalog');
+      await picker.getByRole('slider', { name: /Color wheel/u }).waitFor();
+      assert(
+        (await picker.getByRole('tab').count()) === 2,
+        'Repository color picker did not expose exactly Wheel and Tone.'
+      );
+      assert(
+        (await picker.getByRole('button', { name: 'None' }).count()) === 0,
+        'Repository color picker exposed Harmony controls.'
+      );
+      await picker.getByRole('tab', { name: 'tone' }).click();
+      await picker.getByLabel('jewel').first().click();
+      await page.waitForFunction(() =>
+        Object.entries(localStorage).some(
+          ([key, value]) =>
+            key.endsWith('.repository-colors') &&
+            /^#[0-9A-F]{6}$/u.test(
+              (JSON.parse(value) as Record<string, unknown>)['owner-a-catalog'] as string
+            )
+        )
+      );
+      assert(
+        (await picker.getByLabel(/Selected jewel color 1:/u).count()) === 1,
+        'Tone picker did not retain exactly one selected color.'
+      );
+      await settleGraphPresentationAsync(page);
+      const afterColor = await readGraphPresentationAsync(page);
+      assert(
+        afterColor.layoutCount === 1,
+        `Repository color update recomputed graph layout: expected 1, received ${afterColor.layoutCount}.`
+      );
+      // The source dialog correctly blocks background header actions while open.
+      await page.keyboard.press('Escape');
+      await picker.waitFor({ state: 'hidden' });
+      await closeMobileRepositorySourceDialogAsync(page);
+      await toggleThemeAsync(page);
+      await settleGraphPresentationAsync(page);
+      const afterThemeChange = await readGraphPresentationAsync(page);
+      assert(
+        afterThemeChange.layoutCount === 1,
+        `Repository color theme switch recomputed graph layout: expected 1, received ${afterThemeChange.layoutCount}.`
+      );
+      await openRepositoryPickerAsync(page);
+      await page.getByLabel('Change color for owner-a/catalog').click();
+      await page.getByRole('button', { name: 'Reset color' }).click();
+      await page.waitForFunction(() =>
+        Object.entries(localStorage).every(
+          ([key, value]) =>
+            !key.endsWith('.repository-colors') ||
+            !Object.hasOwn(JSON.parse(value) as Record<string, unknown>, 'owner-a-catalog')
+        )
+      );
+      const after = await readGraphPresentationAsync(page);
+      assert(
+        await repository.isChecked(),
+        'Color swatch interaction changed repository selection.'
+      );
+      assert(
+        before.layoutCount === after.layoutCount,
+        `Repository color interaction recomputed graph layout: ${before.layoutCount} -> ${after.layoutCount}.`
+      );
+      assert(
+        JSON.stringify(before.viewport) === JSON.stringify(after.viewport),
+        'Repository color interaction changed the graph viewport.'
+      );
+      assert(
+        requests.every(request => !request.includes('/api/workspace/selection')),
+        `Repository color interaction issued a selection request: ${requests.join(', ')}`
+      );
+      assert(
+        requests.every(request => !request.includes('github')),
+        `Repository color interaction issued a GitHub request: ${requests.join(', ')}`
+      );
+      return [];
+    }
+  ),
+  scenario(
     'source-picker-runtime-recovery',
     'Recovers a current single-owner selection after the server evicts its incremental runtime.',
     async page => {
@@ -1535,6 +1641,7 @@ const scenarios: readonly Scenario[] = [
           .waitFor();
         if (viewport.width <= 768) await closeWorkspaceToolsDialogAsync(page);
         await assertWorkspaceViewportAsync(page, repositoryCount, viewport);
+        await assertWorkspaceGraphShellAsync(page, viewport);
         const artifact = `workspace-elk-${repositoryCount}-${viewport.width}.png`;
         await page.screenshot({ path: resolve(evidenceDirectory, artifact), fullPage: true });
         artifacts.push(artifact);
@@ -1945,6 +2052,29 @@ async function readGraphViewportAsync(page: Page) {
   return viewport;
 }
 
+/*** Capture public graph presentation state to reject color edits that re-layout or auto-fit. */
+async function readGraphPresentationAsync(page: Page) {
+  const presentation = await page.evaluate(() => {
+    const probe = (window as typeof window & { __atlasViewportProbe?: GraphViewportProbe })
+      .__atlasViewportProbe;
+    return probe?.controller === null || probe?.controller === undefined
+      ? null
+      : { layoutCount: probe.layoutCount, viewport: probe.controller.getViewport() };
+  });
+  assert(presentation !== null, 'Graph presentation probe was unavailable.');
+  return presentation;
+}
+
+/*** Allows the public GraphView runtime to reconcile paint before reading its lifecycle counter. */
+async function settleGraphPresentationAsync(page: Page): Promise<void> {
+  await page.evaluate(
+    () =>
+      new Promise<void>(resolve =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+      )
+  );
+}
+
 /*** Establishes a user-owned viewport baseline through native graph and control input. */
 async function panAndZoomGraphAsync(page: Page): Promise<void> {
   const graph = page.getByRole('application', { name: 'Graph' });
@@ -2212,7 +2342,7 @@ async function pinchGraphAsync(
 /*** Rejects an incomplete or duplicate scenario registry before a browser can produce misleading evidence. */
 function assertScenarioRegistry(): void {
   const scenarioIds = scenarios.map(scenario => scenario.id);
-  assert(scenarioIds.length === 29, `Expected exactly 29 scenarios, found ${scenarioIds.length}.`);
+  assert(scenarioIds.length === 30, `Expected exactly 30 scenarios, found ${scenarioIds.length}.`);
   assert(
     new Set(scenarioIds).size === scenarioIds.length,
     'Scenario registry contains duplicate IDs.'

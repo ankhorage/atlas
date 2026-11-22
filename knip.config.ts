@@ -1,6 +1,6 @@
 import { createKnipConfig } from '@ankhorage/devtools/knip';
 
-export default createKnipConfig({
+const atlasKnipConfig = createKnipConfig({
   entry: [
     '.prettierrc.js',
     'eslint.config.mjs',
@@ -13,11 +13,11 @@ export default createKnipConfig({
     'test/e2e/compoundSelectionHarness.tsx',
     'test/e2e/next-fixture-app/app/**/*.tsx',
     'test/e2e/next-fixture-app/app/**/*.ts',
-    'test/e2e/next-fixture-app/next.config.ts',
   ],
   // The project-detector spec reads this nested workspace from disk at runtime; Knip cannot
   // statically resolve that fixture-data path as an import.
   ignoreFiles: [
+    '.agents/skills/zora-designer/scripts/**/*.ts',
     'examples/**',
     'test/fixtures/typescript/compound-selection/src/**/*.ts',
     'test/fixtures/typescript/nested-workspace/packages/dashboard/src/index.ts',
@@ -28,3 +28,6 @@ export default createKnipConfig({
   // These packages are resolved by supported published dynamic providers, not static imports.
   ignoreDependencies: ['@ankhorage/infra-local', '@ankhorage/infra-minikube'],
 });
+
+// The fixture config resolves the test app's external source-root alias to an absolute path.
+export default { ...atlasKnipConfig, ignoreUnresolved: [/\/src$/] };

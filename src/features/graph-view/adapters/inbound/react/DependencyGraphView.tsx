@@ -72,6 +72,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
     cycleHighlights: props.cycleHighlights,
     layout: settings.cytoscapeLayout,
     packageGraph,
+    repositoryColors: settings.repositoryColors,
     theme,
     visibleElements,
   });
@@ -145,12 +146,17 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
  * layout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.
  */
 function useGraphViewPresentation(input: GraphViewPresentationInput) {
-  const projectedModel = useMemo(
+  const model = useMemo(
     () =>
       input.visibleElements === null
         ? null
-        : createGraphViewModel(input.packageGraph, input.visibleElements, input.cycleHighlights),
-    [input.cycleHighlights, input.packageGraph, input.visibleElements]
+        : createGraphViewModel(
+            input.packageGraph,
+            input.visibleElements,
+            input.cycleHighlights,
+            input.repositoryColors
+          ),
+    [input.cycleHighlights, input.packageGraph, input.repositoryColors, input.visibleElements]
   );
   const styles = useMemo(
     () =>
@@ -167,7 +173,7 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
   return {
     layout: readGraphViewLayout(input.layout),
     layoutOptions,
-    model: projectedModel,
+    model,
     styles,
   };
 }
@@ -281,6 +287,7 @@ interface GraphViewPresentationInput {
   readonly cycleHighlights: readonly CycleHighlight[];
   readonly layout: LayoutOptions['name'];
   readonly packageGraph: ElementsDefinition;
+  readonly repositoryColors: Readonly<Record<string, string>>;
   readonly theme: ZoraRuntimeTheme;
   readonly visibleElements: ElementsDefinition | null;
 }

@@ -110,6 +110,8 @@ export interface WorkspacePresentationSettings {
   readonly subPackageDepth: number;
   readonly layout: string;
   readonly spacing: number;
+  /** Explicit repository-only #RRGGBB overrides. Absent entries use the fixed graph default. */
+  readonly repositoryColors: Readonly<Record<string, string>>;
 }
 
 /** Immutable identity for a safely reusable GitHub analysis within one authorization scope. */

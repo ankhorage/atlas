@@ -1,4 +1,5 @@
 'use client';
+import type { ColorToneDefinition } from '@ankhorage/zora';
 import { Button } from '@ankhorage/zora/web/button';
 import { Dialog } from '@ankhorage/zora/web/dialog';
 import { IconButton } from '@ankhorage/zora/web/icon-button';
@@ -160,6 +161,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     inventoryError,
     openWorkspace: actions.openWorkspace,
     repositories,
+    repositoryColorTones: props.repositoryColorTones ?? [],
     search: state.search,
     selectedIds: state.selectedIds,
     selectedRepositories,
@@ -200,6 +202,7 @@ interface ProjectSourceFormProps {
   readonly authControls?: ReactNode;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
+  readonly repositoryColorTones?: readonly ColorToneDefinition[];
   readonly selectionRequired?: boolean;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
 }

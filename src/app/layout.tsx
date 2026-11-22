@@ -1,6 +1,7 @@
 import '@/app/globals.css';
 
 import { parseAppManifest } from '@ankhorage/contracts';
+import { ReactNativeWebStyleSheet } from '@ankhorage/surface';
 import type { Metadata } from 'next';
 
 import { ZoraRuntimeProvider } from '@/features/theme/adapters/inbound/react/ZoraRuntimeProvider';
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           {children}
         </ZoraRuntimeProvider>
+        <ReactNativeWebStyleSheet />
       </body>
     </html>
   );
