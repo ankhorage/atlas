@@ -1,13 +1,11 @@
 {
   "name": "@ankhorage/atlas",
   "bin": {
-    "atlas": "bin/atlas.ts"
+    "atlas": "dist/bin/atlas.js"
   },
   "files": [
-    "bin",
+    "dist",
     "ankh.config.json",
-    "src",
-    "tsconfig.json",
     ".next/BUILD_ID",
     ".next/*.js",
     ".next/*.json",
@@ -26,7 +24,7 @@
     "bun": ">=1.2.18",
     "npm": ">=10.9.2"
   },
-  "version": "0.21.6",
+  "version": "0.21.7",
   "description": "Analyze and visualize codebases, dependencies, architecture rules, and audit evidence.",
   "repository": {
     "type": "git",
@@ -46,7 +44,8 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build",
+    "build": "bun run build:package && bun src/features/offline-export/adapters/outbound/bun/buildOfflineWorkspaceBundle.ts && next build",
+    "build:package": "rm -rf dist && bun build --target=node --format=esm --outdir dist --root src --bundle src/capabilities/index.ts src/cli/index.ts && bun build --target=node --format=esm --outdir dist --root . --bundle bin/atlas.ts && bun x tsc -p tsconfig.package.json",
     "start": "next start",
     "lint": "ankhorage-eslint . --max-warnings=0",
     "format:check": "ankhorage-prettier --check .",
@@ -65,6 +64,7 @@
     "test:maven": "mvn -B -f maven-plugin/pom.xml test",
     "test:gradle": "gradle --no-daemon -p gradle-plugin test",
     "test:offline-browser": "bun test/e2e/offlineWorkspace.ts",
+    "test:packed-offline": "bun test/e2e/packedOfflineWorkspace.ts",
     "test:compound-selection-browser": "bun test/e2e/compoundSelectionBrowser.ts",
     "test:github-logout-browser": "bun test/e2e/githubLogoutBrowser.ts",
     "test:multi-project-browser": "bun ./test/e2e/multiProjectBrowser.ts",
@@ -128,7 +128,7 @@
   "packageManager": "bun@1.4.2",
   "ankh": {
     "category": "atlas",
-    "provider": "./src/cli/index.ts",
+    "provider": "./dist/cli/index.js",
     "capabilities": [
       {
         "id": "atlas.audit",
@@ -183,8 +183,14 @@
     ]
   },
   "exports": {
-    "./capabilities": "./src/capabilities/index.ts",
-    "./cli": "./src/cli/index.ts",
+    "./capabilities": {
+      "types": "./dist/capabilities/index.d.ts",
+      "import": "./dist/capabilities/index.js"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "import": "./dist/cli/index.js"
+    },
     "./package.json": "./package.json"
   },
   "license": "MIT",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.7
+
+### Patch Changes
+
+- c70b75b: Publish Node-compatible JavaScript and TypeScript declarations for Atlas capabilities, CLI provider, and binary entrypoints.
+
 ## 0.21.6
 
 ### Patch Changes

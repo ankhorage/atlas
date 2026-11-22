@@ -76,6 +76,9 @@ jobs:
           curl --fail --silent http://127.0.0.1:3000/ > /dev/null
           ATLAS_ONLINE_URL=http://127.0.0.1:3000/ bun run test:offline-browser
 
+      - name: Verify packaged offline workspace export
+        run: bun run test:packed-offline
+
       - name: Verify compound selection browser acceptance
         env:
           ATLAS_PROJECT_PATH: ${{ github.workspace }}/test/fixtures/typescript/compound-selection

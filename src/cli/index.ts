@@ -1,4 +1,4 @@
-import { createAtlasRuntimeProvider } from '@/cli/provider/createAtlasRuntimeProvider';
+import { createAtlasRuntimeProvider } from './provider/createAtlasRuntimeProvider.js';
 
 const provider = createAtlasRuntimeProvider();
 

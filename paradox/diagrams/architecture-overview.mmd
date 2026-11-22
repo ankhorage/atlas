@@ -122,10 +122,12 @@ graph TD
   module_src_cli_runAuditSourceAsync_ts --> module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --> module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_runAuditSourceAsync_ts --> module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_cli_runAuditSourceAsync_ts --> module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --> module_src_types_cli_ts
   module_src_cli_startViewerAsync_ts["src/cli/startViewerAsync.ts"]
   package__ankhorage_atlas -.-> module_src_cli_startViewerAsync_ts
   module_src_cli_startViewerAsync_ts --> module_src_types_cli_ts
+  module_src_cli_startViewerAsync_ts --> module_src_utils_resolveAtlasPackageRoot_ts
   module_src_cli_startViewerSourceAsync_ts["src/cli/startViewerSourceAsync.ts"]
   package__ankhorage_atlas -.-> module_src_cli_startViewerSourceAsync_ts
   module_src_cli_startViewerSourceAsync_ts --> module_src_cli_startViewerAsync_ts
@@ -417,6 +419,7 @@ graph TD
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_types_audit_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_types_projectFiles_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_types_workspace_ts
+  module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_utils_resolveAtlasPackageRoot_ts
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts["src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts"]
   package__ankhorage_atlas -.-> module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts["src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts"]
@@ -923,6 +926,8 @@ graph TD
   package__ankhorage_atlas -.-> module_src_utils_isRepositoryId_ts
   module_src_utils_parseProjectPath_ts["src/utils/parseProjectPath.ts"]
   package__ankhorage_atlas -.-> module_src_utils_parseProjectPath_ts
+  module_src_utils_resolveAtlasPackageRoot_ts["src/utils/resolveAtlasPackageRoot.ts"]
+  package__ankhorage_atlas -.-> module_src_utils_resolveAtlasPackageRoot_ts
   module_test_benchmarks_graphPresentation_ts["test/benchmarks/graphPresentation.ts"]
   package__ankhorage_atlas -.-> module_test_benchmarks_graphPresentation_ts
   module_test_benchmarks_graphPresentation_ts --> module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
@@ -987,6 +992,8 @@ graph TD
   module_test_e2e_offlineWorkspace_ts["test/e2e/offlineWorkspace.ts"]
   package__ankhorage_atlas -.-> module_test_e2e_offlineWorkspace_ts
   module_test_e2e_offlineWorkspace_ts --> module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_packedOfflineWorkspace_ts["test/e2e/packedOfflineWorkspace.ts"]
+  package__ankhorage_atlas -.-> module_test_e2e_packedOfflineWorkspace_ts
   module_test_e2e_productionCompoundCanvas_ts["test/e2e/productionCompoundCanvas.ts"]
   package__ankhorage_atlas -.-> module_test_e2e_productionCompoundCanvas_ts
   module_test_e2e_workspaceLoadingBrowser_ts["test/e2e/workspaceLoadingBrowser.ts"]
@@ -1372,3 +1379,6 @@ graph TD
   module_test_src_utils_parseProjectPath_spec_ts["test/src/utils/parseProjectPath.spec.ts"]
   package__ankhorage_atlas -.-> module_test_src_utils_parseProjectPath_spec_ts
   module_test_src_utils_parseProjectPath_spec_ts --> module_src_utils_parseProjectPath_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts["test/src/utils/resolveAtlasPackageRoot.spec.ts"]
+  package__ankhorage_atlas -.-> module_test_src_utils_resolveAtlasPackageRoot_spec_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts --> module_src_utils_resolveAtlasPackageRoot_ts
