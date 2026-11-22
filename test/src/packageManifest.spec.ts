@@ -9,14 +9,12 @@ import { assert, describe, it } from '@artiphishle/testosterone';
 import { CAPABILITIES } from '@/capabilities';
 
 describe('[package manifest]', () => {
-  it('publishes production Next.js output without build caches', async () => {
+  it('publishes generated Node entrypoints without TypeScript runtime sources', async () => {
     const manifest = JSON.parse(await readFile('package.json', 'utf8')) as PackageManifest;
 
     assert.deepEqual(manifest.files, [
-      'bin',
+      'dist',
       'ankh.config.json',
-      'src',
-      'tsconfig.json',
       '.next/BUILD_ID',
       '.next/*.js',
       '.next/*.json',
@@ -31,9 +29,28 @@ describe('[package manifest]', () => {
     ]);
     assert.equal(manifest.files.includes('.next'), false);
     assert.equal(manifest.name, '@ankhorage/atlas');
-    assert.equal(manifest.bin.atlas, 'bin/atlas.ts');
-    assert.equal(manifest.exports['./cli'], './src/cli/index.ts');
-    assert.equal(manifest.exports['./capabilities'], './src/capabilities/index.ts');
+    assert.equal(manifest.bin.atlas, 'dist/bin/atlas.js');
+    assert.equal(manifest.ankh.provider, './dist/cli/index.js');
+    assert.equal(manifest.scripts['build:package'] !== undefined, true);
+    assert.equal(manifest.scripts.build.includes('bun run build:package'), true);
+    assert.deepEqual(manifest.exports['./cli'], {
+      types: './dist/cli/index.d.ts',
+      import: './dist/cli/index.js',
+    });
+    assert.deepEqual(manifest.exports['./capabilities'], {
+      types: './dist/capabilities/index.d.ts',
+      import: './dist/capabilities/index.js',
+    });
+    const runtimeEntrypoints = [
+      manifest.bin.atlas,
+      manifest.ankh.provider,
+      getRuntimeImportTarget(manifest.exports['./cli']),
+      getRuntimeImportTarget(manifest.exports['./capabilities']),
+    ];
+    assert.equal(
+      runtimeEntrypoints.some(entrypoint => entrypoint.endsWith('.ts')),
+      false
+    );
     const manifestCapabilities = manifest.ankh.capabilities as readonly Capability[];
 
     assert.equal(isCapabilityCatalog(manifestCapabilities), true);
@@ -81,9 +98,25 @@ describe('[package manifest]', () => {
 interface PackageManifest {
   readonly ankh: {
     readonly capabilities: readonly Capability[];
+    readonly provider: string;
   };
   readonly bin: Readonly<Record<string, string>>;
-  readonly exports: Readonly<Record<string, string>>;
+  readonly exports: Readonly<Record<string, PackageExportTarget>>;
   readonly files: readonly string[];
   readonly name: string;
+  readonly scripts: Readonly<Record<string, string>>;
+}
+
+type PackageExportTarget = string | PackageRuntimeExport;
+
+interface PackageRuntimeExport {
+  readonly import: string;
+  readonly types: string;
+}
+
+function getRuntimeImportTarget(exportTarget: PackageExportTarget): string {
+  if (typeof exportTarget === 'string') {
+    throw new Error('Runtime package exports must declare JavaScript and declaration targets.');
+  }
+  return exportTarget.import;
 }

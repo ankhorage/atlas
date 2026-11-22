@@ -7,6 +7,8 @@ const atlasKnipConfig = createKnipConfig({
     'eslint.local.config.mjs',
     'prettier.local.config.js',
     'paradox.config.mjs',
+    'src/capabilities/index.ts',
+    'src/cli/index.ts',
     'test/**/*.spec.{ts,tsx}',
     'src/features/offline-export/adapters/inbound/browser/bootstrapOfflineWorkspace.tsx',
     'test/benchmarks/*.ts',
