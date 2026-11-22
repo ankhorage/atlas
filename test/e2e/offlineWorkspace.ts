@@ -221,16 +221,21 @@ async function selectGraphNodes(page: Page): Promise<void> {
 
   const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
   await assertGraphHitTargetAsync(page, secondTarget);
-  await page.keyboard.down(modifier);
-  await page.mouse.click(secondTarget.x, secondTarget.y);
-  await page.keyboard.up(modifier);
+  await graph.click({
+    modifiers: [modifier],
+    position: nodes[1]!.position,
+  });
   await page.waitForFunction(
     expectedModifier => {
       const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
         .__atlasGraphInputProbe;
       return expectedModifier === 'ctrlKey'
-        ? probe?.events.some(event => event.graphTarget && event.ctrlKey)
-        : probe?.events.some(event => event.graphTarget && event.metaKey);
+        ? probe?.events.some(
+            event => event.type === 'pointerdown' && event.graphTarget && event.ctrlKey
+          )
+        : probe?.events.some(
+            event => event.type === 'pointerdown' && event.graphTarget && event.metaKey
+          );
     },
     modifier === 'Meta' ? 'metaKey' : 'ctrlKey'
   );
@@ -248,7 +253,7 @@ async function selectGraphNodes(page: Page): Promise<void> {
     );
 }
 
-/*** Records native pointer modifiers at the graph boundary without inspecting GraphView internals. */
+/*** Records native pointer modifiers at the GraphView pointer-down boundary without inspecting internals. */
 async function installGraphInputProbeAsync(page: Page): Promise<void> {
   await page.evaluate(() => {
     const graph = document.querySelector('[role="application"][aria-label="Graph"]');
@@ -256,7 +261,7 @@ async function installGraphInputProbeAsync(page: Page): Promise<void> {
     const target = window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe };
     target.__atlasGraphInputProbe = { events: [] };
     graph.addEventListener(
-      'pointerup',
+      'pointerdown',
       event => {
         const current = target.__atlasGraphInputProbe;
         if (current === undefined) return;
@@ -268,6 +273,7 @@ async function installGraphInputProbeAsync(page: Page): Promise<void> {
               ctrlKey: pointerEvent.ctrlKey,
               graphTarget: event.target instanceof Node && graph.contains(event.target),
               metaKey: pointerEvent.metaKey,
+              type: event.type,
             },
           ],
         };
@@ -336,6 +342,7 @@ interface GraphInputProbe {
     readonly ctrlKey: boolean;
     readonly graphTarget: boolean;
     readonly metaKey: boolean;
+    readonly type: string;
   }[];
 }
 

@@ -867,7 +867,10 @@ const scenarios: readonly Scenario[] = [
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('Choose repositories').click();
       await page.getByLabel('Search repositories').fill('akon taxi');
-      await page.getByLabel('viewport/akon taxi').waitFor();
+      const removedRepositoryCheckbox = page.getByRole('checkbox', {
+        name: 'viewport/akon taxi',
+      });
+      await removedRepositoryCheckbox.waitFor();
       assert(
         getRequestCount(selectionRequests) === 0,
         'Searching repositories sent a selection request.'
@@ -944,7 +947,7 @@ const scenarios: readonly Scenario[] = [
       const removalResponse = page.waitForResponse(
         response => response.url().endsWith('/api/workspace/selection') && response.status() === 200
       );
-      await page.getByLabel('viewport/akon taxi').uncheck();
+      await removedRepositoryCheckbox.click();
       await removalRequest;
       await removalResponse;
       await page.waitForFunction(async ids => {
@@ -962,7 +965,7 @@ const scenarios: readonly Scenario[] = [
         return JSON.stringify(probe?.controller?.measureNodes?.(ids)) === before;
       }, allNodeIds);
       assert(
-        !(await page.getByLabel('viewport/akon taxi').isChecked()),
+        !(await removedRepositoryCheckbox.isChecked()),
         'Repository picker did not commit the removal.'
       );
       assert(
