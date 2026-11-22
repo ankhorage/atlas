@@ -2197,11 +2197,21 @@ async function resolveResponsiveTouchGraphNodeIdsAsync(): Promise<readonly strin
     showVendorPackages: settings.showVendorPackages,
     subPackageDepth: settings.subPackageDepth,
   });
-  const visibleNodeIds = createGraphViewModel(elements, projection.elements, []).nodes.map(
-    node => node.id
+  const requestedNodeIds = projection.elements.nodes.flatMap(node => {
+    const id = node.data.id;
+    return typeof id === 'string' && id.length > 0 ? [id] : [];
+  });
+  const visibleNodeIds = createGraphViewModel(
+    projection.elements,
+    projection.elements,
+    []
+  ).nodes.map(node => node.id);
+  assert(
+    requestedNodeIds.length === visibleNodeIds.length &&
+      requestedNodeIds.every(id => visibleNodeIds.includes(id)),
+    `Responsive touch requested IDs do not match the visible projected node identities: requested ${requestedNodeIds.join(', ')}; visible ${visibleNodeIds.join(', ')}.`
   );
-  const graphNodeIds = createGraphViewModel(elements, elements, []).nodes.map(node => node.id);
-  return [...new Set([...visibleNodeIds, ...graphNodeIds])];
+  return requestedNodeIds;
 }
 
 /*** Reads a controller-measured node from the canonical Atlas GraphView projection. */
