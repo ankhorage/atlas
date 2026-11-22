@@ -221,14 +221,14 @@ async function selectGraphNodes(page: Page): Promise<void> {
 
   const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
   await assertGraphHitTargetAsync(page, secondTarget);
-  await graph.click({
-    modifiers: [modifier],
-    position: nodes[1]!.position,
-  });
+  await page.keyboard.down(modifier);
+  try {
+    await page.mouse.click(secondTarget.x, secondTarget.y);
+  } finally {
+    await page.keyboard.up(modifier);
+  }
   await waitForModifiedGraphPointerAsync(page, modifier === 'Meta' ? 'metaKey' : 'ctrlKey');
-  await page.waitForFunction(
-    () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
-  );
+  await waitForGraphSelectionAsync(page, nodeIds, secondTarget);
   const selection = await readSelectedTreeItems(page);
   if (
     selection.length !== 2 ||
@@ -261,6 +261,8 @@ async function installGraphInputProbeAsync(page: Page): Promise<void> {
             ...current.events.slice(-7),
             {
               ctrlKey: pointerEvent.ctrlKey,
+              clientX: pointerEvent.clientX,
+              clientY: pointerEvent.clientY,
               graphTarget,
               metaKey: pointerEvent.metaKey,
               probeGraphConnected: graph.isConnected,
@@ -274,6 +276,59 @@ async function installGraphInputProbeAsync(page: Page): Promise<void> {
       { capture: true }
     );
   });
+}
+
+/*** Waits for synchronized tree multi-selection and reports the observed graph input and public geometry on failure. */
+async function waitForGraphSelectionAsync(
+  page: Page,
+  nodeIds: readonly string[],
+  expectedTarget: { readonly x: number; readonly y: number }
+): Promise<void> {
+  try {
+    await page.waitForFunction(
+      () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
+    );
+  } catch (error) {
+    const diagnostic = await readGraphSelectionDiagnosticAsync(page, nodeIds, expectedTarget);
+    throw new Error(
+      `Modified GraphView click did not create synchronized multi-selection: ${JSON.stringify(diagnostic)}`,
+      { cause: error }
+    );
+  }
+}
+
+/*** Reads bounded public graph, document, pointer, and synchronized-tree state for a failed modified graph click. */
+async function readGraphSelectionDiagnosticAsync(
+  page: Page,
+  nodeIds: readonly string[],
+  expectedTarget: { readonly x: number; readonly y: number }
+): Promise<unknown> {
+  return page.evaluate(
+    ({ ids, target }) => {
+      const windowTarget = window as typeof window & {
+        __atlasGraphAcceptance?: GraphProbe;
+        __atlasGraphInputProbe?: GraphInputProbe;
+      };
+      const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+      const bounds = graph?.getBoundingClientRect();
+      return {
+        activeElement: document.activeElement?.tagName ?? null,
+        expectedTarget: target,
+        graphBounds:
+          bounds === undefined
+            ? null
+            : { height: bounds.height, width: bounds.width, x: bounds.x, y: bounds.y },
+        graphConnected: graph?.isConnected ?? false,
+        measuredNodes:
+          windowTarget.__atlasGraphAcceptance?.controller?.measureNodes?.(ids)?.nodes ?? [],
+        pointerEvents: windowTarget.__atlasGraphInputProbe?.events ?? [],
+        selectedTreeItems: [
+          ...document.querySelectorAll('[role="treeitem"][aria-selected="true"]'),
+        ].map(item => item.getAttribute('aria-label') ?? item.textContent ?? ''),
+      };
+    },
+    { ids: nodeIds, target: expectedTarget }
+  );
 }
 
 /*** Waits for the modified native GraphView input and reports bounded live evidence when it is absent. */
@@ -365,6 +420,8 @@ interface GraphProbe {
 interface GraphInputProbe {
   readonly events: readonly {
     readonly ctrlKey: boolean;
+    readonly clientX: number;
+    readonly clientY: number;
     readonly graphTarget: boolean;
     readonly metaKey: boolean;
     readonly probeGraphConnected: boolean;
