@@ -224,7 +224,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/cli/startViewerAsync.ts">
       src/cli/startViewerAsync.ts
-      <small>10 functions</small>
+      <small>9 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/cli/startViewerSourceAsync.ts">
@@ -1066,6 +1066,11 @@
       src/utils/parseProjectPath.ts
       <small>1 function</small>
     </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/utils/resolveAtlasPackageRoot.ts">
+      src/utils/resolveAtlasPackageRoot.ts
+      <small>1 function</small>
+    </button>
   </li>
           </ul>
         </nav>
@@ -1078,7 +1083,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>344</strong><span class="muted">modules</span></div>
+        <div><strong>347</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1265,15 +1270,15 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/audit/domain/hasBlockingAuditRuleFailure.ts</code>, <code>src/features/offline-export/application/createOfflineHtmlReportAsync.ts</code>, <code>src/types/audit.ts</code></p>
     <p><strong>Exports:</strong> <code>runAuditAsync</code></p>
-  </article><article class="item" data-search="src/cli/runAuditSourceAsync.ts src/cli/runAuditAsync.ts src/features/project-source/application/use-cases/parseProjectSource.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/types/cli.ts runAuditSourceAsync">
+  </article><article class="item" data-search="src/cli/runAuditSourceAsync.ts src/cli/runAuditAsync.ts src/features/project-source/application/use-cases/parseProjectSource.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/types/audit.ts src/types/cli.ts runAuditSourceAsync">
     <h3>src/cli/runAuditSourceAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/cli/runAuditAsync.ts</code>, <code>src/features/project-source/application/use-cases/parseProjectSource.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code>, <code>src/types/cli.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/cli/runAuditAsync.ts</code>, <code>src/features/project-source/application/use-cases/parseProjectSource.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code>, <code>src/types/audit.ts</code>, <code>src/types/cli.ts</code></p>
     <p><strong>Exports:</strong> <code>runAuditSourceAsync</code></p>
-  </article><article class="item" data-search="src/cli/startViewerAsync.ts src/types/cli.ts startViewerAsync">
+  </article><article class="item" data-search="src/cli/startViewerAsync.ts src/types/cli.ts src/utils/resolveAtlasPackageRoot.ts startViewerAsync">
     <h3>src/cli/startViewerAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/types/cli.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/types/cli.ts</code>, <code>src/utils/resolveAtlasPackageRoot.ts</code></p>
     <p><strong>Exports:</strong> <code>startViewerAsync</code></p>
   </article><article class="item" data-search="src/cli/startViewerSourceAsync.ts src/cli/startViewerAsync.ts src/features/project-source/application/use-cases/parseProjectSource.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/types/cli.ts startViewerSourceAsync">
     <h3>src/cli/startViewerSourceAsync.ts</h3>
@@ -1660,10 +1665,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>buildOfflineWorkspaceBundleAsync</code></p>
-  </article><article class="item" data-search="src/features/offline-export/application/createOfflineHtmlReportAsync.ts src/types/audit.ts src/types/projectFiles.ts src/types/workspace.ts createOfflineHtmlReportAsync">
+  </article><article class="item" data-search="src/features/offline-export/application/createOfflineHtmlReportAsync.ts src/types/audit.ts src/types/projectFiles.ts src/types/workspace.ts src/utils/resolveAtlasPackageRoot.ts createOfflineHtmlReportAsync">
     <h3>src/features/offline-export/application/createOfflineHtmlReportAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/types/audit.ts</code>, <code>src/types/projectFiles.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/types/audit.ts</code>, <code>src/types/projectFiles.ts</code>, <code>src/types/workspace.ts</code>, <code>src/utils/resolveAtlasPackageRoot.ts</code></p>
     <p><strong>Exports:</strong> <code>createOfflineHtmlReportAsync</code></p>
   </article><article class="item" data-search="src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts inspectProjectForAnalysisAsync">
     <h3>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</h3>
@@ -2230,6 +2235,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <code>parseProjectPath</code></p>
+  </article><article class="item" data-search="src/utils/resolveAtlasPackageRoot.ts resolveAtlasPackageRoot">
+    <h3>src/utils/resolveAtlasPackageRoot.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
+    <p><strong>Exports:</strong> <code>resolveAtlasPackageRoot</code></p>
   </article><article class="item" data-search="test/benchmarks/graphPresentation.ts src/features/graph-view/adapters/inbound/react/createGraphViewModel.ts src/features/graph-view/utils/projectVisibleGraph.ts">
     <h3>test/benchmarks/graphPresentation.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2314,6 +2324,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <h3>test/e2e/offlineWorkspace.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>test/e2e/productionCompoundCanvas.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/e2e/packedOfflineWorkspace.ts">
+    <h3>test/e2e/packedOfflineWorkspace.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <span class="empty">None</span></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/e2e/productionCompoundCanvas.ts assertProductionCompoundCanvasAsync installProductionGraphProbeAsync">
     <h3>test/e2e/productionCompoundCanvas.ts</h3>
@@ -2835,6 +2850,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/utils/parseProjectPath.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/utils/resolveAtlasPackageRoot.spec.ts src/utils/resolveAtlasPackageRoot.ts">
+    <h3>test/src/utils/resolveAtlasPackageRoot.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/utils/resolveAtlasPackageRoot.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article>
     </section>
     <section class="panel">
@@ -2856,7 +2876,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
             </section>
             <section>
               <h3>src/cli/provider/createAtlasRuntimeProvider.ts</h3>
-              <article class="item" id="symbol-createatlasruntimeprovider" data-search="createAtlasRuntimeProvider  function src/cli/provider/createAtlasRuntimeProvider.ts Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands. () =&gt; { id: string; category: string; version: string; capabilities: readonly [{ readonly id: &quot;atlas.audit&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Audit project architecture&quot;; readonly description: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.inspect&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Inspect project dependencies&quot;; readonly description: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.export&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Export Atlas report&quot;; readonly description: &quot;Export a portable Atlas report artifact.&quot;; }]; commands: ({ path: string[]; capability: &quot;atlas.audit&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.inspect&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.export&quot;; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }">
+              <article class="item" id="symbol-createatlasruntimeprovider" data-search="createAtlasRuntimeProvider  function src/cli/provider/createAtlasRuntimeProvider.ts Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands. () =&gt; AtlasRuntimeProvider">
     <h4>createAtlasRuntimeProvider</h4>
     
     <p class="muted">function • <code>src/cli/provider/createAtlasRuntimeProvider.ts:12:1</code></p>
@@ -2866,9 +2886,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <div><strong>Related symbols:</strong> <span class="empty">None</span></div>
     <div>
         <h5>Signature</h5>
-        <pre>() =&gt; { id: string; category: string; version: string; capabilities: readonly [{ readonly id: &quot;atlas.audit&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Audit project architecture&quot;; readonly description: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.inspect&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Inspect project dependencies&quot;; readonly description: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.export&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Export Atlas report&quot;; readonly description: &quot;Export a portable Atlas report artifact.&quot;; }]; commands: ({ path: string[]; capability: &quot;atlas.audit&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.inspect&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.export&quot;; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }</pre>
+        <pre>() =&gt; AtlasRuntimeProvider</pre>
         
-        <p><strong>Returns:</strong> <code>{ id: string; category: string; version: string; capabilities: readonly [{ readonly id: &quot;atlas.audit&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Audit project architecture&quot;; readonly description: &quot;Create an Atlas audit from a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.inspect&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Inspect project dependencies&quot;; readonly description: &quot;Open the Atlas graph inspector for a local path or GitHub repository.&quot;; }, { readonly id: &quot;atlas.export&quot;; readonly owner: &quot;@ankhorage/atlas&quot;; readonly access: readonly [&quot;invoke&quot;]; readonly binding: { readonly kind: &quot;action&quot;; readonly bindableAs: readonly [&quot;target&quot;]; }; readonly label: &quot;Export Atlas report&quot;; readonly description: &quot;Export a portable Atlas report artifact.&quot;; }]; commands: ({ path: string[]; capability: &quot;atlas.audit&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.inspect&quot;; summary: string; } | { path: string[]; capability: &quot;atlas.export&quot;; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }</code></p>
+        <p><strong>Returns:</strong> <code>AtlasRuntimeProvider</code></p>
       </div>
     
   </article>
@@ -3007,10 +3027,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_cli_ts
   module_src_cli_startViewerAsync_ts[&quot;src/cli/startViewerAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_startViewerAsync_ts
   module_src_cli_startViewerAsync_ts --&gt; module_src_types_cli_ts
+  module_src_cli_startViewerAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_cli_startViewerSourceAsync_ts[&quot;src/cli/startViewerSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_startViewerSourceAsync_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_cli_startViewerAsync_ts
@@ -3302,6 +3324,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_audit_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
@@ -3808,6 +3831,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_utils_isRepositoryId_ts
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_utils_parseProjectPath_ts
+  module_src_utils_resolveAtlasPackageRoot_ts[&quot;src/utils/resolveAtlasPackageRoot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_benchmarks_graphPresentation_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
@@ -3872,6 +3897,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_offlineWorkspace_ts
   module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_packedOfflineWorkspace_ts[&quot;test/e2e/packedOfflineWorkspace.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_packedOfflineWorkspace_ts
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_productionCompoundCanvas_ts
   module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
@@ -4257,6 +4284,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_parseProjectPath_spec_ts[&quot;test/src/utils/parseProjectPath.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_utils_parseProjectPath_spec_ts
   module_test_src_utils_parseProjectPath_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts[&quot;test/src/utils/resolveAtlasPackageRoot.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_utils_resolveAtlasPackageRoot_spec_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -4384,10 +4414,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_cli_ts
   module_src_cli_startViewerAsync_ts[&quot;src/cli/startViewerAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_startViewerAsync_ts
   module_src_cli_startViewerAsync_ts --&gt; module_src_types_cli_ts
+  module_src_cli_startViewerAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_cli_startViewerSourceAsync_ts[&quot;src/cli/startViewerSourceAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_cli_startViewerSourceAsync_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_cli_startViewerAsync_ts
@@ -4679,6 +4711,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_audit_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts[&quot;src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_analysis_adapters_outbound_project_detector_inspectProjectForAnalysisAsync_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts[&quot;src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts&quot;]
@@ -5185,6 +5218,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_utils_isRepositoryId_ts
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_utils_parseProjectPath_ts
+  module_src_utils_resolveAtlasPackageRoot_ts[&quot;src/utils/resolveAtlasPackageRoot.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_benchmarks_graphPresentation_ts
   module_test_benchmarks_graphPresentation_ts --&gt; module_src_features_graph_view_adapters_inbound_react_createGraphViewModel_ts
@@ -5249,6 +5284,8 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_offlineWorkspace_ts
   module_test_e2e_offlineWorkspace_ts --&gt; module_test_e2e_productionCompoundCanvas_ts
+  module_test_e2e_packedOfflineWorkspace_ts[&quot;test/e2e/packedOfflineWorkspace.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_e2e_packedOfflineWorkspace_ts
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_e2e_productionCompoundCanvas_ts
   module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
@@ -5634,6 +5671,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_parseProjectPath_spec_ts[&quot;test/src/utils/parseProjectPath.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_utils_parseProjectPath_spec_ts
   module_test_src_utils_parseProjectPath_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts[&quot;test/src/utils/resolveAtlasPackageRoot.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_utils_resolveAtlasPackageRoot_spec_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
 </pre>
     </details>
   </article><article class="item" data-search="Module relationships diagrams/module-relationships.mmd">
@@ -5863,6 +5903,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_isRepositoryColors_ts[&quot;src/utils/isRepositoryColors.ts&quot;]
   module_src_utils_isRepositoryId_ts[&quot;src/utils/isRepositoryId.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
+  module_src_utils_resolveAtlasPackageRoot_ts[&quot;src/utils/resolveAtlasPackageRoot.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
   module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
@@ -5880,6 +5921,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_packedOfflineWorkspace_ts[&quot;test/e2e/packedOfflineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
@@ -5984,6 +6026,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_filter_filterVendorPackages_spec_ts[&quot;test/src/utils/filter/filterVendorPackages.spec.ts&quot;]
   module_test_src_utils_getProjectName_spec_ts[&quot;test/src/utils/getProjectName.spec.ts&quot;]
   module_test_src_utils_parseProjectPath_spec_ts[&quot;test/src/utils/parseProjectPath.spec.ts&quot;]
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts[&quot;test/src/utils/resolveAtlasPackageRoot.spec.ts&quot;]
   module__next_types_validator_ts --&gt; module__next_types_routes_d_ts
   module_bin_atlas_ts --&gt; module_src_cli_runAtlasCliAsync_ts
   module_src_app_actions_audit_actions_ts --&gt; module_src_features_project_source_composition_createProjectSourceAuditAsync_ts
@@ -6043,8 +6086,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_cli_ts
   module_src_cli_startViewerAsync_ts --&gt; module_src_types_cli_ts
+  module_src_cli_startViewerAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_cli_startViewerAsync_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
@@ -6180,6 +6225,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_audit_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readJavaProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
@@ -6667,6 +6713,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_filter_filterVendorPackages_spec_ts --&gt; module_src_features_graph_view_utils_filterVendorPackages_ts
   module_test_src_utils_getProjectName_spec_ts --&gt; module_src_utils_getProjectName_ts
   module_test_src_utils_parseProjectPath_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
 </div>
     <details>
       <summary>View Mermaid source</summary>
@@ -6894,6 +6941,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_isRepositoryColors_ts[&quot;src/utils/isRepositoryColors.ts&quot;]
   module_src_utils_isRepositoryId_ts[&quot;src/utils/isRepositoryId.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
+  module_src_utils_resolveAtlasPackageRoot_ts[&quot;src/utils/resolveAtlasPackageRoot.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
   module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
@@ -6911,6 +6959,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_packedOfflineWorkspace_ts[&quot;test/e2e/packedOfflineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
@@ -7015,6 +7064,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_filter_filterVendorPackages_spec_ts[&quot;test/src/utils/filter/filterVendorPackages.spec.ts&quot;]
   module_test_src_utils_getProjectName_spec_ts[&quot;test/src/utils/getProjectName.spec.ts&quot;]
   module_test_src_utils_parseProjectPath_spec_ts[&quot;test/src/utils/parseProjectPath.spec.ts&quot;]
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts[&quot;test/src/utils/resolveAtlasPackageRoot.spec.ts&quot;]
   module__next_types_validator_ts --&gt; module__next_types_routes_d_ts
   module_bin_atlas_ts --&gt; module_src_cli_runAtlasCliAsync_ts
   module_src_app_actions_audit_actions_ts --&gt; module_src_features_project_source_composition_createProjectSourceAuditAsync_ts
@@ -7074,8 +7124,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --&gt; module_src_types_cli_ts
   module_src_cli_startViewerAsync_ts --&gt; module_src_types_cli_ts
+  module_src_cli_startViewerAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_cli_startViewerAsync_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_startViewerSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
@@ -7211,6 +7263,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_audit_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_types_workspace_ts
+  module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readJavaProjectFileMetadata_ts --&gt; module_src_types_projectFiles_ts
@@ -7698,6 +7751,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_filter_filterVendorPackages_spec_ts --&gt; module_src_features_graph_view_utils_filterVendorPackages_ts
   module_test_src_utils_getProjectName_spec_ts --&gt; module_src_utils_getProjectName_ts
   module_test_src_utils_parseProjectPath_spec_ts --&gt; module_src_utils_parseProjectPath_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts --&gt; module_src_utils_resolveAtlasPackageRoot_ts
 </pre>
     </details>
   </article><article class="item" data-search="Export graph diagrams/export-graph.mmd">
@@ -7927,6 +7981,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_isRepositoryColors_ts[&quot;src/utils/isRepositoryColors.ts&quot;]
   module_src_utils_isRepositoryId_ts[&quot;src/utils/isRepositoryId.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
+  module_src_utils_resolveAtlasPackageRoot_ts[&quot;src/utils/resolveAtlasPackageRoot.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
   module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
@@ -7944,6 +7999,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_packedOfflineWorkspace_ts[&quot;test/e2e/packedOfflineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
@@ -8048,6 +8104,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_filter_filterVendorPackages_spec_ts[&quot;test/src/utils/filter/filterVendorPackages.spec.ts&quot;]
   module_test_src_utils_getProjectName_spec_ts[&quot;test/src/utils/getProjectName.spec.ts&quot;]
   module_test_src_utils_parseProjectPath_spec_ts[&quot;test/src/utils/parseProjectPath.spec.ts&quot;]
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts[&quot;test/src/utils/resolveAtlasPackageRoot.spec.ts&quot;]
   export_createAtlasRuntimeProvider[&quot;createAtlasRuntimeProvider&quot;]
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; export_createAtlasRuntimeProvider
   export_provider[&quot;provider&quot;]
@@ -8279,6 +8336,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_utils_isRepositoryColors_ts[&quot;src/utils/isRepositoryColors.ts&quot;]
   module_src_utils_isRepositoryId_ts[&quot;src/utils/isRepositoryId.ts&quot;]
   module_src_utils_parseProjectPath_ts[&quot;src/utils/parseProjectPath.ts&quot;]
+  module_src_utils_resolveAtlasPackageRoot_ts[&quot;src/utils/resolveAtlasPackageRoot.ts&quot;]
   module_test_benchmarks_graphPresentation_ts[&quot;test/benchmarks/graphPresentation.ts&quot;]
   module_test_e2e_compoundSelectionBrowser_ts[&quot;test/e2e/compoundSelectionBrowser.ts&quot;]
   module_test_e2e_compoundSelectionHarness_tsx[&quot;test/e2e/compoundSelectionHarness.tsx&quot;]
@@ -8296,6 +8354,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx[&quot;test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx&quot;]
   module_test_e2e_next_fixture_app_next_config_ts[&quot;test/e2e/next-fixture-app/next.config.ts&quot;]
   module_test_e2e_offlineWorkspace_ts[&quot;test/e2e/offlineWorkspace.ts&quot;]
+  module_test_e2e_packedOfflineWorkspace_ts[&quot;test/e2e/packedOfflineWorkspace.ts&quot;]
   module_test_e2e_productionCompoundCanvas_ts[&quot;test/e2e/productionCompoundCanvas.ts&quot;]
   module_test_e2e_workspaceLoadingBrowser_ts[&quot;test/e2e/workspaceLoadingBrowser.ts&quot;]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts[&quot;test/fixtures/typescript/compound-selection/src/features/feature.ts&quot;]
@@ -8400,6 +8459,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_utils_filter_filterVendorPackages_spec_ts[&quot;test/src/utils/filter/filterVendorPackages.spec.ts&quot;]
   module_test_src_utils_getProjectName_spec_ts[&quot;test/src/utils/getProjectName.spec.ts&quot;]
   module_test_src_utils_parseProjectPath_spec_ts[&quot;test/src/utils/parseProjectPath.spec.ts&quot;]
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts[&quot;test/src/utils/resolveAtlasPackageRoot.spec.ts&quot;]
   export_createAtlasRuntimeProvider[&quot;createAtlasRuntimeProvider&quot;]
   module_src_cli_provider_createAtlasRuntimeProvider_ts --&gt; export_createAtlasRuntimeProvider
   export_provider[&quot;provider&quot;]
@@ -8709,7 +8769,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
       <h2>src/cli/runAuditSourceAsync.ts</h2>
       <article class="item" data-search="runAuditSourceAsync src/cli/runAuditSourceAsync.ts Resolve one local or GitHub source, run the canonical audit, and clean transient sources.">
     <h3>runAuditSourceAsync</h3>
-    <p class="muted"><code>src/cli/runAuditSourceAsync.ts:7:1</code></p>
+    <p class="muted"><code>src/cli/runAuditSourceAsync.ts:8:1</code></p>
     <p>Resolve one local or GitHub source, run the canonical audit, and clean transient sources.</p>
     
   </article>
@@ -8737,34 +8797,29 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted"><code>src/cli/startViewerAsync.ts:77:1</code></p>
     <p>Temporarily binds one port and returns its actual assigned value when available.</p>
     
-  </article><article class="item" data-search="resolvePackageRoot src/cli/startViewerAsync.ts Resolves the installed Atlas package root from this CLI module.">
-    <h3>resolvePackageRoot</h3>
-    <p class="muted"><code>src/cli/startViewerAsync.ts:90:1</code></p>
-    <p>Resolves the installed Atlas package root from this CLI module.</p>
-    
   </article><article class="item" data-search="resolveNextBin src/cli/startViewerAsync.ts Resolves the packaged Next executable with a PATH fallback.">
     <h3>resolveNextBin</h3>
-    <p class="muted"><code>src/cli/startViewerAsync.ts:96:1</code></p>
+    <p class="muted"><code>src/cli/startViewerAsync.ts:90:1</code></p>
     <p>Resolves the packaged Next executable with a PATH fallback.</p>
     
   </article><article class="item" data-search="pipeViewerOutput src/cli/startViewerAsync.ts Pipes viewer output only when verbose CLI logging is enabled.">
     <h3>pipeViewerOutput</h3>
-    <p class="muted"><code>src/cli/startViewerAsync.ts:107:1</code></p>
+    <p class="muted"><code>src/cli/startViewerAsync.ts:101:1</code></p>
     <p>Pipes viewer output only when verbose CLI logging is enabled.</p>
     
   </article><article class="item" data-search="writeProcessOutput src/cli/startViewerAsync.ts Writes one safely narrowed child-process output chunk.">
     <h3>writeProcessOutput</h3>
-    <p class="muted"><code>src/cli/startViewerAsync.ts:114:1</code></p>
+    <p class="muted"><code>src/cli/startViewerAsync.ts:108:1</code></p>
     <p>Writes one safely narrowed child-process output chunk.</p>
     
   </article><article class="item" data-search="logVerbose src/cli/startViewerAsync.ts Emits one verbose Atlas CLI line when requested.">
     <h3>logVerbose</h3>
-    <p class="muted"><code>src/cli/startViewerAsync.ts:119:1</code></p>
+    <p class="muted"><code>src/cli/startViewerAsync.ts:113:1</code></p>
     <p>Emits one verbose Atlas CLI line when requested.</p>
     
   </article><article class="item" data-search="delayAsync src/cli/startViewerAsync.ts Waits for a bounded CLI lifecycle delay.">
     <h3>delayAsync</h3>
-    <p class="muted"><code>src/cli/startViewerAsync.ts:124:1</code></p>
+    <p class="muted"><code>src/cli/startViewerAsync.ts:118:1</code></p>
     <p>Waits for a bounded CLI lifecycle delay.</p>
     
   </article>
@@ -12963,6 +13018,16 @@ Entries are removed after success or failure so later loads observe source chang
     <h3>parseProjectPath</h3>
     <p class="muted"><code>src/utils/parseProjectPath.ts:4:14</code></p>
     <p>Returns the configured project path in portable POSIX form.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-utils-resolveatlaspackageroot-ts" class="view" data-view="src/utils/resolveAtlasPackageRoot.ts" hidden>
+    <section class="panel">
+      <h2>src/utils/resolveAtlasPackageRoot.ts</h2>
+      <article class="item" data-search="resolveAtlasPackageRoot src/utils/resolveAtlasPackageRoot.ts Resolves Atlas&#39;s package root from its public manifest instead of a bundled module location.">
+    <h3>resolveAtlasPackageRoot</h3>
+    <p class="muted"><code>src/utils/resolveAtlasPackageRoot.ts:5:1</code></p>
+    <p>Resolves Atlas&#39;s package root from its public manifest instead of a bundled module location.</p>
     
   </article>
     </section>

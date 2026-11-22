@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.21.6",
+      "value": "v0.21.7",
       "color": "cb3837"
     },
     {
@@ -404,6 +404,7 @@
         "src/cli/runAuditAsync.ts",
         "src/features/project-source/application/use-cases/parseProjectSource.ts",
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "src/types/audit.ts",
         "src/types/cli.ts"
       ],
       "exports": [
@@ -414,7 +415,8 @@
       "path": "src/cli/startViewerAsync.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/types/cli.ts"
+        "src/types/cli.ts",
+        "src/utils/resolveAtlasPackageRoot.ts"
       ],
       "exports": [
         "startViewerAsync"
@@ -1237,7 +1239,8 @@
       "dependencies": [
         "src/types/audit.ts",
         "src/types/projectFiles.ts",
-        "src/types/workspace.ts"
+        "src/types/workspace.ts",
+        "src/utils/resolveAtlasPackageRoot.ts"
       ],
       "exports": [
         "createOfflineHtmlReportAsync"
@@ -2603,6 +2606,14 @@
       ]
     },
     {
+      "path": "src/utils/resolveAtlasPackageRoot.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
+      "exports": [
+        "resolveAtlasPackageRoot"
+      ]
+    },
+    {
       "path": "test/benchmarks/graphPresentation.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -2772,6 +2783,12 @@
       "dependencies": [
         "test/e2e/productionCompoundCanvas.ts"
       ],
+      "exports": []
+    },
+    {
+      "path": "test/e2e/packedOfflineWorkspace.ts",
+      "isEntrypoint": false,
+      "dependencies": [],
       "exports": []
     },
     {
@@ -3693,6 +3710,14 @@
         "src/utils/parseProjectPath.ts"
       ],
       "exports": []
+    },
+    {
+      "path": "test/src/utils/resolveAtlasPackageRoot.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/utils/resolveAtlasPackageRoot.ts"
+      ],
+      "exports": []
     }
   ],
   "exports": [
@@ -3716,9 +3741,9 @@
       "relatedSymbols": [],
       "signatures": [
         {
-          "label": "() => { id: string; category: string; version: string; capabilities: readonly [{ readonly id: \"atlas.audit\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Audit project architecture\"; readonly description: \"Create an Atlas audit from a local path or GitHub repository.\"; }, { readonly id: \"atlas.inspect\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Inspect project dependencies\"; readonly description: \"Open the Atlas graph inspector for a local path or GitHub repository.\"; }, { readonly id: \"atlas.export\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Export Atlas report\"; readonly description: \"Export a portable Atlas report artifact.\"; }]; commands: ({ path: string[]; capability: \"atlas.audit\"; summary: string; } | { path: string[]; capability: \"atlas.inspect\"; summary: string; } | { path: string[]; capability: \"atlas.export\"; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }",
+          "label": "() => AtlasRuntimeProvider",
           "parameters": [],
-          "returnType": "{ id: string; category: string; version: string; capabilities: readonly [{ readonly id: \"atlas.audit\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Audit project architecture\"; readonly description: \"Create an Atlas audit from a local path or GitHub repository.\"; }, { readonly id: \"atlas.inspect\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Inspect project dependencies\"; readonly description: \"Open the Atlas graph inspector for a local path or GitHub repository.\"; }, { readonly id: \"atlas.export\"; readonly owner: \"@ankhorage/atlas\"; readonly access: readonly [\"invoke\"]; readonly binding: { readonly kind: \"action\"; readonly bindableAs: readonly [\"target\"]; }; readonly label: \"Export Atlas report\"; readonly description: \"Export a portable Atlas report artifact.\"; }]; commands: ({ path: string[]; capability: \"atlas.audit\"; summary: string; } | { path: string[]; capability: \"atlas.inspect\"; summary: string; } | { path: string[]; capability: \"atlas.export\"; summary: string; })[]; handlers: { path: string[]; handler: typeof audit; }[]; }",
+          "returnType": "AtlasRuntimeProvider",
           "returnDescription": null
         }
       ],
@@ -4208,7 +4233,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/runAuditSourceAsync.ts",
-        "line": 7,
+        "line": 8,
         "column": 1
       }
     },
@@ -4257,24 +4282,13 @@
       }
     },
     {
-      "name": "resolvePackageRoot",
-      "description": "Resolves the installed Atlas package root from this CLI module.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/cli/startViewerAsync.ts",
-        "line": 90,
-        "column": 1
-      }
-    },
-    {
       "name": "resolveNextBin",
       "description": "Resolves the packaged Next executable with a PATH fallback.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/startViewerAsync.ts",
-        "line": 96,
+        "line": 90,
         "column": 1
       }
     },
@@ -4285,7 +4299,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/startViewerAsync.ts",
-        "line": 107,
+        "line": 101,
         "column": 1
       }
     },
@@ -4296,7 +4310,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/startViewerAsync.ts",
-        "line": 114,
+        "line": 108,
         "column": 1
       }
     },
@@ -4307,7 +4321,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/startViewerAsync.ts",
-        "line": 119,
+        "line": 113,
         "column": 1
       }
     },
@@ -4318,7 +4332,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/cli/startViewerAsync.ts",
-        "line": 124,
+        "line": 118,
         "column": 1
       }
     },
@@ -11592,6 +11606,17 @@
         "line": 4,
         "column": 14
       }
+    },
+    {
+      "name": "resolveAtlasPackageRoot",
+      "description": "Resolves Atlas's package root from its public manifest instead of a bundled module location.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/utils/resolveAtlasPackageRoot.ts",
+        "line": 5,
+        "column": 1
+      }
     }
   ],
   "sequenceScenarios": [
@@ -11738,12 +11763,22 @@
       },
       {
         "fromPath": "src/cli/runAuditSourceAsync.ts",
+        "toPath": "src/types/audit.ts",
+        "sourcePath": "src/cli/runAuditSourceAsync.ts"
+      },
+      {
+        "fromPath": "src/cli/runAuditSourceAsync.ts",
         "toPath": "src/types/cli.ts",
         "sourcePath": "src/cli/runAuditSourceAsync.ts"
       },
       {
         "fromPath": "src/cli/startViewerAsync.ts",
         "toPath": "src/types/cli.ts",
+        "sourcePath": "src/cli/startViewerAsync.ts"
+      },
+      {
+        "fromPath": "src/cli/startViewerAsync.ts",
+        "toPath": "src/utils/resolveAtlasPackageRoot.ts",
         "sourcePath": "src/cli/startViewerAsync.ts"
       },
       {
@@ -12072,6 +12107,11 @@
         "sourcePath": "test/src/utils/parseProjectPath.spec.ts"
       },
       {
+        "fromPath": "test/src/utils/resolveAtlasPackageRoot.spec.ts",
+        "toPath": "src/utils/resolveAtlasPackageRoot.ts",
+        "sourcePath": "test/src/utils/resolveAtlasPackageRoot.spec.ts"
+      },
+      {
         "fromPath": "src/cli/commands/export/runExportCommand.ts",
         "toPath": "src/cli/parseAtlasCommandArgs.ts",
         "sourcePath": "src/cli/commands/export/runExportCommand.ts"
@@ -12274,6 +12314,11 @@
       {
         "fromPath": "src/features/offline-export/application/createOfflineHtmlReportAsync.ts",
         "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/offline-export/application/createOfflineHtmlReportAsync.ts"
+      },
+      {
+        "fromPath": "src/features/offline-export/application/createOfflineHtmlReportAsync.ts",
+        "toPath": "src/utils/resolveAtlasPackageRoot.ts",
         "sourcePath": "src/features/offline-export/application/createOfflineHtmlReportAsync.ts"
       },
       {
@@ -15318,8 +15363,8 @@
       },
       {
         "fromSymbol": "startViewerAsync",
-        "toSymbol": "resolvePackageRoot",
-        "callExpression": "resolvePackageRoot",
+        "toSymbol": "resolveAtlasPackageRoot",
+        "callExpression": "resolveAtlasPackageRoot",
         "sourcePath": "src/cli/startViewerAsync.ts"
       },
       {
@@ -15413,24 +15458,6 @@
         "sourcePath": "src/cli/startViewerAsync.ts"
       },
       {
-        "fromSymbol": "resolvePackageRoot",
-        "toSymbol": "fileURLToPath",
-        "callExpression": "fileURLToPath",
-        "sourcePath": "src/cli/startViewerAsync.ts"
-      },
-      {
-        "fromSymbol": "resolvePackageRoot",
-        "toSymbol": "resolve",
-        "callExpression": "resolve",
-        "sourcePath": "src/cli/startViewerAsync.ts"
-      },
-      {
-        "fromSymbol": "resolvePackageRoot",
-        "toSymbol": "dirname",
-        "callExpression": "dirname",
-        "sourcePath": "src/cli/startViewerAsync.ts"
-      },
-      {
         "fromSymbol": "resolveNextBin",
         "toSymbol": "resolve",
         "callExpression": "resolve",
@@ -15507,6 +15534,18 @@
         "toSymbol": "toPortablePath",
         "callExpression": "toPortablePath",
         "sourcePath": "src/utils/parseProjectPath.ts"
+      },
+      {
+        "fromSymbol": "resolveAtlasPackageRoot",
+        "toSymbol": "dirname",
+        "callExpression": "dirname",
+        "sourcePath": "src/utils/resolveAtlasPackageRoot.ts"
+      },
+      {
+        "fromSymbol": "resolveAtlasPackageRoot",
+        "toSymbol": "createRequire",
+        "callExpression": "createRequire",
+        "sourcePath": "src/utils/resolveAtlasPackageRoot.ts"
       },
       {
         "fromSymbol": "measure",
@@ -17351,6 +17390,114 @@
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "mkdtemp",
+        "callExpression": "mkdtemp",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "tmpdir",
+        "callExpression": "tmpdir",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "runCommandAsync",
+        "callExpression": "runCommandAsync",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "findArchiveAsync",
+        "callExpression": "findArchiveAsync",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "mkdir",
+        "callExpression": "mkdir",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "writeFixtureAsync",
+        "callExpression": "writeFixtureAsync",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "writeFile",
+        "callExpression": "writeFile",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "assertEmbeddedWorkspaceAssetsAsync",
+        "callExpression": "assertEmbeddedWorkspaceAssetsAsync",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/packedOfflineWorkspace.ts",
+        "toSymbol": "rm",
+        "callExpression": "rm",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "findArchiveAsync",
+        "toSymbol": "readdir",
+        "callExpression": "readdir",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "findArchiveAsync",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "writeFixtureAsync",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertEmbeddedWorkspaceAssetsAsync",
+        "toSymbol": "join",
+        "callExpression": "join",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertEmbeddedWorkspaceAssetsAsync",
+        "toSymbol": "readFile",
+        "callExpression": "readFile",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertEmbeddedWorkspaceAssetsAsync",
+        "toSymbol": "escapeInlineStyle",
+        "callExpression": "escapeInlineStyle",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "assertEmbeddedWorkspaceAssetsAsync",
+        "toSymbol": "escapeInlineScript",
+        "callExpression": "escapeInlineScript",
+        "sourcePath": "test/e2e/packedOfflineWorkspace.ts"
+      },
+      {
         "fromSymbol": "assertProductionCompoundCanvasAsync",
         "toSymbol": "readBreadcrumbsAsync",
         "callExpression": "readBreadcrumbsAsync",
@@ -17648,6 +17795,12 @@
         "fromSymbol": "test/src/packageManifest.spec.ts",
         "toSymbol": "readFile",
         "callExpression": "readFile",
+        "sourcePath": "test/src/packageManifest.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/packageManifest.spec.ts",
+        "toSymbol": "getRuntimeImportTarget",
+        "callExpression": "getRuntimeImportTarget",
         "sourcePath": "test/src/packageManifest.spec.ts"
       },
       {
@@ -18171,6 +18324,30 @@
         "toSymbol": "parseProjectPath",
         "callExpression": "parseProjectPath",
         "sourcePath": "test/src/utils/parseProjectPath.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/utils/resolveAtlasPackageRoot.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/utils/resolveAtlasPackageRoot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/utils/resolveAtlasPackageRoot.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/utils/resolveAtlasPackageRoot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/utils/resolveAtlasPackageRoot.spec.ts",
+        "toSymbol": "resolveAtlasPackageRoot",
+        "callExpression": "resolveAtlasPackageRoot",
+        "sourcePath": "test/src/utils/resolveAtlasPackageRoot.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/utils/resolveAtlasPackageRoot.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/utils/resolveAtlasPackageRoot.spec.ts"
       },
       {
         "fromSymbol": "src/app/api/dependency-graph/route.ts",
@@ -18714,14 +18891,8 @@
       },
       {
         "fromSymbol": "readOfflineWorkspaceBundleAsync",
-        "toSymbol": "dirname",
-        "callExpression": "dirname",
-        "sourcePath": "src/features/offline-export/application/createOfflineHtmlReportAsync.ts"
-      },
-      {
-        "fromSymbol": "readOfflineWorkspaceBundleAsync",
-        "toSymbol": "fileURLToPath",
-        "callExpression": "fileURLToPath",
+        "toSymbol": "resolveAtlasPackageRoot",
+        "callExpression": "resolveAtlasPackageRoot",
         "sourcePath": "src/features/offline-export/application/createOfflineHtmlReportAsync.ts"
       },
       {
@@ -28442,37 +28613,7 @@
     "typeReferences": [
       {
         "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "Atlas",
-        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
-      },
-      {
-        "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "Audit",
-        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
-      },
-      {
-        "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "Create",
-        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
-      },
-      {
-        "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "Export",
-        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
-      },
-      {
-        "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "GitHub",
-        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
-      },
-      {
-        "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "Inspect",
-        "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
-      },
-      {
-        "fromSymbol": "createAtlasRuntimeProvider",
-        "toType": "Open",
+        "toType": "AtlasRuntimeProvider",
         "sourcePath": "src/cli/provider/createAtlasRuntimeProvider.ts"
       }
     ],

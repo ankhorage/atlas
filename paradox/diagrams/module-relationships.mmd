@@ -222,6 +222,7 @@ graph LR
   module_src_utils_isRepositoryColors_ts["src/utils/isRepositoryColors.ts"]
   module_src_utils_isRepositoryId_ts["src/utils/isRepositoryId.ts"]
   module_src_utils_parseProjectPath_ts["src/utils/parseProjectPath.ts"]
+  module_src_utils_resolveAtlasPackageRoot_ts["src/utils/resolveAtlasPackageRoot.ts"]
   module_test_benchmarks_graphPresentation_ts["test/benchmarks/graphPresentation.ts"]
   module_test_e2e_compoundSelectionBrowser_ts["test/e2e/compoundSelectionBrowser.ts"]
   module_test_e2e_compoundSelectionHarness_tsx["test/e2e/compoundSelectionHarness.tsx"]
@@ -239,6 +240,7 @@ graph LR
   module_test_e2e_next_fixture_app_app_viewport_ViewportAcceptanceGraph_tsx["test/e2e/next-fixture-app/app/viewport/ViewportAcceptanceGraph.tsx"]
   module_test_e2e_next_fixture_app_next_config_ts["test/e2e/next-fixture-app/next.config.ts"]
   module_test_e2e_offlineWorkspace_ts["test/e2e/offlineWorkspace.ts"]
+  module_test_e2e_packedOfflineWorkspace_ts["test/e2e/packedOfflineWorkspace.ts"]
   module_test_e2e_productionCompoundCanvas_ts["test/e2e/productionCompoundCanvas.ts"]
   module_test_e2e_workspaceLoadingBrowser_ts["test/e2e/workspaceLoadingBrowser.ts"]
   module_test_fixtures_typescript_compound_selection_src_features_feature_ts["test/fixtures/typescript/compound-selection/src/features/feature.ts"]
@@ -343,6 +345,7 @@ graph LR
   module_test_src_utils_filter_filterVendorPackages_spec_ts["test/src/utils/filter/filterVendorPackages.spec.ts"]
   module_test_src_utils_getProjectName_spec_ts["test/src/utils/getProjectName.spec.ts"]
   module_test_src_utils_parseProjectPath_spec_ts["test/src/utils/parseProjectPath.spec.ts"]
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts["test/src/utils/resolveAtlasPackageRoot.spec.ts"]
   module__next_types_validator_ts --> module__next_types_routes_d_ts
   module_bin_atlas_ts --> module_src_cli_runAtlasCliAsync_ts
   module_src_app_actions_audit_actions_ts --> module_src_features_project_source_composition_createProjectSourceAuditAsync_ts
@@ -402,8 +405,10 @@ graph LR
   module_src_cli_runAuditSourceAsync_ts --> module_src_cli_runAuditAsync_ts
   module_src_cli_runAuditSourceAsync_ts --> module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_runAuditSourceAsync_ts --> module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_cli_runAuditSourceAsync_ts --> module_src_types_audit_ts
   module_src_cli_runAuditSourceAsync_ts --> module_src_types_cli_ts
   module_src_cli_startViewerAsync_ts --> module_src_types_cli_ts
+  module_src_cli_startViewerAsync_ts --> module_src_utils_resolveAtlasPackageRoot_ts
   module_src_cli_startViewerSourceAsync_ts --> module_src_cli_startViewerAsync_ts
   module_src_cli_startViewerSourceAsync_ts --> module_src_features_project_source_application_use_cases_parseProjectSource_ts
   module_src_cli_startViewerSourceAsync_ts --> module_src_features_project_source_composition_loadProjectSourceAsync_ts
@@ -539,6 +544,7 @@ graph LR
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_types_audit_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_types_projectFiles_ts
   module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_types_workspace_ts
+  module_src_features_offline_export_application_createOfflineHtmlReportAsync_ts --> module_src_utils_resolveAtlasPackageRoot_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts --> module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readDelphiProjectFileMetadata_ts --> module_src_types_projectFiles_ts
   module_src_features_project_analysis_adapters_outbound_source_metadata_readJavaProjectFileMetadata_ts --> module_src_types_projectFiles_ts
@@ -1026,3 +1032,4 @@ graph LR
   module_test_src_utils_filter_filterVendorPackages_spec_ts --> module_src_features_graph_view_utils_filterVendorPackages_ts
   module_test_src_utils_getProjectName_spec_ts --> module_src_utils_getProjectName_ts
   module_test_src_utils_parseProjectPath_spec_ts --> module_src_utils_parseProjectPath_ts
+  module_test_src_utils_resolveAtlasPackageRoot_spec_ts --> module_src_utils_resolveAtlasPackageRoot_ts
