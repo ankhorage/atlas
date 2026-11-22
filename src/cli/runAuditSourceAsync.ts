@@ -1,13 +1,14 @@
 import { runAuditAsync } from '@/cli/runAuditAsync';
 import { parseProjectSource } from '@/features/project-source/application/use-cases/parseProjectSource';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
+import type { Audit } from '@/types/audit';
 import type { AtlasCliOptions } from '@/types/cli';
 
 /*** Resolve one local or GitHub source, run the canonical audit, and clean transient sources. */
 export async function runAuditSourceAsync(
   options: AtlasCliOptions,
   artifactFormat: 'json' | 'csv' | 'offline' = 'json'
-) {
+): Promise<RunAuditSourceResult> {
   const source = parseProjectSource(options.source ?? process.cwd());
   const resolved = await loadProjectSourceAsync(source);
 
@@ -41,4 +42,10 @@ export async function runAuditSourceAsync(
   } finally {
     await resolved.cleanupAsync();
   }
+}
+
+interface RunAuditSourceResult {
+  readonly artifactPath: string;
+  readonly audit: Audit;
+  readonly exitCode: 0 | 2;
 }

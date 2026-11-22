@@ -9,7 +9,7 @@ import { inspect } from '@/cli/commands/inspect';
 import packageJson from '../../../package.json';
 
 /*** Create the Ankh runtime provider for Atlas audit, inspect, and offline-export commands. */
-export function createAtlasRuntimeProvider() {
+export function createAtlasRuntimeProvider(): AtlasRuntimeProvider {
   return {
     id: 'atlas',
     category: 'atlas',
@@ -39,3 +39,7 @@ export function createAtlasRuntimeProvider() {
     ],
   } satisfies AnkhRuntimeCommandProvider;
 }
+
+type AtlasRuntimeProvider = AnkhRuntimeCommandProvider & {
+  readonly handlers: NonNullable<AnkhRuntimeCommandProvider['handlers']>;
+};
