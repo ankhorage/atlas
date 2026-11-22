@@ -225,20 +225,7 @@ async function selectGraphNodes(page: Page): Promise<void> {
     modifiers: [modifier],
     position: nodes[1]!.position,
   });
-  await page.waitForFunction(
-    expectedModifier => {
-      const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
-        .__atlasGraphInputProbe;
-      return expectedModifier === 'ctrlKey'
-        ? probe?.events.some(
-            event => event.type === 'pointerdown' && event.graphTarget && event.ctrlKey
-          )
-        : probe?.events.some(
-            event => event.type === 'pointerdown' && event.graphTarget && event.metaKey
-          );
-    },
-    modifier === 'Meta' ? 'metaKey' : 'ctrlKey'
-  );
+  await waitForModifiedGraphPointerAsync(page, modifier === 'Meta' ? 'metaKey' : 'ctrlKey');
   await page.waitForFunction(
     () => document.querySelectorAll('[role="treeitem"][aria-selected="true"]').length === 2
   );
@@ -253,26 +240,32 @@ async function selectGraphNodes(page: Page): Promise<void> {
     );
 }
 
-/*** Records native pointer modifiers at the GraphView pointer-down boundary without inspecting internals. */
+/*** Records bounded native pointer input at document capture so GraphView root replacement cannot orphan the probe. */
 async function installGraphInputProbeAsync(page: Page): Promise<void> {
   await page.evaluate(() => {
     const graph = document.querySelector('[role="application"][aria-label="Graph"]');
     if (graph === null) throw new Error('Graph application was unavailable for input probing.');
     const target = window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe };
     target.__atlasGraphInputProbe = { events: [] };
-    graph.addEventListener(
+    document.addEventListener(
       'pointerdown',
       event => {
         const current = target.__atlasGraphInputProbe;
         if (current === undefined) return;
         const pointerEvent = event as PointerEvent;
+        const currentGraph = document.querySelector('[role="application"][aria-label="Graph"]');
+        const graphTarget =
+          event.target instanceof Node && currentGraph?.contains(event.target) === true;
         target.__atlasGraphInputProbe = {
           events: [
-            ...current.events,
+            ...current.events.slice(-7),
             {
               ctrlKey: pointerEvent.ctrlKey,
-              graphTarget: event.target instanceof Node && graph.contains(event.target),
+              graphTarget,
               metaKey: pointerEvent.metaKey,
+              probeGraphConnected: graph.isConnected,
+              probeGraphIsCurrent: graph === currentGraph,
+              targetTagName: event.target instanceof Element ? event.target.tagName : null,
               type: event.type,
             },
           ],
@@ -281,6 +274,38 @@ async function installGraphInputProbeAsync(page: Page): Promise<void> {
       { capture: true }
     );
   });
+}
+
+/*** Waits for the modified native GraphView input and reports bounded live evidence when it is absent. */
+async function waitForModifiedGraphPointerAsync(
+  page: Page,
+  expectedModifier: 'ctrlKey' | 'metaKey'
+): Promise<void> {
+  try {
+    await page.waitForFunction(modifier => {
+      const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
+        .__atlasGraphInputProbe;
+      return probe?.events.some(
+        event => event.type === 'pointerdown' && event.graphTarget && event[modifier]
+      );
+    }, expectedModifier);
+  } catch (error) {
+    const diagnostic = await page.evaluate(() => {
+      const probe = (window as typeof window & { __atlasGraphInputProbe?: GraphInputProbe })
+        .__atlasGraphInputProbe;
+      const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+      return {
+        events: probe?.events ?? [],
+        graphConnected: graph?.isConnected ?? false,
+        selectedTreeItems: document.querySelectorAll('[role="treeitem"][aria-selected="true"]')
+          .length,
+      };
+    });
+    throw new Error(
+      `Modified GraphView pointer input was not observed for ${expectedModifier}: ${JSON.stringify(diagnostic)}`,
+      { cause: error }
+    );
+  }
 }
 
 /*** Verifies that a controller-measured coordinate resolves to a pointer-enabled GraphView target. */
@@ -342,6 +367,9 @@ interface GraphInputProbe {
     readonly ctrlKey: boolean;
     readonly graphTarget: boolean;
     readonly metaKey: boolean;
+    readonly probeGraphConnected: boolean;
+    readonly probeGraphIsCurrent: boolean;
+    readonly targetTagName: string | null;
     readonly type: string;
   }[];
 }
