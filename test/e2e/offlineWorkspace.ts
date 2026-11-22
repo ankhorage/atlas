@@ -388,11 +388,27 @@ async function assertGraphHitTargetAsync(
 
 /*** Reads exact public GraphView hit geometry so native clicks target two distinct rendered nodes. */
 async function readMeasuredGraphNodesAsync(page: Page, nodeIds: readonly string[]) {
-  await page.waitForFunction(ids => {
-    const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
-      .__atlasGraphAcceptance;
-    return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
-  }, nodeIds);
+  try {
+    await page.waitForFunction(ids => {
+      const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
+        .__atlasGraphAcceptance;
+      return probe?.controller?.measureNodes?.(ids)?.nodes.length === ids.length;
+    }, nodeIds);
+  } catch (error) {
+    const diagnostic = await page.evaluate(ids => {
+      const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
+        .__atlasGraphAcceptance;
+      const graph = document.querySelector('[role="application"][aria-label="Graph"]');
+      return {
+        graphConnected: graph?.isConnected ?? false,
+        measurement: probe?.controller?.measureNodes?.(ids) ?? null,
+      };
+    }, nodeIds);
+    throw new Error(
+      `GraphView did not expose both selection targets: ${JSON.stringify(diagnostic)}`,
+      { cause: error }
+    );
+  }
   await page.waitForFunction(async ids => {
     const probe = (window as typeof window & { __atlasGraphAcceptance?: GraphProbe })
       .__atlasGraphAcceptance;
