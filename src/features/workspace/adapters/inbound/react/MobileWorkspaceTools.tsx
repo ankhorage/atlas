@@ -18,8 +18,6 @@ export function MobileWorkspaceTools({
 }: MobileWorkspaceToolsProps) {
   const settings = useSettings();
 
-  if (!open) return null;
-
   return (
     <Dialog
       closeOnBackdrop
