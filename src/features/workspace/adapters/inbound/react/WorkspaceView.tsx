@@ -29,12 +29,15 @@ export function WorkspaceView({
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
-  const [liveWorkspace, setLiveWorkspace] = useState<LiveWorkspace>({
-    projectName,
-    repositoryStatuses,
-    runtimeId,
-    workspace,
-  });
+  const [liveWorkspace, setLiveWorkspace] = useState<LiveWorkspace>(() =>
+    createLiveWorkspace({
+      projectName,
+      repositoryStatuses,
+      runtimeId,
+      selectionRequired,
+      workspace,
+    })
+  );
   const selection = useWorkspaceRepositorySelection(
     currentSource,
     selectedRepositoryIds(repositories),
@@ -45,25 +48,73 @@ export function WorkspaceView({
   const activeProjectName = liveWorkspace.projectName;
   const settingsScope =
     workspaceScope ?? resolveWorkspaceProjectIdentity(liveWorkspace.workspace, activeProjectName);
+  return renderWorkspace({
+    auditExportActions,
+    currentSource,
+    githubAuth,
+    liveWorkspace,
+    offline,
+    onRetry,
+    onSelection: selection,
+    projectName: activeProjectName,
+    repositories,
+    repositoryColorTones,
+    settingsScope,
+    workspaceScope,
+  });
+}
+
+/*** Keep the stateful browser coordination separate from the stable rendered workspace shell. */
+function renderWorkspace(input: {
+  readonly auditExportActions: AuditExportActions | undefined;
+  readonly currentSource: string | undefined;
+  readonly githubAuth: GitHubAuthView;
+  readonly liveWorkspace: LiveWorkspace;
+  readonly offline: boolean | undefined;
+  readonly onRetry: ((repositoryId: string) => Promise<void>) | undefined;
+  readonly onSelection: ReturnType<typeof useWorkspaceRepositorySelection>;
+  readonly projectName: string;
+  readonly repositories: readonly WorkspaceRepositoryOption[] | undefined;
+  readonly repositoryColorTones: readonly ColorToneDefinition[] | undefined;
+  readonly settingsScope: string;
+  readonly workspaceScope: string | undefined;
+}) {
   return (
-    <SettingsProvider workspaceScope={settingsScope}>
+    <SettingsProvider workspaceScope={input.settingsScope}>
       <WorkspaceLayout
-        auditExportActions={auditExportActions}
-        currentSource={currentSource}
-        githubAuth={githubAuth}
-        liveWorkspace={liveWorkspace}
-        offline={offline}
-        projectName={activeProjectName}
-        repositories={repositories}
-        repositoryColorTones={repositoryColorTones}
-        selectionError={liveWorkspace.error}
-        selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
-        workspaceScope={workspaceScope}
-        onRetry={onRetry}
-        onSelection={selection}
+        auditExportActions={input.auditExportActions}
+        currentSource={input.currentSource}
+        githubAuth={input.githubAuth}
+        liveWorkspace={input.liveWorkspace}
+        offline={input.offline}
+        projectName={input.projectName}
+        repositories={input.repositories}
+        repositoryColorTones={input.repositoryColorTones}
+        selectionError={input.liveWorkspace.error}
+        selectionRequired={input.liveWorkspace.selectionRequired === true}
+        workspaceScope={input.workspaceScope}
+        onRetry={input.onRetry}
+        onSelection={input.onSelection}
       />
     </SettingsProvider>
   );
+}
+
+/*** Preserve the server's initial selection state before the browser begins incremental updates. */
+function createLiveWorkspace(input: {
+  readonly projectName: string;
+  readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
+  readonly runtimeId: string | undefined;
+  readonly selectionRequired: boolean | undefined;
+  readonly workspace: WorkspaceLoadResult;
+}): LiveWorkspace {
+  return {
+    projectName: input.projectName,
+    repositoryStatuses: input.repositoryStatuses,
+    runtimeId: input.runtimeId,
+    selectionRequired: input.selectionRequired,
+    workspace: input.workspace,
+  };
 }
 
 /*** Derive the initial server-confirmed selection without persisting a graph or provider payload. */
