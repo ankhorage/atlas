@@ -98,7 +98,11 @@ function readDesktopWorkspaceViewport(): boolean {
 /*** Renders the graph or the current project-source load error. */
 function WorkspaceContent(props: WorkspaceContentProps) {
   return (
-    <section data-testid="workspace-content" style={workspaceContentStyle}>
+    <section
+      className={styles.content}
+      data-testid="workspace-content"
+      style={workspaceContentStyle}
+    >
       <div className={styles.toolsControl}>
         <Button
           leadingIcon={{ name: 'options-outline' }}

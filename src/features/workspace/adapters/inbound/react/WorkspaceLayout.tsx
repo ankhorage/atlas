@@ -2,7 +2,6 @@
 
 import type { ColorToneDefinition } from '@ankhorage/zora';
 import { AppShell } from '@ankhorage/zora/web/app-shell';
-import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';
@@ -101,12 +100,11 @@ function WorkspaceMain({
   workspace,
   onRetry,
 }: WorkspaceMainProps) {
-  const { theme } = useZoraTheme();
   const auditEvaluation = workspace.ok ? workspace.value.evaluation : null;
   const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
   const cycleInspection = useWorkspaceCycleInspection();
   return (
-    <main data-testid="main" style={workspaceMainStyle(theme.semantics.surface.default)}>
+    <main data-testid="main" style={workspaceMainStyle}>
       {selectionRequired ? (
         <RepositorySelectionNotice />
       ) : (
@@ -134,18 +132,16 @@ function WorkspaceMain({
 }
 
 /*** Keep the workspace canvas layout independent from its status and graph content. */
-function workspaceMainStyle(backgroundColor: string) {
-  return {
-    backgroundColor,
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'row' as const,
-    minHeight: 0,
-    minWidth: 0,
-    overflow: 'hidden',
-    zIndex: 0,
-  };
-}
+const workspaceMainStyle = {
+  backgroundColor: 'transparent',
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'row' as const,
+  minHeight: 0,
+  minWidth: 0,
+  overflow: 'hidden',
+  zIndex: 0,
+};
 
 /*** Show the anonymous bulk-selection guidance only while a multiple-repository operation remains incomplete. */
 function hasIncompleteBulkSelection(
