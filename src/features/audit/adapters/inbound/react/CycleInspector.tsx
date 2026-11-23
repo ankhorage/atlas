@@ -1,7 +1,9 @@
 'use client';
-import { Accordion, AccordionItem } from '@ankhorage/zora/web/accordion';
-import { Button, IconButton } from '@ankhorage/zora/web/button';
+import { Accordion } from '@ankhorage/zora/web/accordion';
+import { AccordionItem } from '@ankhorage/zora/web/accordion-item';
+import { Button } from '@ankhorage/zora/web/button';
 import { Card } from '@ankhorage/zora/web/card';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
 import React from 'react';

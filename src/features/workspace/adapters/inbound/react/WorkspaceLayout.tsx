@@ -1,8 +1,8 @@
 'use client';
 
 import type { ColorToneDefinition } from '@ankhorage/zora';
+import { AppShell } from '@ankhorage/zora/web/app-shell';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
-import { AppShell } from '@ankhorage/zora/web/view';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import { useCycleSelection } from '@/features/audit/adapters/inbound/react/useCycleSelection';

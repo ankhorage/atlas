@@ -1,12 +1,18 @@
 'use client';
-import { IconButton } from '@ankhorage/zora/web/button';
 import type { GraphViewController } from '@ankhorage/zora/web/graph-view';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
 import React, { type ChangeEvent } from 'react';
 
 import styles from './GraphZoomControls.module.css';
+
+const responsiveControlLayout = {
+  p: { base: 8, md: 'm' },
+  width: { base: '100%', md: undefined },
+  wrap: { base: 'nowrap', md: 'wrap' },
+} as const;
 
 interface GraphZoomControlsProps {
   readonly controller: GraphViewController | null;
@@ -34,7 +40,7 @@ export function GraphZoomControls({
   };
 
   return (
-    <View align="center" className={styles.controls} direction="row" gap="s" justify="center" p="m">
+    <View align="center" direction="row" gap="s" justify="center" {...responsiveControlLayout}>
       <Text variant="bodySmall">Zoom:</Text>
       <IconButton
         color="neutral"

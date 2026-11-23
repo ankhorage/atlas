@@ -16,8 +16,6 @@ import { WorkspaceSettingsRestore } from '@/features/workspace/adapters/inbound/
 import { WorkspaceDialogTitle } from '@/features/workspace/adapters/inbound/react/WorkspaceDialogTitle';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
-import styles from './WorkspaceHeader.module.css';
-
 /*** Edits a GitHub source while applying repository selection changes immediately. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
@@ -90,7 +88,7 @@ function ProjectSourceDialog({
       width="wide"
       onDismiss={onDismiss}
     >
-      <View className={styles.mobileSourceDialog} direction="column" gap="s">
+      <View direction="column" gap="s">
         {authControls}
         <ProjectSourceControls
           initiallyOpen={initiallyOpen && sourceForm.selectionSupported}

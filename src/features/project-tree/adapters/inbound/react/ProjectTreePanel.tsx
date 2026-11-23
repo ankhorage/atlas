@@ -18,13 +18,14 @@ export function ProjectTreePanel({ nodes, onSelect, selectedIds }: ProjectTreePa
   const expansion = useProjectTreeExpansion(nodes, selectedIds);
 
   return (
-    <View p="xs" style={{ color: theme.semantics.content.default }}>
+    <View p="xs">
       <TreeView
         ariaLabel="Project tree"
         expansionIndicator="chevron"
         expandedIds={expansion.expandedIds}
         nodes={treeNodes}
         selectedIds={selectedIds}
+        style={{ color: theme.semantics.content.default }}
         onExpandedChange={expansion.onExpandedChange}
         onSelect={(id, intent) => {
           const node = findProjectTreeNode(nodes, id);
