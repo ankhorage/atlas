@@ -679,12 +679,17 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx">
       src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx
-      <small>2 functions</small>
+      <small>3 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts">
       src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts
       <small>2 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts">
+      src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts
+      <small>10 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/project-tree/application/use-cases/buildProjectTree.ts">
@@ -1083,7 +1088,7 @@
       <div class="summary">
         <div><strong>2</strong><span class="muted">public exports</span></div>
         <div><strong>0</strong><span class="muted">components</span></div>
-        <div><strong>347</strong><span class="muted">modules</span></div>
+        <div><strong>349</strong><span class="muted">modules</span></div>
         <div><strong>1</strong><span class="muted">entrypoints</span></div>
       </div>
       <h3>Entrypoints</h3>
@@ -1775,6 +1780,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/project-tree/utils/getProjectTreeAncestorIds.ts</code>, <code>src/types/projectTree.ts</code></p>
     <p><strong>Exports:</strong> <code>useProjectTreeExpansion</code></p>
+  </article><article class="item" data-search="src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts src/types/projectTree.ts addSourceFeatureNavigation">
+    <h3>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/projectTree.ts</code></p>
+    <p><strong>Exports:</strong> <code>addSourceFeatureNavigation</code></p>
   </article><article class="item" data-search="src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/projectFiles.ts src/types/projectTree.ts buildProjectTree">
     <h3>src/features/project-tree/application/use-cases/buildProjectTree.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2045,10 +2055,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/workspaceSnapshotValidation.ts</code>, <code>src/types/dependencyAnalysis.ts</code></p>
     <p><strong>Exports:</strong> <code>externalSnapshotContracts</code></p>
-  </article><article class="item" data-search="src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/workspace.ts hydrateWorkspaceSnapshot">
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/types/workspace.ts hydrateWorkspaceSnapshot">
     <h3>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <code>hydrateWorkspaceSnapshot</code></p>
   </article><article class="item" data-search="src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts isWorkspaceSelectionSource normalizeWorkspaceSelectionSource">
     <h3>src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts</h3>
@@ -2090,10 +2100,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</code>, <code>src/features/project-analysis/application/use-cases/selectParserLanguage.ts</code>, <code>src/features/project-analysis/composition/createProjectFileTreeAsync.ts</code>, <code>src/features/project-source/application/use-cases/parseProjectSource.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts</code>, <code>src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts</code>, <code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts</code>, <code>src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts</code></p>
     <p><strong>Exports:</strong> <code>analyzeWorkspaceRepositoryAsync</code></p>
-  </article><article class="item" data-search="src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts src/features/audit/application/use-cases/createAuditFromSnapshot.ts src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/types/parserSelection.ts src/types/projectAnalysis.ts src/types/projectFiles.ts src/types/workspace.ts composeWorkspaceRepositoryRuntimeResult ComposeWorkspaceRepositoryRuntimeResultInput RepositoryAnalysis WorkspaceRepositoryRuntimeResult">
+  </article><article class="item" data-search="src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts src/features/audit/application/use-cases/createAuditFromSnapshot.ts src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts src/types/parserSelection.ts src/types/projectAnalysis.ts src/types/projectFiles.ts src/types/workspace.ts composeWorkspaceRepositoryRuntimeResult ComposeWorkspaceRepositoryRuntimeResultInput RepositoryAnalysis WorkspaceRepositoryRuntimeResult">
     <h3>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/audit/application/use-cases/createAuditFromSnapshot.ts</code>, <code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</code>, <code>src/types/parserSelection.ts</code>, <code>src/types/projectAnalysis.ts</code>, <code>src/types/projectFiles.ts</code>, <code>src/types/workspace.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/audit/application/use-cases/createAuditFromSnapshot.ts</code>, <code>src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts</code>, <code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</code>, <code>src/types/parserSelection.ts</code>, <code>src/types/projectAnalysis.ts</code>, <code>src/types/projectFiles.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <code>composeWorkspaceRepositoryRuntimeResult</code>, <code>ComposeWorkspaceRepositoryRuntimeResultInput</code>, <code>RepositoryAnalysis</code>, <code>WorkspaceRepositoryRuntimeResult</code></p>
   </article><article class="item" data-search="src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts src/features/workspace/composition/analyzeWorkspaceRepositoryAsync.ts src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts src/features/workspace/composition/updateWorkspaceRepositoryRuntimeAsync.ts src/types/projectSource.ts createWorkspaceRepositoryRuntime loadWorkspaceRepositoriesAsync runWorkspaceOperationAsync WorkspaceRepositoryAuthorization WorkspaceRepositoryRuntime WorkspaceRepositoryRuntimeDependencies WorkspaceRepositoryRuntimeError WorkspaceRepositoryRuntimeUpdate">
     <h3>src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts</h3>
@@ -2684,6 +2694,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <h3>test/src/features/project-source/sourceJarAcceptance.spec.ts</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/cli/runAuditSourceAsync.ts</code>, <code>src/features/audit/composition/createAuditAsync.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code></p>
+    <p><strong>Exports:</strong> <span class="empty">None</span></p>
+  </article><article class="item" data-search="test/src/features/project-tree/addSourceFeatureNavigation.spec.ts src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts src/types/projectFiles.ts">
+    <h3>test/src/features/project-tree/addSourceFeatureNavigation.spec.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts</code>, <code>src/features/project-tree/application/use-cases/buildProjectTree.ts</code>, <code>src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts</code>, <code>src/types/projectFiles.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/project-tree/buildProjectTree.spec.ts src/features/project-tree/application/use-cases/buildProjectTree.ts src/features/project-tree/utils/findProjectTreeNodeByGraphPackage.ts src/types/projectFiles.ts">
     <h3>test/src/features/project-tree/buildProjectTree.spec.ts</h3>
@@ -3411,6 +3426,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_features_project_tree_utils_getProjectTreeAncestorIds_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_types_projectTree_ts
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts[&quot;src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts[&quot;src/features/project-tree/application/use-cases/buildProjectTree.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts --&gt; module_src_types_projectFiles_ts
@@ -3676,6 +3694,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_isWorkspaceSelectionSource_ts[&quot;src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts&quot;]
@@ -3717,6 +3736,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_dependency_analysis_application_use_cases_projectDependencyGraph_ts
+  module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_types_parserSelection_ts
@@ -4151,6 +4171,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts[&quot;test/src/features/project-tree/addSourceFeatureNavigation.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_utils_resolveProjectTreeGraphNodeId_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_tree_buildProjectTree_spec_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
@@ -4798,6 +4824,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_features_project_tree_utils_getProjectTreeAncestorIds_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_types_projectTree_ts
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts[&quot;src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts[&quot;src/features/project-tree/application/use-cases/buildProjectTree.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts --&gt; module_src_types_projectFiles_ts
@@ -5063,6 +5092,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_isWorkspaceSelectionSource_ts[&quot;src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts&quot;]
@@ -5104,6 +5134,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_dependency_analysis_application_use_cases_projectDependencyGraph_ts
+  module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_types_parserSelection_ts
@@ -5538,6 +5569,12 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts[&quot;test/src/features/project-tree/addSourceFeatureNavigation.spec.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_utils_resolveProjectTreeGraphNodeId_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_project_tree_buildProjectTree_spec_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
@@ -5811,6 +5848,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_loadProjectSourceAsync_ts[&quot;src/features/project-source/composition/loadProjectSourceAsync.ts&quot;]
   module_src_features_project_tree_adapters_inbound_react_ProjectTreePanel_tsx[&quot;src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx&quot;]
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts[&quot;src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts&quot;]
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts[&quot;src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts&quot;]
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts[&quot;src/features/project-tree/application/use-cases/buildProjectTree.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveGraphProjectTreeSelection_ts[&quot;src/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveProjectTreeNavigation_ts[&quot;src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts&quot;]
@@ -5993,6 +6031,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts[&quot;test/src/features/project-tree/addSourceFeatureNavigation.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -6270,6 +6309,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_tree_adapters_inbound_react_ProjectTreePanel_tsx --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_features_project_tree_utils_getProjectTreeAncestorIds_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_types_projectTree_ts
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_application_use_cases_resolveGraphProjectTreeSelection_ts --&gt; module_src_features_project_tree_utils_findProjectTreeNodeByGraphPackage_ts
@@ -6425,6 +6465,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_application_use_cases_diagnoseWorkspaceRepositoryOperationAsync_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
   module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_reconcileWorkspaceDefinitions_ts --&gt; module_src_types_workspace_ts
@@ -6448,6 +6489,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_composition_analyzeWorkspaceRepositoryAsync_ts --&gt; module_src_features_workspace_composition_createWorkspaceRepositoryRuntime_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_dependency_analysis_application_use_cases_projectDependencyGraph_ts
+  module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_types_parserSelection_ts
@@ -6646,6 +6688,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_utils_resolveProjectTreeGraphNodeId_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_utils_findProjectTreeNodeByGraphPackage_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_types_projectFiles_ts
@@ -6849,6 +6895,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_loadProjectSourceAsync_ts[&quot;src/features/project-source/composition/loadProjectSourceAsync.ts&quot;]
   module_src_features_project_tree_adapters_inbound_react_ProjectTreePanel_tsx[&quot;src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx&quot;]
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts[&quot;src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts&quot;]
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts[&quot;src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts&quot;]
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts[&quot;src/features/project-tree/application/use-cases/buildProjectTree.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveGraphProjectTreeSelection_ts[&quot;src/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveProjectTreeNavigation_ts[&quot;src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts&quot;]
@@ -7031,6 +7078,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts[&quot;test/src/features/project-tree/addSourceFeatureNavigation.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -7308,6 +7356,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_tree_adapters_inbound_react_ProjectTreePanel_tsx --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_features_project_tree_utils_getProjectTreeAncestorIds_ts
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts --&gt; module_src_types_projectTree_ts
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts --&gt; module_src_types_projectFiles_ts
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts --&gt; module_src_types_projectTree_ts
   module_src_features_project_tree_application_use_cases_resolveGraphProjectTreeSelection_ts --&gt; module_src_features_project_tree_utils_findProjectTreeNodeByGraphPackage_ts
@@ -7463,6 +7512,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_application_use_cases_diagnoseWorkspaceRepositoryOperationAsync_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_features_workspace_application_use_cases_workspaceSnapshotValidation_ts
   module_src_features_workspace_application_use_cases_externalSnapshotContracts_ts --&gt; module_src_types_dependencyAnalysis_ts
+  module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_reconcileWorkspaceDefinitions_ts --&gt; module_src_types_workspace_ts
@@ -7486,6 +7536,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_composition_analyzeWorkspaceRepositoryAsync_ts --&gt; module_src_features_workspace_composition_createWorkspaceRepositoryRuntime_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_dependency_analysis_application_use_cases_projectDependencyGraph_ts
+  module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_features_workspace_application_use_cases_hydrateWorkspaceSnapshot_ts
   module_src_features_workspace_composition_composeWorkspaceRepositoryRuntimeResult_ts --&gt; module_src_types_parserSelection_ts
@@ -7684,6 +7735,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_cli_runAuditSourceAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_audit_composition_createAuditAsync_ts
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_features_project_tree_utils_resolveProjectTreeGraphNodeId_ts
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts --&gt; module_src_types_projectFiles_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_application_use_cases_buildProjectTree_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_features_project_tree_utils_findProjectTreeNodeByGraphPackage_ts
   module_test_src_features_project_tree_buildProjectTree_spec_ts --&gt; module_src_types_projectFiles_ts
@@ -7889,6 +7944,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_loadProjectSourceAsync_ts[&quot;src/features/project-source/composition/loadProjectSourceAsync.ts&quot;]
   module_src_features_project_tree_adapters_inbound_react_ProjectTreePanel_tsx[&quot;src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx&quot;]
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts[&quot;src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts&quot;]
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts[&quot;src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts&quot;]
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts[&quot;src/features/project-tree/application/use-cases/buildProjectTree.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveGraphProjectTreeSelection_ts[&quot;src/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveProjectTreeNavigation_ts[&quot;src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts&quot;]
@@ -8071,6 +8127,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts[&quot;test/src/features/project-tree/addSourceFeatureNavigation.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -8244,6 +8301,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_project_source_composition_loadProjectSourceAsync_ts[&quot;src/features/project-source/composition/loadProjectSourceAsync.ts&quot;]
   module_src_features_project_tree_adapters_inbound_react_ProjectTreePanel_tsx[&quot;src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx&quot;]
   module_src_features_project_tree_adapters_inbound_react_useProjectTreeExpansion_ts[&quot;src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts&quot;]
+  module_src_features_project_tree_application_use_cases_addSourceFeatureNavigation_ts[&quot;src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts&quot;]
   module_src_features_project_tree_application_use_cases_buildProjectTree_ts[&quot;src/features/project-tree/application/use-cases/buildProjectTree.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveGraphProjectTreeSelection_ts[&quot;src/features/project-tree/application/use-cases/resolveGraphProjectTreeSelection.ts&quot;]
   module_src_features_project_tree_application_use_cases_resolveProjectTreeNavigation_ts[&quot;src/features/project-tree/application/use-cases/resolveProjectTreeNavigation.ts&quot;]
@@ -8426,6 +8484,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_project_source_materializeSourceJarAsync_spec_ts[&quot;test/src/features/project-source/materializeSourceJarAsync.spec.ts&quot;]
   module_test_src_features_project_source_projectSource_spec_ts[&quot;test/src/features/project-source/projectSource.spec.ts&quot;]
   module_test_src_features_project_source_sourceJarAcceptance_spec_ts[&quot;test/src/features/project-source/sourceJarAcceptance.spec.ts&quot;]
+  module_test_src_features_project_tree_addSourceFeatureNavigation_spec_ts[&quot;test/src/features/project-tree/addSourceFeatureNavigation.spec.ts&quot;]
   module_test_src_features_project_tree_buildProjectTree_spec_ts[&quot;test/src/features/project-tree/buildProjectTree.spec.ts&quot;]
   module_test_src_features_project_tree_getProjectTreeAncestorIds_spec_ts[&quot;test/src/features/project-tree/getProjectTreeAncestorIds.spec.ts&quot;]
   module_test_src_features_project_tree_resolveProjectTreeNavigation_spec_ts[&quot;test/src/features/project-tree/resolveProjectTreeNavigation.spec.ts&quot;]
@@ -10889,6 +10948,11 @@ Entries are removed after success or failure so later loads observe source chang
     <p class="muted"><code>src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx:39:1</code></p>
     <p>Map a portable project-tree node into the ZORA TreeView presentation contract.</p>
     
+  </article><article class="item" data-search="formatSourceEvidence src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx ">
+    <h3>formatSourceEvidence</h3>
+    <p class="muted"><code>src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx:62:1</code></p>
+    <p class="empty">No description available.</p>
+    
   </article>
     </section>
   </section><section id="view-src-features-project-tree-adapters-inbound-react-useprojecttreeexpansion-ts" class="view" data-view="src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts" hidden>
@@ -10903,6 +10967,61 @@ Entries are removed after success or failure so later loads observe source chang
     <h3>revealSelections</h3>
     <p class="muted"><code>src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts:32:1</code></p>
     <p>Add only the ancestors required to reveal all selections without opening selected folders.</p>
+    
+  </article>
+    </section>
+  </section><section id="view-src-features-project-tree-application-use-cases-addsourcefeaturenavigation-ts" class="view" data-view="src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts" hidden>
+    <section class="panel">
+      <h2>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts</h2>
+      <article class="item" data-search="addSourceFeatureNavigation src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>addSourceFeatureNavigation</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:18:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="listAllFeatures src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>listAllFeatures</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:47:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="collectFeaturesByPackage src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>collectFeaturesByPackage</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:56:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="addFeaturesToPackages src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>addFeaturesToPackages</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:107:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="isDeepestPackageNode src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>isDeepestPackageNode</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:132:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="featureNode src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>featureNode</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:143:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="unavailableFeatureEvidenceNode src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>unavailableFeatureEvidenceNode</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:164:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="listAllPages src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>listAllPages</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:175:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="compareComponent src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>compareComponent</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:192:1</code></p>
+    <p class="empty">No description available.</p>
+    
+  </article><article class="item" data-search="compareFeature src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts ">
+    <h3>compareFeature</h3>
+    <p class="muted"><code>src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts:197:1</code></p>
+    <p class="empty">No description available.</p>
     
   </article>
     </section>
@@ -12436,12 +12555,12 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</h2>
       <article class="item" data-search="hydrateWorkspaceSnapshot src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts Rebuilds the workspace view model from the portable Audit without host-specific analysis.">
     <h3>hydrateWorkspaceSnapshot</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts:5:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts:8:1</code></p>
     <p>Rebuilds the workspace view model from the portable Audit without host-specific analysis.</p>
     
   </article><article class="item" data-search="createProjectIdentity src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts Creates a stable browser-safe scope for workspace preferences without exposing a local path.">
     <h3>createProjectIdentity</h3>
-    <p class="muted"><code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts:15:1</code></p>
+    <p class="muted"><code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts:23:1</code></p>
     <p>Creates a stable browser-safe scope for workspace preferences without exposing a local path.</p>
     
   </article>
@@ -12706,52 +12825,52 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts</h2>
       <article class="item" data-search="composeWorkspaceRepositoryRuntimeResult src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Recompose the client-safe workspace view from retained portable repository analyses.">
     <h3>composeWorkspaceRepositoryRuntimeResult</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:18:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:19:1</code></p>
     <p>Recompose the client-safe workspace view from retained portable repository analyses.</p>
     
   </article><article class="item" data-search="selectedEntries src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Retain only analyses whose repository remains selected by the trusted server-side workspace.">
     <h3>selectedEntries</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:48:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:49:1</code></p>
     <p>Retain only analyses whose repository remains selected by the trusted server-side workspace.</p>
     
   </article><article class="item" data-search="unavailableWorkspace src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Preserve the no-successful-project failure without disclosing runtime details.">
     <h3>unavailableWorkspace</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:59:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:60:1</code></p>
     <p>Preserve the no-successful-project failure without disclosing runtime details.</p>
     
   </article><article class="item" data-search="createWorkspaceProjectSnapshot src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Build the canonical audit snapshot with global dependency topology and a representative file tree.">
     <h3>createWorkspaceProjectSnapshot</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:72:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:73:1</code></p>
     <p>Build the canonical audit snapshot with global dependency topology and a representative file tree.</p>
     
   </article><article class="item" data-search="navigationTree src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Create virtual owner and repository roots with identities stable across retries and revisions.">
     <h3>navigationTree</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:97:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:98:1</code></p>
     <p>Create virtual owner and repository roots with identities stable across retries and revisions.</p>
     
   </article><article class="item" data-search="prefixTree src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Prefix cached project-tree graph references with their selected repository identity.">
     <h3>prefixTree</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:121:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:128:1</code></p>
     <p>Prefix cached project-tree graph references with their selected repository identity.</p>
     
   </article><article class="item" data-search="repositoryGraphId src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Keep identity stable across provider rename and materialization location changes.">
     <h3>repositoryGraphId</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:134:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:141:1</code></p>
     <p>Keep identity stable across provider rename and materialization location changes.</p>
     
   </article><article class="item" data-search="workspaceIdentity src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Keep browser preference scope stable when one failed repository becomes available.">
     <h3>workspaceIdentity</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:139:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:146:1</code></p>
     <p>Keep browser preference scope stable when one failed repository becomes available.</p>
     
   </article><article class="item" data-search="orderedStatuses src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Render operation state in selected-repository order without exposing provider or filesystem failures.">
     <h3>orderedStatuses</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:147:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:154:1</code></p>
     <p>Render operation state in selected-repository order without exposing provider or filesystem failures.</p>
     
   </article><article class="item" data-search="repositoryStatus src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts Build a credential-free status record suitable for a browser response.">
     <h3>repositoryStatus</h3>
-    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:159:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts:166:1</code></p>
     <p>Build a credential-free status record suitable for a browser response.</p>
     
   </article>

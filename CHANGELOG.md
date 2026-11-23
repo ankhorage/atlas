@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.0
+
+### Minor Changes
+
+- 4d0a428: Add evidence-backed feature and component navigation to the Atlas workspace tree.
+
 ## 0.21.7
 
 ### Patch Changes

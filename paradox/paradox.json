@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.21.7",
+      "value": "v0.22.0",
       "color": "cb3837"
     },
     {
@@ -1479,6 +1479,16 @@
       ]
     },
     {
+      "path": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/projectTree.ts"
+      ],
+      "exports": [
+        "addSourceFeatureNavigation"
+      ]
+    },
+    {
       "path": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -2137,6 +2147,7 @@
       "path": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
       "isEntrypoint": false,
       "dependencies": [
+        "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
         "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "src/types/workspace.ts"
       ],
@@ -2241,6 +2252,7 @@
       "dependencies": [
         "src/features/audit/application/use-cases/createAuditFromSnapshot.ts",
         "src/features/dependency-analysis/application/use-cases/projectDependencyGraph.ts",
+        "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
         "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
         "src/types/parserSelection.ts",
@@ -3410,6 +3422,17 @@
         "src/cli/runAuditSourceAsync.ts",
         "src/features/audit/composition/createAuditAsync.ts",
         "src/features/project-source/composition/loadProjectSourceAsync.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts",
+        "src/types/projectFiles.ts"
       ],
       "exports": []
     },
@@ -7769,6 +7792,17 @@
       }
     },
     {
+      "name": "formatSourceEvidence",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
+        "line": 62,
+        "column": 1
+      }
+    },
+    {
       "name": "useProjectTreeExpansion",
       "description": "Start collapsed, preserve manual expansion, and reveal ancestors required by selected rows.",
       "see": [],
@@ -7787,6 +7821,116 @@
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "name": "addSourceFeatureNavigation",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
+      "name": "listAllFeatures",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 47,
+        "column": 1
+      }
+    },
+    {
+      "name": "collectFeaturesByPackage",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 56,
+        "column": 1
+      }
+    },
+    {
+      "name": "addFeaturesToPackages",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 107,
+        "column": 1
+      }
+    },
+    {
+      "name": "isDeepestPackageNode",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 132,
+        "column": 1
+      }
+    },
+    {
+      "name": "featureNode",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 143,
+        "column": 1
+      }
+    },
+    {
+      "name": "unavailableFeatureEvidenceNode",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 164,
+        "column": 1
+      }
+    },
+    {
+      "name": "listAllPages",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 175,
+        "column": 1
+      }
+    },
+    {
+      "name": "compareComponent",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 192,
+        "column": 1
+      }
+    },
+    {
+      "name": "compareFeature",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "line": 197,
         "column": 1
       }
     },
@@ -10580,7 +10724,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
-        "line": 5,
+        "line": 8,
         "column": 1
       }
     },
@@ -10591,7 +10735,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
-        "line": 15,
+        "line": 23,
         "column": 1
       }
     },
@@ -11075,7 +11219,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 18,
+        "line": 19,
         "column": 1
       }
     },
@@ -11086,7 +11230,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 48,
+        "line": 49,
         "column": 1
       }
     },
@@ -11097,7 +11241,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 59,
+        "line": 60,
         "column": 1
       }
     },
@@ -11108,7 +11252,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 72,
+        "line": 73,
         "column": 1
       }
     },
@@ -11119,7 +11263,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 97,
+        "line": 98,
         "column": 1
       }
     },
@@ -11130,7 +11274,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 121,
+        "line": 128,
         "column": 1
       }
     },
@@ -11141,7 +11285,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 134,
+        "line": 141,
         "column": 1
       }
     },
@@ -11152,7 +11296,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 139,
+        "line": 146,
         "column": 1
       }
     },
@@ -11163,7 +11307,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 147,
+        "line": 154,
         "column": 1
       }
     },
@@ -11174,7 +11318,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
-        "line": 159,
+        "line": 166,
         "column": 1
       }
     },
@@ -12528,6 +12672,11 @@
       },
       {
         "fromPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "toPath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "sourcePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
         "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "sourcePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
       },
@@ -13192,6 +13341,26 @@
         "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
       },
       {
+        "fromPath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toPath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toPath": "src/features/project-tree/utils/resolveProjectTreeGraphNodeId.ts",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toPath": "src/types/projectFiles.ts",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/project-tree/buildProjectTree.spec.ts",
         "toPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "sourcePath": "test/src/features/project-tree/buildProjectTree.spec.ts"
@@ -13632,6 +13801,11 @@
         "sourcePath": "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts"
       },
       {
+        "fromPath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "toPath": "src/types/projectTree.ts",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
         "fromPath": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "toPath": "src/types/projectFiles.ts",
         "sourcePath": "src/features/project-tree/application/use-cases/buildProjectTree.ts"
@@ -13720,6 +13894,11 @@
         "fromPath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts",
         "toPath": "src/types/dependencyAnalysis.ts",
         "sourcePath": "src/features/workspace/application/use-cases/externalSnapshotContracts.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "toPath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
       },
       {
         "fromPath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
@@ -19569,8 +19748,20 @@
       },
       {
         "fromSymbol": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "toSymbol": "addSourceFeatureNavigation",
+        "callExpression": "addSourceFeatureNavigation",
+        "sourcePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
         "toSymbol": "buildProjectTree",
         "callExpression": "buildProjectTree",
+        "sourcePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts",
+        "toSymbol": "createSourceGraphFromProjectAnalysisSnapshots",
+        "callExpression": "createSourceGraphFromProjectAnalysisSnapshots",
         "sourcePath": "src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts"
       },
       {
@@ -22184,6 +22375,54 @@
         "sourcePath": "test/src/features/project-source/sourceJarAcceptance.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "addSourceFeatureNavigation",
+        "callExpression": "addSourceFeatureNavigation",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "buildProjectTree",
+        "callExpression": "buildProjectTree",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "files",
+        "callExpression": "files",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "sourceGraph",
+        "callExpression": "sourceGraph",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts",
+        "toSymbol": "resolveProjectTreeGraphNodeId",
+        "callExpression": "resolveProjectTreeGraphNodeId",
+        "sourcePath": "test/src/features/project-tree/addSourceFeatureNavigation.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/project-tree/buildProjectTree.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -23822,6 +24061,96 @@
         "sourcePath": "src/features/project-source/application/use-cases/resolveProjectSourceAsync.ts"
       },
       {
+        "fromSymbol": "addSourceFeatureNavigation",
+        "toSymbol": "projectSourceFeatures",
+        "callExpression": "projectSourceFeatures",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "addSourceFeatureNavigation",
+        "toSymbol": "createSourceFeatureProjectionIndex",
+        "callExpression": "createSourceFeatureProjectionIndex",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "addSourceFeatureNavigation",
+        "toSymbol": "createSourceGraphIndex",
+        "callExpression": "createSourceGraphIndex",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "addSourceFeatureNavigation",
+        "toSymbol": "collectFeaturesByPackage",
+        "callExpression": "collectFeaturesByPackage",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "addSourceFeatureNavigation",
+        "toSymbol": "listAllFeatures",
+        "callExpression": "listAllFeatures",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "addSourceFeatureNavigation",
+        "toSymbol": "addFeaturesToPackages",
+        "callExpression": "addFeaturesToPackages",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "toSymbol": "unavailableFeatureEvidenceNode",
+        "callExpression": "unavailableFeatureEvidenceNode",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "listAllFeatures",
+        "toSymbol": "listAllPages",
+        "callExpression": "listAllPages",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "toSymbol": "listSourceFeatures",
+        "callExpression": "listSourceFeatures",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "collectFeaturesByPackage",
+        "toSymbol": "listAllPages",
+        "callExpression": "listAllPages",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "toSymbol": "listSourceFeatureMembers",
+        "callExpression": "listSourceFeatureMembers",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "collectFeaturesByPackage",
+        "toSymbol": "findSourceNode",
+        "callExpression": "findSourceNode",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "toSymbol": "addFeaturesToPackages",
+        "callExpression": "addFeaturesToPackages",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts",
+        "toSymbol": "isDeepestPackageNode",
+        "callExpression": "isDeepestPackageNode",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
+        "fromSymbol": "listAllPages",
+        "toSymbol": "readPage",
+        "callExpression": "readPage",
+        "sourcePath": "src/features/project-tree/application/use-cases/addSourceFeatureNavigation.ts"
+      },
+      {
         "fromSymbol": "src/features/project-tree/application/use-cases/buildProjectTree.ts",
         "toSymbol": "isProjectFileMetadata",
         "callExpression": "isProjectFileMetadata",
@@ -24441,8 +24770,20 @@
       },
       {
         "fromSymbol": "hydrateWorkspaceSnapshot",
+        "toSymbol": "addSourceFeatureNavigation",
+        "callExpression": "addSourceFeatureNavigation",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "hydrateWorkspaceSnapshot",
         "toSymbol": "buildProjectTree",
         "callExpression": "buildProjectTree",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "hydrateWorkspaceSnapshot",
+        "toSymbol": "deserializeSourceGraph",
+        "callExpression": "deserializeSourceGraph",
         "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
       },
       {
@@ -26843,6 +27184,12 @@
         "fromSymbol": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
         "toSymbol": "onSelect",
         "callExpression": "onSelect",
+        "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
+      },
+      {
+        "fromSymbol": "toTreeItemNode",
+        "toSymbol": "formatSourceEvidence",
+        "callExpression": "formatSourceEvidence",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx"
       },
       {
