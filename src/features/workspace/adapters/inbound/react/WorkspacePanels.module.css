@@ -24,6 +24,8 @@
   }
 
   .toolsControl {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     display: block;
+    left: 12px;
   }
 }
