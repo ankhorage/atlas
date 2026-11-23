@@ -96,19 +96,38 @@ describe('[graph viewport controls]', () => {
       expect(spacingChanges).toEqual([]);
 
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }]);
+      expect(fits).toEqual([
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+      ]);
       expect(spacingChanges).toEqual([0.4]);
       expect(host.container.querySelector('#spacing')?.textContent).toBe('0.4');
 
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }, undefined]);
+      expect(fits).toEqual([
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        undefined,
+      ]);
 
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }, undefined]);
+      expect(fits).toEqual([
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        undefined,
+      ]);
 
       await click('#disable');
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }, undefined]);
+      expect(fits).toEqual([
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        undefined,
+      ]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
@@ -209,6 +228,82 @@ describe('[graph viewport controls]', () => {
 
       await click('button[aria-label="Fit graph and optimize spacing for readability"]');
       expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }]);
+    } finally {
+      await act(async () => root.unmount());
+      host.unmount();
+    }
+  });
+
+  it('refits once when the visible topology grows or shrinks', async () => {
+    const fits: (GraphViewFitOptions | undefined)[] = [];
+    const controller: GraphViewController = {
+      fit: options => fits.push(options),
+      measureNodes: nodeIds => ({
+        viewport: { width: 1200, height: 800 },
+        nodes: nodeIds.map(id => ({
+          id,
+          position: { x: 600, y: 400 },
+          size: { width: 48, height: 24 },
+        })),
+      }),
+      getViewport: () => ({ zoom: 1, pan: { x: 0, y: 0 } }),
+      getZoomRange: () => ({ min: 0.5, max: 8 }),
+      setPan: () => {},
+      setZoom: () => {},
+      zoomBy: () => {},
+    };
+    const host = render(<div />);
+    const root = createRoot(host.container);
+
+    function Harness() {
+      const viewport = useGraphViewport({
+        cycleHighlights: [],
+        onSpacingFactorChange: () => undefined,
+        spacingFactor: 1,
+      });
+      return (
+        <>
+          <button id="ready" onClick={() => viewport.handleReady(controller)}>
+            Ready
+          </button>
+          <button id="two" onClick={() => viewport.handleLayoutComplete(controller, ['a', 'b'])}>
+            Two
+          </button>
+          <button
+            id="three"
+            onClick={() => viewport.handleLayoutComplete(controller, ['a', 'b', 'c'])}
+          >
+            Three
+          </button>
+          <button id="one" onClick={() => viewport.handleLayoutComplete(controller, ['a'])}>
+            One
+          </button>
+        </>
+      );
+    }
+
+    const click = async (selector: string) => {
+      await act(async () => host.container.querySelector<HTMLButtonElement>(selector)!.click());
+    };
+
+    try {
+      await act(async () =>
+        root.render(
+          <ZoraProvider mode="light">
+            <Harness />
+          </ZoraProvider>
+        )
+      );
+      await click('#ready');
+      await click('#two');
+      await click('#two');
+      await click('#three');
+      await click('#one');
+      expect(fits).toEqual([
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+        { optimizeSpacing: true },
+      ]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();

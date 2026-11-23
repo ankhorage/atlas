@@ -27,6 +27,19 @@
   min-width: 0;
 }
 
+.desktopSourceControls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.mobileSourceControls {
+  display: none;
+}
+
 .breadcrumbs {
   min-width: 0;
   overflow-x: auto;
@@ -67,5 +80,13 @@
 
   .actions {
     gap: 4px;
+  }
+
+  .desktopSourceControls {
+    display: none;
+  }
+
+  .mobileSourceControls {
+    display: block;
   }
 }
