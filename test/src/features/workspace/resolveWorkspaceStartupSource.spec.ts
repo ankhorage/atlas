@@ -19,10 +19,10 @@ describe('[resolveWorkspaceStartupSource]', () => {
     });
   });
 
-  it('loads the shipped TypeScript example when neither browser source nor project environment is configured', () => {
+  it('loads the shipped architecture showcase when no browser source or project environment is configured', () => {
     assert.deepEqual(resolveWorkspaceStartupSource(undefined, undefined), {
       kind: 'filesystem',
-      path: resolve(process.cwd(), 'examples/typescript/my-app'),
+      path: resolve(process.cwd(), 'examples/typescript/architecture-showcase'),
     });
   });
 });
