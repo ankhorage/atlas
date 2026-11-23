@@ -1,0 +1,31 @@
+.frame {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  padding: 24px;
+}
+
+.frame > * {
+  border: 1px solid #d8deef;
+  border-radius: 20px;
+  box-shadow: 0 20px 48px rgb(24 47 91 / 18%);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.header {
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .frame {
+    padding: 0;
+  }
+
+  .frame > * {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

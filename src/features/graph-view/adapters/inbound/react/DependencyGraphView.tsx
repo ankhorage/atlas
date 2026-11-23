@@ -206,7 +206,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
           onViewportChange={viewport.handleViewportChange}
           onSpacingFactorChange={viewport.handleSpacingFactorChange}
           spacingFactor={props.spacingFactor}
-          style={{ background: props.theme.semantics.surface.default }}
+          style={{ background: 'transparent' }}
           styleRules={props.styles}
         />
         {props.overlay}
