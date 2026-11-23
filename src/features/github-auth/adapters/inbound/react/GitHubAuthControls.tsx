@@ -13,11 +13,23 @@ export function GitHubAuthControls({ auth }: { readonly auth: GitHubAuthView }) 
 
   if (auth.status === 'authenticated')
     return (
-      <form ref={logoutForm} action="/api/auth/github/logout" method="post">
-        <Button size="s" variant="outline" onPress={() => logoutForm.current?.requestSubmit()}>
-          Sign out {auth.displayName}
-        </Button>
-      </form>
+      <View direction="row" gap="xs" style={{ flexWrap: 'wrap' }}>
+        <form ref={privateLoginForm} action="/api/auth/github/login" method="post">
+          <input name="privateRepositoryAccess" type="hidden" value="true" />
+          <Button
+            size="s"
+            variant="outline"
+            onPress={() => privateLoginForm.current?.requestSubmit()}
+          >
+            Authorize private repositories
+          </Button>
+        </form>
+        <form ref={logoutForm} action="/api/auth/github/logout" method="post">
+          <Button size="s" variant="outline" onPress={() => logoutForm.current?.requestSubmit()}>
+            Sign out {auth.displayName}
+          </Button>
+        </form>
+      </View>
     );
   if (auth.status === 'unavailable') return <span role="status">{auth.message}</span>;
   return (
