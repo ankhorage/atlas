@@ -1,18 +1,8 @@
-.controls {
-  flex-wrap: wrap;
-}
-
 .slider {
   width: 256px;
 }
 
 @media (max-width: 768px) {
-  .controls {
-    flex-wrap: nowrap;
-    padding: 8px;
-    width: 100%;
-  }
-
   .slider {
     flex: 1 1 auto;
     min-width: 0;

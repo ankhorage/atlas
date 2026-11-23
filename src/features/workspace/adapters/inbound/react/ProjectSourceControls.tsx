@@ -94,15 +94,16 @@ function PublicOnlyFilter({
   readonly onChange: (checked: boolean) => void;
 }) {
   return (
-    <Checkbox
-      accessibilityLabel="Public only"
-      checked={checked}
-      className={styles.publicOnly}
-      size="s"
-      onCheckedChange={onChange}
-    >
-      Public only
-    </Checkbox>
+    <span className={styles.publicOnly}>
+      <Checkbox
+        accessibilityLabel="Public only"
+        checked={checked}
+        size="s"
+        onCheckedChange={onChange}
+      >
+        Public only
+      </Checkbox>
+    </span>
   );
 }
 
@@ -110,7 +111,6 @@ function PublicOnlyFilter({
 function RepositoryCopyButton({ sourceForm }: { readonly sourceForm: ProjectSourceFormModel }) {
   return (
     <Button
-      accessibilityLabel="Copy repository links"
       disabled={sourceForm.selectedRepositories.length === 0}
       leadingIcon={{ name: 'copy-outline' }}
       size="s"
@@ -171,13 +171,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
       defaultOpen={props.initiallyOpen}
       placement="bottom-start"
       anchor={({ toggle }) => (
-        <Button
-          accessibilityLabel="Choose repositories"
-          disabled={!props.selectionSupported}
-          size="s"
-          variant="outline"
-          onPress={toggle}
-        >
+        <Button disabled={!props.selectionSupported} size="s" variant="outline" onPress={toggle}>
           Repositories ({props.selectedIds.size}/{props.totalCount})
         </Button>
       )}
@@ -208,7 +202,7 @@ function RepositoryPicker(props: RepositoryPickerProps) {
 function RepositoryChoices(props: RepositoryPickerProps) {
   if (props.repositories.length === 0) return <span>No repositories match this search.</span>;
   return props.repositories.map(repository => (
-    <View className={styles.repositoryChoice} direction="row" key={repository.id}>
+    <View align="center" direction="row" justify="space-between" key={repository.id}>
       <Checkbox
         accessibilityLabel={`${repository.owner}/${repository.name}`}
         checked={props.selectedIds.has(repository.id)}

@@ -1,7 +1,7 @@
 'use client';
 import type { ColorToneDefinition } from '@ankhorage/zora';
 import { AppHeader } from '@ankhorage/zora/web/app-header';
-import { Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
+import { Breadcrumbs, type BreadcrumbItem } from '@ankhorage/zora/web/breadcrumbs';
 import { Heading } from '@ankhorage/zora/web/heading';
 import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Image } from '@ankhorage/zora/web/image';
@@ -158,10 +158,4 @@ interface WorkspaceHeaderProps {
   readonly workspaceScope?: string;
   readonly onNavigate: (path: string) => void;
   readonly onSelection: (detail: WorkspaceSelectionEventDetail) => void;
-}
-
-interface BreadcrumbItem {
-  readonly id: string;
-  readonly label: string;
-  readonly icon?: { readonly name: string };
 }

@@ -34,7 +34,15 @@ export function GraphZoomControls({
   };
 
   return (
-    <View align="center" className={styles.controls} direction="row" gap="s" justify="center" p="m">
+    <View
+      align="center"
+      direction="row"
+      gap="s"
+      justify="center"
+      p={{ base: 8, md: 'm' }}
+      width={{ base: '100%', md: undefined }}
+      wrap={{ base: 'nowrap', md: 'wrap' }}
+    >
       <Text variant="bodySmall">Zoom:</Text>
       <IconButton
         color="neutral"

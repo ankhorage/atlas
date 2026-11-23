@@ -27,10 +27,6 @@
   min-width: 0;
 }
 
-.mobileSourceDialog > * {
-  margin-bottom: 8px;
-}
-
 .breadcrumbs {
   min-width: 0;
   overflow-x: auto;
@@ -48,11 +44,6 @@
   display: inline-flex;
   gap: 4px;
   white-space: nowrap;
-}
-
-.repositoryChoice {
-  align-items: center;
-  justify-content: space-between;
 }
 
 .repositoryColorSwatch {

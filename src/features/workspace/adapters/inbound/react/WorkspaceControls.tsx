@@ -115,7 +115,7 @@ function WorkspaceMenu(props: WorkspaceMenuProps) {
     <Popover
       placement="bottom-end"
       anchor={({ toggle }) => (
-        <Button accessibilityLabel="Manage workspaces" size="s" variant="outline" onPress={toggle}>
+        <Button size="s" variant="outline" onPress={toggle}>
           Workspace
         </Button>
       )}
