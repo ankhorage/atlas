@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Start collapsed, preserve manual expansion, and reveal ancestors required by selected rows. */
+/*** Open the first top-level folder, preserve manual expansion, and reveal selected rows. */
 export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
   selectedIds: readonly string[]
@@ -12,7 +12,7 @@ export function useProjectTreeExpansion(
   const [state, setState] = useState<ProjectTreeExpansionState>(() => ({
     nodes,
     selectedIds,
-    ids: revealSelections(nodes, selectedIds, []),
+    ids: revealSelections(nodes, selectedIds, initialExpandedIds(nodes)),
   }));
   if (state.nodes !== nodes || !arraysEqual(state.selectedIds, selectedIds)) {
     setState({
@@ -26,6 +26,12 @@ export function useProjectTreeExpansion(
     expandedIds: state.ids,
     onExpandedChange: (ids: readonly string[]) => setState({ nodes, selectedIds, ids }),
   };
+}
+
+/*** Select the first visible folder as the useful initial entry point without expanding the whole tree. */
+function initialExpandedIds(nodes: readonly ProjectTreeNode[]): readonly string[] {
+  const topFolder = nodes.find(node => node.children !== undefined && node.children.length > 0);
+  return topFolder === undefined ? [] : [topFolder.id];
 }
 
 /*** Add only the ancestors required to reveal all selections without opening selected folders. */
