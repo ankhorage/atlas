@@ -1098,10 +1098,10 @@ const scenarios: readonly Scenario[] = [
           layoutCount: stability.layoutCount,
           previousLayoutCount: stability.previousLayoutCount,
           previousViewport: stability.previousViewport,
-          retainedLeafModelCoordinates: summarizeCoordinateDeltas(
+          retainedLeafRenderedCoordinates: summarizeCoordinateDeltas(
             stability.previousParentMeasurements,
             stability.measurement?.nodes ?? [],
-            'visible repository root renderedPosition (leaf/model position)'
+            'visible repository root renderedPosition (leaf; not a model position)'
           ),
           sourceLeafMeasurementCount: stability.sourceLeafMeasurementCount,
           viewport: stability.viewport,
@@ -1119,11 +1119,11 @@ const scenarios: readonly Scenario[] = [
             y: node.position.y,
           }))
         ) === JSON.stringify(stability.previousPositions),
-        `Repository removal changed retained leaf/model coordinates: ${JSON.stringify(
+        `Repository removal changed retained leaf rendered coordinates: ${JSON.stringify(
           summarizeCoordinateDeltas(
             stability.previousParentMeasurements,
             stability.measurement?.nodes ?? [],
-            'visible repository root renderedPosition (leaf/model position)'
+            'visible repository root renderedPosition (leaf; not a model position)'
           )
         )}; projected source-leaf measurement count: ${stability.sourceLeafMeasurementCount} (zero proves these roots are not measured compound-parent centers).`
       );
