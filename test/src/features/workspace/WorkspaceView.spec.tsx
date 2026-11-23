@@ -209,6 +209,68 @@ describe('[WorkspaceView]', () => {
     unmount();
   });
 
+  it('clears the final repository locally without calling an expired selection runtime', async () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const fetchCalls: (string | URL | Request)[] = [];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = Object.assign(
+      async (input: string | URL | Request) => {
+        fetchCalls.push(input);
+        return new Response(null, { status: 410 });
+      },
+      { preconnect: originalFetch.preconnect }
+    );
+    try {
+      const { container, unmount } = render(
+        <ZoraRuntimeProvider
+          initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+          themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+        >
+          <WorkspaceView
+            currentSource="ankhorage"
+            projectName="Atlas"
+            repositories={[
+              {
+                id: 'atlas',
+                name: 'atlas',
+                owner: 'ankhorage',
+                selected: true,
+                url: 'https://github.com/ankhorage/atlas',
+                visibility: 'public',
+              },
+            ]}
+            runtimeId="expired-runtime"
+            workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+          />
+        </ZoraRuntimeProvider>
+      );
+      await React.act(async () =>
+        container
+          .querySelector<HTMLButtonElement>('[aria-label="Open repository source and workspace"]')
+          ?.click()
+      );
+      const picker = [...document.querySelectorAll<HTMLButtonElement>('button')].find(button =>
+        button.textContent?.startsWith('Repositories (')
+      );
+      await React.act(async () => picker?.click());
+      const deselectAll = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+        button => button.textContent === 'Deselect all'
+      );
+      await React.act(async () => deselectAll?.click());
+
+      assert.equal(fetchCalls.length, 0);
+      assert.equal(
+        container.textContent?.includes('Select one or more repositories to inspect.'),
+        true
+      );
+      unmount();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
   it('keeps repository and workspace actions in one accessible mobile source workflow', async () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
