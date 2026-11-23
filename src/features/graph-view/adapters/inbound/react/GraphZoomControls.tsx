@@ -8,6 +8,12 @@ import React, { type ChangeEvent } from 'react';
 
 import styles from './GraphZoomControls.module.css';
 
+const responsiveControlLayout = {
+  p: { base: 8, md: 'm' },
+  width: { base: '100%', md: undefined },
+  wrap: { base: 'nowrap', md: 'wrap' },
+} as const;
+
 interface GraphZoomControlsProps {
   readonly controller: GraphViewController | null;
   readonly maxZoom: number;
@@ -34,15 +40,7 @@ export function GraphZoomControls({
   };
 
   return (
-    <View
-      align="center"
-      direction="row"
-      gap="s"
-      justify="center"
-      p={{ base: 8, md: 'm' }}
-      width={{ base: '100%', md: undefined }}
-      wrap={{ base: 'nowrap', md: 'wrap' }}
-    >
+    <View align="center" direction="row" gap="s" justify="center" {...responsiveControlLayout}>
       <Text variant="bodySmall">Zoom:</Text>
       <IconButton
         color="neutral"

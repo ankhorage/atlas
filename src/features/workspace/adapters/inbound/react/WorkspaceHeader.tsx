@@ -1,7 +1,7 @@
 'use client';
 import type { ColorToneDefinition } from '@ankhorage/zora';
 import { AppHeader } from '@ankhorage/zora/web/app-header';
-import { Breadcrumbs, type BreadcrumbItem } from '@ankhorage/zora/web/breadcrumbs';
+import { type BreadcrumbItem, Breadcrumbs } from '@ankhorage/zora/web/breadcrumbs';
 import { Heading } from '@ankhorage/zora/web/heading';
 import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Image } from '@ankhorage/zora/web/image';
