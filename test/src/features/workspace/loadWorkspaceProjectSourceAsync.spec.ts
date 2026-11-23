@@ -192,7 +192,7 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     }
   });
 
-  it('loads the shipped TypeScript example without a selected source or runtime project path', async () => {
+  it('loads the shipped architecture showcase without a selected source or runtime project path', async () => {
     const previousProjectPath = process.env.ATLAS_PROJECT_PATH;
     delete process.env.ATLAS_PROJECT_PATH;
 
@@ -202,7 +202,7 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
         nodes: [],
       }));
 
-      assert.equal(result.projectName, 'my-app');
+      assert.equal(result.projectName, 'architecture-showcase');
       assert.equal(result.workspace.ok, true);
     } finally {
       if (previousProjectPath !== undefined) process.env.ATLAS_PROJECT_PATH = previousProjectPath;

@@ -17,7 +17,10 @@ export function resolveWorkspaceStartupSource(
 }
 
 /*** Keep the shipped example available when a deployment has no selected project or mounted workspace. */
-const DEFAULT_WORKSPACE_PROJECT_PATH = resolve(process.cwd(), 'examples/typescript/my-app');
+const DEFAULT_WORKSPACE_PROJECT_PATH = resolve(
+  process.cwd(),
+  'examples/typescript/architecture-showcase'
+);
 
 type WorkspaceStartupSource =
   | { readonly kind: 'filesystem'; readonly path: string }
