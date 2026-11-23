@@ -1,3 +1,6 @@
+import { deserializeSourceGraph } from '@ankhorage/dependency-graph';
+
+import { addSourceFeatureNavigation } from '@/features/project-tree/application/use-cases/addSourceFeatureNavigation';
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import type { ProjectOverview, WorkspaceSnapshot } from '@/types/workspace';
 
@@ -7,7 +10,12 @@ export function hydrateWorkspaceSnapshot(snapshot: WorkspaceSnapshot): ProjectOv
     evaluation: snapshot.audit.evaluation,
     packageGraph: snapshot.audit.packageGraph,
     projectIdentity: createProjectIdentity(snapshot),
-    tree: snapshot.navigationTree ?? buildProjectTree(snapshot.audit.files),
+    tree:
+      snapshot.navigationTree ??
+      addSourceFeatureNavigation(
+        buildProjectTree(snapshot.audit.files),
+        deserializeSourceGraph(snapshot.audit.sourceGraph)
+      ),
   };
 }
 

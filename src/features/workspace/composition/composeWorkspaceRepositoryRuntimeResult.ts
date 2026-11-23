@@ -7,6 +7,7 @@ import type { GitHubRepositoryDiscoveryRepository } from '@ankhorage/repository/
 
 import { createAuditFromSnapshot } from '@/features/audit/application/use-cases/createAuditFromSnapshot';
 import { projectDependencyGraph } from '@/features/dependency-analysis/application/use-cases/projectDependencyGraph';
+import { addSourceFeatureNavigation } from '@/features/project-tree/application/use-cases/addSourceFeatureNavigation';
 import { buildProjectTree } from '@/features/project-tree/application/use-cases/buildProjectTree';
 import { hydrateWorkspaceSnapshot } from '@/features/workspace/application/use-cases/hydrateWorkspaceSnapshot';
 import type { ParserSelection } from '@/types/parserSelection';
@@ -104,7 +105,13 @@ function navigationTree(entries: readonly RepositoryEntry[]) {
       children: projects
         .toSorted((left, right) => left.repository.name.localeCompare(right.repository.name))
         .map(({ repository, entry }) => ({
-          children: prefixTree(buildProjectTree(entry.files), repository.id),
+          children: prefixTree(
+            addSourceFeatureNavigation(
+              buildProjectTree(entry.files),
+              createSourceGraphFromProjectAnalysisSnapshots([entry.analysis])
+            ),
+            repository.id
+          ),
           graphPackage: repositoryGraphId(repository.id),
           id: `repository:${repository.id}`,
           kind: 'virtual' as const,

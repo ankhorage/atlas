@@ -40,15 +40,27 @@ function toTreeItemNode(node: ProjectTreeNode): TreeItemNode {
   return {
     id: node.id,
     label: (
-      <Text numberOfLines={1} variant="bodySmall">
-        {node.label}
-      </Text>
+      <View>
+        <Text numberOfLines={1} variant="bodySmall">
+          {node.label}
+        </Text>
+        {node.sourceEvidence === undefined ? null : (
+          <Text numberOfLines={1} variant="caption">
+            {formatSourceEvidence(node.sourceEvidence)}
+          </Text>
+        )}
+      </View>
     ),
     icon: (
       <Icon name={node.kind === 'file' ? 'document-text-outline' : 'folder-outline'} size="s" />
     ),
     ...(node.children ? { children: node.children.map(child => toTreeItemNode(child)) } : {}),
   };
+}
+
+/** Presents portable analyzer evidence without making a source-path ownership claim. */
+function formatSourceEvidence(evidence: NonNullable<ProjectTreeNode['sourceEvidence']>): string {
+  return `${evidence.filePath}:${evidence.location.line}:${evidence.location.column}`;
 }
 
 interface ProjectTreePanelProps {
