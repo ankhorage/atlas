@@ -473,8 +473,7 @@ async function openWorkspaceMenuAsync(page: Page): Promise<void> {
   await openRepositorySourceDialogAsync(page);
   await closeRepositoryPickerAsync(page);
   const saveAs = page.getByRole('button', { name: 'Save as', exact: true });
-  if (!(await saveAs.isVisible()))
-    await page.locator('[aria-label="Manage workspaces"]:visible').click();
+  if (!(await saveAs.isVisible())) await workspaceButton(page).click();
   await saveAs.waitFor();
 }
 
@@ -486,10 +485,20 @@ async function openRepositoryPickerAsync(
   const repository = page.getByRole('checkbox', { name: repositoryLabel });
   if (!(await repository.isVisible())) {
     await openRepositorySourceDialogAsync(page);
-    const picker = page.locator('[aria-label="Choose repositories"]:visible');
+    const picker = repositoryPickerButton(page);
     if (!(await repository.isVisible())) await picker.click();
   }
   await repository.waitFor();
+}
+
+/*** Selects the live repository-picker trigger by its complete accessible button name. */
+function repositoryPickerButton(page: Page): Locator {
+  return page.getByRole('button', { name: /^Repositories \(\d+\/\d+\)$/, exact: true });
+}
+
+/*** Selects the saved-workspace trigger by its complete accessible button name. */
+function workspaceButton(page: Page): Locator {
+  return page.getByRole('button', { name: 'Workspace', exact: true });
 }
 
 /*** Opens the compact repository-source dialog before interacting with its shared controls. */
@@ -733,11 +742,11 @@ const scenarios: readonly Scenario[] = [
       await openRepositorySourceDialogAsync(page);
       await page.getByLabel('GitHub owner').fill('owner-delayed');
       await page.getByLabel('GitHub owner').fill('owner-empty');
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByText('No repositories match this search.').waitFor();
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByLabel('GitHub owner').fill('owner-a');
-      await page.getByLabel('Choose repositories').waitFor();
+      await repositoryPickerButton(page).waitFor();
       assert(
         !(await page.getByRole('checkbox', { name: 'Public only' }).isChecked()),
         'Public only must remain unchecked until explicitly selected.'
@@ -749,7 +758,7 @@ const scenarios: readonly Scenario[] = [
       await publicOnly.press('Space');
       await waitForCheckboxStateAsync(page, 'Public only', false);
       assert(!(await publicOnly.isChecked()), 'Public only remained checked after deselection.');
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl =>
@@ -777,7 +786,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page);
       await openRepositorySourceDialogAsync(page);
-      const picker = page.getByLabel('Choose repositories');
+      const picker = repositoryPickerButton(page);
       await assertTopmostControlAsync(picker, 'Repository picker');
       assert(
         await picker.isDisabled(),
@@ -865,7 +874,7 @@ const scenarios: readonly Scenario[] = [
         if (request.url().endsWith('/api/workspace/selection')) selectionRequests.push(request);
       });
       await openRepositorySourceDialogAsync(page);
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByLabel('Search repositories').fill('akon taxi');
       const removedRepositoryCheckbox = page.getByRole('checkbox', {
         name: 'viewport/akon taxi',
@@ -1054,7 +1063,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
       const before = page.url();
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl =>
@@ -1179,7 +1188,7 @@ const scenarios: readonly Scenario[] = [
         const body = JSON.parse(request.postData() ?? '{}') as { readonly runtimeId?: unknown };
         return body.runtimeId === undefined;
       });
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await recoveryRequest;
       await page.waitForURL(
@@ -1200,7 +1209,7 @@ const scenarios: readonly Scenario[] = [
       const firstRequest = page.waitForRequest(
         request => request.url().endsWith('/api/workspace/selection') && request.method() === 'POST'
       );
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await firstRequest;
       const secondRequest = page.waitForRequest(
@@ -1225,7 +1234,7 @@ const scenarios: readonly Scenario[] = [
       await openWorkspaceAsync(page);
       await openRepositorySourceDialogAsync(page);
       assert(
-        await page.getByLabel('Choose repositories').isDisabled(),
+        await repositoryPickerButton(page).isDisabled(),
         'Overlapping owners were exposed to the single-owner picker.'
       );
       await closeMobileRepositorySourceDialogAsync(page);
@@ -1240,7 +1249,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page, 'owner-a%2Cowner-b%7Cexclude%3Downer-a-catalog');
       await openRepositorySourceDialogAsync(page);
-      const picker = page.getByLabel('Choose repositories');
+      const picker = repositoryPickerButton(page);
       assert(
         await picker.isDisabled(),
         'Multi-owner exclusions were exposed to incremental selection.'
@@ -1451,7 +1460,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await closeMobileRepositorySourceDialogAsync(page);
       const vendor = page.getByRole('switch', { name: 'Show Vendor' });
@@ -1467,7 +1476,7 @@ const scenarios: readonly Scenario[] = [
       await assertSwitchCheckedAsync(restoredVendor, 'Saved vendor setting was not restored.');
       await page.getByRole('application', { name: 'Graph' }).waitFor();
       await openRepositorySourceDialogAsync(page);
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await waitForCheckboxStateAsync(page, 'owner-a/catalog', false);
       await waitForCheckboxStateAsync(page, 'owner-a/shared', true);
       assert(
@@ -1491,7 +1500,7 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
         openedUrl => openedUrl.searchParams.get('repositories') === 'owner-a-shared'
@@ -1509,7 +1518,7 @@ const scenarios: readonly Scenario[] = [
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Owner was not restored after the auth redirect.'
       );
-      await page.getByLabel('Choose repositories').click();
+      await repositoryPickerButton(page).click();
       assert(
         !(await page.getByRole('checkbox', { name: 'owner-a/catalog' }).isChecked()),
         'Excluded repository was not restored after the auth redirect.'
@@ -1920,7 +1929,7 @@ async function exerciseMobileInteractionContractAsync(page: Page): Promise<void>
 
   await sourceEntry.click();
   await page.getByText('Repository source', { exact: true }).waitFor();
-  const repositoryPickers = page.getByLabel('Choose repositories');
+  const repositoryPickers = repositoryPickerButton(page);
   assert(
     (await repositoryPickers.count()) === 1,
     'Repository source dialog did not expose its focused repository picker.'

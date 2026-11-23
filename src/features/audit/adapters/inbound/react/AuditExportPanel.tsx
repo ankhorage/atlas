@@ -28,21 +28,28 @@ function ExportButton({ format, mimeType, onExport }: ExportButtonProps) {
       leadingIcon={{ name: 'download-outline' }}
       size="s"
       variant="ghost"
-      onPress={async () => {
-        if (onExport === undefined) return;
-        const { data, filename } = await onExport();
-        const blob = new Blob([data], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = filename;
-        anchor.click();
-        URL.revokeObjectURL(url);
+      onPress={() => {
+        if (onExport !== undefined) void downloadExportAsync(onExport, mimeType);
       }}
     >
       {format}
     </Button>
   );
+}
+
+/*** Downloads one export asynchronously after a synchronous ZORA button event. */
+async function downloadExportAsync(
+  onExport: NonNullable<ExportButtonProps['onExport']>,
+  mimeType: string
+): Promise<void> {
+  const { data, filename } = await onExport();
+  const blob = new Blob([data], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 interface ExportButtonProps {

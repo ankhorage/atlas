@@ -55,8 +55,8 @@ describe('[WorkspaceView]', () => {
     await React.act(async () => {
       await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
     });
-    const workspaceMenu = document.querySelector<HTMLButtonElement>(
-      '[aria-label="Manage workspaces"]'
+    const workspaceMenu = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+      button => button.textContent === 'Workspace'
     );
     assert.equal(workspaceMenu?.textContent, 'Workspace');
     await React.act(async () => workspaceMenu?.click());
@@ -170,7 +170,12 @@ describe('[WorkspaceView]', () => {
     assert.equal(sourceEntry !== null, true);
     await React.act(async () => sourceEntry?.click());
     assert.equal(document.body.textContent?.includes('Repository source'), true);
-    assert.equal(document.body.querySelector('[aria-label="Manage workspaces"]') !== null, true);
+    assert.equal(
+      [...document.body.querySelectorAll<HTMLButtonElement>('button')].some(
+        button => button.textContent === 'Workspace'
+      ),
+      true
+    );
     assert.equal(
       document.body.querySelector('[aria-label="Close repository source"]') !== null,
       true
