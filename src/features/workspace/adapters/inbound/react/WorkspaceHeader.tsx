@@ -76,7 +76,9 @@ function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
           repositories={props.repositories}
           repositoryColorTones={props.repositoryColorTones}
           selectionRequired={props.selectionRequired}
-          authControls={<GitHubAuthControls auth={props.githubAuth} />}
+          renderAuthControls={onWorkspaceOpen => (
+            <GitHubAuthControls auth={props.githubAuth} onWorkspaceOpen={onWorkspaceOpen} />
+          )}
           onSelection={props.onSelection}
         />
       )}

@@ -4,9 +4,14 @@ import { NextResponse } from 'next/server';
 
 import {
   clearGitHubAuthAttemptCookie,
+  clearGitHubAuthReturnToCookie,
   clearGitHubAuthSessionCookie,
+  clearGitHubPrivateAccessRequestCookie,
   readGitHubAuthAttempt,
+  readGitHubAuthReturnTo,
+  readGitHubPrivateAccessRequest,
   setGitHubAuthSessionCookie,
+  setGitHubPrivateAccessCookie,
 } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 
 /*** Create the OAuth callback edge so failed session promotion never authenticates the pre-login browser identifier. */
@@ -14,19 +19,26 @@ export function createGitHubCallbackRoute(
   completeAuthorizationAsync: CompleteGitHubAuthorizationAsync
 ): (request: Request) => Promise<Response> {
   return async request => {
-    const response = NextResponse.redirect(new URL('/', request.url));
+    const cookieHeader = request.headers.get('cookie');
+    const returnTo = readGitHubAuthReturnTo(cookieHeader) ?? '/';
+    const privateAccessRequested = readGitHubPrivateAccessRequest(cookieHeader);
+    const response = NextResponse.redirect(new URL(returnTo, request.url));
     clearGitHubAuthAttemptCookie(response.cookies);
-    const attempt = readGitHubAuthAttempt(request.headers.get('cookie'));
-    if (attempt === undefined) return redirectWithOutcome(response, request.url, 'session-expired');
+    clearGitHubAuthReturnToCookie(response.cookies);
+    clearGitHubPrivateAccessRequestCookie(response.cookies);
+    const attempt = readGitHubAuthAttempt(cookieHeader);
+    if (attempt === undefined)
+      return redirectWithOutcome(response, returnTo, request.url, 'session-expired');
     const completed = await completeAuthorizationAsync(attempt, request.url);
     if (completed.outcome !== 'authenticated')
-      return redirectWithOutcome(response, request.url, completed.outcome);
+      return redirectWithOutcome(response, returnTo, request.url, completed.outcome);
     try {
       setGitHubAuthSessionCookie(completed.session, response.cookies);
-      return redirectWithOutcome(response, request.url, 'signed-in');
+      if (privateAccessRequested) setGitHubPrivateAccessCookie(response.cookies);
+      return redirectWithOutcome(response, returnTo, request.url, 'signed-in');
     } catch {
       clearGitHubAuthSessionCookie(response.cookies);
-      return redirectWithOutcome(response, request.url, 'failed');
+      return redirectWithOutcome(response, returnTo, request.url, 'failed');
     }
   };
 }
@@ -34,10 +46,11 @@ export function createGitHubCallbackRoute(
 /*** Redirect only to Atlas and expose a generic outcome that never reveals provider or token data. */
 function redirectWithOutcome(
   response: NextResponse,
+  returnTo: string,
   requestUrl: string,
   outcome: string
 ): NextResponse {
-  const destination = new URL('/', requestUrl);
+  const destination = new URL(returnTo, requestUrl);
   destination.searchParams.set('githubAuth', outcome);
   response.headers.set('location', destination.toString());
   return response;
