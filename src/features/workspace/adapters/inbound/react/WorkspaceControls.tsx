@@ -43,11 +43,13 @@ export function WorkspaceControls(props: WorkspaceControlsProps) {
       }
       onOpen={workspace => openWorkspace(workspace, props.settings, props.onOpenWorkspace)}
       onRename={() => renameWorkspace(props.activeWorkspaceId, definitions, setDefinitions)}
+      open={props.open}
       onSave={saveAs =>
         saveWorkspace(saveAs, props, props.settings, definitions, setDefinitions, workspace =>
           openWorkspace(workspace, props.settings, props.onOpenWorkspace)
         )
       }
+      onOpenChange={props.onOpenChange}
     />
   );
 }
@@ -113,12 +115,14 @@ function useWorkspaceSettingsRestore(
 function WorkspaceMenu(props: WorkspaceMenuProps) {
   return (
     <Popover
+      open={props.open}
       placement="bottom-end"
       anchor={({ toggle }) => (
         <Button size="s" variant="outline" onPress={toggle}>
           Workspace
         </Button>
       )}
+      onOpenChange={props.onOpenChange}
     >
       <Surface style={{ padding: 8 }} variant="raised">
         <label>

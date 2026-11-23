@@ -3,6 +3,7 @@ import { Popover } from '@ankhorage/surface/browser';
 import type { ColorToneDefinition } from '@ankhorage/zora';
 import { Button } from '@ankhorage/zora/web/button';
 import { Checkbox } from '@ankhorage/zora/web/checkbox';
+import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Surface } from '@ankhorage/zora/web/surface';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
@@ -24,6 +25,8 @@ export function ProjectSourceControls({
   sourceForm,
   visibleRepositories,
   onPublicOnlyChange,
+  onWorkspaceOpenChange,
+  workspaceOpen,
 }: ProjectSourceControlsProps) {
   return (
     <>
@@ -36,30 +39,51 @@ export function ProjectSourceControls({
           if (isGitHubSourceInput(source)) sourceForm.setSource(source);
         }}
       />
-      <RepositoryPicker
-        repositories={visibleRepositories}
-        repositoryColorTones={sourceForm.repositoryColorTones}
-        search={sourceForm.search}
-        selectedIds={sourceForm.selectedIds}
-        settings={sourceForm.settings}
-        selectionSupported={sourceForm.selectionSupported}
-        totalCount={sourceForm.repositories.length}
+      <SourceRepositoryPicker
         initiallyOpen={initiallyOpen}
-        onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
-        onSearchChange={sourceForm.setSearch}
-        onSelectAll={() =>
-          sourceForm.setSelectedIds(
-            new Set(sourceForm.repositories.map(repository => repository.id))
-          )
-        }
-        onSelectionChange={sourceForm.setSelectedIds}
+        sourceForm={sourceForm}
+        visibleRepositories={visibleRepositories}
       />
       {showSelectionNotice ? <SelectionSourceNotice sourceForm={sourceForm} /> : null}
       {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
       <PublicOnlyFilter checked={publicOnly} onChange={onPublicOnlyChange} />
       <RepositoryCopyButton sourceForm={sourceForm} />
-      <WorkspaceControl sourceForm={sourceForm} />
+      <WorkspaceControl
+        sourceForm={sourceForm}
+        open={workspaceOpen}
+        onOpenChange={onWorkspaceOpenChange}
+      />
     </>
+  );
+}
+
+/*** Connect the reusable picker to the staged source form without widening the header component. */
+function SourceRepositoryPicker({
+  initiallyOpen,
+  sourceForm,
+  visibleRepositories,
+}: {
+  readonly initiallyOpen?: boolean;
+  readonly sourceForm: ProjectSourceFormModel;
+  readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
+}) {
+  return (
+    <RepositoryPicker
+      repositories={visibleRepositories}
+      repositoryColorTones={sourceForm.repositoryColorTones}
+      search={sourceForm.search}
+      selectedIds={sourceForm.selectedIds}
+      settings={sourceForm.settings}
+      selectionSupported={sourceForm.selectionSupported}
+      totalCount={sourceForm.repositories.length}
+      initiallyOpen={initiallyOpen}
+      onDeselectAll={() => sourceForm.setSelectedIds(new Set())}
+      onSearchChange={sourceForm.setSearch}
+      onSelectAll={() =>
+        sourceForm.setSelectedIds(new Set(sourceForm.repositories.map(repository => repository.id)))
+      }
+      onSelectionChange={sourceForm.setSelectedIds}
+    />
   );
 }
 
@@ -75,7 +99,15 @@ function isGitHubSourceInput(value: string): boolean {
 }
 
 /*** Keeps saved-workspace actions in the persistent header settings context. */
-function WorkspaceControl({ sourceForm }: { readonly sourceForm: ProjectSourceFormModel }) {
+function WorkspaceControl({
+  sourceForm,
+  open,
+  onOpenChange,
+}: {
+  readonly sourceForm: ProjectSourceFormModel;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+}) {
   return (
     <WorkspaceControls
       activeWorkspaceId={sourceForm.activeWorkspaceId}
@@ -83,8 +115,10 @@ function WorkspaceControl({ sourceForm }: { readonly sourceForm: ProjectSourceFo
       selectedIds={sourceForm.selectedIds}
       settings={sourceForm.settings}
       source={sourceForm.source}
+      open={open}
       onDeleteWorkspace={sourceForm.deleteWorkspace}
       onOpenWorkspace={sourceForm.openWorkspace}
+      onOpenChange={onOpenChange}
     />
   );
 }
@@ -125,15 +159,14 @@ function PublicOnlyFilter({
 /*** Copies the canonical URLs of the staged repository selection. */
 function RepositoryCopyButton({ sourceForm }: { readonly sourceForm: ProjectSourceFormModel }) {
   return (
-    <Button
+    <IconButton
       disabled={sourceForm.selectedRepositories.length === 0}
-      leadingIcon={{ name: 'copy-outline' }}
+      icon={{ name: 'copy-outline' }}
+      label="Copy selected repository links"
       size="s"
       variant="ghost"
       onPress={sourceForm.copyRepositoryLinks}
-    >
-      Copy
-    </Button>
+    />
   );
 }
 
@@ -144,6 +177,8 @@ interface ProjectSourceControlsProps {
   readonly sourceForm: ProjectSourceFormModel;
   readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
   readonly onPublicOnlyChange: (checked: boolean) => void;
+  readonly onWorkspaceOpenChange: (open: boolean) => void;
+  readonly workspaceOpen: boolean;
 }
 
 interface ProjectSourceFormModel {

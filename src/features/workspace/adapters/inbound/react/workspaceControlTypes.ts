@@ -10,6 +10,8 @@ export interface WorkspaceControlsProps {
   readonly selectedIds: ReadonlySet<string>;
   readonly settings: SettingsContextValue;
   readonly source: string;
+  readonly open?: boolean;
+  readonly onOpenChange?: (open: boolean) => void;
 }
 
 export interface WorkspaceMenuProps {
@@ -20,6 +22,8 @@ export interface WorkspaceMenuProps {
   readonly onOpen: (workspace: WorkspaceDefinition) => void;
   readonly onRename: () => void;
   readonly onSave: (saveAs: boolean) => void;
+  readonly open?: boolean;
+  readonly onOpenChange?: (open: boolean) => void;
 }
 
 export interface WorkspaceOpenDetail {

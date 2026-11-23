@@ -7,6 +7,9 @@ import type { ResponseCookies } from 'next/dist/server/web/spec-extension/cookie
 /*** Keep GitHub credentials encrypted and authenticated in host-only browser cookies. */
 const githubAuthCookieNames = {
   attempt: '__Host-atlas-github-attempt',
+  privateAccess: '__Host-atlas-github-private-access',
+  privateAccessRequest: '__Host-atlas-github-private-access-request',
+  returnTo: '__Host-atlas-github-return-to',
   session: '__Host-atlas-github-session',
 } as const;
 
@@ -31,6 +34,35 @@ export function setGitHubAuthSessionCookie(session: AuthSession, cookies: Respon
   });
 }
 
+/*** Retain the safe Atlas destination while GitHub owns the browser navigation. */
+export function setGitHubAuthReturnToCookie(returnTo: string, cookies: ResponseCookies): void {
+  cookies.set(githubAuthCookieNames.returnTo, sealCookieValue({ returnTo }, 'return-to'), {
+    ...cookieOptions(),
+    maxAge: 600,
+  });
+}
+
+/*** Remember a private-scope request only until the authorization callback completes. */
+export function setGitHubPrivateAccessRequestCookie(cookies: ResponseCookies): void {
+  cookies.set(
+    githubAuthCookieNames.privateAccessRequest,
+    sealCookieValue({ requested: true }, 'private-access-request'),
+    { ...cookieOptions(), maxAge: 600 }
+  );
+}
+
+/*** Mark a completed private-scope authorization without exposing a credential to the browser. */
+export function setGitHubPrivateAccessCookie(cookies: ResponseCookies): void {
+  cookies.set(
+    githubAuthCookieNames.privateAccess,
+    sealCookieValue({ enabled: true }, 'private-access'),
+    {
+      ...cookieOptions(),
+      maxAge: 28_800,
+    }
+  );
+}
+
 /*** Remove transient authorization state after a callback, whether it succeeded or failed. */
 export function clearGitHubAuthAttemptCookie(cookies: ResponseCookies): void {
   clearGitHubAuthCookie(githubAuthCookieNames.attempt, cookies);
@@ -39,6 +71,21 @@ export function clearGitHubAuthAttemptCookie(cookies: ResponseCookies): void {
 /*** Remove the opaque local browser session without claiming to revoke copied stateless cookies. */
 export function clearGitHubAuthSessionCookie(cookies: ResponseCookies): void {
   clearGitHubAuthCookie(githubAuthCookieNames.session, cookies);
+}
+
+/*** Clear navigation and private-scope markers whenever the related authorization ends. */
+export function clearGitHubAuthReturnToCookie(cookies: ResponseCookies): void {
+  clearGitHubAuthCookie(githubAuthCookieNames.returnTo, cookies);
+}
+
+/*** Clear the one-time private authorization request after its callback is handled. */
+export function clearGitHubPrivateAccessRequestCookie(cookies: ResponseCookies): void {
+  clearGitHubAuthCookie(githubAuthCookieNames.privateAccessRequest, cookies);
+}
+
+/*** Clear the browser-local marker when the user signs out. */
+export function clearGitHubPrivateAccessCookie(cookies: ResponseCookies): void {
+  clearGitHubAuthCookie(githubAuthCookieNames.privateAccess, cookies);
 }
 
 /*** Emit a host-only HTTPS tombstone that matches the scope of each authentication cookie. */
@@ -74,6 +121,36 @@ export function readGitHubAuthAttempt(
   return opened === undefined || isExpired(opened.expiresAt) ? undefined : opened;
 }
 
+/*** Read a callback destination only after authenticating its opaque host cookie. */
+export function readGitHubAuthReturnTo(cookieHeader: string | null): string | undefined {
+  const value = readCookie(cookieHeader, githubAuthCookieNames.returnTo);
+  const opened =
+    value === undefined
+      ? undefined
+      : openCookieValue<{ readonly returnTo?: unknown }>(value, 'return-to');
+  return opened !== undefined && isSafeAtlasPath(opened.returnTo) ? opened.returnTo : undefined;
+}
+
+/*** Report a successful private-scope authorization marker without treating it as a token. */
+export function readGitHubPrivateAccess(cookieHeader: string | null): boolean {
+  return readGitHubCookieFlag(
+    cookieHeader,
+    githubAuthCookieNames.privateAccess,
+    'private-access',
+    'enabled'
+  );
+}
+
+/*** Report the in-flight consent request only at the callback boundary. */
+export function readGitHubPrivateAccessRequest(cookieHeader: string | null): boolean {
+  return readGitHubCookieFlag(
+    cookieHeader,
+    githubAuthCookieNames.privateAccessRequest,
+    'private-access-request',
+    'requested'
+  );
+}
+
 /*** Report whether the deployment has a valid cookie key without exposing or deriving its value. */
 export function hasGitHubAuthCookieEncryptionKey(): boolean {
   try {
@@ -85,7 +162,7 @@ export function hasGitHubAuthCookieEncryptionKey(): boolean {
 }
 
 /*** Encrypt and authenticate cookie content with the deployment-owned 256-bit key. */
-function sealCookieValue(value: unknown, purpose: 'attempt' | 'session'): string {
+function sealCookieValue(value: unknown, purpose: CookiePurpose): string {
   const iv = randomBytes(12);
   const cipher = createCipheriv('aes-256-gcm', readEncryptionKey(), iv);
   cipher.setAAD(Buffer.from(`atlas-github-auth:${purpose}:v1`));
@@ -94,7 +171,7 @@ function sealCookieValue(value: unknown, purpose: 'attempt' | 'session'): string
 }
 
 /*** Reject malformed, tampered, or incorrectly purposed cookie values without revealing their content. */
-function openCookieValue<T>(value: string, purpose: 'attempt' | 'session'): T | undefined {
+function openCookieValue<T>(value: string, purpose: CookiePurpose): T | undefined {
   try {
     const [iv, tag, ciphertext, ...unexpected] = value.split('.');
     if (unexpected.length > 0) return undefined;
@@ -134,3 +211,24 @@ function isExpired(expiresAt: number | undefined): boolean {
 function readCookie(cookieHeader: string | null, name: string): string | undefined {
   return cookieHeader?.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`, 'u'))?.[1];
 }
+
+/*** Keep OAuth redirects inside this app even if a cookie was copied or tampered with. */
+function isSafeAtlasPath(value: unknown): value is string {
+  return typeof value === 'string' && value.startsWith('/') && !value.startsWith('//');
+}
+
+/*** Decode a short-lived boolean marker without widening cookie parsing to callers. */
+function readGitHubCookieFlag(
+  cookieHeader: string | null,
+  name: string,
+  purpose: CookiePurpose,
+  property: 'enabled' | 'requested'
+): boolean {
+  const value = readCookie(cookieHeader, name);
+  const opened =
+    value === undefined ? undefined : openCookieValue<Record<string, unknown>>(value, purpose);
+  return property === 'enabled' ? opened?.enabled === true : opened?.requested === true;
+}
+
+type CookiePurpose =
+  'attempt' | 'private-access' | 'private-access-request' | 'return-to' | 'session';

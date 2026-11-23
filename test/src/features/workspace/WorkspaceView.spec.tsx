@@ -148,7 +148,11 @@ describe('[WorkspaceView]', () => {
       >
         <WorkspaceView
           currentSource="@me"
-          githubAuth={{ displayName: 'GitHub account', status: 'authenticated' }}
+          githubAuth={{
+            displayName: 'GitHub account',
+            privateRepositoryAccess: false,
+            status: 'authenticated',
+          }}
           projectName="Atlas"
           repositories={[
             {
@@ -201,7 +205,7 @@ describe('[WorkspaceView]', () => {
       document.querySelector('[role="checkbox"][aria-label="organization/private"]') !== null,
       true
     );
-    assert.equal(document.body.textContent?.includes('Authorize private repositories'), true);
+    assert.equal(document.body.textContent?.includes('Authorize private repositories'), false);
     unmount();
   });
 

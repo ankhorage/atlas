@@ -4,9 +4,12 @@ import { NextResponse } from 'next/server';
 import { createGitHubCallbackRoute } from '@/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute';
 import {
   readGitHubAuthAttempt,
+  readGitHubPrivateAccess,
   readGitHubAuthSession,
   setGitHubAuthAttemptCookie,
+  setGitHubAuthReturnToCookie,
   setGitHubAuthSessionCookie,
+  setGitHubPrivateAccessRequestCookie,
 } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 
 process.env.ATLAS_GITHUB_OAUTH_COOKIE_ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
@@ -54,10 +57,28 @@ describe('[GitHub callback route]', () => {
 
     assert.equal(readGitHubAuthSession(wrongPurpose), undefined);
   });
+
+  it('returns to the selected Atlas source and marks a completed private-scope authorization', async () => {
+    const GET = createGitHubCallbackRoute(async () => ({
+      outcome: 'authenticated',
+      session: { accessToken: 'test-token', user: { id: 'user-a', username: 'user-a' } },
+    }));
+    const response = await GET(callbackRequest('/?source=%40me&repositories=repo-a', true));
+
+    const destination = new URL(response.headers.get('location') ?? '');
+    assert.equal(destination.searchParams.get('source'), '@me');
+    assert.equal(destination.searchParams.get('repositories'), 'repo-a');
+    assert.equal(destination.searchParams.get('githubAuth'), 'signed-in');
+    const privateCookie = response.headers
+      .getSetCookie()
+      .find(value => value.startsWith('__Host-atlas-github-private-access='))
+      ?.split(';')[0];
+    assert.equal(readGitHubPrivateAccess(privateCookie ?? null), true);
+  });
 });
 
 /*** Create a browser-bound encrypted attempt cookie for the callback edge. */
-function callbackRequest(): Request {
+function callbackRequest(returnTo = '/', privateAccessRequested = false): Request {
   const response = NextResponse.next();
   setGitHubAuthAttemptCookie(
     {
@@ -68,7 +89,12 @@ function callbackRequest(): Request {
     },
     response.cookies
   );
-  const cookie = response.headers.getSetCookie()[0]?.split(';')[0] ?? '';
+  setGitHubAuthReturnToCookie(returnTo, response.cookies);
+  if (privateAccessRequested) setGitHubPrivateAccessRequestCookie(response.cookies);
+  const cookie = response.headers
+    .getSetCookie()
+    .map(value => value.split(';')[0])
+    .join('; ');
   return new Request('https://atlas.test/api/auth/github/callback?code=code-a&state=state-a', {
     headers: { cookie },
   });
