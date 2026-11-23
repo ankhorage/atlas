@@ -185,6 +185,7 @@ function preserveWorkspaceDuringRecovery(
       : frame.workspace;
   return {
     error: undefined,
+    projectName: frame.projectName,
     repositoryStatuses: frame.repositoryStatuses,
     runtimeId: frame.runtimeId,
     workspace,
@@ -230,6 +231,8 @@ function isWorkspaceProgressFrame(
     value.generation === generation &&
     'runtimeId' in value &&
     typeof value.runtimeId === 'string' &&
+    'projectName' in value &&
+    typeof value.projectName === 'string' &&
     'workspace' in value &&
     isWorkspaceLoadResult(value.workspace) &&
     'repositoryStatuses' in value &&
@@ -276,6 +279,7 @@ interface WorkspaceSelectionRequest {
 
 interface WorkspaceProgressFrame {
   readonly generation: number;
+  readonly projectName: string;
   readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[];
   readonly runtimeId: string;
   readonly workspace: WorkspaceLoadResult;
@@ -291,6 +295,7 @@ interface WorkspaceSelectionState {
 
 export interface LiveWorkspace {
   readonly error?: string;
+  readonly projectName: string;
   readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
   readonly runtimeId: string | undefined;
   readonly workspace: WorkspaceLoadResult;

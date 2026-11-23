@@ -10,6 +10,7 @@ import { View } from '@ankhorage/zora/web/view';
 import { RepositoryColorControl } from '@/features/workspace/adapters/inbound/react/RepositoryColorControl';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceOpenDetail } from '@/features/workspace/adapters/inbound/react/workspaceControlTypes';
+import { isWorkspaceSelectionSource } from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { SettingsContextValue } from '@/types/settings';
 
@@ -19,6 +20,7 @@ import styles from './WorkspaceHeader.module.css';
 export function ProjectSourceControls({
   initiallyOpen,
   publicOnly,
+  showSelectionNotice = true,
   sourceForm,
   visibleRepositories,
   onPublicOnlyChange,
@@ -27,10 +29,12 @@ export function ProjectSourceControls({
     <>
       <TextInput
         accessibilityLabel="GitHub owner"
-        placeholder="@me or owner/repository"
+        placeholder="@me or GitHub owner"
         size="s"
         value={sourceForm.source}
-        onChangeText={sourceForm.setSource}
+        onChangeText={source => {
+          if (isGitHubSourceInput(source)) sourceForm.setSource(source);
+        }}
       />
       <RepositoryPicker
         repositories={visibleRepositories}
@@ -50,12 +54,23 @@ export function ProjectSourceControls({
         }
         onSelectionChange={sourceForm.setSelectedIds}
       />
-      <SelectionSourceNotice sourceForm={sourceForm} />
+      {showSelectionNotice ? <SelectionSourceNotice sourceForm={sourceForm} /> : null}
       {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
       <PublicOnlyFilter checked={publicOnly} onChange={onPublicOnlyChange} />
       <RepositoryCopyButton sourceForm={sourceForm} />
       <WorkspaceControl sourceForm={sourceForm} />
     </>
+  );
+}
+
+/*** Allow GitHub owner input and the transient states required while typing @me. */
+function isGitHubSourceInput(value: string): boolean {
+  return (
+    value === '' ||
+    value === '@' ||
+    value === '@m' ||
+    isWorkspaceSelectionSource(value) ||
+    /^[A-Za-z\d](?:[A-Za-z\d-]{0,38})?$/u.test(value)
   );
 }
 
@@ -76,7 +91,7 @@ function WorkspaceControl({ sourceForm }: { readonly sourceForm: ProjectSourceFo
 
 /*** Explains why a preserved legacy workspace cannot use the single-owner incremental transport. */
 function SelectionSourceNotice({ sourceForm }: { readonly sourceForm: ProjectSourceFormModel }) {
-  if (sourceForm.selectionSupported || sourceForm.source.trim() === '') return null;
+  if (sourceForm.selectionSupported || !sourceForm.source.includes(',')) return null;
   return (
     <span role="status">
       Repository selection is available for one GitHub owner or @me. This workspace remains
@@ -125,6 +140,7 @@ function RepositoryCopyButton({ sourceForm }: { readonly sourceForm: ProjectSour
 interface ProjectSourceControlsProps {
   readonly initiallyOpen?: boolean;
   readonly publicOnly: boolean;
+  readonly showSelectionNotice?: boolean;
   readonly sourceForm: ProjectSourceFormModel;
   readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
   readonly onPublicOnlyChange: (checked: boolean) => void;

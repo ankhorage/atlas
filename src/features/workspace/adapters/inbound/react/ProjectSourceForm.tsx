@@ -40,6 +40,7 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         <ProjectSourceControls
           initiallyOpen={props.selectionRequired && sourceForm.selectionSupported}
           publicOnly={publicOnly}
+          showSelectionNotice={false}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
           onPublicOnlyChange={setPublicOnly}
