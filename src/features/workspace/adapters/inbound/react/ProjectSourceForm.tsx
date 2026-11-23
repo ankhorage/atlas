@@ -16,6 +16,8 @@ import { WorkspaceSettingsRestore } from '@/features/workspace/adapters/inbound/
 import { WorkspaceDialogTitle } from '@/features/workspace/adapters/inbound/react/WorkspaceDialogTitle';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
+import styles from './WorkspaceHeader.module.css';
+
 /*** Edits a GitHub source while applying repository selection changes immediately. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
@@ -33,17 +35,29 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         activeWorkspaceId={sourceForm.activeWorkspaceId}
         settings={sourceForm.settings}
       />
-      <RepositorySourceEntry onOpen={() => setSourceOpen(true)} />
-      <ProjectSourceDialog
-        authControls={props.authControls}
-        initiallyOpen={props.selectionRequired}
-        open={sourceOpen}
-        publicOnly={publicOnly}
-        sourceForm={sourceForm}
-        visibleRepositories={visibleRepositories}
-        onDismiss={() => setSourceOpen(false)}
-        onPublicOnlyChange={setPublicOnly}
-      />
+      <div className={styles.desktopSourceControls}>
+        {props.authControls}
+        <ProjectSourceControls
+          initiallyOpen={props.selectionRequired && sourceForm.selectionSupported}
+          publicOnly={publicOnly}
+          sourceForm={sourceForm}
+          visibleRepositories={visibleRepositories}
+          onPublicOnlyChange={setPublicOnly}
+        />
+      </div>
+      <div className={styles.mobileSourceControls}>
+        <RepositorySourceEntry onOpen={() => setSourceOpen(true)} />
+        <ProjectSourceDialog
+          authControls={props.authControls}
+          initiallyOpen={props.selectionRequired}
+          open={sourceOpen}
+          publicOnly={publicOnly}
+          sourceForm={sourceForm}
+          visibleRepositories={visibleRepositories}
+          onDismiss={() => setSourceOpen(false)}
+          onPublicOnlyChange={setPublicOnly}
+        />
+      </div>
     </>
   );
 }

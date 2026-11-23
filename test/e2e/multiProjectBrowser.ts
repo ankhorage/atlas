@@ -506,12 +506,17 @@ function workspaceButton(page: Page): Locator {
   return page.getByRole('button', { name: 'Workspace', exact: true });
 }
 
-/*** Opens the compact repository-source dialog before interacting with its shared controls. */
+/*** Opens the compact mobile dialog, while desktop exposes the same controls in the app header. */
 async function openRepositorySourceDialogAsync(page: Page): Promise<void> {
   const dialog = page.getByText('Repository source', { exact: true });
   if (await dialog.isVisible()) return;
-  await page.getByLabel('Open repository source and workspace').click();
-  await dialog.waitFor();
+  const entry = page.getByLabel('Open repository source and workspace');
+  if (await entry.isVisible()) {
+    await entry.click();
+    await dialog.waitFor();
+    return;
+  }
+  await page.getByLabel('GitHub owner').waitFor();
 }
 
 /*** Closes the picker and then its mobile dialog so subsequent controls are no longer obscured. */

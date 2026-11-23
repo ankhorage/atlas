@@ -27,7 +27,7 @@ export function ProjectSourceControls({
     <>
       <TextInput
         accessibilityLabel="GitHub owner"
-        placeholder="ankhorage or @me"
+        placeholder="@me or owner/repository"
         size="s"
         value={sourceForm.source}
         onChangeText={sourceForm.setSource}

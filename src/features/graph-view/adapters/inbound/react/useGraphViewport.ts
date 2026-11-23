@@ -13,19 +13,19 @@ import { getAdaptiveCycleLayoutSpacing } from '@/features/audit/utils/getAdaptiv
 import type { CycleHighlight } from '@/types/auditVisualization';
 
 /***
- * Mirrors owner viewport state and fits exactly once after the first settled layout.
- * Later layouts remain passive so progressive graph updates retain user navigation.
+ * Mirrors owner viewport state and fits each distinct settled topology once.
+ * Duplicate layouts remain passive so user navigation survives renderer updates.
  */
 export function useGraphViewport(input: UseGraphViewportInput) {
   const [controller, setController] = useState<GraphViewController | null>(null);
   const controllerRef = useRef<GraphViewController | null>(null);
-  const initialFitControllerRef = useRef<GraphViewController | null>(null);
+  const fittedTopologyRef = useRef<TopologyFit | null>(null);
   const [viewport, setViewport] = useState({ zoom: 1, min: 0.5, max: 2 });
   const cycleFocus = useCycleViewportFocus(input, setViewport);
 
   /*** Captures the controller before synchronizing the initial viewport. */
   const handleReady = (nextController: GraphViewController) => {
-    if (controllerRef.current !== nextController) initialFitControllerRef.current = null;
+    if (controllerRef.current !== nextController) fittedTopologyRef.current = null;
     controllerRef.current = nextController;
     setController(nextController);
     synchronizeGraphViewport(nextController, setViewport);
@@ -51,11 +51,9 @@ export function useGraphViewport(input: UseGraphViewportInput) {
       nextController: GraphViewController,
       visibleNodeIds: readonly string[]
     ) => {
-      if (
-        initialFitControllerRef.current !== nextController &&
-        hasMeasuredVisibleLayout(nextController, visibleNodeIds)
-      ) {
-        initialFitControllerRef.current = nextController;
+      const topology = createTopologyFit(nextController, visibleNodeIds);
+      if (topology !== null && fittedTopologyRef.current?.signature !== topology.signature) {
+        fittedTopologyRef.current = topology;
         fitGraphWithOptimizedSpacing(nextController, setViewport);
       }
       cycleFocus.handleLayoutComplete(nextController, visibleNodeIds);
@@ -67,23 +65,25 @@ export function useGraphViewport(input: UseGraphViewportInput) {
   };
 }
 
-/*** Requires a non-empty, fully measured layout before consuming the one automatic fit. */
-function hasMeasuredVisibleLayout(
+/*** Requires a non-empty, fully measured layout before fitting a changed topology. */
+function createTopologyFit(
   controller: GraphViewController,
   visibleNodeIds: readonly string[]
-): boolean {
-  const uniqueVisibleNodeIds = [...new Set(visibleNodeIds)];
-  if (uniqueVisibleNodeIds.length === 0) return false;
+): TopologyFit | null {
+  const uniqueVisibleNodeIds = [...new Set(visibleNodeIds)].sort();
+  if (uniqueVisibleNodeIds.length === 0) return null;
 
   const measurement = controller.measureNodes?.(uniqueVisibleNodeIds);
-  return (
-    measurement !== null &&
-    measurement !== undefined &&
-    measurement.viewport.width > 0 &&
-    measurement.viewport.height > 0 &&
-    measurement.nodes.length === uniqueVisibleNodeIds.length &&
-    measurement.nodes.every(node => node.size.width > 0 && node.size.height > 0)
-  );
+  if (
+    measurement === null ||
+    measurement === undefined ||
+    measurement.viewport.width <= 0 ||
+    measurement.viewport.height <= 0 ||
+    measurement.nodes.length !== uniqueVisibleNodeIds.length ||
+    measurement.nodes.some(node => node.size.width <= 0 || node.size.height <= 0)
+  )
+    return null;
+  return { signature: uniqueVisibleNodeIds.join('|') };
 }
 
 /*** Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit. */
@@ -307,4 +307,8 @@ interface GraphViewportState {
   readonly zoom: number;
   readonly min: number;
   readonly max: number;
+}
+
+interface TopologyFit {
+  readonly signature: string;
 }
