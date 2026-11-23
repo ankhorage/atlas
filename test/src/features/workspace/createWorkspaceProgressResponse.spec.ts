@@ -19,12 +19,14 @@ describe('[createWorkspaceProgressResponse]', () => {
       [
         {
           generation: 7,
+          projectName: 'GitHub workspace',
           repositoryStatuses: [],
           runtimeId: 'first',
           workspace: result('first').workspace,
         },
         {
           generation: 7,
+          projectName: 'GitHub workspace',
           repositoryStatuses: [],
           runtimeId: 'second',
           workspace: result('second').workspace,
@@ -107,6 +109,7 @@ function parseFrames(body: string): unknown[] {
 function progressFrame(generation: number, value: ReturnType<typeof result>) {
   return {
     generation,
+    projectName: value.projectName,
     repositoryStatuses: value.repositoryStatuses,
     runtimeId: value.runtimeId,
     workspace: value.workspace,

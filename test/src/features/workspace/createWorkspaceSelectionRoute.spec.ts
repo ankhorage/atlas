@@ -101,11 +101,12 @@ function frame(runtimeId: string, status: 'loading' | 'successful') {
   };
 }
 
-/*** Represent only the four fields promised by the wire contract. */
+/*** Represent only the browser-visible fields promised by the wire contract. */
 function transportFrame(runtimeId: string, status: 'loading' | 'successful') {
   const result = frame(runtimeId, status);
   return {
     generation: 1,
+    projectName: result.projectName,
     repositoryStatuses: result.repositoryStatuses,
     runtimeId: result.runtimeId,
     workspace: result.workspace,

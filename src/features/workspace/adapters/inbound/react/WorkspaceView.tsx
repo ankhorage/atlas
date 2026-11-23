@@ -30,6 +30,7 @@ export function WorkspaceView({
   workspace,
 }: WorkspaceViewProps) {
   const [liveWorkspace, setLiveWorkspace] = useState<LiveWorkspace>({
+    projectName,
     repositoryStatuses,
     runtimeId,
     workspace,
@@ -41,8 +42,9 @@ export function WorkspaceView({
     setLiveWorkspace
   );
   const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
+  const activeProjectName = liveWorkspace.projectName;
   const settingsScope =
-    workspaceScope ?? resolveWorkspaceProjectIdentity(liveWorkspace.workspace, projectName);
+    workspaceScope ?? resolveWorkspaceProjectIdentity(liveWorkspace.workspace, activeProjectName);
   return (
     <SettingsProvider workspaceScope={settingsScope}>
       <WorkspaceLayout
@@ -51,7 +53,7 @@ export function WorkspaceView({
         githubAuth={githubAuth}
         liveWorkspace={liveWorkspace}
         offline={offline}
-        projectName={projectName}
+        projectName={activeProjectName}
         repositories={repositories}
         repositoryColorTones={repositoryColorTones}
         selectionError={liveWorkspace.error}
@@ -81,13 +83,20 @@ function useWorkspaceRepositoryRetry(
   const latestRetry = useRef(0);
   if (liveWorkspace.runtimeId === undefined) return undefined;
   return repositoryId =>
-    retryRepositoryAsync(liveWorkspace.runtimeId, repositoryId, latestRetry, setLiveWorkspace);
+    retryRepositoryAsync(
+      liveWorkspace.runtimeId,
+      repositoryId,
+      liveWorkspace.projectName,
+      latestRetry,
+      setLiveWorkspace
+    );
 }
 
 /*** Request one server-owned repository retry while preserving the live React workspace and selections. */
 async function retryRepositoryAsync(
   runtimeId: string | undefined,
   repositoryId: string,
+  projectName: string,
   latestRetry: { current: number },
   setLiveWorkspace: (value: LiveWorkspace) => void
 ): Promise<void> {
@@ -104,6 +113,7 @@ async function retryRepositoryAsync(
     throw new Error('The repository retry returned an invalid workspace.');
   if (requestId !== latestRetry.current) return;
   setLiveWorkspace({
+    projectName,
     repositoryStatuses: result.repositoryStatuses,
     runtimeId: result.runtimeId,
     workspace: result.workspace,

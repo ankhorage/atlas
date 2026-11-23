@@ -51,6 +51,7 @@ async function streamWorkspaceProgressAsync(
 function toProgressFrame(result: WorkspaceRepositoryRuntimeResult, generation: number) {
   return {
     generation,
+    projectName: result.projectName,
     repositoryStatuses: result.repositoryStatuses,
     runtimeId: result.runtimeId,
     workspace: result.workspace,

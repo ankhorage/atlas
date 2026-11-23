@@ -750,6 +750,13 @@ const scenarios: readonly Scenario[] = [
     async page => {
       await page.goto(url, { waitUntil: 'networkidle' });
       await openRepositorySourceDialogAsync(page);
+      const source = page.getByLabel('GitHub owner');
+      await source.fill('@');
+      await source.fill('@!');
+      assert(
+        (await source.inputValue()) === '@',
+        'The owner input accepted an invalid special character.'
+      );
       await page.getByLabel('GitHub owner').fill('owner-delayed');
       await page.getByLabel('GitHub owner').fill('owner-empty');
       await repositoryPickerButton(page).click();
@@ -780,6 +787,10 @@ const scenarios: readonly Scenario[] = [
         (await page.getByLabel('GitHub owner').inputValue()) === 'owner-a',
         'Shorthand repository owner was not normalized.'
       );
+      assert(
+        (await page.getByTestId('workspace-breadcrumbs').innerText()).includes('catalog'),
+        'The workspace header did not replace the repository-selection prompt after loading.'
+      );
       await assertGraphCanvasAsync(page);
       await openRepositoryPickerAsync(page);
       await waitForCheckboxStateAsync(page, 'owner-a/catalog', true);
@@ -802,11 +813,14 @@ const scenarios: readonly Scenario[] = [
         await picker.isDisabled(),
         'Multi-owner picker was not bounded to the server contract.'
       );
-      await page
-        .getByText('Repository selection is available for one GitHub owner or @me.', {
-          exact: false,
-        })
-        .waitFor();
+      assert(
+        (await page
+          .getByText('Repository selection is available for one GitHub owner or @me.', {
+            exact: false,
+          })
+          .count()) === 0,
+        'The desktop header rendered its long source-status notice inline.'
+      );
       await page.getByText('owner-a', { exact: true }).waitFor();
       await page.getByText('owner-b', { exact: true }).waitFor();
       return [];
