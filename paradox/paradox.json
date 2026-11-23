@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.22.0",
+      "value": "v0.22.1",
       "color": "cb3837"
     },
     {
@@ -4415,6 +4415,17 @@
       }
     },
     {
+      "name": "downloadExportAsync",
+      "description": "Downloads one export asynchronously after a synchronous ZORA button event.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
+        "line": 41,
+        "column": 1
+      }
+    },
+    {
       "name": "AuditRuleList",
       "description": "Render specialized cycle findings plus generic architecture findings.",
       "see": [],
@@ -4465,7 +4476,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "line": 23,
+        "line": 25,
         "column": 1
       }
     },
@@ -4476,7 +4487,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "line": 76,
+        "line": 78,
         "column": 1
       }
     },
@@ -4487,7 +4498,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "line": 92,
+        "line": 94,
         "column": 1
       }
     },
@@ -4547,13 +4558,13 @@
       }
     },
     {
-      "name": "CycleRow",
-      "description": "Renders one compact single-line cycle row with the selection switch in the trailing slot.",
+      "name": "createCycleRow",
+      "description": "Builds one compact ZORA list item while preserving cycle inspection and selection behavior.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 136,
+        "line": 107,
         "column": 1
       }
     },
@@ -5917,7 +5928,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 225,
+        "line": 226,
         "column": 1
       }
     },
@@ -5928,7 +5939,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 244,
+        "line": 245,
         "column": 1
       }
     },
@@ -5939,7 +5950,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 257,
+        "line": 258,
         "column": 1
       }
     },
@@ -5950,7 +5961,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "line": 20,
+        "line": 26,
         "column": 1
       }
     },
@@ -5961,7 +5972,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx",
-        "line": 30,
+        "line": 36,
         "column": 9
       }
     },
@@ -6044,7 +6055,7 @@
     },
     {
       "name": "useGraphViewport",
-      "description": "Mirrors owner viewport state and fits exactly once after the first settled layout.\nLater layouts remain passive so progressive graph updates retain user navigation.",
+      "description": "Mirrors owner viewport state and fits each distinct settled topology once.\nDuplicate layouts remain passive so user navigation survives renderer updates.",
       "see": [],
       "security": [],
       "sourceLocation": {
@@ -6087,13 +6098,13 @@
       }
     },
     {
-      "name": "hasMeasuredVisibleLayout",
-      "description": "Requires a non-empty, fully measured layout before consuming the one automatic fit.",
+      "name": "createTopologyFit",
+      "description": "Requires a non-empty, fully measured layout before fitting a changed topology.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 71,
+        "line": 69,
         "column": 1
       }
     },
@@ -7787,7 +7798,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 39,
+        "line": 40,
         "column": 1
       }
     },
@@ -7798,7 +7809,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/ProjectTreePanel.tsx",
-        "line": 62,
+        "line": 63,
         "column": 1
       }
     },
@@ -8909,7 +8920,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 110,
+        "line": 111,
         "column": 1
       }
     },
@@ -8931,7 +8942,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 208,
+        "line": 202,
         "column": 1
       }
     },
@@ -8942,7 +8953,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 231,
+        "line": 225,
         "column": 1
       }
     },
@@ -8964,7 +8975,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 54,
+        "line": 66,
         "column": 1
       }
     },
@@ -8975,7 +8986,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 67,
+        "line": 79,
         "column": 1
       }
     },
@@ -8986,7 +8997,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 108,
+        "line": 120,
         "column": 1
       }
     },
@@ -8997,7 +9008,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 127,
+        "line": 139,
         "column": 1
       }
     },
@@ -9008,7 +9019,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 178,
+        "line": 190,
         "column": 1
       }
     },
@@ -9019,7 +9030,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 189,
+        "line": 201,
         "column": 1
       }
     },
@@ -9954,7 +9965,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 24,
+        "line": 27,
         "column": 1
       }
     },
@@ -9965,7 +9976,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 30,
+        "line": 33,
         "column": 9
       }
     },
@@ -9976,7 +9987,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 64,
+        "line": 67,
         "column": 1
       }
     },
@@ -9987,7 +9998,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 99,
+        "line": 102,
         "column": 1
       }
     },
@@ -9998,7 +10009,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 124,
+        "line": 127,
         "column": 1
       }
     },
@@ -10009,7 +10020,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 142,
+        "line": 145,
         "column": 1
       }
     },
@@ -10020,7 +10031,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
-        "line": 150,
+        "line": 153,
         "column": 1
       }
     },
@@ -16777,9 +16788,21 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
+        "fromSymbol": "openWorkspaceMenuAsync",
+        "toSymbol": "workspaceButton",
+        "callExpression": "workspaceButton",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
         "fromSymbol": "openRepositoryPickerAsync",
         "toSymbol": "openRepositorySourceDialogAsync",
         "callExpression": "openRepositorySourceDialogAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "openRepositoryPickerAsync",
+        "toSymbol": "repositoryPickerButton",
+        "callExpression": "repositoryPickerButton",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -16862,6 +16885,12 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "repositoryPickerButton",
+        "callExpression": "repositoryPickerButton",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assert",
         "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -16898,6 +16927,54 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "waitForGraphNodesAsync",
+        "callExpression": "waitForGraphNodesAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "panAndZoomGraphAsync",
+        "callExpression": "panAndZoomGraphAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "measureNodes",
+        "callExpression": "controller?.measureNodes",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "getViewport",
+        "callExpression": "controller.getViewport",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "capture",
+        "toSymbol": "measureNodes",
+        "callExpression": "target.__atlasViewportProbe?.controller?.measureNodes",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "getRequestCount",
+        "callExpression": "getRequestCount",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "measureNodes",
+        "callExpression": "controller\n            ?.measureNodes",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "getViewport",
+        "callExpression": "controller?.getViewport",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "closeMobileRepositorySourceDialogAsync",
         "callExpression": "closeMobileRepositorySourceDialogAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -16918,12 +16995,6 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "toggleThemeAsync",
         "callExpression": "toggleThemeAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "waitForGraphNodesAsync",
-        "callExpression": "waitForGraphNodesAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -17072,6 +17143,12 @@
       },
       {
         "fromSymbol": "exerciseMobileInteractionContractAsync",
+        "toSymbol": "repositoryPickerButton",
+        "callExpression": "repositoryPickerButton",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "exerciseMobileInteractionContractAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -17086,6 +17163,12 @@
         "fromSymbol": "exerciseMobileInteractionContractAsync",
         "toSymbol": "closeWorkspaceToolsDialogAsync",
         "callExpression": "closeWorkspaceToolsDialogAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "exerciseNativeGraphInteractionContractAsync",
+        "toSymbol": "waitForGraphNodesAsync",
+        "callExpression": "waitForGraphNodesAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -17158,6 +17241,24 @@
         "fromSymbol": "readGraphPresentationAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "panAndZoomGraphAsync",
+        "toSymbol": "assert",
+        "callExpression": "assert",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "panAndZoomGraphAsync",
+        "toSymbol": "readGraphViewportAsync",
+        "callExpression": "readGraphViewportAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "panAndZoomGraphAsync",
+        "toSymbol": "findGraphPanPointAsync",
+        "callExpression": "findGraphPanPointAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -17486,14 +17587,44 @@
       },
       {
         "fromSymbol": "selectGraphNodes",
-        "toSymbol": "findSelectionIndex",
-        "callExpression": "findSelectionIndex",
+        "toSymbol": "readMeasuredGraphNodesAsync",
+        "callExpression": "readMeasuredGraphNodesAsync",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
-        "fromSymbol": "findSelectionIndex",
-        "toSymbol": "click",
-        "callExpression": "click",
+        "fromSymbol": "selectGraphNodes",
+        "toSymbol": "installGraphInputProbeAsync",
+        "callExpression": "installGraphInputProbeAsync",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "selectGraphNodes",
+        "toSymbol": "assertGraphHitTargetAsync",
+        "callExpression": "assertGraphHitTargetAsync",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "selectGraphNodes",
+        "toSymbol": "readSelectedTreeItems",
+        "callExpression": "readSelectedTreeItems",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "selectGraphNodes",
+        "toSymbol": "waitForModifiedGraphPointerAsync",
+        "callExpression": "waitForModifiedGraphPointerAsync",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "selectGraphNodes",
+        "toSymbol": "waitForGraphSelectionAsync",
+        "callExpression": "waitForGraphSelectionAsync",
+        "sourcePath": "test/e2e/offlineWorkspace.ts"
+      },
+      {
+        "fromSymbol": "waitForGraphSelectionAsync",
+        "toSymbol": "readGraphSelectionDiagnosticAsync",
+        "callExpression": "readGraphSelectionDiagnosticAsync",
         "sourcePath": "test/e2e/offlineWorkspace.ts"
       },
       {
@@ -25466,6 +25597,12 @@
       },
       {
         "fromSymbol": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
+        "toSymbol": "downloadExportAsync",
+        "callExpression": "downloadExportAsync",
+        "sourcePath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx"
+      },
+      {
+        "fromSymbol": "downloadExportAsync",
         "toSymbol": "onExport",
         "callExpression": "onExport",
         "sourcePath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx"
@@ -25526,24 +25663,24 @@
       },
       {
         "fromSymbol": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
+        "toSymbol": "createCycleRow",
+        "callExpression": "createCycleRow",
+        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
+      },
+      {
+        "fromSymbol": "createCycleRow",
         "toSymbol": "getCycleId",
         "callExpression": "getCycleId",
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
       },
       {
-        "fromSymbol": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toSymbol": "onCycleInspectionChange",
-        "callExpression": "props.onCycleInspectionChange",
+        "fromSymbol": "createCycleRow",
+        "toSymbol": "getCycleDisplayPath",
+        "callExpression": "getCycleDisplayPath",
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
       },
       {
-        "fromSymbol": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "toSymbol": "createCycleInspection",
-        "callExpression": "createCycleInspection",
-        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
-      },
-      {
-        "fromSymbol": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
+        "fromSymbol": "createCycleRow",
         "toSymbol": "t",
         "callExpression": "t",
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
@@ -25555,13 +25692,25 @@
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
       },
       {
-        "fromSymbol": "CycleRow",
-        "toSymbol": "getCycleDisplayPath",
-        "callExpression": "getCycleDisplayPath",
+        "fromSymbol": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
+        "toSymbol": "onCycleInspectionChange",
+        "callExpression": "props.onCycleInspectionChange",
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
       },
       {
-        "fromSymbol": "CycleRow",
+        "fromSymbol": "onPress",
+        "toSymbol": "onCycleInspectionChange",
+        "callExpression": "props.onCycleInspectionChange",
+        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
+      },
+      {
+        "fromSymbol": "onPress",
+        "toSymbol": "createCycleInspection",
+        "callExpression": "createCycleInspection",
+        "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
+      },
+      {
+        "fromSymbol": "onPress",
         "toSymbol": "t",
         "callExpression": "t",
         "sourcePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx"
@@ -26528,8 +26677,8 @@
       },
       {
         "fromSymbol": "handleLayoutComplete",
-        "toSymbol": "hasMeasuredVisibleLayout",
-        "callExpression": "hasMeasuredVisibleLayout",
+        "toSymbol": "createTopologyFit",
+        "callExpression": "createTopologyFit",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {

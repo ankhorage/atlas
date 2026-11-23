@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.1
+
+### Patch Changes
+
+- f14f187: Preserve the settled graph viewport and retained node positions when repository selection changes.
+
 ## 0.22.0
 
 ### Minor Changes
