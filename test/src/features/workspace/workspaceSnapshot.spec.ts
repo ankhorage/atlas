@@ -64,8 +64,20 @@ describe('[workspace snapshots]', () => {
       [
         ['directory:src', 'src'],
         ['directory:support', 'support'],
+        ['feature-evidence:unavailable:current', ''],
       ]
     );
+    assert.deepEqual(
+      workspace.value.tree.slice(0, 2).map(node => node.label),
+      ['src', 'support']
+    );
+    assert.deepEqual(workspace.value.tree.at(-1), {
+      graphPackage: '',
+      id: 'feature-evidence:unavailable:current',
+      kind: 'virtual',
+      label: 'Feature evidence unavailable',
+      unavailable: true,
+    });
     assert.deepEqual(
       createPackageGraphElements(workspace.value.packageGraph).nodes.map(node => [
         node.data.id,

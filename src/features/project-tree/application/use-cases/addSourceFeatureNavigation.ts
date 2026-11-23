@@ -119,11 +119,11 @@ function addFeaturesToPackages(
     })
       ? featuresByPackage.get(node.graphPackage)
       : undefined;
+    const decoratedChildren =
+      features === undefined ? children : [...(children ?? []), ...features.map(featureNode)];
     return {
       ...node,
-      ...(children === undefined
-        ? {}
-        : { children: [...children, ...(features?.map(featureNode) ?? [])] }),
+      ...(decoratedChildren === undefined ? {} : { children: decoratedChildren }),
     };
   });
 }

@@ -54,6 +54,50 @@ describe('[source feature navigation]', () => {
     expect(tree[0]?.children?.[0]?.children?.map(node => node.label)).toEqual(['CatalogCard.tsx']);
   });
 
+  it('adds analyzer-proven features to a leaf package row without existing children', () => {
+    const tree = addSourceFeatureNavigation(
+      [
+        {
+          graphPackage: 'app.catalog',
+          id: 'directory:catalog',
+          kind: 'directory',
+          label: 'catalog',
+        },
+      ],
+      sourceGraph()
+    );
+
+    expect(tree).toEqual([
+      {
+        children: [
+          {
+            children: [
+              {
+                graphPackage: 'app.catalog',
+                id: 'feature-member:feature:current:catalog:current:declaration:CatalogCard',
+                kind: 'virtual',
+                label: 'CatalogCard',
+                sourceEvidence: {
+                  analyzerId: 'typescript',
+                  filePath: 'src/catalog/CatalogCard.tsx',
+                  location: { line: 4, column: 1, endLine: 12, endColumn: 2 },
+                },
+              },
+            ],
+            graphPackage: 'app.catalog',
+            id: 'feature:feature:current:catalog',
+            kind: 'virtual',
+            label: 'catalog',
+          },
+        ],
+        graphPackage: 'app.catalog',
+        id: 'directory:catalog',
+        kind: 'directory',
+        label: 'catalog',
+      },
+    ]);
+  });
+
   it('represents unsupported feature evidence as unavailable', () => {
     const graph = sourceGraph({ capabilities: [] });
     const tree = addSourceFeatureNavigation(buildProjectTree(files()), graph);
