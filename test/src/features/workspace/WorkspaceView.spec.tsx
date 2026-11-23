@@ -137,6 +137,74 @@ describe('[WorkspaceView]', () => {
     unmount();
   });
 
+  it('keeps private repositories available when the Public only filter is turned off', async () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const { container, unmount } = render(
+      <ZoraRuntimeProvider
+        initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+        themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+      >
+        <WorkspaceView
+          currentSource="@me"
+          githubAuth={{ displayName: 'GitHub account', status: 'authenticated' }}
+          projectName="Atlas"
+          repositories={[
+            {
+              id: 'public',
+              name: 'public',
+              owner: 'organization',
+              selected: false,
+              url: 'https://github.com/organization/public',
+              visibility: 'public',
+            },
+            {
+              id: 'private',
+              name: 'private',
+              owner: 'organization',
+              selected: false,
+              url: 'https://github.com/organization/private',
+              visibility: 'private',
+            },
+          ]}
+          workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+        />
+      </ZoraRuntimeProvider>
+    );
+
+    await React.act(async () =>
+      container
+        .querySelector<HTMLButtonElement>('[aria-label="Open repository source and workspace"]')
+        ?.click()
+    );
+    const picker = [...document.querySelectorAll<HTMLButtonElement>('button')].find(button =>
+      button.textContent?.startsWith('Repositories (')
+    );
+    await React.act(async () => picker?.click());
+    assert.equal(
+      document.querySelector('[role="checkbox"][aria-label="organization/private"]') !== null,
+      true
+    );
+
+    const publicOnly = document.querySelector<HTMLElement>(
+      '[role="checkbox"][aria-label="Public only"]'
+    );
+    await React.act(async () => publicOnly?.click());
+    assert.equal(
+      document.querySelector('[role="checkbox"][aria-label="organization/private"]') === null,
+      true
+    );
+
+    await React.act(async () => publicOnly?.click());
+    assert.equal(
+      document.querySelector('[role="checkbox"][aria-label="organization/private"]') !== null,
+      true
+    );
+    assert.equal(document.body.textContent?.includes('Authorize private repositories'), true);
+    unmount();
+  });
+
   it('keeps repository and workspace actions in one accessible mobile source workflow', async () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
