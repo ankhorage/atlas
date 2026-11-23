@@ -64,6 +64,11 @@ type GraphViewportProbe = {
   } | null;
   layoutCount: number;
 };
+type GraphCoordinate = {
+  readonly id: string;
+  readonly position: { readonly x: number; readonly y: number };
+  readonly size: { readonly width: number; readonly height: number };
+};
 type GraphGestureProbe = {
   mouseDownCount: number;
   mouseMoveCount: number;
@@ -566,6 +571,47 @@ async function isSwitchCheckedAsync(switchControl: Locator): Promise<boolean> {
   );
 }
 
+/*** Summarizes bounded coordinate evidence without writing full retained-node inventories to CI logs. */
+function summarizeCoordinateDeltas(
+  before: readonly GraphCoordinate[] | undefined,
+  after: readonly GraphCoordinate[] | undefined,
+  measurementKind: string
+) {
+  const beforeById = new Map((before ?? []).map(node => [node.id, node]));
+  const afterById = new Map((after ?? []).map(node => [node.id, node]));
+  const deltas = [...beforeById].flatMap(([id, previous]) => {
+    const next = afterById.get(id);
+    if (next === undefined) return [];
+    const dx = next.position.x - previous.position.x;
+    const dy = next.position.y - previous.position.y;
+    return dx === 0 && dy === 0 ? [] : [{ dx, dy, id, next, previous }];
+  });
+  const missingAfter = [...beforeById.keys()].filter(id => !afterById.has(id));
+  const missingBefore = [...afterById.keys()].filter(id => !beforeById.has(id));
+  return {
+    changedCount: deltas.length,
+    maxAbsoluteXDelta: Math.max(0, ...deltas.map(delta => Math.abs(delta.dx))),
+    maxAbsoluteYDelta: Math.max(0, ...deltas.map(delta => Math.abs(delta.dy))),
+    measurementKind,
+    missingAfterCount: missingAfter.length,
+    missingBeforeCount: missingBefore.length,
+    representatives: deltas
+      .toSorted(
+        (left, right) =>
+          Math.max(Math.abs(right.dx), Math.abs(right.dy)) -
+            Math.max(Math.abs(left.dx), Math.abs(left.dy)) || left.id.localeCompare(right.id)
+      )
+      .slice(0, 3)
+      .map(({ dx, dy, id, next, previous }) => ({
+        after: next,
+        before: previous,
+        dx,
+        dy,
+        id,
+      })),
+  };
+}
+
 /*** Fails with a concrete diagnostic instead of accepting a missing user-visible state. */
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -809,66 +855,73 @@ const scenarios: readonly Scenario[] = [
       const repositoryIds = Array.from({ length: 87 }, (_, index) => `viewport-87-${index}`);
       const removedNodeId = 'repository.viewport-87-0';
       const retainedNodeIds = repositoryIds.slice(1).map(id => `repository.${id}`);
+      const retainedLeafNodeIds = retainedNodeIds.map(id => `${id}.src`);
       const allNodeIds = [removedNodeId, ...retainedNodeIds];
       await openWorkspaceAsync(page, 'viewport-87', repositoryIds);
       await waitForGraphNodesAsync(page, retainedNodeIds);
       await panAndZoomGraphAsync(page);
-      await page.evaluate(() => {
-        const target = window as typeof window & {
-          __atlasTopologyAcceptance?: {
-            readonly controller: GraphViewportProbe['controller'];
-            readonly graph: Element | null;
-            readonly layoutCount: number;
-            readonly viewport: ReturnType<
-              NonNullable<GraphViewportProbe['controller']>['getViewport']
-            >;
-            readonly positions: readonly {
-              readonly id: string;
-              readonly x: number;
-              readonly y: number;
-            }[];
-            readonly allPositions: readonly {
-              readonly id: string;
-              readonly x: number;
-              readonly y: number;
-            }[];
+      await page.evaluate(
+        ({ parentNodeIds, leafNodeIds }) => {
+          const target = window as typeof window & {
+            __atlasTopologyAcceptance?: {
+              readonly controller: GraphViewportProbe['controller'];
+              readonly graph: Element | null;
+              readonly layoutCount: number;
+              readonly viewport: ReturnType<
+                NonNullable<GraphViewportProbe['controller']>['getViewport']
+              >;
+              readonly positions: readonly {
+                readonly id: string;
+                readonly x: number;
+                readonly y: number;
+              }[];
+              readonly parentMeasurements: readonly GraphCoordinate[];
+              readonly sourceLeafMeasurementCount: number;
+              readonly allPositions: readonly {
+                readonly id: string;
+                readonly x: number;
+                readonly y: number;
+              }[];
+            };
+            __atlasViewportProbe?: GraphViewportProbe;
           };
-          __atlasViewportProbe?: GraphViewportProbe;
-        };
-        const controller = target.__atlasViewportProbe?.controller;
-        const measurement = controller?.measureNodes?.(
-          Array.from({ length: 86 }, (_, index) => `repository.viewport-87-${index + 1}`)
-        );
-        const allMeasurement = controller?.measureNodes?.(
-          Array.from({ length: 87 }, (_, index) => `repository.viewport-87-${index}`)
-        );
-        if (
-          controller === null ||
-          controller === undefined ||
-          measurement === null ||
-          measurement === undefined ||
-          allMeasurement === null ||
-          allMeasurement === undefined ||
-          allMeasurement.nodes.length !== 87
-        )
-          throw new Error('Graph controller did not expose the retained-node measurements.');
-        target.__atlasTopologyAcceptance = {
-          controller,
-          graph: document.querySelector('[role="application"][aria-label="Graph"]'),
-          layoutCount: target.__atlasViewportProbe?.layoutCount ?? 0,
-          positions: measurement.nodes.map(node => ({
-            id: node.id,
-            x: node.position.x,
-            y: node.position.y,
-          })),
-          allPositions: allMeasurement.nodes.map(node => ({
-            id: node.id,
-            x: node.position.x,
-            y: node.position.y,
-          })),
-          viewport: controller.getViewport(),
-        };
-      });
+          const controller = target.__atlasViewportProbe?.controller;
+          const measurement = controller?.measureNodes?.(parentNodeIds);
+          const allMeasurement = controller?.measureNodes?.(
+            Array.from({ length: 87 }, (_, index) => `repository.viewport-87-${index}`)
+          );
+          const leafMeasurement = controller?.measureNodes?.(leafNodeIds);
+          if (
+            controller === null ||
+            controller === undefined ||
+            measurement === null ||
+            measurement === undefined ||
+            allMeasurement === null ||
+            allMeasurement === undefined ||
+            allMeasurement.nodes.length !== 87
+          )
+            throw new Error('Graph controller did not expose the retained-node measurements.');
+          target.__atlasTopologyAcceptance = {
+            controller,
+            graph: document.querySelector('[role="application"][aria-label="Graph"]'),
+            layoutCount: target.__atlasViewportProbe?.layoutCount ?? 0,
+            positions: measurement.nodes.map(node => ({
+              id: node.id,
+              x: node.position.x,
+              y: node.position.y,
+            })),
+            parentMeasurements: measurement.nodes,
+            sourceLeafMeasurementCount: leafMeasurement?.nodes.length ?? 0,
+            allPositions: allMeasurement.nodes.map(node => ({
+              id: node.id,
+              x: node.position.x,
+              y: node.position.y,
+            })),
+            viewport: controller.getViewport(),
+          };
+        },
+        { leafNodeIds: retainedLeafNodeIds, parentNodeIds: retainedNodeIds }
+      );
       const selectionRequests: Request[] = [];
       page.on('request', request => {
         if (request.url().endsWith('/api/workspace/selection')) selectionRequests.push(request);
@@ -995,6 +1048,8 @@ const scenarios: readonly Scenario[] = [
               readonly x: number;
               readonly y: number;
             }[];
+            readonly parentMeasurements: readonly GraphCoordinate[];
+            readonly sourceLeafMeasurementCount: number;
             readonly allPositions: readonly {
               readonly id: string;
               readonly x: number;
@@ -1020,6 +1075,8 @@ const scenarios: readonly Scenario[] = [
           measurement,
           allMeasurement,
           previousLayoutCount: baseline?.layoutCount,
+          previousParentMeasurements: baseline?.parentMeasurements,
+          sourceLeafMeasurementCount: baseline?.sourceLeafMeasurementCount,
           previousPositions: baseline?.positions,
           previousViewport: baseline?.viewport,
           viewport: controller?.getViewport(),
@@ -1037,7 +1094,18 @@ const scenarios: readonly Scenario[] = [
       );
       assert(
         stability.layoutCount === stability.previousLayoutCount,
-        `Repository removal ran a full graph layout or auto-fit: ${JSON.stringify(stability)}.`
+        `Repository removal ran a full graph layout or auto-fit: ${JSON.stringify({
+          layoutCount: stability.layoutCount,
+          previousLayoutCount: stability.previousLayoutCount,
+          previousViewport: stability.previousViewport,
+          retainedLeafModelCoordinates: summarizeCoordinateDeltas(
+            stability.previousParentMeasurements,
+            stability.measurement?.nodes ?? [],
+            'visible repository root renderedPosition (leaf/model position)'
+          ),
+          sourceLeafMeasurementCount: stability.sourceLeafMeasurementCount,
+          viewport: stability.viewport,
+        })}.`
       );
       assert(
         JSON.stringify(stability.viewport) === JSON.stringify(stability.previousViewport),
@@ -1051,7 +1119,13 @@ const scenarios: readonly Scenario[] = [
             y: node.position.y,
           }))
         ) === JSON.stringify(stability.previousPositions),
-        'Repository removal changed retained-node coordinates.'
+        `Repository removal changed retained leaf/model coordinates: ${JSON.stringify(
+          summarizeCoordinateDeltas(
+            stability.previousParentMeasurements,
+            stability.measurement?.nodes ?? [],
+            'visible repository root renderedPosition (leaf/model position)'
+          )
+        )}; projected source-leaf measurement count: ${stability.sourceLeafMeasurementCount} (zero proves these roots are not measured compound-parent centers).`
       );
       return [];
     }
