@@ -10,8 +10,8 @@
     "atlas": {
       "id": "atlas",
       "name": "Atlas",
-      "light": { "primaryColor": "#043c8c", "harmony": "analogous" },
-      "dark": { "primaryColor": "#5b9cff", "harmony": "analogous" }
+      "light": { "primaryColor": "#075cc8", "harmony": "analogous" },
+      "dark": { "primaryColor": "#8ab6ff", "harmony": "analogous" }
     }
   },
   "activeThemeId": "atlas",

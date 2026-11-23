@@ -1,3 +1,12 @@
+.content {
+  background: linear-gradient(145deg, #fcfcff 0%, #f4f6fd 100%);
+  border: 1px solid #d8deef;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgb(24 47 91 / 16%);
+  margin: 12px 12px 12px 0;
+  overflow: hidden;
+}
+
 .toolsControl {
   bottom: 56px;
   display: none;
@@ -7,7 +16,16 @@
 }
 
 @media (max-width: 768px) {
+  .content {
+    border-radius: 0;
+    border-width: 1px 0 0;
+    box-shadow: none;
+    margin: 0;
+  }
+
   .toolsControl {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
     display: block;
+    left: 12px;
   }
 }

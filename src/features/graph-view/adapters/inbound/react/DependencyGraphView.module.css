@@ -1,5 +1,35 @@
+.canvas {
+  background: linear-gradient(145deg, #fdfdff 0%, #f2f5fd 100%);
+  position: relative;
+}
+
+.viewport {
+  background:
+    radial-gradient(circle at 78% 18%, rgb(218 229 255 / 78%) 0, transparent 26%),
+    linear-gradient(145deg, #fdfdff 0%, #f2f5fd 100%);
+  min-width: 0;
+}
+
+.zoomControls {
+  background: rgb(252 253 255 / 94%);
+  border: 1px solid #d8deef;
+  border-radius: 12px;
+  bottom: 16px;
+  box-shadow: 0 8px 20px rgb(24 47 91 / 14%);
+  padding: 2px 6px;
+  position: absolute;
+  right: 16px;
+  z-index: 2;
+}
+
 @media (max-width: 768px) {
   .canvas {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .zoomControls {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
   }
 }

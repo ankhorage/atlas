@@ -725,7 +725,7 @@ async function assertWorkspaceViewportAsync(
   else {
     assert(result.sidebar !== null, 'Desktop workspace sidebar was unavailable.');
     assert(
-      result.sidebar.width === 288,
+      result.sidebar.width === referenceDesktopSidebarWidth,
       'Workspace sidebar is not visibly occupying its owned width.'
     );
   }
@@ -1840,6 +1840,10 @@ const responsiveViewports = [
   { height: 900, width: 1440 },
 ] as const;
 
+const referenceDesktopFramePadding = 24;
+const referenceDesktopPanelMargin = 12;
+const referenceDesktopSidebarWidth = 256;
+
 /*** Captures the measured layout invariants rendered by Chromium for one responsive acceptance cell. */
 async function captureResponsiveEvidenceAsync(
   page: Page,
@@ -1946,7 +1950,7 @@ function assertResponsiveEvidence(
     assertSeparatePointerTargets(evidence.tools, evidence.zoom, 'Tools overlaps the Zoom control.');
   } else {
     assert(
-      evidence.sidebar !== null && evidence.sidebar.width === 288,
+      evidence.sidebar !== null && evidence.sidebar.width === referenceDesktopSidebarWidth,
       'Desktop sidebar changed width.'
     );
   }
@@ -2485,7 +2489,7 @@ function assertAnonymousBulkWorkspaceGeometry(
     );
 }
 
-/*** Verifies the shell keeps its fixed sidebar and allocates the remainder only to workspace content. */
+/*** Verifies the shell keeps the reference frame inset and fixed sidebar geometry. */
 function assertWorkspaceGeometryBaseline(
   geometry: WorkspaceGeometry,
   viewport: { readonly height: number; readonly width: number },
@@ -2510,8 +2514,14 @@ function assertWorkspaceGeometryBaseline(
       geometry.sidebar !== null,
       `Anonymous bulk ${phase} did not render the desktop sidebar.`
     );
-    assert(geometry.sidebar.left === 0, `Anonymous bulk ${phase} shifted the sidebar.`);
-    assert(geometry.sidebar.width === 288, `Anonymous bulk ${phase} changed the sidebar width.`);
+    assert(
+      geometry.sidebar.left === referenceDesktopFramePadding + referenceDesktopPanelMargin,
+      `Anonymous bulk ${phase} shifted the sidebar.`
+    );
+    assert(
+      geometry.sidebar.width === referenceDesktopSidebarWidth,
+      `Anonymous bulk ${phase} changed the sidebar width.`
+    );
   }
   assertBoundsContained(
     geometry.graph,

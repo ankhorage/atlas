@@ -17,6 +17,8 @@ import type { WorkspaceRepositoryOption } from '@/features/workspace/composition
 import type { Audit } from '@/types/audit';
 import type { WorkspaceLoadResult, WorkspaceRepositoryLoadStatus } from '@/types/workspace';
 
+import styles from './WorkspaceLayout.module.css';
+
 /*** Compose the workspace's persistent shell and its graph, inspection, and load-state presentation. */
 export function WorkspaceLayout({
   auditExportActions,
@@ -47,28 +49,30 @@ export function WorkspaceLayout({
     onSelection,
   };
   return (
-    <AppShell header={<WorkspaceHeaderSlot {...headerProps} />}>
-      <WorkspaceMain
-        auditExportActions={auditExportActions}
-        currentSource={currentSource}
-        githubAuth={githubAuth}
-        navigation={navigation}
-        offline={offline}
-        projectName={projectName}
-        repositoryStatuses={liveWorkspace.repositoryStatuses}
-        selectionError={selectionError}
-        selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
-        workspace={liveWorkspace.workspace}
-        onRetry={onRetry}
-      />
-    </AppShell>
+    <div className={styles.frame}>
+      <AppShell header={<WorkspaceHeaderSlot {...headerProps} />}>
+        <WorkspaceMain
+          auditExportActions={auditExportActions}
+          currentSource={currentSource}
+          githubAuth={githubAuth}
+          navigation={navigation}
+          offline={offline}
+          projectName={projectName}
+          repositoryStatuses={liveWorkspace.repositoryStatuses}
+          selectionError={selectionError}
+          selectionRequired={selectionRequired && liveWorkspace.runtimeId === undefined}
+          workspace={liveWorkspace.workspace}
+          onRetry={onRetry}
+        />
+      </AppShell>
+    </div>
   );
 }
 
 /*** Place the workspace header above graph overlays without mixing header and graph responsibilities. */
 function WorkspaceHeaderSlot(props: WorkspaceHeaderSlotProps) {
   return (
-    <div style={{ position: 'relative', zIndex: 10 }}>
+    <div className={styles.header}>
       <WorkspaceHeader
         currentPackage={props.navigation.currentPackage}
         currentSource={props.currentSource}
@@ -106,7 +110,7 @@ function WorkspaceMain({
   const cycleSelection = useWorkspaceCycleSelection(auditEvaluation, workspace, projectName);
   const cycleInspection = useWorkspaceCycleInspection();
   return (
-    <main data-testid="main" style={workspaceMainStyle(theme.semantics.surface.default)}>
+    <main data-testid="main" style={createWorkspaceMainStyle(theme.semantics.surface.default)}>
       {selectionRequired ? (
         <RepositorySelectionNotice />
       ) : (
@@ -134,7 +138,7 @@ function WorkspaceMain({
 }
 
 /*** Keep the workspace canvas layout independent from its status and graph content. */
-function workspaceMainStyle(backgroundColor: string) {
+function createWorkspaceMainStyle(backgroundColor: string) {
   return {
     backgroundColor,
     display: 'flex',

@@ -186,7 +186,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
 
   return (
     <div className={styles.canvas} style={GRAPH_CANVAS_STYLE}>
-      <div style={GRAPH_VIEWPORT_STYLE}>
+      <div className={styles.viewport} style={GRAPH_VIEWPORT_STYLE}>
         <GraphView
           edges={interactions.edges}
           layout={props.layout}
@@ -211,13 +211,15 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
         />
         {props.overlay}
       </div>
-      <GraphZoomControls
-        controller={viewport.controller}
-        maxZoom={viewport.max}
-        minZoom={viewport.min}
-        onFit={viewport.fitGraph}
-        zoom={viewport.zoom}
-      />
+      <div className={styles.zoomControls}>
+        <GraphZoomControls
+          controller={viewport.controller}
+          maxZoom={viewport.max}
+          minZoom={viewport.min}
+          onFit={viewport.fitGraph}
+          zoom={viewport.zoom}
+        />
+      </div>
     </div>
   );
 }

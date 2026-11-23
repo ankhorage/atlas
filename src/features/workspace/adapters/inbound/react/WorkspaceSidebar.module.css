@@ -1,5 +1,11 @@
 .desktop {
   display: flex;
+  background: linear-gradient(160deg, #fbfcff 0%, #eff3fd 100%);
+  border: 1px solid #d8deef;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgb(24 47 91 / 16%);
+  margin: 12px;
+  overflow: hidden;
 }
 
 .mobile {
