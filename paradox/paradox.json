@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.22.1",
+      "value": "v0.22.2",
       "color": "cb3837"
     },
     {
@@ -713,12 +713,21 @@
       "dependencies": [],
       "exports": [
         "clearGitHubAuthAttemptCookie",
+        "clearGitHubAuthReturnToCookie",
         "clearGitHubAuthSessionCookie",
+        "clearGitHubPrivateAccessCookie",
+        "clearGitHubPrivateAccessRequestCookie",
         "hasGitHubAuthCookieEncryptionKey",
         "readGitHubAuthAttempt",
+        "readGitHubAuthReturnTo",
         "readGitHubAuthSession",
+        "readGitHubPrivateAccess",
+        "readGitHubPrivateAccessRequest",
         "setGitHubAuthAttemptCookie",
-        "setGitHubAuthSessionCookie"
+        "setGitHubAuthReturnToCookie",
+        "setGitHubAuthSessionCookie",
+        "setGitHubPrivateAccessCookie",
+        "setGitHubPrivateAccessRequestCookie"
       ]
     },
     {
@@ -1771,6 +1780,7 @@
         "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
         "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
         "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "src/types/settings.ts"
       ],
@@ -3130,6 +3140,14 @@
       "exports": []
     },
     {
+      "path": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/project-analysis/composition/readProjectSnapshotAsync.ts"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/dependency-analysis/cppDependencyGraph.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -3838,7 +3856,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/api/auth/github/login/route.ts",
-        "line": 11,
+        "line": 15,
         "column": 1
       }
     },
@@ -3849,7 +3867,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/api/auth/github/login/route.ts",
-        "line": 40,
+        "line": 46,
         "column": 1
       }
     },
@@ -3860,7 +3878,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/api/auth/github/login/route.ts",
-        "line": 46,
+        "line": 52,
         "column": 1
       }
     },
@@ -3871,7 +3889,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/api/auth/github/login/route.ts",
-        "line": 53,
+        "line": 59,
+        "column": 1
+      }
+    },
+    {
+      "name": "readAtlasReturnPath",
+      "description": "Preserve only a same-origin Atlas path so consent returns to the current repository selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/app/api/auth/github/login/route.ts",
+        "line": 66,
         "column": 1
       }
     },
@@ -5158,7 +5187,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
-        "line": 13,
+        "line": 18,
         "column": 1
       }
     },
@@ -5169,7 +5198,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
-        "line": 35,
+        "line": 47,
         "column": 1
       }
     },
@@ -5180,7 +5209,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
-        "line": 9,
+        "line": 12,
         "column": 1
       }
     },
@@ -5191,7 +5220,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
-        "line": 24,
+        "line": 30,
         "column": 1
       }
     },
@@ -5202,7 +5231,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 14,
+        "line": 17,
         "column": 1
       }
     },
@@ -5213,7 +5242,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 25,
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "name": "setGitHubAuthReturnToCookie",
+      "description": "Retain the safe Atlas destination while GitHub owns the browser navigation.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 38,
+        "column": 1
+      }
+    },
+    {
+      "name": "setGitHubPrivateAccessRequestCookie",
+      "description": "Remember a private-scope request only until the authorization callback completes.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 46,
+        "column": 1
+      }
+    },
+    {
+      "name": "setGitHubPrivateAccessCookie",
+      "description": "Mark a completed private-scope authorization without exposing a credential to the browser.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 55,
         "column": 1
       }
     },
@@ -5224,7 +5286,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 35,
+        "line": 67,
         "column": 1
       }
     },
@@ -5235,7 +5297,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 40,
+        "line": 72,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearGitHubAuthReturnToCookie",
+      "description": "Clear navigation and private-scope markers whenever the related authorization ends.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 77,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearGitHubPrivateAccessRequestCookie",
+      "description": "Clear the one-time private authorization request after its callback is handled.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 82,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearGitHubPrivateAccessCookie",
+      "description": "Clear the browser-local marker when the user signs out.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 87,
         "column": 1
       }
     },
@@ -5246,7 +5341,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 45,
+        "line": 92,
         "column": 1
       }
     },
@@ -5257,7 +5352,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 53,
+        "line": 100,
         "column": 1
       }
     },
@@ -5268,7 +5363,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 58,
+        "line": 105,
         "column": 1
       }
     },
@@ -5279,7 +5374,40 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 66,
+        "line": 113,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubAuthReturnTo",
+      "description": "Read a callback destination only after authenticating its opaque host cookie.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 125,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubPrivateAccess",
+      "description": "Report a successful private-scope authorization marker without treating it as a token.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 135,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubPrivateAccessRequest",
+      "description": "Report the in-flight consent request only at the callback boundary.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 145,
         "column": 1
       }
     },
@@ -5290,7 +5418,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 78,
+        "line": 155,
         "column": 1
       }
     },
@@ -5301,7 +5429,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 88,
+        "line": 165,
         "column": 1
       }
     },
@@ -5312,7 +5440,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 97,
+        "line": 174,
         "column": 1
       }
     },
@@ -5323,7 +5451,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 120,
+        "line": 197,
         "column": 1
       }
     },
@@ -5334,7 +5462,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 129,
+        "line": 206,
         "column": 1
       }
     },
@@ -5345,7 +5473,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
-        "line": 134,
+        "line": 211,
+        "column": 1
+      }
+    },
+    {
+      "name": "isSafeAtlasPath",
+      "description": "Keep OAuth redirects inside this app even if a cookie was copied or tampered with.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 216,
+        "column": 1
+      }
+    },
+    {
+      "name": "readGitHubCookieFlag",
+      "description": "Decode a short-lived boolean marker without widening cookie parsing to callers.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts",
+        "line": 221,
         "column": 1
       }
     },
@@ -5356,7 +5506,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
-        "line": 8,
+        "line": 11,
         "column": 1
       }
     },
@@ -5367,18 +5517,51 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
-        "line": 23,
+        "line": 29,
         "column": 1
       }
     },
     {
       "name": "GitHubAuthControls",
-      "description": "Render GitHub account actions in the existing ZORA header without exposing credentials to the client.",
+      "description": "Keep account access in one compact avatar menu without exposing credentials to the client.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
         "line": 9,
+        "column": 1
+      }
+    },
+    {
+      "name": "createAuthenticatedActions",
+      "description": "Define account actions separately so the visual trigger remains compact and readable.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "line": 59,
+        "column": 1
+      }
+    },
+    {
+      "name": "createAnonymousActions",
+      "description": "Limit anonymous account actions to the single possible next step.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "line": 92,
+        "column": 1
+      }
+    },
+    {
+      "name": "submitAccountForm",
+      "description": "Submit a nearby form only in response to a menu action, never while rendering.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "line": 97,
         "column": 1
       }
     },
@@ -5928,7 +6111,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 226,
+        "line": 228,
         "column": 1
       }
     },
@@ -5939,7 +6122,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 245,
+        "line": 247,
         "column": 1
       }
     },
@@ -5950,7 +6133,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 258,
+        "line": 260,
         "column": 1
       }
     },
@@ -8634,7 +8817,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse.ts",
-        "line": 61,
+        "line": 62,
         "column": 1
       }
     },
@@ -8876,7 +9059,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 19,
+        "line": 21,
+        "column": 1
+      }
+    },
+    {
+      "name": "SourceRepositoryPicker",
+      "description": "Connect the reusable picker to the staged source form without widening the header component.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
+        "line": 61,
+        "column": 1
+      }
+    },
+    {
+      "name": "isGitHubSourceInput",
+      "description": "Allow GitHub owner input and the transient states required while typing @me.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
+        "line": 91,
         "column": 1
       }
     },
@@ -8887,7 +9092,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 63,
+        "line": 102,
         "column": 1
       }
     },
@@ -8898,7 +9103,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 78,
+        "line": 127,
         "column": 1
       }
     },
@@ -8909,7 +9114,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 89,
+        "line": 138,
         "column": 1
       }
     },
@@ -8920,7 +9125,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 111,
+        "line": 160,
         "column": 1
       }
     },
@@ -8931,7 +9136,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 168,
+        "line": 219,
         "column": 1
       }
     },
@@ -8942,7 +9147,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 202,
+        "line": 253,
         "column": 1
       }
     },
@@ -8953,7 +9158,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 225,
+        "line": 276,
         "column": 1
       }
     },
@@ -8975,7 +9180,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 66,
+        "line": 73,
         "column": 1
       }
     },
@@ -8986,7 +9191,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 79,
+        "line": 86,
         "column": 1
       }
     },
@@ -8997,7 +9202,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 120,
+        "line": 131,
         "column": 1
       }
     },
@@ -9008,7 +9213,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 139,
+        "line": 150,
         "column": 1
       }
     },
@@ -9019,7 +9224,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 190,
+        "line": 201,
         "column": 1
       }
     },
@@ -9030,7 +9235,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 201,
+        "line": 212,
         "column": 1
       }
     },
@@ -9398,13 +9603,24 @@
       }
     },
     {
+      "name": "clearWorkspaceSelection",
+      "description": "Clear the browser-owned selection locally so expired runtimes cannot block an empty selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 105,
+        "column": 1
+      }
+    },
+    {
       "name": "recoverWorkspaceRuntimeAsync",
       "description": "Starts a fresh runtime with the current complete selection after the server evicts an old one.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 104,
+        "line": 123,
         "column": 1
       }
     },
@@ -9415,7 +9631,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 138,
+        "line": 157,
         "column": 1
       }
     },
@@ -9426,7 +9642,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 164,
+        "line": 183,
         "column": 1
       }
     },
@@ -9437,7 +9653,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 177,
+        "line": 196,
         "column": 1
       }
     },
@@ -9448,7 +9664,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 195,
+        "line": 216,
         "column": 1
       }
     },
@@ -9459,7 +9675,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 205,
+        "line": 226,
         "column": 1
       }
     },
@@ -9470,7 +9686,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 210,
+        "line": 231,
         "column": 1
       }
     },
@@ -9481,7 +9697,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 215,
+        "line": 236,
         "column": 1
       }
     },
@@ -9492,7 +9708,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 222,
+        "line": 243,
         "column": 1
       }
     },
@@ -9503,7 +9719,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 241,
+        "line": 264,
         "column": 1
       }
     },
@@ -9514,7 +9730,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 253,
+        "line": 276,
         "column": 1
       }
     },
@@ -9536,7 +9752,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 56,
+        "line": 58,
         "column": 1
       }
     },
@@ -9547,7 +9763,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 69,
+        "line": 71,
         "column": 1
       }
     },
@@ -9558,7 +9774,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 86,
+        "line": 88,
         "column": 1
       }
     },
@@ -9569,7 +9785,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 97,
+        "line": 99,
         "column": 1
       }
     },
@@ -9580,7 +9796,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 113,
+        "line": 115,
         "column": 1
       }
     },
@@ -9591,7 +9807,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 148,
+        "line": 152,
         "column": 1
       }
     },
@@ -9602,7 +9818,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 178,
+        "line": 182,
         "column": 1
       }
     },
@@ -9613,7 +9829,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 206,
+        "line": 210,
         "column": 1
       }
     },
@@ -9624,7 +9840,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 220,
+        "line": 224,
         "column": 1
       }
     },
@@ -9635,7 +9851,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 239,
+        "line": 243,
         "column": 1
       }
     },
@@ -9646,7 +9862,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 255,
+        "line": 259,
         "column": 1
       }
     },
@@ -9657,7 +9873,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx",
-        "line": 265,
+        "line": 269,
         "column": 1
       }
     },
@@ -9723,7 +9939,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 95,
+        "line": 97,
         "column": 1
       }
     },
@@ -9734,7 +9950,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 113,
+        "line": 115,
         "column": 1
       }
     },
@@ -9745,7 +9961,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 144,
+        "line": 146,
         "column": 1
       }
     },
@@ -9756,7 +9972,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 21,
+        "line": 23,
         "column": 1
       }
     },
@@ -9767,7 +9983,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 69,
+        "line": 73,
         "column": 1
       }
     },
@@ -9778,18 +9994,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 91,
+        "line": 95,
         "column": 1
       }
     },
     {
-      "name": "workspaceMainStyle",
+      "name": "createWorkspaceMainStyle",
       "description": "Keep the workspace canvas layout independent from its status and graph content.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 137,
+        "line": 141,
         "column": 1
       }
     },
@@ -9800,7 +10016,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 151,
+        "line": 155,
         "column": 1
       }
     },
@@ -9811,7 +10027,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 160,
+        "line": 164,
         "column": 1
       }
     },
@@ -9822,7 +10038,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 178,
+        "line": 182,
         "column": 1
       }
     },
@@ -9833,7 +10049,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 190,
+        "line": 194,
         "column": 1
       }
     },
@@ -9910,7 +10126,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 141,
+        "line": 145,
         "column": 1
       }
     },
@@ -9921,7 +10137,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 180,
+        "line": 184,
         "column": 1
       }
     },
@@ -9932,7 +10148,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 207,
+        "line": 211,
         "column": 1
       }
     },
@@ -9943,7 +10159,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 220,
+        "line": 224,
         "column": 1
       }
     },
@@ -9954,7 +10170,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx",
-        "line": 237,
+        "line": 241,
         "column": 1
       }
     },
@@ -10047,13 +10263,35 @@
       }
     },
     {
+      "name": "renderWorkspace",
+      "description": "Keep the stateful browser coordination separate from the stable rendered workspace shell.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 68,
+        "column": 1
+      }
+    },
+    {
+      "name": "createLiveWorkspace",
+      "description": "Preserve the server's initial selection state before the browser begins incremental updates.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 104,
+        "column": 1
+      }
+    },
+    {
       "name": "selectedRepositoryIds",
       "description": "Derive the initial server-confirmed selection without persisting a graph or provider payload.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 68,
+        "line": 121,
         "column": 1
       }
     },
@@ -10064,7 +10302,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 77,
+        "line": 130,
         "column": 1
       }
     },
@@ -10075,7 +10313,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 88,
+        "line": 147,
         "column": 1
       }
     },
@@ -10086,7 +10324,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 114,
+        "line": 175,
         "column": 1
       }
     },
@@ -10097,7 +10335,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 131,
+        "line": 192,
         "column": 1
       }
     },
@@ -13047,6 +13285,11 @@
         "sourcePath": "test/src/features/audit/useCycleSelection.spec.tsx"
       },
       {
+        "fromPath": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+        "toPath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
+        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
+      },
+      {
         "fromPath": "test/src/features/dependency-analysis/cppDependencyGraph.spec.ts",
         "toPath": "src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts",
         "sourcePath": "test/src/features/dependency-analysis/cppDependencyGraph.spec.ts"
@@ -14739,6 +14982,11 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/workspaceControlTypes.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
+        "toPath": "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
       },
       {
@@ -16885,14 +17133,14 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "repositoryPickerButton",
-        "callExpression": "repositoryPickerButton",
+        "toSymbol": "assert",
+        "callExpression": "assert",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "assert",
-        "callExpression": "assert",
+        "toSymbol": "repositoryPickerButton",
+        "callExpression": "repositoryPickerButton",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -20844,6 +21092,36 @@
         "sourcePath": "test/src/features/audit/useCycleSelection.spec.tsx"
       },
       {
+        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+        "toSymbol": "readProjectSnapshotAsync",
+        "callExpression": "readProjectSnapshotAsync",
+        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
+        "toSymbol": "expect",
+        "callExpression": "expect",
+        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
+      },
+      {
         "fromSymbol": "test/src/features/dependency-analysis/cppDependencyGraph.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -21330,9 +21608,27 @@
         "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts",
+        "toSymbol": "readGitHubPrivateAccess",
+        "callExpression": "readGitHubPrivateAccess",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
         "fromSymbol": "callbackRequest",
         "toSymbol": "setGitHubAuthAttemptCookie",
         "callExpression": "setGitHubAuthAttemptCookie",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "callbackRequest",
+        "toSymbol": "setGitHubAuthReturnToCookie",
+        "callExpression": "setGitHubAuthReturnToCookie",
+        "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
+      },
+      {
+        "fromSymbol": "callbackRequest",
+        "toSymbol": "setGitHubPrivateAccessRequestCookie",
+        "callExpression": "setGitHubPrivateAccessRequestCookie",
         "sourcePath": "test/src/features/github-auth/createGitHubCallbackRoute.spec.ts"
       },
       {
@@ -25548,6 +25844,24 @@
         "sourcePath": "src/app/api/auth/github/login/route.ts"
       },
       {
+        "fromSymbol": "POST",
+        "toSymbol": "setGitHubAuthReturnToCookie",
+        "callExpression": "setGitHubAuthReturnToCookie",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "readAtlasReturnPath",
+        "callExpression": "readAtlasReturnPath",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
+        "fromSymbol": "POST",
+        "toSymbol": "setGitHubPrivateAccessRequestCookie",
+        "callExpression": "setGitHubPrivateAccessRequestCookie",
+        "sourcePath": "src/app/api/auth/github/login/route.ts"
+      },
+      {
         "fromSymbol": "readPrivateRepositoryAccess",
         "toSymbol": "isFormReader",
         "callExpression": "isFormReader",
@@ -25861,8 +26175,32 @@
       },
       {
         "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "readGitHubAuthReturnTo",
+        "callExpression": "readGitHubAuthReturnTo",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "readGitHubPrivateAccessRequest",
+        "callExpression": "readGitHubPrivateAccessRequest",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
         "toSymbol": "clearGitHubAuthAttemptCookie",
         "callExpression": "clearGitHubAuthAttemptCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "clearGitHubAuthReturnToCookie",
+        "callExpression": "clearGitHubAuthReturnToCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "clearGitHubPrivateAccessRequestCookie",
+        "callExpression": "clearGitHubPrivateAccessRequestCookie",
         "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
       },
       {
@@ -25891,6 +26229,12 @@
       },
       {
         "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
+        "toSymbol": "setGitHubPrivateAccessCookie",
+        "callExpression": "setGitHubPrivateAccessCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts",
         "toSymbol": "clearGitHubAuthSessionCookie",
         "callExpression": "clearGitHubAuthSessionCookie",
         "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubCallbackRoute.ts"
@@ -25911,6 +26255,24 @@
         "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
         "toSymbol": "clearGitHubAuthSessionCookie",
         "callExpression": "clearGitHubAuthSessionCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "clearGitHubAuthReturnToCookie",
+        "callExpression": "clearGitHubAuthReturnToCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "clearGitHubPrivateAccessCookie",
+        "callExpression": "clearGitHubPrivateAccessCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts",
+        "toSymbol": "clearGitHubPrivateAccessRequestCookie",
+        "callExpression": "clearGitHubPrivateAccessRequestCookie",
         "sourcePath": "src/features/github-auth/adapters/inbound/next/createGitHubLogoutRoute.ts"
       },
       {
@@ -25944,6 +26306,42 @@
         "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
       },
       {
+        "fromSymbol": "setGitHubAuthReturnToCookie",
+        "toSymbol": "sealCookieValue",
+        "callExpression": "sealCookieValue",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "setGitHubAuthReturnToCookie",
+        "toSymbol": "cookieOptions",
+        "callExpression": "cookieOptions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "setGitHubPrivateAccessRequestCookie",
+        "toSymbol": "sealCookieValue",
+        "callExpression": "sealCookieValue",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "setGitHubPrivateAccessRequestCookie",
+        "toSymbol": "cookieOptions",
+        "callExpression": "cookieOptions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "setGitHubPrivateAccessCookie",
+        "toSymbol": "sealCookieValue",
+        "callExpression": "sealCookieValue",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "setGitHubPrivateAccessCookie",
+        "toSymbol": "cookieOptions",
+        "callExpression": "cookieOptions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
         "fromSymbol": "clearGitHubAuthAttemptCookie",
         "toSymbol": "clearGitHubAuthCookie",
         "callExpression": "clearGitHubAuthCookie",
@@ -25951,6 +26349,24 @@
       },
       {
         "fromSymbol": "clearGitHubAuthSessionCookie",
+        "toSymbol": "clearGitHubAuthCookie",
+        "callExpression": "clearGitHubAuthCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "clearGitHubAuthReturnToCookie",
+        "toSymbol": "clearGitHubAuthCookie",
+        "callExpression": "clearGitHubAuthCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "clearGitHubPrivateAccessRequestCookie",
+        "toSymbol": "clearGitHubAuthCookie",
+        "callExpression": "clearGitHubAuthCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "clearGitHubPrivateAccessCookie",
         "toSymbol": "clearGitHubAuthCookie",
         "callExpression": "clearGitHubAuthCookie",
         "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
@@ -25998,6 +26414,36 @@
         "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
       },
       {
+        "fromSymbol": "readGitHubAuthReturnTo",
+        "toSymbol": "readCookie",
+        "callExpression": "readCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "readGitHubAuthReturnTo",
+        "toSymbol": "openCookieValue",
+        "callExpression": "openCookieValue",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "readGitHubAuthReturnTo",
+        "toSymbol": "isSafeAtlasPath",
+        "callExpression": "isSafeAtlasPath",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "readGitHubPrivateAccess",
+        "toSymbol": "readGitHubCookieFlag",
+        "callExpression": "readGitHubCookieFlag",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "readGitHubPrivateAccessRequest",
+        "toSymbol": "readGitHubCookieFlag",
+        "callExpression": "readGitHubCookieFlag",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
         "fromSymbol": "hasGitHubAuthCookieEncryptionKey",
         "toSymbol": "readEncryptionKey",
         "callExpression": "readEncryptionKey",
@@ -26034,10 +26480,16 @@
         "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
       },
       {
-        "fromSymbol": "readGitHubAuthViewAsync",
-        "toSymbol": "readGitHubAuthSession",
-        "callExpression": "readGitHubAuthSession",
-        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+        "fromSymbol": "readGitHubCookieFlag",
+        "toSymbol": "readCookie",
+        "callExpression": "readCookie",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
+      },
+      {
+        "fromSymbol": "readGitHubCookieFlag",
+        "toSymbol": "openCookieValue",
+        "callExpression": "openCookieValue",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/githubAuthCookies.ts"
       },
       {
         "fromSymbol": "readGitHubAuthViewAsync",
@@ -26047,8 +26499,20 @@
       },
       {
         "fromSymbol": "readGitHubAuthViewAsync",
+        "toSymbol": "readGitHubAuthSession",
+        "callExpression": "readGitHubAuthSession",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromSymbol": "readGitHubAuthViewAsync",
         "toSymbol": "createGitHubAuthAdapterAsync",
         "callExpression": "createGitHubAuthAdapterAsync",
+        "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
+      },
+      {
+        "fromSymbol": "readGitHubAuthViewAsync",
+        "toSymbol": "readGitHubPrivateAccess",
+        "callExpression": "readGitHubPrivateAccess",
         "sourcePath": "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts"
       },
       {
@@ -26071,8 +26535,26 @@
       },
       {
         "fromSymbol": "GitHubAuthControls",
-        "toSymbol": "useRef",
-        "callExpression": "useRef",
+        "toSymbol": "createAuthenticatedActions",
+        "callExpression": "createAuthenticatedActions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromSymbol": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "toSymbol": "submitAccountForm",
+        "callExpression": "submitAccountForm",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromSymbol": "GitHubAuthControls",
+        "toSymbol": "createAnonymousActions",
+        "callExpression": "createAnonymousActions",
+        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
+      },
+      {
+        "fromSymbol": "onPress",
+        "toSymbol": "requestPrivateAccess",
+        "callExpression": "requestPrivateAccess",
         "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
       },
       {
@@ -27919,8 +28401,26 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
+        "toSymbol": "isGitHubSourceInput",
+        "callExpression": "isGitHubSourceInput",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
+        "toSymbol": "setSource",
+        "callExpression": "sourceForm.setSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
         "toSymbol": "setSelectedIds",
         "callExpression": "sourceForm.setSelectedIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
+      },
+      {
+        "fromSymbol": "isGitHubSourceInput",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx"
       },
       {
@@ -27945,6 +28445,18 @@
         "fromSymbol": "ProjectSourceForm",
         "toSymbol": "useState",
         "callExpression": "useState",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "ProjectSourceForm",
+        "toSymbol": "renderAuthControls",
+        "callExpression": "props.renderAuthControls",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "toSymbol": "setWorkspaceOpen",
+        "callExpression": "setWorkspaceOpen",
         "sourcePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx"
       },
       {
@@ -28513,6 +29025,12 @@
       },
       {
         "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "clearWorkspaceSelection",
+        "callExpression": "clearWorkspaceSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
         "toSymbol": "replaceWorkspaceHistory",
         "callExpression": "replaceWorkspaceHistory",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
@@ -28557,6 +29075,12 @@
         "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "toSymbol": "readSelectionError",
         "callExpression": "readSelectionError",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "clearWorkspaceSelection",
+        "toSymbol": "setLiveWorkspace",
+        "callExpression": "setLiveWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
@@ -28903,8 +29427,8 @@
       },
       {
         "fromSymbol": "WorkspaceMain",
-        "toSymbol": "workspaceMainStyle",
-        "callExpression": "workspaceMainStyle",
+        "toSymbol": "createWorkspaceMainStyle",
+        "callExpression": "createWorkspaceMainStyle",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
       },
       {
@@ -29010,6 +29534,12 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toSymbol": "createLiveWorkspace",
+        "callExpression": "createLiveWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
         "fromSymbol": "WorkspaceView",
         "toSymbol": "useWorkspaceRepositorySelection",
         "callExpression": "useWorkspaceRepositorySelection",
@@ -29031,6 +29561,12 @@
         "fromSymbol": "WorkspaceView",
         "toSymbol": "resolveWorkspaceProjectIdentity",
         "callExpression": "resolveWorkspaceProjectIdentity",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "WorkspaceView",
+        "toSymbol": "renderWorkspace",
+        "callExpression": "renderWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {

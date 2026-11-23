@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.2
+
+### Patch Changes
+
+- 31eccef: Start Atlas with an included architecture showcase and add Java and TypeScript reference applications.
+
 ## 0.22.1
 
 ### Patch Changes
