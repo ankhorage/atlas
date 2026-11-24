@@ -38,11 +38,11 @@ export function useGraphViewport(input: UseGraphViewportInput) {
   };
 
   /*** Runs the canonical readable fit and spacing optimization from explicit user intent. */
-  const fitGraph = () => {
+  const fitGraph = useCallback(() => {
     const nextController = controllerRef.current;
     if (nextController === null) return;
     fitGraphWithOptimizedSpacing(nextController, setViewport);
-  };
+  }, []);
 
   return {
     controller,
