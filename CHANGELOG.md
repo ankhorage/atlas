@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.4
+
+### Patch Changes
+
+- 7d07fd2: Refine workspace graph controls, tree navigation, and dependency graph colors.
+
 ## 0.22.3
 
 ### Patch Changes

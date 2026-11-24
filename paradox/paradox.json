@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.22.3",
+      "value": "v0.22.4",
       "color": "cb3837"
     },
     {
@@ -3947,7 +3947,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/app/loading.tsx",
-        "line": 7,
+        "line": 6,
         "column": 1
       }
     },
@@ -4409,7 +4409,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
-        "line": 9,
+        "line": 8,
         "column": 1
       }
     },
@@ -4420,7 +4420,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/ArchitectureAnalysisPanel.tsx",
-        "line": 62,
+        "line": 61,
         "column": 1
       }
     },
@@ -4464,7 +4464,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
-        "line": 12,
+        "line": 11,
         "column": 1
       }
     },
@@ -4475,7 +4475,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
-        "line": 44,
+        "line": 43,
         "column": 1
       }
     },
@@ -4486,7 +4486,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/AuditRuleList.tsx",
-        "line": 77,
+        "line": 76,
         "column": 1
       }
     },
@@ -4497,7 +4497,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/AuditRulePanel.tsx",
-        "line": 10,
+        "line": 9,
         "column": 1
       }
     },
@@ -4508,7 +4508,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "line": 25,
+        "line": 24,
         "column": 1
       }
     },
@@ -4519,7 +4519,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "line": 78,
+        "line": 77,
         "column": 1
       }
     },
@@ -4530,7 +4530,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CycleInspector.tsx",
-        "line": 94,
+        "line": 93,
         "column": 1
       }
     },
@@ -4541,7 +4541,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 21,
+        "line": 20,
         "column": 1
       }
     },
@@ -4552,7 +4552,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 34,
+        "line": 33,
         "column": 1
       }
     },
@@ -4563,7 +4563,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 51,
+        "line": 50,
         "column": 1
       }
     },
@@ -4574,7 +4574,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 76,
+        "line": 75,
         "column": 1
       }
     },
@@ -4585,7 +4585,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 93,
+        "line": 92,
         "column": 1
       }
     },
@@ -4596,7 +4596,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails.tsx",
-        "line": 107,
+        "line": 106,
         "column": 1
       }
     },
@@ -8001,12 +8001,34 @@
     },
     {
       "name": "useProjectTreeExpansion",
-      "description": "Start collapsed, preserve manual expansion, and reveal ancestors required by selected rows.",
+      "description": "Open the workspace root, preserve manual expansion, and reveal ancestors required by selected rows.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "initiallyExpandedIds",
+      "description": "Keep the workspace entry visible without expanding arbitrary source folders.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "name": "virtualDescendantIds",
+      "description": "Expand owner and repository presentation roots so the repository's top folder is visible.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
+        "line": 40,
         "column": 1
       }
     },
@@ -8017,7 +8039,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
-        "line": 32,
+        "line": 50,
         "column": 1
       }
     },
@@ -8512,7 +8534,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 23,
+        "line": 33,
         "column": 1
       }
     },
@@ -8523,7 +8545,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 35,
+        "line": 45,
         "column": 1
       }
     },
@@ -8534,7 +8556,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 78,
+        "line": 88,
         "column": 1
       }
     },
@@ -8545,7 +8567,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 96,
+        "line": 106,
         "column": 1
       }
     },
@@ -8556,8 +8578,19 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 100,
+        "line": 110,
         "column": 9
+      }
+    },
+    {
+      "name": "layoutIcon",
+      "description": "Resolve the icon owned by the active supported layout algorithm.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
+        "line": 132,
+        "column": 1
       }
     },
     {
@@ -8567,7 +8600,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 117,
+        "line": 137,
         "column": 1
       }
     },
@@ -8578,7 +8611,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 135,
+        "line": 155,
         "column": 1
       }
     },
@@ -8589,7 +8622,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 147,
+        "line": 167,
         "column": 1
       }
     },
@@ -8600,7 +8633,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 151,
+        "line": 171,
         "column": 9
       }
     },
@@ -9887,7 +9920,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceGraph.tsx",
-        "line": 13,
+        "line": 12,
         "column": 1
       }
     },
@@ -9920,7 +9953,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 66,
+        "line": 59,
         "column": 1
       }
     },
@@ -9931,7 +9964,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 97,
+        "line": 90,
         "column": 1
       }
     },
@@ -9942,7 +9975,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 115,
+        "line": 108,
         "column": 1
       }
     },
@@ -9953,7 +9986,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 146,
+        "line": 139,
         "column": 1
       }
     },
@@ -10981,13 +11014,24 @@
       }
     },
     {
+      "name": "localNavigationTree",
+      "description": "Retain the project name as a selectable top-level tree folder for local analyses.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
+        "line": 18,
+        "column": 1
+      }
+    },
+    {
       "name": "createProjectIdentity",
       "description": "Creates a stable browser-safe scope for workspace preferences without exposing a local path.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts",
-        "line": 23,
+        "line": 36,
         "column": 1
       }
     },
@@ -25169,18 +25213,24 @@
       },
       {
         "fromSymbol": "hydrateWorkspaceSnapshot",
+        "toSymbol": "localNavigationTree",
+        "callExpression": "localNavigationTree",
+        "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
+      },
+      {
+        "fromSymbol": "localNavigationTree",
         "toSymbol": "addSourceFeatureNavigation",
         "callExpression": "addSourceFeatureNavigation",
         "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
       },
       {
-        "fromSymbol": "hydrateWorkspaceSnapshot",
+        "fromSymbol": "localNavigationTree",
         "toSymbol": "buildProjectTree",
         "callExpression": "buildProjectTree",
         "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
       },
       {
-        "fromSymbol": "hydrateWorkspaceSnapshot",
+        "fromSymbol": "localNavigationTree",
         "toSymbol": "deserializeSourceGraph",
         "callExpression": "deserializeSourceGraph",
         "sourcePath": "src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts"
@@ -27808,6 +27858,12 @@
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
+        "fromSymbol": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
+        "toSymbol": "initiallyExpandedIds",
+        "callExpression": "initiallyExpandedIds",
+        "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
+      },
+      {
         "fromSymbol": "useProjectTreeExpansion",
         "toSymbol": "arraysEqual",
         "callExpression": "arraysEqual",
@@ -27829,6 +27885,12 @@
         "fromSymbol": "onExpandedChange",
         "toSymbol": "setState",
         "callExpression": "setState",
+        "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
+      },
+      {
+        "fromSymbol": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
+        "toSymbol": "virtualDescendantIds",
+        "callExpression": "virtualDescendantIds",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
@@ -27967,6 +28029,12 @@
         "fromSymbol": "LayoutSettings",
         "toSymbol": "t",
         "callExpression": "t",
+        "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
+      },
+      {
+        "fromSymbol": "LayoutSettings",
+        "toSymbol": "layoutIcon",
+        "callExpression": "layoutIcon",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
@@ -29332,15 +29400,15 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceControls.tsx"
       },
       {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "toSymbol": "onNavigate",
-        "callExpression": "props.onNavigate",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
-      },
-      {
         "fromSymbol": "WorkspaceIdentity",
         "toSymbol": "createBreadcrumbItems",
         "callExpression": "createBreadcrumbItems",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toSymbol": "onNavigate",
+        "callExpression": "props.onNavigate",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {
