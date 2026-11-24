@@ -17,7 +17,7 @@ const ACTIVE_CYCLE: readonly CycleHighlight[] = [
 ];
 
 describe('[graph viewport controls]', () => {
-  it('adapts cycle spacing only from settled complete-cycle measurements', async () => {
+  it('fits cycle evidence without changing the selected layout spacing', async () => {
     const state = { zoom: 1, min: 0.5, max: 8 };
     const fits: (GraphViewFitOptions | undefined)[] = [];
     const spacingChanges: number[] = [];
@@ -92,42 +92,23 @@ describe('[graph viewport controls]', () => {
 
       await click('#ready');
       await click('#incomplete');
-      expect(fits).toEqual([{ optimizeSpacing: true }]);
+      expect(fits).toEqual([undefined]);
       expect(spacingChanges).toEqual([]);
 
       await click('#settled');
-      expect(fits).toEqual([
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-      ]);
-      expect(spacingChanges).toEqual([0.4]);
-      expect(host.container.querySelector('#spacing')?.textContent).toBe('0.4');
+      expect(fits).toEqual([undefined, undefined, undefined]);
+      expect(spacingChanges).toEqual([]);
+      expect(host.container.querySelector('#spacing')?.textContent).toBe('0.8');
 
       await click('#settled');
-      expect(fits).toEqual([
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        undefined,
-      ]);
+      expect(fits).toEqual([undefined, undefined, undefined]);
 
       await click('#settled');
-      expect(fits).toEqual([
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        undefined,
-      ]);
+      expect(fits).toEqual([undefined, undefined, undefined]);
 
       await click('#disable');
       await click('#settled');
-      expect(fits).toEqual([
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        undefined,
-      ]);
+      expect(fits).toEqual([undefined, undefined, undefined]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
@@ -209,7 +190,7 @@ describe('[graph viewport controls]', () => {
       expect(fits).toEqual([]);
       await click('#settled');
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }]);
+      expect(fits).toEqual([undefined]);
 
       state.zoom = 5;
       await click('#zoom-event');
@@ -217,17 +198,17 @@ describe('[graph viewport controls]', () => {
 
       await click('#ready');
       await click('#settled');
-      expect(fits).toEqual([{ optimizeSpacing: true }]);
+      expect(fits).toEqual([undefined]);
 
       state.max = 3;
       state.zoom = 1;
       await click('#settled');
       expect(slider().max).toBe('3');
       expect(slider().value).toBe('1');
-      expect(fits).toEqual([{ optimizeSpacing: true }]);
+      expect(fits).toEqual([undefined]);
 
       await click('button[aria-label="Fit graph and optimize spacing for readability"]');
-      expect(fits).toEqual([{ optimizeSpacing: true }, { optimizeSpacing: true }]);
+      expect(fits).toEqual([undefined, { optimizeSpacing: true }]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
@@ -306,12 +287,7 @@ describe('[graph viewport controls]', () => {
       await click('#one');
       positions.set('a', { x: 1400, y: 400 });
       await click('#one');
-      expect(fits).toEqual([
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-        { optimizeSpacing: true },
-      ]);
+      expect(fits).toEqual([undefined, undefined, undefined, undefined]);
     } finally {
       await act(async () => root.unmount());
       host.unmount();
