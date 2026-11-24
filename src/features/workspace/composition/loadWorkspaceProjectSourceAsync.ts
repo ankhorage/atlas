@@ -13,6 +13,7 @@ import type { GitHubRepositoryAuthorization } from '@/features/github-auth/adapt
 import { createGitHubProjectMaterializer } from '@/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer';
 import { discoverWorkspaceGitHubSourcesAsync } from '@/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync';
 import { loadProjectSourceAsync } from '@/features/project-source/composition/loadProjectSourceAsync';
+import { createEmptyWorkspaceProjectSourceResult } from '@/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult';
 import {
   createWorkspaceRepositoryRuntime,
   type WorkspaceRepositoryAuthorization,
@@ -154,6 +155,8 @@ export async function loadWorkspaceProjectSourceAsync(
   authorizationScope = 'anonymous'
 ): Promise<WorkspaceProjectSourceResult> {
   const startupSource = resolveWorkspaceStartupSource(sourceValue, process.env.ATLAS_PROJECT_PATH);
+
+  if (startupSource.kind === 'empty') return createEmptyWorkspaceProjectSourceResult();
 
   if (startupSource.kind === 'filesystem') {
     const projectPath = parseProjectPath(startupSource.path);

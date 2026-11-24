@@ -3,8 +3,8 @@ import type { ColorToneDefinition } from '@ankhorage/zora';
 import { connection } from 'next/server';
 
 import { downloadAuditJsonAction, downloadAuditXmlAction } from '@/app/actions/audit.actions';
-import type { GitHubRepositoryAuthorization } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import {
+  type GitHubRepositoryAuthorization,
   readGitHubAuthViewAsync,
   readGitHubRepositoryAuthenticationAsync,
 } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
@@ -20,13 +20,7 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
     readGitHubRepositoryAuthenticationAsync(),
   ]);
   const result = await loadWorkspace(
-    withRepositorySelection(
-      authenticatedInventorySource(
-        readSearchParam(params.source),
-        repositoryAuthentication.authentication
-      ),
-      readSearchParam(params.repositories)
-    ),
+    withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories)),
     repositoryAuthentication
   );
 
@@ -55,14 +49,6 @@ function createColorToneDefinitions(
   catalog: typeof TONE_PAIR_CATALOG
 ): readonly ColorToneDefinition[] {
   return catalog.map(({ accent, accentTarget, id }) => ({ accent, accentTarget, id }));
-}
-
-/*** Open the current user's inventory after sign-in while anonymous visitors retain public-owner discovery. */
-function authenticatedInventorySource(
-  source: string | undefined,
-  authentication: GitHubRepositoryAuthorization['authentication']
-): string | undefined {
-  return source ?? (authentication === 'anonymous' ? undefined : '@me');
 }
 
 /*** Read one scalar search parameter while ignoring repeated values. */
