@@ -183,6 +183,7 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const { viewport } = props;
   const interactions = useGraphCanvasInteractions(props);
   const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
+  useVisibleTopologyFit(props.model, viewport);
 
   return (
     <div className={styles.canvas} style={GRAPH_CANVAS_STYLE}>
@@ -222,6 +223,33 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
       </div>
     </div>
   );
+}
+
+/*** Refit after every browser-committed projection change, including filters and package depth. */
+function useVisibleTopologyFit(
+  model: DependencyGraphCanvasProps['model'],
+  viewport: ReturnType<typeof useGraphViewport>
+): void {
+  const visibleTopologySignature = useMemo(
+    () =>
+      [...model.nodes.map(node => `node:${node.id}`), ...model.edges.map(edge => `edge:${edge.id}`)]
+        .sort()
+        .join('|'),
+    [model.edges, model.nodes]
+  );
+  useFitVisibleTopology(viewport, visibleTopologySignature);
+}
+
+/*** Refit once the browser has committed every projection change, including filters and depth. */
+function useFitVisibleTopology(
+  viewport: ReturnType<typeof useGraphViewport>,
+  visibleTopologySignature: string
+): void {
+  useEffect(() => {
+    if (viewport.controller === null || visibleTopologySignature.length === 0) return;
+    const frame = requestAnimationFrame(viewport.fitGraph);
+    return () => cancelAnimationFrame(frame);
+  }, [viewport.controller, viewport.fitGraph, visibleTopologySignature]);
 }
 
 /*** Compose local hover presentation with workspace-owned controlled graph selection. */

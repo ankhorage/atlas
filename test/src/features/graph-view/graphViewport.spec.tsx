@@ -236,13 +236,18 @@ describe('[graph viewport controls]', () => {
 
   it('refits once when the visible topology grows or shrinks', async () => {
     const fits: (GraphViewFitOptions | undefined)[] = [];
+    const positions = new Map([
+      ['a', { x: 600, y: 400 }],
+      ['b', { x: 600, y: 400 }],
+      ['c', { x: 600, y: 400 }],
+    ]);
     const controller: GraphViewController = {
       fit: options => fits.push(options),
       measureNodes: nodeIds => ({
         viewport: { width: 1200, height: 800 },
         nodes: nodeIds.map(id => ({
           id,
-          position: { x: 600, y: 400 },
+          position: positions.get(id)!,
           size: { width: 48, height: 24 },
         })),
       }),
@@ -299,7 +304,10 @@ describe('[graph viewport controls]', () => {
       await click('#two');
       await click('#three');
       await click('#one');
+      positions.set('a', { x: 1400, y: 400 });
+      await click('#one');
       expect(fits).toEqual([
+        { optimizeSpacing: true },
         { optimizeSpacing: true },
         { optimizeSpacing: true },
         { optimizeSpacing: true },

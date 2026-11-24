@@ -38,11 +38,11 @@ export function useGraphViewport(input: UseGraphViewportInput) {
   };
 
   /*** Runs the canonical readable fit and spacing optimization from explicit user intent. */
-  const fitGraph = () => {
+  const fitGraph = useCallback(() => {
     const nextController = controllerRef.current;
     if (nextController === null) return;
     fitGraphWithOptimizedSpacing(nextController, setViewport);
-  };
+  }, []);
 
   return {
     controller,
@@ -52,7 +52,10 @@ export function useGraphViewport(input: UseGraphViewportInput) {
       visibleNodeIds: readonly string[]
     ) => {
       const topology = createTopologyFit(nextController, visibleNodeIds);
-      if (topology !== null && fittedTopologyRef.current?.signature !== topology.signature) {
+      if (
+        topology !== null &&
+        shouldFitTopology(nextController, topology, fittedTopologyRef.current)
+      ) {
         fittedTopologyRef.current = topology;
         fitGraphWithOptimizedSpacing(nextController, setViewport);
       }
@@ -83,7 +86,39 @@ function createTopologyFit(
     measurement.nodes.some(node => node.size.width <= 0 || node.size.height <= 0)
   )
     return null;
-  return { signature: uniqueVisibleNodeIds.join('|') };
+  return { measurement, signature: uniqueVisibleNodeIds.join('|') };
+}
+
+/*** Refit when a completed layout moves the retained topology beyond the visible canvas. */
+function shouldFitTopology(
+  controller: GraphViewController,
+  topology: TopologyFit,
+  fittedTopology: TopologyFit | null
+): boolean {
+  if (fittedTopology?.signature !== topology.signature) return true;
+  // A zoomed-in viewport is explicitly user-owned; duplicate layout callbacks must not reset it.
+  if (controller.getViewport().zoom > 1) return false;
+  return !areMeasuredNodesVisible(controller, topology.measurement);
+}
+
+/*** Reject a stale fit whenever rendered node bounds escape the measured GraphView viewport. */
+function areMeasuredNodesVisible(
+  controller: GraphViewController,
+  measurement: GraphViewMeasurement
+): boolean {
+  const { pan, zoom } = controller.getViewport();
+  return measurement.nodes.every(node => {
+    const halfWidth = (node.size.width * zoom) / 2;
+    const halfHeight = (node.size.height * zoom) / 2;
+    const centerX = node.position.x * zoom + pan.x;
+    const centerY = node.position.y * zoom + pan.y;
+    return (
+      centerX - halfWidth >= 0 &&
+      centerY - halfHeight >= 0 &&
+      centerX + halfWidth <= measurement.viewport.width &&
+      centerY + halfHeight <= measurement.viewport.height
+    );
+  });
 }
 
 /*** Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit. */
@@ -310,5 +345,6 @@ interface GraphViewportState {
 }
 
 interface TopologyFit {
+  readonly measurement: GraphViewMeasurement;
   readonly signature: string;
 }
