@@ -769,7 +769,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx">
       src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx
-      <small>5 functions</small>
+      <small>4 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/adapters/inbound/next/createWorkspaceInventoryRoute.ts">
@@ -925,6 +925,11 @@
     <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts">
       src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts
       <small>16 functions</small>
+    </button>
+  </li><li>
+    <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts">
+      src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts
+      <small>1 function</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts">
@@ -2030,6 +2035,11 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/workspace/application/use-cases/diagnoseWorkspaceRepositoryOperationAsync.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <code>classifyWorkspaceRepositoryFailure</code>, <code>workspaceRepositoryFailureDescription</code></p>
+  </article><article class="item" data-search="src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts src/types/workspace.ts createEmptyWorkspaceProjectSourceResult">
+    <h3>src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts</h3>
+    <p class="muted">Referenced module</p>
+    <p><strong>Dependencies:</strong> <code>src/types/workspace.ts</code></p>
+    <p><strong>Exports:</strong> <code>createEmptyWorkspaceProjectSourceResult</code></p>
   </article><article class="item" data-search="src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts src/types/workspace.ts createWorkspaceAnalysisCache WorkspaceAnalysisCache">
     <h3>src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts</h3>
     <p class="muted">Referenced module</p>
@@ -2125,10 +2135,10 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/project-analysis/adapters/outbound/project-detector/inspectProjectForAnalysisAsync.ts</code>, <code>src/features/project-analysis/composition/loadProjectSnapshotAsync.ts</code>, <code>src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts</code>, <code>src/features/workspace/application/use-cases/hydrateWorkspaceSnapshot.ts</code>, <code>src/types/workspace.ts</code></p>
     <p><strong>Exports:</strong> <code>loadWorkspaceAsync</code></p>
-  </article><article class="item" data-search="src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts src/features/workspace/composition/loadWorkspaceAsync.ts src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts src/features/workspace/composition/resolveWorkspaceStartupSource.ts src/types/projectSource.ts src/types/workspace.ts src/utils/getProjectName.ts src/utils/parseProjectPath.ts createWorkspaceSelectionOperationAsync discoverWorkspaceInventoryAsync loadAuthenticatedWorkspaceProjectSourceAsync loadWorkspaceProjectSourceAsync retryWorkspaceRepositoryAsync WorkspaceProjectSourceResult WorkspaceRepositoryOption">
+  </article><article class="item" data-search="src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts src/features/project-source/composition/loadProjectSourceAsync.ts src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts src/features/workspace/composition/loadWorkspaceAsync.ts src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts src/features/workspace/composition/resolveWorkspaceStartupSource.ts src/types/projectSource.ts src/types/workspace.ts src/utils/getProjectName.ts src/utils/parseProjectPath.ts createWorkspaceSelectionOperationAsync discoverWorkspaceInventoryAsync loadAuthenticatedWorkspaceProjectSourceAsync loadWorkspaceProjectSourceAsync retryWorkspaceRepositoryAsync WorkspaceProjectSourceResult WorkspaceRepositoryOption">
     <h3>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts</h3>
     <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts</code>, <code>src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts</code>, <code>src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code>, <code>src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts</code>, <code>src/features/workspace/composition/loadWorkspaceAsync.ts</code>, <code>src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts</code>, <code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts</code>, <code>src/types/projectSource.ts</code>, <code>src/types/workspace.ts</code>, <code>src/utils/getProjectName.ts</code>, <code>src/utils/parseProjectPath.ts</code></p>
+    <p><strong>Dependencies:</strong> <code>src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts</code>, <code>src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts</code>, <code>src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts</code>, <code>src/features/project-source/composition/loadProjectSourceAsync.ts</code>, <code>src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts</code>, <code>src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts</code>, <code>src/features/workspace/composition/loadWorkspaceAsync.ts</code>, <code>src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts</code>, <code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts</code>, <code>src/types/projectSource.ts</code>, <code>src/types/workspace.ts</code>, <code>src/utils/getProjectName.ts</code>, <code>src/utils/parseProjectPath.ts</code></p>
     <p><strong>Exports:</strong> <code>createWorkspaceSelectionOperationAsync</code>, <code>discoverWorkspaceInventoryAsync</code>, <code>loadAuthenticatedWorkspaceProjectSourceAsync</code>, <code>loadWorkspaceProjectSourceAsync</code>, <code>retryWorkspaceRepositoryAsync</code>, <code>WorkspaceProjectSourceResult</code>, <code>WorkspaceRepositoryOption</code></p>
   </article><article class="item" data-search="src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts src/features/workspace/composition/composeWorkspaceRepositoryRuntimeResult.ts src/features/workspace/composition/createWorkspaceRepositoryStatus.ts src/features/workspace/utils/settleBoundedAsync.ts src/types/workspace.ts loadWorkspaceRepositoryBatchAsync WorkspaceRepositoryProgress WorkspaceRuntimeState">
     <h3>src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts</h3>
@@ -2529,11 +2539,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
     <h3>test/src/features/audit/useCycleSelection.spec.tsx</h3>
     <p class="muted">Referenced module</p>
     <p><strong>Dependencies:</strong> <code>src/features/audit/adapters/inbound/react/useCycleSelection.ts</code>, <code>src/features/audit/utils/cycleVisualization.ts</code></p>
-    <p><strong>Exports:</strong> <span class="empty">None</span></p>
-  </article><article class="item" data-search="test/src/features/dependency-analysis/architectureExamples.spec.ts src/features/project-analysis/composition/readProjectSnapshotAsync.ts">
-    <h3>test/src/features/dependency-analysis/architectureExamples.spec.ts</h3>
-    <p class="muted">Referenced module</p>
-    <p><strong>Dependencies:</strong> <code>src/features/project-analysis/composition/readProjectSnapshotAsync.ts</code></p>
     <p><strong>Exports:</strong> <span class="empty">None</span></p>
   </article><article class="item" data-search="test/src/features/dependency-analysis/cppDependencyGraph.spec.ts src/features/dependency-analysis/adapters/outbound/dependency-graph/projectDependencyImportsAsync.ts src/features/project-analysis/adapters/outbound/source-metadata/readCppProjectFileMetadata.ts">
     <h3>test/src/features/dependency-analysis/cppDependencyGraph.spec.ts</h3>
@@ -3679,6 +3684,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_features_workspace_application_use_cases_diagnoseWorkspaceRepositoryOperationAsync_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts[&quot;src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts --&gt; module_src_types_workspace_ts
@@ -3779,6 +3787,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_discoverWorkspaceGitHubSourcesAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_createWorkspaceRepositoryRuntime_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceRepositoryBatchAsync_ts
@@ -4046,9 +4055,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_src_features_audit_useCycleSelection_spec_tsx
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_adapters_inbound_react_useCycleSelection_ts
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_utils_cycleVisualization_ts
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts[&quot;test/src/features/dependency-analysis/architectureExamples.spec.ts&quot;]
-  package__ankhorage_atlas -.-&gt; module_test_src_features_dependency_analysis_architectureExamples_spec_ts
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/cppDependencyGraph.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts --&gt; module_src_features_dependency_analysis_adapters_outbound_dependency_graph_projectDependencyImportsAsync_ts
@@ -5081,6 +5087,9 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_features_workspace_application_use_cases_diagnoseWorkspaceRepositoryOperationAsync_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts[&quot;src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts&quot;]
+  package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts --&gt; module_src_types_workspace_ts
@@ -5181,6 +5190,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_discoverWorkspaceGitHubSourcesAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_createWorkspaceRepositoryRuntime_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceRepositoryBatchAsync_ts
@@ -5448,9 +5458,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   package__ankhorage_atlas -.-&gt; module_test_src_features_audit_useCycleSelection_spec_tsx
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_adapters_inbound_react_useCycleSelection_ts
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_utils_cycleVisualization_ts
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts[&quot;test/src/features/dependency-analysis/architectureExamples.spec.ts&quot;]
-  package__ankhorage_atlas -.-&gt; module_test_src_features_dependency_analysis_architectureExamples_spec_ts
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/cppDependencyGraph.spec.ts&quot;]
   package__ankhorage_atlas -.-&gt; module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts --&gt; module_src_features_dependency_analysis_adapters_outbound_dependency_graph_projectDependencyImportsAsync_ts
@@ -5911,6 +5918,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceSessionStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts&quot;]
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts&quot;]
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts[&quot;src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts&quot;]
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts[&quot;src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
@@ -6011,7 +6019,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_audit_resolveAuditConfiguration_spec_ts[&quot;test/src/features/audit/resolveAuditConfiguration.spec.ts&quot;]
   module_test_src_features_audit_resolveSelectedCycleIds_spec_ts[&quot;test/src/features/audit/resolveSelectedCycleIds.spec.ts&quot;]
   module_test_src_features_audit_useCycleSelection_spec_tsx[&quot;test/src/features/audit/useCycleSelection.spec.tsx&quot;]
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts[&quot;test/src/features/dependency-analysis/architectureExamples.spec.ts&quot;]
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/cppDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_delphiDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/delphiDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_javaDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/javaDependencyGraph.spec.ts&quot;]
@@ -6471,6 +6478,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceStore_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_features_workspace_application_use_cases_diagnoseWorkspaceRepositoryOperationAsync_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_projectAnalysis_ts
@@ -6531,6 +6539,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_discoverWorkspaceGitHubSourcesAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_createWorkspaceRepositoryRuntime_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceRepositoryBatchAsync_ts
@@ -6638,7 +6647,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_audit_resolveSelectedCycleIds_spec_ts --&gt; module_src_features_audit_utils_cycleVisualization_ts
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_adapters_inbound_react_useCycleSelection_ts
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_utils_cycleVisualization_ts
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts --&gt; module_src_features_dependency_analysis_adapters_outbound_dependency_graph_projectDependencyImportsAsync_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts --&gt; module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts
   module_test_src_features_dependency_analysis_delphiDependencyGraph_spec_ts --&gt; module_src_features_dependency_analysis_adapters_outbound_dependency_graph_projectDependencyImportsAsync_ts
@@ -6961,6 +6969,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceSessionStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts&quot;]
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts&quot;]
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts[&quot;src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts&quot;]
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts[&quot;src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
@@ -7061,7 +7070,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_audit_resolveAuditConfiguration_spec_ts[&quot;test/src/features/audit/resolveAuditConfiguration.spec.ts&quot;]
   module_test_src_features_audit_resolveSelectedCycleIds_spec_ts[&quot;test/src/features/audit/resolveSelectedCycleIds.spec.ts&quot;]
   module_test_src_features_audit_useCycleSelection_spec_tsx[&quot;test/src/features/audit/useCycleSelection.spec.tsx&quot;]
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts[&quot;test/src/features/dependency-analysis/architectureExamples.spec.ts&quot;]
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/cppDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_delphiDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/delphiDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_javaDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/javaDependencyGraph.spec.ts&quot;]
@@ -7521,6 +7529,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceStore_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_features_workspace_application_use_cases_diagnoseWorkspaceRepositoryOperationAsync_ts
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts --&gt; module_src_types_workspace_ts
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts --&gt; module_src_types_workspace_ts
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_features_audit_application_use_cases_createAuditFromSnapshot_ts
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts --&gt; module_src_types_projectAnalysis_ts
@@ -7581,6 +7590,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_adapters_outbound_repository_createGitHubProjectMaterializer_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_discoverWorkspaceGitHubSourcesAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_project_source_composition_loadProjectSourceAsync_ts
+  module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_createWorkspaceRepositoryRuntime_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceAsync_ts
   module_src_features_workspace_composition_loadWorkspaceProjectSourceAsync_ts --&gt; module_src_features_workspace_composition_loadWorkspaceRepositoryBatchAsync_ts
@@ -7688,7 +7698,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_audit_resolveSelectedCycleIds_spec_ts --&gt; module_src_features_audit_utils_cycleVisualization_ts
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_adapters_inbound_react_useCycleSelection_ts
   module_test_src_features_audit_useCycleSelection_spec_tsx --&gt; module_src_features_audit_utils_cycleVisualization_ts
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts --&gt; module_src_features_project_analysis_composition_readProjectSnapshotAsync_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts --&gt; module_src_features_dependency_analysis_adapters_outbound_dependency_graph_projectDependencyImportsAsync_ts
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts --&gt; module_src_features_project_analysis_adapters_outbound_source_metadata_readCppProjectFileMetadata_ts
   module_test_src_features_dependency_analysis_delphiDependencyGraph_spec_ts --&gt; module_src_features_dependency_analysis_adapters_outbound_dependency_graph_projectDependencyImportsAsync_ts
@@ -8013,6 +8022,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceSessionStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts&quot;]
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts&quot;]
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts[&quot;src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts&quot;]
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts[&quot;src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
@@ -8113,7 +8123,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_audit_resolveAuditConfiguration_spec_ts[&quot;test/src/features/audit/resolveAuditConfiguration.spec.ts&quot;]
   module_test_src_features_audit_resolveSelectedCycleIds_spec_ts[&quot;test/src/features/audit/resolveSelectedCycleIds.spec.ts&quot;]
   module_test_src_features_audit_useCycleSelection_spec_tsx[&quot;test/src/features/audit/useCycleSelection.spec.tsx&quot;]
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts[&quot;test/src/features/dependency-analysis/architectureExamples.spec.ts&quot;]
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/cppDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_delphiDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/delphiDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_javaDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/javaDependencyGraph.spec.ts&quot;]
@@ -8371,6 +8380,7 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceSessionStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts&quot;]
   module_src_features_workspace_adapters_outbound_browser_createBrowserWorkspaceStore_ts[&quot;src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts&quot;]
   module_src_features_workspace_application_use_cases_classifyWorkspaceRepositoryFailure_ts[&quot;src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts&quot;]
+  module_src_features_workspace_application_use_cases_createEmptyWorkspaceProjectSourceResult_ts[&quot;src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceAnalysisCache_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts&quot;]
   module_src_features_workspace_application_use_cases_createWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/createWorkspaceSnapshot.ts&quot;]
   module_src_features_workspace_application_use_cases_deserializeWorkspaceSnapshot_ts[&quot;src/features/workspace/application/use-cases/deserializeWorkspaceSnapshot.ts&quot;]
@@ -8471,7 +8481,6 @@ The canonical CLI surface is exposed through Ankh. Use `audit` for rule evaluati
   module_test_src_features_audit_resolveAuditConfiguration_spec_ts[&quot;test/src/features/audit/resolveAuditConfiguration.spec.ts&quot;]
   module_test_src_features_audit_resolveSelectedCycleIds_spec_ts[&quot;test/src/features/audit/resolveSelectedCycleIds.spec.ts&quot;]
   module_test_src_features_audit_useCycleSelection_spec_tsx[&quot;test/src/features/audit/useCycleSelection.spec.tsx&quot;]
-  module_test_src_features_dependency_analysis_architectureExamples_spec_ts[&quot;test/src/features/dependency-analysis/architectureExamples.spec.ts&quot;]
   module_test_src_features_dependency_analysis_cppDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/cppDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_delphiDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/delphiDependencyGraph.spec.ts&quot;]
   module_test_src_features_dependency_analysis_javaDependencyGraph_spec_ts[&quot;test/src/features/dependency-analysis/javaDependencyGraph.spec.ts&quot;]
@@ -11471,22 +11480,17 @@ Entries are removed after success or failure so later loads observe source chang
     
   </article><article class="item" data-search="createColorToneDefinitions src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx Select the serializable Tone props required by ZORA from the published Templates catalog.">
     <h3>createColorToneDefinitions</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:54:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:48:1</code></p>
     <p>Select the serializable Tone props required by ZORA from the published Templates catalog.</p>
-    
-  </article><article class="item" data-search="authenticatedInventorySource src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx Open the current user&#39;s inventory after sign-in while anonymous visitors retain public-owner discovery.">
-    <h3>authenticatedInventorySource</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:61:1</code></p>
-    <p>Open the current user&#39;s inventory after sign-in while anonymous visitors retain public-owner discovery.</p>
     
   </article><article class="item" data-search="readSearchParam src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx Read one scalar search parameter while ignoring repeated values.">
     <h3>readSearchParam</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:69:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:55:1</code></p>
     <p>Read one scalar search parameter while ignoring repeated values.</p>
     
   </article><article class="item" data-search="withRepositorySelection src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx Keep repository ids in an explicit query field while the server validates them against discovery.">
     <h3>withRepositorySelection</h3>
-    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:74:1</code></p>
+    <p class="muted"><code>src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx:60:1</code></p>
     <p>Keep repository ids in an explicit query field while the server validates them against discovery.</p>
     
   </article>
@@ -12466,6 +12470,16 @@ Entries are removed after success or failure so later loads observe source chang
     
   </article>
     </section>
+  </section><section id="view-src-features-workspace-application-use-cases-createemptyworkspaceprojectsourceresult-ts" class="view" data-view="src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts" hidden>
+    <section class="panel">
+      <h2>src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts</h2>
+      <article class="item" data-search="createEmptyWorkspaceProjectSourceResult src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts Produces the picker-first workspace state without loading an implicit project.">
+    <h3>createEmptyWorkspaceProjectSourceResult</h3>
+    <p class="muted"><code>src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts:4:1</code></p>
+    <p>Produces the picker-first workspace state without loading an implicit project.</p>
+    
+  </article>
+    </section>
   </section><section id="view-src-features-workspace-application-use-cases-createworkspaceanalysiscache-ts" class="view" data-view="src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts" hidden>
     <section class="panel">
       <h2>src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts</h2>
@@ -13086,52 +13100,52 @@ Entries are removed after success or failure so later loads observe source chang
       <h2>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts</h2>
       <article class="item" data-search="retryWorkspaceRepositoryAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Retry one failed repository through the process-local runtime that owns its retained snapshots.">
     <h3>retryWorkspaceRepositoryAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:46:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:47:1</code></p>
     <p>Retry one failed repository through the process-local runtime that owns its retained snapshots.</p>
     
   </article><article class="item" data-search="discoverWorkspaceInventoryAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Discover only credential-free repository metadata for a request-scoped GitHub owner inventory.">
     <h3>discoverWorkspaceInventoryAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:61:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:62:1</code></p>
     <p>Discover only credential-free repository metadata for a request-scoped GitHub owner inventory.</p>
     
   </article><article class="item" data-search="createWorkspaceSelectionOperationAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Validate a browser selection against current authorized inventory before creating a streaming runtime operation.">
     <h3>createWorkspaceSelectionOperationAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:78:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:79:1</code></p>
     <p>Validate a browser selection against current authorized inventory before creating a streaming runtime operation.</p>
     
   </article><article class="item" data-search="selectedInventoryRepositories src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Resolve opaque browser IDs exclusively from the fresh authorized inventory.">
     <h3>selectedInventoryRepositories</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:125:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:126:1</code></p>
     <p>Resolve opaque browser IDs exclusively from the fresh authorized inventory.</p>
     
   </article><article class="item" data-search="loadWorkspaceProjectSourceAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Load the configured local project or discover GitHub sources supplied by the browser query.">
     <h3>loadWorkspaceProjectSourceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:142:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:143:1</code></p>
     <p>Load the configured local project or discover GitHub sources supplied by the browser query.</p>
     
   </article><article class="item" data-search="loadGitHubWorkspaceAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Delegate multi-project loading to the server-owned revision runtime.">
     <h3>loadGitHubWorkspaceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:191:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:194:1</code></p>
     <p>Delegate multi-project loading to the server-owned revision runtime.</p>
     
   </article><article class="item" data-search="loadAuthenticatedWorkspaceProjectSourceAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Load a workspace with the credential resolved at the trusted request boundary.">
     <h3>loadAuthenticatedWorkspaceProjectSourceAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:239:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:242:1</code></p>
     <p>Load a workspace with the credential resolved at the trusted request boundary.</p>
     
   </article><article class="item" data-search="toRepositoryOptions src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Preserve picker state from discovery while keeping the runtime status model separate.">
     <h3>toRepositoryOptions</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:258:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:261:1</code></p>
     <p>Preserve picker state from discovery while keeping the runtime status model separate.</p>
     
   </article><article class="item" data-search="parseGitHubWorkspaceSource src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Decode persisted exclusion identities without changing the established source query format.">
     <h3>parseGitHubWorkspaceSource</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:268:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:271:1</code></p>
     <p>Decode persisted exclusion identities without changing the established source query format.</p>
     
   </article><article class="item" data-search="resolveGitHubRevisionAsync src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts Resolve a GitHub URL to its immutable revision through the public Repository capability.">
     <h3>resolveGitHubRevisionAsync</h3>
-    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:305:1</code></p>
+    <p class="muted"><code>src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts:308:1</code></p>
     <p>Resolve a GitHub URL to its immutable revision through the public Repository capability.</p>
     
   </article>
@@ -13159,10 +13173,10 @@ Entries are removed after success or failure so later loads observe source chang
   </section><section id="view-src-features-workspace-composition-resolveworkspacestartupsource-ts" class="view" data-view="src/features/workspace/composition/resolveWorkspaceStartupSource.ts" hidden>
     <section class="panel">
       <h2>src/features/workspace/composition/resolveWorkspaceStartupSource.ts</h2>
-      <article class="item" data-search="resolveWorkspaceStartupSource src/features/workspace/composition/resolveWorkspaceStartupSource.ts Resolve the browser workspace source with query, environment, then Atlas self-hosting precedence.">
+      <article class="item" data-search="resolveWorkspaceStartupSource src/features/workspace/composition/resolveWorkspaceStartupSource.ts Resolve the browser workspace source with query and explicit local-project precedence.">
     <h3>resolveWorkspaceStartupSource</h3>
-    <p class="muted"><code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts:4:1</code></p>
-    <p>Resolve the browser workspace source with query, environment, then Atlas self-hosting precedence.</p>
+    <p class="muted"><code>src/features/workspace/composition/resolveWorkspaceStartupSource.ts:2:1</code></p>
+    <p>Resolve the browser workspace source with query and explicit local-project precedence.</p>
     
   </article>
     </section>

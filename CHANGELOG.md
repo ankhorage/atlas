@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.22.3
+
+### Patch Changes
+
+- ac873a0: Start without a preselected example workspace when no source is configured.
+- 40938f2: Render the workspace edge-to-edge without an outer inset, border, rounding, or shadow.
+
 ## 0.22.2
 
 ### Patch Changes

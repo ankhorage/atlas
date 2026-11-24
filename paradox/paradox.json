@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.22.2",
+      "value": "v0.22.3",
       "color": "cb3837"
     },
     {
@@ -2098,6 +2098,16 @@
       ]
     },
     {
+      "path": "src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createEmptyWorkspaceProjectSourceResult"
+      ]
+    },
+    {
       "path": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -2344,6 +2354,7 @@
         "src/features/project-source/adapters/outbound/repository/createGitHubProjectMaterializer.ts",
         "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
         "src/features/project-source/composition/loadProjectSourceAsync.ts",
+        "src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts",
         "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "src/features/workspace/composition/loadWorkspaceAsync.ts",
         "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts",
@@ -3136,14 +3147,6 @@
       "dependencies": [
         "src/features/audit/adapters/inbound/react/useCycleSelection.ts",
         "src/features/audit/utils/cycleVisualization.ts"
-      ],
-      "exports": []
-    },
-    {
-      "path": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-      "isEntrypoint": false,
-      "dependencies": [
-        "src/features/project-analysis/composition/readProjectSnapshotAsync.ts"
       ],
       "exports": []
     },
@@ -8718,18 +8721,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 54,
-        "column": 1
-      }
-    },
-    {
-      "name": "authenticatedInventorySource",
-      "description": "Open the current user's inventory after sign-in while anonymous visitors retain public-owner discovery.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 61,
+        "line": 48,
         "column": 1
       }
     },
@@ -8740,7 +8732,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 69,
+        "line": 55,
         "column": 1
       }
     },
@@ -8751,7 +8743,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 74,
+        "line": 60,
         "column": 1
       }
     },
@@ -10560,6 +10552,17 @@
       }
     },
     {
+      "name": "createEmptyWorkspaceProjectSourceResult",
+      "description": "Produces the picker-first workspace state without loading an implicit project.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
       "name": "createWorkspaceAnalysisCache",
       "description": "Create bounded in-memory discovery and immutable-revision analysis caches for one browser session.",
       "see": [],
@@ -11710,7 +11713,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 46,
+        "line": 47,
         "column": 1
       }
     },
@@ -11721,7 +11724,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 61,
+        "line": 62,
         "column": 1
       }
     },
@@ -11732,7 +11735,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 78,
+        "line": 79,
         "column": 1
       }
     },
@@ -11743,7 +11746,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 125,
+        "line": 126,
         "column": 1
       }
     },
@@ -11754,7 +11757,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 142,
+        "line": 143,
         "column": 1
       }
     },
@@ -11765,7 +11768,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 191,
+        "line": 194,
         "column": 1
       }
     },
@@ -11776,7 +11779,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 239,
+        "line": 242,
         "column": 1
       }
     },
@@ -11787,7 +11790,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 258,
+        "line": 261,
         "column": 1
       }
     },
@@ -11798,7 +11801,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 268,
+        "line": 271,
         "column": 1
       }
     },
@@ -11809,7 +11812,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
-        "line": 305,
+        "line": 308,
         "column": 1
       }
     },
@@ -11848,12 +11851,12 @@
     },
     {
       "name": "resolveWorkspaceStartupSource",
-      "description": "Resolve the browser workspace source with query, environment, then Atlas self-hosting precedence.",
+      "description": "Resolve the browser workspace source with query and explicit local-project precedence.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
-        "line": 4,
+        "line": 2,
         "column": 1
       }
     },
@@ -13056,6 +13059,11 @@
       },
       {
         "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
+        "toPath": "src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
         "toPath": "src/features/workspace/composition/createWorkspaceRepositoryRuntime.ts",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
       },
@@ -13283,11 +13291,6 @@
         "fromPath": "test/src/features/audit/useCycleSelection.spec.tsx",
         "toPath": "src/features/audit/utils/cycleVisualization.ts",
         "sourcePath": "test/src/features/audit/useCycleSelection.spec.tsx"
-      },
-      {
-        "fromPath": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-        "toPath": "src/features/project-analysis/composition/readProjectSnapshotAsync.ts",
-        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
       },
       {
         "fromPath": "test/src/features/dependency-analysis/cppDependencyGraph.spec.ts",
@@ -14103,6 +14106,11 @@
         "fromPath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/application/use-cases/classifyWorkspaceRepositoryFailure.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/application/use-cases/createEmptyWorkspaceProjectSourceResult.ts"
       },
       {
         "fromPath": "src/features/workspace/application/use-cases/createWorkspaceAnalysisCache.ts",
@@ -20361,6 +20369,12 @@
       },
       {
         "fromSymbol": "loadWorkspaceProjectSourceAsync",
+        "toSymbol": "createEmptyWorkspaceProjectSourceResult",
+        "callExpression": "createEmptyWorkspaceProjectSourceResult",
+        "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
+      },
+      {
+        "fromSymbol": "loadWorkspaceProjectSourceAsync",
         "toSymbol": "parseProjectPath",
         "callExpression": "parseProjectPath",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts"
@@ -20508,12 +20522,6 @@
         "toSymbol": "composeWorkspaceRepositoryRuntimeResult",
         "callExpression": "composeWorkspaceRepositoryRuntimeResult",
         "sourcePath": "src/features/workspace/composition/loadWorkspaceRepositoryBatchAsync.ts"
-      },
-      {
-        "fromSymbol": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts",
-        "toSymbol": "resolve",
-        "callExpression": "resolve",
-        "sourcePath": "src/features/workspace/composition/resolveWorkspaceStartupSource.ts"
       },
       {
         "fromSymbol": "updateWorkspaceRepositoryRuntimeAsync",
@@ -21090,36 +21098,6 @@
         "toSymbol": "expect",
         "callExpression": "expect",
         "sourcePath": "test/src/features/audit/useCycleSelection.spec.tsx"
-      },
-      {
-        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-        "toSymbol": "describe",
-        "callExpression": "describe",
-        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-        "toSymbol": "it",
-        "callExpression": "it",
-        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-        "toSymbol": "readProjectSnapshotAsync",
-        "callExpression": "readProjectSnapshotAsync",
-        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-        "toSymbol": "resolve",
-        "callExpression": "resolve",
-        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/dependency-analysis/architectureExamples.spec.ts",
-        "toSymbol": "expect",
-        "callExpression": "expect",
-        "sourcePath": "test/src/features/dependency-analysis/architectureExamples.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/dependency-analysis/cppDependencyGraph.spec.ts",
@@ -23471,12 +23449,6 @@
         "fromSymbol": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
         "toSymbol": "resolveWorkspaceStartupSource",
         "callExpression": "resolveWorkspaceStartupSource",
-        "sourcePath": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts"
-      },
-      {
-        "fromSymbol": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts",
-        "toSymbol": "resolve",
-        "callExpression": "resolve",
         "sourcePath": "test/src/features/workspace/resolveWorkspaceStartupSource.spec.ts"
       },
       {
@@ -28169,12 +28141,6 @@
         "fromSymbol": "AtlasWorkspacePage",
         "toSymbol": "withRepositorySelection",
         "callExpression": "withRepositorySelection",
-        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
-      },
-      {
-        "fromSymbol": "AtlasWorkspacePage",
-        "toSymbol": "authenticatedInventorySource",
-        "callExpression": "authenticatedInventorySource",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {
