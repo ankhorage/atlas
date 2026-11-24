@@ -61,17 +61,14 @@ describe('[workspace snapshots]', () => {
     );
     assert.deepEqual(
       workspace.value.tree.map(node => [node.id, node.graphPackage]),
-      [
-        ['directory:src', 'src'],
-        ['directory:support', 'support'],
-        ['feature-evidence:unavailable:current', ''],
-      ]
+      [['project:root', '']]
     );
     assert.deepEqual(
-      workspace.value.tree.slice(0, 2).map(node => node.label),
+      workspace.value.tree[0]?.children?.slice(0, 2).map(node => node.label),
       ['src', 'support']
     );
-    assert.deepEqual(workspace.value.tree.at(-1), {
+    assert.equal(workspace.value.tree[0]?.label, 'compound-selection');
+    assert.deepEqual(workspace.value.tree[0]?.children?.at(-1), {
       graphPackage: '',
       id: 'feature-evidence:unavailable:current',
       kind: 'virtual',

@@ -2,7 +2,6 @@
 import type { RuleFinding } from '@ankhorage/rules';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
-import React from 'react';
 
 import { CyclicDependenciesRuleDetails } from '@/features/audit/adapters/inbound/react/CyclicDependenciesRuleDetails';
 import type { Audit, AuditRuleResult } from '@/types/audit';

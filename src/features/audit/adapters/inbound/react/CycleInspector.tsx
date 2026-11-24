@@ -6,7 +6,6 @@ import { Card } from '@ankhorage/zora/web/card';
 import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
-import React from 'react';
 
 import { t } from '@/i18n/i18n';
 import type { CycleEdgeEvidence } from '@/types/audit';

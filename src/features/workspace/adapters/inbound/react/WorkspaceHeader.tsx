@@ -41,13 +41,6 @@ function WorkspaceIdentity(props: WorkspaceHeaderProps) {
       <Heading level={3} numberOfLines={1} size="h5">
         Atlas
       </Heading>
-      <IconButton
-        icon={{ name: 'home-outline' }}
-        label="Home"
-        size="m"
-        variant="ghost"
-        onPress={() => props.onNavigate('')}
-      />
       <div className={styles.breadcrumbs}>
         <Breadcrumbs
           compact

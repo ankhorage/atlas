@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 
 import { AuditRuleList } from '@/features/audit/adapters/inbound/react/AuditRuleList';
 import { RuleDagExplorer } from '@/features/rule-explorer/adapters/inbound/react/RuleDagExplorer';

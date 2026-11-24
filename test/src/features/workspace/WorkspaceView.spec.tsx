@@ -68,7 +68,7 @@ describe('[WorkspaceView]', () => {
     window.localStorage.removeItem('atlas.workspace-definitions.v1');
   });
 
-  it('renders the Atlas brand, icon-only Home action, and persistent error inside the ZORA app shell', () => {
+  it('renders the Atlas brand without a Home action and keeps errors inside the ZORA app shell', () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
     if (!parsed.ok) return;
@@ -86,7 +86,7 @@ describe('[WorkspaceView]', () => {
 
     assert.equal(container.textContent?.includes('Atlas'), true);
     assert.equal(container.textContent?.includes('Home'), false);
-    assert.equal(container.querySelector('[aria-label="Home"]') !== null, true);
+    assert.equal(container.querySelector('[aria-label="Home"]') === null, true);
     assert.equal(container.textContent?.includes('Packages'), false);
     assert.equal(
       container
