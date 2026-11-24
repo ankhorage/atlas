@@ -192,7 +192,7 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
     }
   });
 
-  it('loads the shipped architecture showcase without a selected source or runtime project path', async () => {
+  it('starts with an empty graph when no source or runtime project path is configured', async () => {
     const previousProjectPath = process.env.ATLAS_PROJECT_PATH;
     delete process.env.ATLAS_PROJECT_PATH;
 
@@ -202,8 +202,12 @@ describe('[loadWorkspaceProjectSourceAsync]', () => {
         nodes: [],
       }));
 
-      assert.equal(result.projectName, 'architecture-showcase');
-      assert.equal(result.workspace.ok, true);
+      assert.equal(result.projectName, 'Choose GitHub repositories');
+      assert.equal(result.selectionRequired, true);
+      assert.deepEqual(result.workspace, {
+        ok: false,
+        error: 'Choose one or more repositories to inspect.',
+      });
     } finally {
       if (previousProjectPath !== undefined) process.env.ATLAS_PROJECT_PATH = previousProjectPath;
     }
