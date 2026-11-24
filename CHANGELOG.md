@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.22.5
+
+### Patch Changes
+
+- d644d00: Refit the graph after repository, filter, vendor, package-depth, and layout changes move nodes beyond the visible canvas.
+
 ## 0.22.4
 
 ### Patch Changes

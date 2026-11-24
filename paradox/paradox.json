@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.22.4",
+      "value": "v0.22.5",
       "color": "cb3837"
     },
     {
@@ -6108,13 +6108,35 @@
       }
     },
     {
+      "name": "useVisibleTopologyFit",
+      "description": "Refit after every browser-committed projection change, including filters and package depth.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
+        "line": 229,
+        "column": 1
+      }
+    },
+    {
+      "name": "useFitVisibleTopology",
+      "description": "Refit once the browser has committed every projection change, including filters and depth.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
+        "line": 244,
+        "column": 1
+      }
+    },
+    {
       "name": "useGraphCanvasInteractions",
       "description": "Compose local hover presentation with workspace-owned controlled graph selection.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 228,
+        "line": 256,
         "column": 1
       }
     },
@@ -6125,7 +6147,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 247,
+        "line": 275,
         "column": 1
       }
     },
@@ -6136,7 +6158,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 260,
+        "line": 288,
         "column": 1
       }
     },
@@ -6273,24 +6295,35 @@
       }
     },
     {
-      "name": "fitGraph",
-      "description": "Runs the canonical readable fit and spacing optimization from explicit user intent.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 41,
-        "column": 9
-      }
-    },
-    {
       "name": "createTopologyFit",
       "description": "Requires a non-empty, fully measured layout before fitting a changed topology.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 69,
+        "line": 72,
+        "column": 1
+      }
+    },
+    {
+      "name": "shouldFitTopology",
+      "description": "Refit when a completed layout moves the retained topology beyond the visible canvas.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
+        "line": 93,
+        "column": 1
+      }
+    },
+    {
+      "name": "areMeasuredNodesVisible",
+      "description": "Reject a stale fit whenever rendered node bounds escape the measured GraphView viewport.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
+        "line": 105,
         "column": 1
       }
     },
@@ -6301,7 +6334,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 90,
+        "line": 125,
         "column": 1
       }
     },
@@ -6312,7 +6345,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 116,
+        "line": 151,
         "column": 9
       }
     },
@@ -6323,7 +6356,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 135,
+        "line": 170,
         "column": 1
       }
     },
@@ -6334,7 +6367,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 157,
+        "line": 192,
         "column": 1
       }
     },
@@ -6345,7 +6378,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 184,
+        "line": 219,
         "column": 1
       }
     },
@@ -6356,7 +6389,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 202,
+        "line": 237,
         "column": 1
       }
     },
@@ -6367,7 +6400,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 241,
+        "line": 276,
         "column": 1
       }
     },
@@ -6378,7 +6411,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 253,
+        "line": 288,
         "column": 1
       }
     },
@@ -6389,7 +6422,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 262,
+        "line": 297,
         "column": 1
       }
     },
@@ -26982,9 +27015,33 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
+        "fromSymbol": "DependencyGraphCanvas",
+        "toSymbol": "useVisibleTopologyFit",
+        "callExpression": "useVisibleTopologyFit",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
+      },
+      {
         "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
         "toSymbol": "handleLayoutComplete",
         "callExpression": "viewport.handleLayoutComplete",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
+      },
+      {
+        "fromSymbol": "useVisibleTopologyFit",
+        "toSymbol": "useMemo",
+        "callExpression": "useMemo",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
+      },
+      {
+        "fromSymbol": "useVisibleTopologyFit",
+        "toSymbol": "useFitVisibleTopology",
+        "callExpression": "useFitVisibleTopology",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
+      },
+      {
+        "fromSymbol": "useFitVisibleTopology",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
@@ -27174,7 +27231,13 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
-        "fromSymbol": "fitGraph",
+        "fromSymbol": "useGraphViewport",
+        "toSymbol": "useCallback",
+        "callExpression": "useCallback",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
         "toSymbol": "fitGraphWithOptimizedSpacing",
         "callExpression": "fitGraphWithOptimizedSpacing",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
@@ -27187,6 +27250,12 @@
       },
       {
         "fromSymbol": "handleLayoutComplete",
+        "toSymbol": "shouldFitTopology",
+        "callExpression": "shouldFitTopology",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "handleLayoutComplete",
         "toSymbol": "fitGraphWithOptimizedSpacing",
         "callExpression": "fitGraphWithOptimizedSpacing",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
@@ -27195,6 +27264,12 @@
         "fromSymbol": "handleLayoutComplete",
         "toSymbol": "handleLayoutComplete",
         "callExpression": "cycleFocus.handleLayoutComplete",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "shouldFitTopology",
+        "toSymbol": "areMeasuredNodesVisible",
+        "callExpression": "areMeasuredNodesVisible",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {

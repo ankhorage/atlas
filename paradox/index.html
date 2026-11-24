@@ -444,7 +444,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx">
       src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx
-      <small>9 functions</small>
+      <small>11 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/react/GraphZoomControls.tsx">
@@ -469,7 +469,7 @@
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/adapters/inbound/react/useGraphViewport.ts">
       src/features/graph-view/adapters/inbound/react/useGraphViewport.ts
-      <small>14 functions</small>
+      <small>15 functions</small>
     </button>
   </li><li>
     <button class="nav-button" type="button" data-target="src/features/graph-view/domain/getDependencyHighlightClasses.ts">
@@ -9949,19 +9949,29 @@ layout effects here. ZORA owns runtime reconciliation; memoization alone is not 
     <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:182:1</code></p>
     <p>Own GraphView controller callbacks and render the viewport plus zoom controls.</p>
     
+  </article><article class="item" data-search="useVisibleTopologyFit src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Refit after every browser-committed projection change, including filters and package depth.">
+    <h3>useVisibleTopologyFit</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:229:1</code></p>
+    <p>Refit after every browser-committed projection change, including filters and package depth.</p>
+    
+  </article><article class="item" data-search="useFitVisibleTopology src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Refit once the browser has committed every projection change, including filters and depth.">
+    <h3>useFitVisibleTopology</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:244:1</code></p>
+    <p>Refit once the browser has committed every projection change, including filters and depth.</p>
+    
   </article><article class="item" data-search="useGraphCanvasInteractions src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Compose local hover presentation with workspace-owned controlled graph selection.">
     <h3>useGraphCanvasInteractions</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:228:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:256:1</code></p>
     <p>Compose local hover presentation with workspace-owned controlled graph selection.</p>
     
   </article><article class="item" data-search="createGraphNodeEventHandler src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Bridge semantic GraphView press intent without coupling selection to renderer select events.">
     <h3>createGraphNodeEventHandler</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:247:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:275:1</code></p>
     <p>Bridge semantic GraphView press intent without coupling selection to renderer select events.</p>
     
   </article><article class="item" data-search="readGraphViewLayout src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx Narrow persisted Cytoscape layout names to the layouts supported by ZORA GraphView.">
     <h3>readGraphViewLayout</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:260:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx:288:1</code></p>
     <p>Narrow persisted Cytoscape layout names to the layouts supported by ZORA GraphView.</p>
     
   </article>
@@ -10055,60 +10065,65 @@ Duplicate layouts remain passive so user navigation survives renderer updates.</
     <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:35:9</code></p>
     <p>Reads the controller synchronously, including events before React commits readiness.</p>
     
-  </article><article class="item" data-search="fitGraph src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Runs the canonical readable fit and spacing optimization from explicit user intent.">
-    <h3>fitGraph</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:41:9</code></p>
-    <p>Runs the canonical readable fit and spacing optimization from explicit user intent.</p>
-    
   </article><article class="item" data-search="createTopologyFit src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Requires a non-empty, fully measured layout before fitting a changed topology.">
     <h3>createTopologyFit</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:69:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:72:1</code></p>
     <p>Requires a non-empty, fully measured layout before fitting a changed topology.</p>
+    
+  </article><article class="item" data-search="shouldFitTopology src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Refit when a completed layout moves the retained topology beyond the visible canvas.">
+    <h3>shouldFitTopology</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:93:1</code></p>
+    <p>Refit when a completed layout moves the retained topology beyond the visible canvas.</p>
+    
+  </article><article class="item" data-search="areMeasuredNodesVisible src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Reject a stale fit whenever rendered node bounds escape the measured GraphView viewport.">
+    <h3>areMeasuredNodesVisible</h3>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:105:1</code></p>
+    <p>Reject a stale fit whenever rendered node bounds escape the measured GraphView viewport.</p>
     
   </article><article class="item" data-search="useCycleViewportFocus src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit.">
     <h3>useCycleViewportFocus</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:90:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:125:1</code></p>
     <p>Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit.</p>
     
   </article><article class="item" data-search="handleLayoutComplete src/features/graph-view/adapters/inbound/react/useGraphViewport.ts ">
     <h3>handleLayoutComplete</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:116:9</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:151:9</code></p>
     <p class="empty">No description available.</p>
     
   </article><article class="item" data-search="synchronizeCycleFocusRefs src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Clears stale refit state when cycle intent changes or is disabled.">
     <h3>synchronizeCycleFocusRefs</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:135:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:170:1</code></p>
     <p>Clears stale refit state when cycle intent changes or is disabled.</p>
     
   </article><article class="item" data-search="handleSettledCycleFocus src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Focuses active cycles only from settled owner geometry, then refits once after adaptive relayout.&#10;Missing cycle evidence is left to projection expansion and never measured as a partial cycle.">
     <h3>handleSettledCycleFocus</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:157:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:192:1</code></p>
     <p>Focuses active cycles only from settled owner geometry, then refits once after adaptive relayout.
 Missing cycle evidence is left to projection expansion and never measured as a partial cycle.</p>
     
   </article><article class="item" data-search="focusActiveCycle src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Fits the whole graph, measures active nodes, and requests only a justified spacing reduction.">
     <h3>focusActiveCycle</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:184:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:219:1</code></p>
     <p>Fits the whole graph, measures active nodes, and requests only a justified spacing reduction.</p>
     
   </article><article class="item" data-search="readCycleLayoutMetrics src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Converts renderer-neutral GraphView measurements into the cycle-spacing policy metrics.">
     <h3>readCycleLayoutMetrics</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:202:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:237:1</code></p>
     <p>Converts renderer-neutral GraphView measurements into the cycle-spacing policy metrics.</p>
     
   </article><article class="item" data-search="createCycleFocusTarget src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Builds a stable active-cycle identity and unique rendered node set.">
     <h3>createCycleFocusTarget</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:241:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:276:1</code></p>
     <p>Builds a stable active-cycle identity and unique rendered node set.</p>
     
   </article><article class="item" data-search="fitGraphWithOptimizedSpacing src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Reuses ZORA&#39;s measured whole-graph optimization for explicit and cycle-focus intent.">
     <h3>fitGraphWithOptimizedSpacing</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:253:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:288:1</code></p>
     <p>Reuses ZORA&#39;s measured whole-graph optimization for explicit and cycle-focus intent.</p>
     
   </article><article class="item" data-search="synchronizeGraphViewport src/features/graph-view/adapters/inbound/react/useGraphViewport.ts Publishes only changed viewport values, including range changes without a zoom event.">
     <h3>synchronizeGraphViewport</h3>
-    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:262:1</code></p>
+    <p class="muted"><code>src/features/graph-view/adapters/inbound/react/useGraphViewport.ts:297:1</code></p>
     <p>Publishes only changed viewport values, including range changes without a zoom event.</p>
     
   </article>
