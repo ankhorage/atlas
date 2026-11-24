@@ -4,7 +4,7 @@ import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
-import React, { type ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 
 import styles from './GraphZoomControls.module.css';
 

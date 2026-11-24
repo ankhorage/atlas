@@ -8,7 +8,7 @@ import {
 } from '@ankhorage/zora/web/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
-import React, { useEffect, useMemo } from 'react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 
 import { LAYOUTS } from '@/features/graph-view/adapters/inbound/cytoscape/constants';
 import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
@@ -282,7 +282,7 @@ interface DependencyGraphViewProps {
   readonly cycleInspection?: CycleInspection | null;
   readonly onCycleEvidenceVisibilityChange?: (hidden: boolean) => void;
   readonly revealedCycle?: CycleHighlight | null;
-  readonly overlay?: React.ReactNode;
+  readonly overlay?: ReactNode;
 }
 
 interface GraphViewPresentationInput {

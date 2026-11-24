@@ -55,12 +55,12 @@ function Harness({ selectedIds }: { selectedIds: readonly string[] }) {
 }
 
 describe('[project tree selection reveal]', () => {
-  it('starts collapsed when no row is selected', async () => {
+  it('opens the top-level folders when no row is selected', async () => {
     const host = render(<div />);
     const root = createRoot(host.container);
     try {
       await act(async () => root.render(<Harness selectedIds={[]} />));
-      expect(host.container.textContent).toBe('');
+      expect(host.container.textContent).toBe('root|other');
     } finally {
       await act(async () => root.unmount());
       host.unmount();
@@ -72,7 +72,7 @@ describe('[project tree selection reveal]', () => {
     const root = createRoot(host.container);
     try {
       await act(async () => root.render(<Harness selectedIds={['file', 'other-file']} />));
-      expect(host.container.textContent).toBe('root|nested|other|other-nested');
+      expect(host.container.textContent).toBe('root|other|nested|other-nested');
 
       await act(async () => host.container.querySelector('button')?.click());
       expect(host.container.textContent).toBe('');

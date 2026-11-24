@@ -10,13 +10,26 @@ export function hydrateWorkspaceSnapshot(snapshot: WorkspaceSnapshot): ProjectOv
     evaluation: snapshot.audit.evaluation,
     packageGraph: snapshot.audit.packageGraph,
     projectIdentity: createProjectIdentity(snapshot),
-    tree:
-      snapshot.navigationTree ??
-      addSourceFeatureNavigation(
-        buildProjectTree(snapshot.audit.files),
-        deserializeSourceGraph(snapshot.audit.sourceGraph)
-      ),
+    tree: snapshot.navigationTree ?? localNavigationTree(snapshot),
   };
+}
+
+/*** Retain the project name as a selectable top-level tree folder for local analyses. */
+function localNavigationTree(snapshot: WorkspaceSnapshot) {
+  const children = addSourceFeatureNavigation(
+    buildProjectTree(snapshot.audit.files),
+    deserializeSourceGraph(snapshot.audit.sourceGraph)
+  );
+  if (children.length === 0) return children;
+  return [
+    {
+      children,
+      graphPackage: '',
+      id: 'project:root',
+      kind: 'virtual' as const,
+      label: snapshot.audit.meta.projectName,
+    },
+  ];
 }
 
 /*** Creates a stable browser-safe scope for workspace preferences without exposing a local path. */

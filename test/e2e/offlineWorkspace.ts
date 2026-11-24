@@ -73,6 +73,7 @@ async function assertWorkspace(page: Page, runtimeAttempts: readonly string[]): 
   if ((await error.count()) > 0)
     throw new Error(`Workspace failed to start: ${await error.innerText()}`);
   await page
+    .getByTestId('workspace-breadcrumbs')
     .getByText(projectName, { exact: true })
     .waitFor({ timeout: 5000 })
     .catch(async () => {
