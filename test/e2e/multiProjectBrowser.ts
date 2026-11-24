@@ -1840,7 +1840,6 @@ const responsiveViewports = [
   { height: 900, width: 1440 },
 ] as const;
 
-const referenceDesktopFramePadding = 24;
 const referenceDesktopPanelMargin = 12;
 const referenceDesktopSidebarWidth = 256;
 
@@ -2489,7 +2488,7 @@ function assertAnonymousBulkWorkspaceGeometry(
     );
 }
 
-/*** Verifies the shell keeps the reference frame inset and fixed sidebar geometry. */
+/*** Verifies the shell keeps the edge-to-edge reference layout and fixed sidebar geometry. */
 function assertWorkspaceGeometryBaseline(
   geometry: WorkspaceGeometry,
   viewport: { readonly height: number; readonly width: number },
@@ -2515,7 +2514,7 @@ function assertWorkspaceGeometryBaseline(
       `Anonymous bulk ${phase} did not render the desktop sidebar.`
     );
     assert(
-      geometry.sidebar.left === referenceDesktopFramePadding + referenceDesktopPanelMargin,
+      geometry.sidebar.left === referenceDesktopPanelMargin,
       `Anonymous bulk ${phase} shifted the sidebar.`
     );
     assert(
