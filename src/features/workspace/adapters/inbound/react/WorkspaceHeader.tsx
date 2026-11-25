@@ -16,6 +16,10 @@ import type { ProjectTreeNode } from '@/types/projectTree';
 
 import styles from './WorkspaceHeader.module.css';
 
+const ROOT_BREADCRUMB_ID = 'workspace-root';
+const OWNER_BREADCRUMB_PREFIX = 'workspace-owner:';
+const PACKAGE_BREADCRUMB_PREFIX = 'workspace-package:';
+
 const ATLAS_BRAND_ICON =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACVklEQVR4nG2TTYiNURjHf895z/veufcyvilkgzJkMUjCRNIMJWUMyiRpViYmCwtLaw1SFpaifKaIsmEzpYgUWQgp8pUYd77unfu+7zmPxTtzXZff7jzn/3z0f84Rtp3LBSPJGQnCA/i0CGqYIAgMAqTO8wfxiK0o7oZrckdtMBqflmhKL8kYjVSHxwElKOaQWlQNmhQlLB6ylbGc2A39CSIGVCDTiYDGjhM96ynkQk5eGMAHprG+R4wxCHZi7FoTBRzQ17WK4/vXgDX4ekGGQb3+U9aI4GPH/DlTKY1W+TZYZtG8ZjROESONcvmngJisQO+eVh48/cCdgXcc7mwF36icHKOOwAjVoQodm5dSjR33H7/n0ctPfP4xSlfHcuJShaDBi79OIkLUFNLd3sKpy0842rWK4/vXcvbaM3a2LWbK9Dx4/cuLPzs3wvjnErvaW3jz8ReHdqxkycIZzJ6W59i+1bx4+51921dQ/VLC1Hlhs87gU8+B7rWcOLiOcjXh5oPXbOm9ilfo3LSUzvYWZjXnCYCL917VViJhW786rxRCS+lhH4Ex3Hr4mq8/yzRPzYHA8EiVudPy7N66jMAIc7ed58dwBWsDrCoExlCuxGw5cp048Tx+/hFbjHBpZn1gDelYTOuVBcxsbmJwqIINDaqK2I39ms0CaTkBgagQ4evMUsAYIa4k4Dy2GGVBUIviEBFUTa4YoYD3WkucxHslyocI4LL77CkrXCIsGFB1XmvJ/8N7nUhWJSwYvLttnR3ps4lEmHAv3gX13/n/iEesJxm/m0ra8xvdevOqWP1lxwAAAABJRU5ErkJggg==';
 
@@ -41,21 +45,15 @@ function WorkspaceIdentity(props: WorkspaceHeaderProps) {
       <Heading level={3} numberOfLines={1} size="h5">
         Atlas
       </Heading>
-      <IconButton
-        icon={{ name: 'home-outline' }}
-        label="Home"
-        size="m"
-        variant="ghost"
-        onPress={() => props.onNavigate('')}
-      />
       <div className={styles.breadcrumbs}>
         <Breadcrumbs
           compact
           items={createBreadcrumbItems(props.currentPackage, props.projectName, props.projectTree)}
-          maxItems={3}
           separator="›"
           testID="workspace-breadcrumbs"
-          onItemPress={({ id }: { readonly id: string }) => props.onNavigate(id)}
+          onItemPress={({ id }: { readonly id: string }) =>
+            props.onNavigate(resolveBreadcrumbNavigationPath(id))
+          }
         />
       </div>
     </div>
@@ -76,7 +74,9 @@ function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
           repositories={props.repositories}
           repositoryColorTones={props.repositoryColorTones}
           selectionRequired={props.selectionRequired}
-          authControls={<GitHubAuthControls auth={props.githubAuth} />}
+          renderAuthControls={onWorkspaceOpen => (
+            <GitHubAuthControls auth={props.githubAuth} onWorkspaceOpen={onWorkspaceOpen} />
+          )}
           onSelection={props.onSelection}
         />
       )}
@@ -91,18 +91,18 @@ function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
   );
 }
 
-/*** Creates package breadcrumbs from a stable Home root to the active package path. */
+/*** Creates the active package breadcrumb trail without duplicating virtual repository identity. */
 function createBreadcrumbItems(
   currentPackage: string,
   projectName: string,
   projectTree: readonly ProjectTreeNode[]
 ): readonly BreadcrumbItem[] {
   const repositoryCrumbs = findRepositoryBreadcrumbs(currentPackage, projectTree);
-  const projectCrumb = { id: '', label: projectName };
-  if (repositoryCrumbs !== null) return [projectCrumb, ...repositoryCrumbs];
+  const projectCrumb = { id: ROOT_BREADCRUMB_ID, label: projectName };
+  if (repositoryCrumbs !== null) return repositoryCrumbs;
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
-    id: packageSegments.slice(0, index + 1).join('.'),
+    id: createPackageBreadcrumbId(packageSegments.slice(0, index + 1).join('.')),
     label,
   }));
 
@@ -131,13 +131,29 @@ function findRepositoryBreadcrumbs(
     .split('.')
     .filter(segment => segment && segment !== 'module' && segment !== 'package');
   return [
-    { id: '', label: match.owner.label },
-    { id: match.repository.graphPackage, label: match.repository.label },
+    {
+      id: `${OWNER_BREADCRUMB_PREFIX}${match.repository.graphPackage}`,
+      label: match.owner.label,
+    },
+    { id: createPackageBreadcrumbId(match.repository.graphPackage), label: match.repository.label },
     ...remainder.map((label, index) => ({
-      id: `${match.repository.graphPackage}.${remainder.slice(0, index + 1).join('.')}`,
+      id: createPackageBreadcrumbId(
+        `${match.repository.graphPackage}.${remainder.slice(0, index + 1).join('.')}`
+      ),
       label,
     })),
   ];
+}
+
+/*** Encodes a graph package identity so breadcrumb keys cannot collide with workspace controls. */
+function createPackageBreadcrumbId(path: string): string {
+  return `${PACKAGE_BREADCRUMB_PREFIX}${path}`;
+}
+
+/*** Resolves a unique breadcrumb identity to the graph package scope it opens. */
+function resolveBreadcrumbNavigationPath(id: string): string {
+  if (id.startsWith(PACKAGE_BREADCRUMB_PREFIX)) return id.slice(PACKAGE_BREADCRUMB_PREFIX.length);
+  return '';
 }
 
 /*** Normalizes navigation paths to the package identity representation used by the graph view. */

@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 
 import {
   clearGitHubAuthAttemptCookie,
+  clearGitHubAuthReturnToCookie,
   clearGitHubAuthSessionCookie,
+  clearGitHubPrivateAccessCookie,
+  clearGitHubPrivateAccessRequestCookie,
 } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 
 /*** Create a same-origin logout route that clears this browser's local session, not copied stateless cookies. */
@@ -16,6 +19,9 @@ export function createGitHubLogoutRoute(
     const response = NextResponse.redirect(new URL('/', request.url), 303);
     clearGitHubAuthAttemptCookie(response.cookies);
     clearGitHubAuthSessionCookie(response.cookies);
+    clearGitHubAuthReturnToCookie(response.cookies);
+    clearGitHubPrivateAccessCookie(response.cookies);
+    clearGitHubPrivateAccessRequestCookie(response.cookies);
     return response;
   };
 }

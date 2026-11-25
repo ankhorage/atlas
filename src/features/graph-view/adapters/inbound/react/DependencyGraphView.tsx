@@ -8,7 +8,7 @@ import {
 } from '@ankhorage/zora/web/graph-view';
 import { useZoraTheme, type ZoraRuntimeTheme } from '@ankhorage/zora/web/runtime';
 import type { ElementsDefinition, LayoutOptions } from 'cytoscape';
-import React, { useEffect, useMemo } from 'react';
+import { type ReactNode, useEffect, useMemo } from 'react';
 
 import { LAYOUTS } from '@/features/graph-view/adapters/inbound/cytoscape/constants';
 import { createPackageGraphElements } from '@/features/graph-view/adapters/inbound/cytoscape/createPackageGraphElements';
@@ -183,10 +183,11 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const { viewport } = props;
   const interactions = useGraphCanvasInteractions(props);
   const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
+  useVisibleTopologyFit(props.model, viewport);
 
   return (
     <div className={styles.canvas} style={GRAPH_CANVAS_STYLE}>
-      <div style={GRAPH_VIEWPORT_STYLE}>
+      <div className={styles.viewport} style={GRAPH_VIEWPORT_STYLE}>
         <GraphView
           edges={interactions.edges}
           layout={props.layout}
@@ -211,15 +212,44 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
         />
         {props.overlay}
       </div>
-      <GraphZoomControls
-        controller={viewport.controller}
-        maxZoom={viewport.max}
-        minZoom={viewport.min}
-        onFit={viewport.fitGraph}
-        zoom={viewport.zoom}
-      />
+      <div className={styles.zoomControls}>
+        <GraphZoomControls
+          controller={viewport.controller}
+          maxZoom={viewport.max}
+          minZoom={viewport.min}
+          onFit={viewport.fitGraph}
+          zoom={viewport.zoom}
+        />
+      </div>
     </div>
   );
+}
+
+/*** Refit after every browser-committed projection change, including filters and package depth. */
+function useVisibleTopologyFit(
+  model: DependencyGraphCanvasProps['model'],
+  viewport: ReturnType<typeof useGraphViewport>
+): void {
+  const visibleTopologySignature = useMemo(
+    () =>
+      [...model.nodes.map(node => `node:${node.id}`), ...model.edges.map(edge => `edge:${edge.id}`)]
+        .sort()
+        .join('|'),
+    [model.edges, model.nodes]
+  );
+  useFitVisibleTopology(viewport, visibleTopologySignature);
+}
+
+/*** Refit once the browser has committed every projection change, including filters and depth. */
+function useFitVisibleTopology(
+  viewport: ReturnType<typeof useGraphViewport>,
+  visibleTopologySignature: string
+): void {
+  useEffect(() => {
+    if (viewport.controller === null || visibleTopologySignature.length === 0) return;
+    const frame = requestAnimationFrame(viewport.fitGraph);
+    return () => cancelAnimationFrame(frame);
+  }, [viewport.controller, viewport.fitGraph, visibleTopologySignature]);
 }
 
 /*** Compose local hover presentation with workspace-owned controlled graph selection. */
@@ -280,7 +310,7 @@ interface DependencyGraphViewProps {
   readonly cycleInspection?: CycleInspection | null;
   readonly onCycleEvidenceVisibilityChange?: (hidden: boolean) => void;
   readonly revealedCycle?: CycleHighlight | null;
-  readonly overlay?: React.ReactNode;
+  readonly overlay?: ReactNode;
 }
 
 interface GraphViewPresentationInput {

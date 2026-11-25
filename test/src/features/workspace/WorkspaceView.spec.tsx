@@ -68,7 +68,7 @@ describe('[WorkspaceView]', () => {
     window.localStorage.removeItem('atlas.workspace-definitions.v1');
   });
 
-  it('renders the Atlas brand, icon-only Home action, and persistent error inside the ZORA app shell', () => {
+  it('renders the Atlas brand without a Home action and keeps errors inside the ZORA app shell', () => {
     const parsed = parseAppManifest(appManifest);
     assert.equal(parsed.ok, true);
     if (!parsed.ok) return;
@@ -86,7 +86,7 @@ describe('[WorkspaceView]', () => {
 
     assert.equal(container.textContent?.includes('Atlas'), true);
     assert.equal(container.textContent?.includes('Home'), false);
-    assert.equal(container.querySelector('[aria-label="Home"]') !== null, true);
+    assert.equal(container.querySelector('[aria-label="Home"]') === null, true);
     assert.equal(container.textContent?.includes('Packages'), false);
     assert.equal(
       container
@@ -135,6 +135,140 @@ describe('[WorkspaceView]', () => {
     assert.equal(publicOnly?.textContent?.trim(), 'Public only');
     assert.equal(publicOnly !== null, true);
     unmount();
+  });
+
+  it('keeps private repositories available when the Public only filter is turned off', async () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const { container, unmount } = render(
+      <ZoraRuntimeProvider
+        initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+        themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+      >
+        <WorkspaceView
+          currentSource="@me"
+          githubAuth={{
+            displayName: 'GitHub account',
+            privateRepositoryAccess: false,
+            status: 'authenticated',
+          }}
+          projectName="Atlas"
+          repositories={[
+            {
+              id: 'public',
+              name: 'public',
+              owner: 'organization',
+              selected: false,
+              url: 'https://github.com/organization/public',
+              visibility: 'public',
+            },
+            {
+              id: 'private',
+              name: 'private',
+              owner: 'organization',
+              selected: false,
+              url: 'https://github.com/organization/private',
+              visibility: 'private',
+            },
+          ]}
+          workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+        />
+      </ZoraRuntimeProvider>
+    );
+
+    await React.act(async () =>
+      container
+        .querySelector<HTMLButtonElement>('[aria-label="Open repository source and workspace"]')
+        ?.click()
+    );
+    const picker = [...document.querySelectorAll<HTMLButtonElement>('button')].find(button =>
+      button.textContent?.startsWith('Repositories (')
+    );
+    await React.act(async () => picker?.click());
+    assert.equal(
+      document.querySelector('[role="checkbox"][aria-label="organization/private"]') !== null,
+      true
+    );
+
+    const publicOnly = document.querySelector<HTMLElement>(
+      '[role="checkbox"][aria-label="Public only"]'
+    );
+    await React.act(async () => publicOnly?.click());
+    assert.equal(
+      document.querySelector('[role="checkbox"][aria-label="organization/private"]') === null,
+      true
+    );
+
+    await React.act(async () => publicOnly?.click());
+    assert.equal(
+      document.querySelector('[role="checkbox"][aria-label="organization/private"]') !== null,
+      true
+    );
+    assert.equal(document.body.textContent?.includes('Authorize private repositories'), false);
+    unmount();
+  });
+
+  it('clears the final repository locally without calling an expired selection runtime', async () => {
+    const parsed = parseAppManifest(appManifest);
+    assert.equal(parsed.ok, true);
+    if (!parsed.ok) return;
+    const fetchCalls: (string | URL | Request)[] = [];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = Object.assign(
+      async (input: string | URL | Request) => {
+        fetchCalls.push(input);
+        return new Response(null, { status: 410 });
+      },
+      { preconnect: originalFetch.preconnect }
+    );
+    try {
+      const { container, unmount } = render(
+        <ZoraRuntimeProvider
+          initialMode={parsed.manifest.activeThemeMode ?? 'light'}
+          themeConfig={parsed.manifest.themes[parsed.manifest.activeThemeId]}
+        >
+          <WorkspaceView
+            currentSource="ankhorage"
+            projectName="Atlas"
+            repositories={[
+              {
+                id: 'atlas',
+                name: 'atlas',
+                owner: 'ankhorage',
+                selected: true,
+                url: 'https://github.com/ankhorage/atlas',
+                visibility: 'public',
+              },
+            ]}
+            runtimeId="expired-runtime"
+            workspace={{ ok: false, error: 'Dependency analysis failed.' }}
+          />
+        </ZoraRuntimeProvider>
+      );
+      await React.act(async () =>
+        container
+          .querySelector<HTMLButtonElement>('[aria-label="Open repository source and workspace"]')
+          ?.click()
+      );
+      const picker = [...document.querySelectorAll<HTMLButtonElement>('button')].find(button =>
+        button.textContent?.startsWith('Repositories (')
+      );
+      await React.act(async () => picker?.click());
+      const deselectAll = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+        button => button.textContent === 'Deselect all'
+      );
+      await React.act(async () => deselectAll?.click());
+
+      assert.equal(fetchCalls.length, 0);
+      assert.equal(
+        container.textContent?.includes('Select one or more repositories to inspect.'),
+        true
+      );
+      unmount();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 
   it('keeps repository and workspace actions in one accessible mobile source workflow', async () => {

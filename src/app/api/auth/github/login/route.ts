@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 
-import { setGitHubAuthAttemptCookie } from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
+import {
+  setGitHubAuthAttemptCookie,
+  setGitHubAuthReturnToCookie,
+  setGitHubPrivateAccessRequestCookie,
+} from '@/features/github-auth/adapters/inbound/next/githubAuthCookies';
 import {
   githubAuthConfiguration,
   githubAuthorizationScopes,
@@ -32,6 +36,8 @@ export async function POST(request: Request): Promise<Response> {
   if (attempt?.attemptId !== result.data.attemptId)
     return NextResponse.json({ error: 'GitHub authorization could not start.' }, { status: 503 });
   setGitHubAuthAttemptCookie(attempt, response.cookies);
+  setGitHubAuthReturnToCookie(readAtlasReturnPath(request), response.cookies);
+  if (wantsPrivateRepositoryAccess) setGitHubPrivateAccessRequestCookie(response.cookies);
   response.headers.set('location', authorizationUrl.toString());
   return response;
 }
@@ -54,4 +60,17 @@ function isFormReader(value: unknown): value is { readonly get: (name: string) =
   return (
     typeof value === 'object' && value !== null && 'get' in value && typeof value.get === 'function'
   );
+}
+
+/*** Preserve only a same-origin Atlas path so consent returns to the current repository selection. */
+function readAtlasReturnPath(request: Request): string {
+  const referer = request.headers.get('referer');
+  if (referer === null) return '/';
+  try {
+    const destination = new URL(referer);
+    if (destination.origin !== new URL(request.url).origin) return '/';
+    return `${destination.pathname}${destination.search}`;
+  } catch {
+    return '/';
+  }
 }

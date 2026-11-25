@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 
-import { getAdaptiveCycleLayoutSpacing } from '@/features/audit/utils/getAdaptiveCycleLayoutSpacing';
 import type { CycleHighlight } from '@/types/auditVisualization';
 
 /***
@@ -37,12 +36,12 @@ export function useGraphViewport(input: UseGraphViewportInput) {
       synchronizeGraphViewport(controllerRef.current, setViewport);
   };
 
-  /*** Runs the canonical readable fit and spacing optimization from explicit user intent. */
-  const fitGraph = () => {
+  /*** Runs the readable fit and spacing optimization requested explicitly by the user. */
+  const fitGraph = useCallback(() => {
     const nextController = controllerRef.current;
     if (nextController === null) return;
     fitGraphWithOptimizedSpacing(nextController, setViewport);
-  };
+  }, []);
 
   return {
     controller,
@@ -52,9 +51,12 @@ export function useGraphViewport(input: UseGraphViewportInput) {
       visibleNodeIds: readonly string[]
     ) => {
       const topology = createTopologyFit(nextController, visibleNodeIds);
-      if (topology !== null && fittedTopologyRef.current?.signature !== topology.signature) {
+      if (
+        topology !== null &&
+        shouldFitTopology(nextController, topology, fittedTopologyRef.current)
+      ) {
         fittedTopologyRef.current = topology;
-        fitGraphWithOptimizedSpacing(nextController, setViewport);
+        fitGraphToViewport(nextController, setViewport);
       }
       cycleFocus.handleLayoutComplete(nextController, visibleNodeIds);
     },
@@ -83,31 +85,56 @@ function createTopologyFit(
     measurement.nodes.some(node => node.size.width <= 0 || node.size.height <= 0)
   )
     return null;
-  return { signature: uniqueVisibleNodeIds.join('|') };
+  return { measurement, signature: uniqueVisibleNodeIds.join('|') };
 }
 
-/*** Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit. */
+/*** Refit when a completed layout moves the retained topology beyond the visible canvas. */
+function shouldFitTopology(
+  controller: GraphViewController,
+  topology: TopologyFit,
+  fittedTopology: TopologyFit | null
+): boolean {
+  if (fittedTopology?.signature !== topology.signature) return true;
+  // A zoomed-in viewport is explicitly user-owned; duplicate layout callbacks must not reset it.
+  if (controller.getViewport().zoom > 1) return false;
+  return !areMeasuredNodesVisible(controller, topology.measurement);
+}
+
+/*** Reject a stale fit whenever rendered node bounds escape the measured GraphView viewport. */
+function areMeasuredNodesVisible(
+  controller: GraphViewController,
+  measurement: GraphViewMeasurement
+): boolean {
+  const { pan, zoom } = controller.getViewport();
+  return measurement.nodes.every(node => {
+    const halfWidth = (node.size.width * zoom) / 2;
+    const halfHeight = (node.size.height * zoom) / 2;
+    const centerX = node.position.x * zoom + pan.x;
+    const centerY = node.position.y * zoom + pan.y;
+    return (
+      centerX - halfWidth >= 0 &&
+      centerY - halfHeight >= 0 &&
+      centerX + halfWidth <= measurement.viewport.width &&
+      centerY + halfHeight <= measurement.viewport.height
+    );
+  });
+}
+
+/*** Owns active-cycle focus without changing the selected layout spacing. */
 function useCycleViewportFocus(
   input: UseGraphViewportInput,
   setViewport: Dispatch<SetStateAction<GraphViewportState>>
 ) {
-  const { cycleHighlights, onSpacingFactorChange, spacingFactor } = input;
+  const { cycleHighlights, onSpacingFactorChange } = input;
   const handledCycleFocusRef = useRef<string | null>(null);
-  const pendingCycleRefitRef = useRef<string | null>(null);
-  const spacingFactorRef = useRef(spacingFactor);
   const cycleFocus = useMemo(() => createCycleFocusTarget(cycleHighlights), [cycleHighlights]);
 
   useEffect(() => {
-    spacingFactorRef.current = spacingFactor;
-  }, [spacingFactor]);
-
-  useEffect(() => {
-    synchronizeCycleFocusRefs(cycleFocus, handledCycleFocusRef, pendingCycleRefitRef);
+    if (cycleFocus === null) handledCycleFocusRef.current = null;
   }, [cycleFocus]);
 
   const handleSpacingFactorChange = useCallback(
     (nextSpacingFactor: number) => {
-      spacingFactorRef.current = nextSpacingFactor;
       onSpacingFactorChange(nextSpacingFactor);
     },
     [onSpacingFactorChange]
@@ -120,49 +147,17 @@ function useCycleViewportFocus(
     handleSettledCycleFocus({
       controller,
       cycleFocus,
-      handleSpacingFactorChange,
       handledCycleFocusRef,
-      pendingCycleRefitRef,
       setViewport,
-      spacingFactorRef,
       visibleNodeIds,
     });
 
   return { handleLayoutComplete, handleSpacingFactorChange };
 }
 
-/*** Clears stale refit state when cycle intent changes or is disabled. */
-function synchronizeCycleFocusRefs(
-  cycleFocus: CycleFocusTarget | null,
-  handledCycleFocusRef: { current: string | null },
-  pendingCycleRefitRef: { current: string | null }
-) {
-  if (cycleFocus !== null) {
-    if (
-      pendingCycleRefitRef.current !== null &&
-      pendingCycleRefitRef.current !== cycleFocus.signature
-    ) {
-      pendingCycleRefitRef.current = null;
-    }
-    return;
-  }
-  handledCycleFocusRef.current = null;
-  pendingCycleRefitRef.current = null;
-}
-
-/***
- * Focuses active cycles only from settled owner geometry, then refits once after adaptive relayout.
- * Missing cycle evidence is left to projection expansion and never measured as a partial cycle.
- */
+/*** Focuses an active cycle only from settled owner geometry. */
 function handleSettledCycleFocus(input: SettledCycleFocusInput) {
   synchronizeGraphViewport(input.controller, input.setViewport);
-
-  const pendingRefit = input.pendingCycleRefitRef.current;
-  if (pendingRefit !== null && pendingRefit === input.cycleFocus?.signature) {
-    input.pendingCycleRefitRef.current = null;
-    input.controller.fit();
-    synchronizeGraphViewport(input.controller, input.setViewport);
-  }
 
   const focus = input.cycleFocus;
   if (focus === null || input.handledCycleFocusRef.current === focus.signature) return;
@@ -170,71 +165,15 @@ function handleSettledCycleFocus(input: SettledCycleFocusInput) {
   if (!focus.nodeIds.every(nodeId => visibleIds.has(nodeId))) return;
 
   input.handledCycleFocusRef.current = focus.signature;
-  focusActiveCycle({
-    controller: input.controller,
-    focus,
-    handleSpacingFactorChange: input.handleSpacingFactorChange,
-    pendingCycleRefitRef: input.pendingCycleRefitRef,
-    setViewport: input.setViewport,
-    spacingFactorRef: input.spacingFactorRef,
-  });
+  focusActiveCycle(input.controller, input.setViewport);
 }
 
-/*** Fits the whole graph, measures active nodes, and requests only a justified spacing reduction. */
-function focusActiveCycle(input: FocusActiveCycleInput) {
-  fitGraphWithOptimizedSpacing(input.controller, input.setViewport);
-  const measurement = input.controller.measureNodes?.(input.focus.nodeIds);
-  if (measurement === null || measurement === undefined) return;
-  if (measurement.nodes.length !== input.focus.nodeIds.length) return;
-
-  const currentSpacing = input.spacingFactorRef.current;
-  const nextSpacing = getAdaptiveCycleLayoutSpacing(
-    currentSpacing,
-    readCycleLayoutMetrics(measurement)
-  );
-  if (nextSpacing >= currentSpacing) return;
-
-  input.pendingCycleRefitRef.current = input.focus.signature;
-  input.handleSpacingFactorChange(nextSpacing);
-}
-
-/*** Converts renderer-neutral GraphView measurements into the cycle-spacing policy metrics. */
-function readCycleLayoutMetrics(measurement: GraphViewMeasurement) {
-  const nodeBounds = measurement.nodes.map(node => ({
-    x1: node.position.x - node.size.width / 2,
-    y1: node.position.y - node.size.height / 2,
-    x2: node.position.x + node.size.width / 2,
-    y2: node.position.y + node.size.height / 2,
-  }));
-  const distances = measurement.nodes.flatMap((node, index) =>
-    measurement.nodes
-      .slice(index + 1)
-      .map(other =>
-        Math.hypot(node.position.x - other.position.x, node.position.y - other.position.y)
-      )
-  );
-  const cycleWidth =
-    Math.max(...nodeBounds.map(bounds => bounds.x2)) -
-    Math.min(...nodeBounds.map(bounds => bounds.x1));
-  const cycleHeight =
-    Math.max(...nodeBounds.map(bounds => bounds.y2)) -
-    Math.min(...nodeBounds.map(bounds => bounds.y1));
-  const averageNodeSize =
-    measurement.nodes.reduce((sum, node) => sum + Math.min(node.size.width, node.size.height), 0) /
-    measurement.nodes.length;
-  const averageNodeDistance =
-    distances.length === 0
-      ? 0
-      : distances.reduce((sum, distance) => sum + distance, 0) / distances.length;
-
-  return {
-    viewportWidth: measurement.viewport.width,
-    viewportHeight: measurement.viewport.height,
-    cycleWidth,
-    cycleHeight,
-    averageNodeSize,
-    averageNodeDistance,
-  };
+/*** Fit cycle evidence without changing the user's selected layout spacing. */
+function focusActiveCycle(
+  controller: GraphViewController,
+  setViewport: Dispatch<SetStateAction<GraphViewportState>>
+) {
+  fitGraphToViewport(controller, setViewport);
 }
 
 /*** Builds a stable active-cycle identity and unique rendered node set. */
@@ -255,6 +194,15 @@ function fitGraphWithOptimizedSpacing(
   setViewport: Dispatch<SetStateAction<GraphViewportState>>
 ) {
   controller.fit({ optimizeSpacing: true });
+  synchronizeGraphViewport(controller, setViewport);
+}
+
+/*** Fits automatically changed geometry while preserving the user's spacing selection. */
+function fitGraphToViewport(
+  controller: GraphViewController,
+  setViewport: Dispatch<SetStateAction<GraphViewportState>>
+) {
+  controller.fit();
   synchronizeGraphViewport(controller, setViewport);
 }
 
@@ -286,21 +234,9 @@ interface CycleFocusTarget {
 interface SettledCycleFocusInput {
   readonly controller: GraphViewController;
   readonly cycleFocus: CycleFocusTarget | null;
-  readonly handleSpacingFactorChange: (spacingFactor: number) => void;
   readonly handledCycleFocusRef: { current: string | null };
-  readonly pendingCycleRefitRef: { current: string | null };
   readonly setViewport: Dispatch<SetStateAction<GraphViewportState>>;
-  readonly spacingFactorRef: { current: number };
   readonly visibleNodeIds: readonly string[];
-}
-
-interface FocusActiveCycleInput {
-  readonly controller: GraphViewController;
-  readonly focus: CycleFocusTarget;
-  readonly handleSpacingFactorChange: (spacingFactor: number) => void;
-  readonly pendingCycleRefitRef: { current: string | null };
-  readonly setViewport: Dispatch<SetStateAction<GraphViewportState>>;
-  readonly spacingFactorRef: { current: number };
 }
 
 interface GraphViewportState {
@@ -310,5 +246,6 @@ interface GraphViewportState {
 }
 
 interface TopologyFit {
+  readonly measurement: GraphViewMeasurement;
   readonly signature: string;
 }

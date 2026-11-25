@@ -1,7 +1,7 @@
 .content {
   align-items: center;
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: space-between;
   min-width: 0;
   width: 100%;
@@ -11,7 +11,7 @@
   align-items: center;
   display: flex;
   flex: 1 1 192px;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -22,7 +22,7 @@
   color: inherit;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
   justify-content: flex-end;
   min-width: 0;
 }
@@ -41,8 +41,14 @@
 }
 
 .breadcrumbs {
+  flex: 1 1 0;
   min-width: 0;
   overflow-x: auto;
+}
+
+.breadcrumbs > * {
+  flex-wrap: nowrap !important;
+  min-width: max-content;
 }
 
 .dialogTitle {
@@ -71,7 +77,7 @@
 
 @media (max-width: 768px) {
   .content {
-    gap: 4px;
+    gap: 8px;
   }
 
   .identity {

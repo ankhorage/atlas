@@ -44,12 +44,12 @@ export function WorkspaceSidebar({ mobile = false, ...props }: WorkspaceSidebarP
         borderRight: `1px solid ${theme.semantics.border.subtle}`,
         flexDirection: 'column',
         flexShrink: 0,
-        maxWidth: 288,
+        maxWidth: 256,
         minHeight: 0,
-        minWidth: 288,
+        minWidth: 256,
         overflow: 'hidden',
         position: 'relative',
-        width: 288,
+        width: 256,
         zIndex: 1,
       }}
     >

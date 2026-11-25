@@ -26,7 +26,7 @@ export function getGraphPalette(theme: ZoraRuntimeTheme): GraphPalette {
   return {
     canvasBg: theme.semantics.surface.default,
     compoundBg: theme.semantics.surface.subtle,
-    edge: theme.semantics.content.muted,
+    edge: theme.semantics.border.subtle,
     nodeBg: theme.semantics.brand.softBg,
     nodeBgVendor: theme.semantics.secondary.softBg,
     nodeBgWorkspaceRoot: theme.semantics.accent.softBg,
@@ -39,8 +39,8 @@ export function getGraphPalette(theme: ZoraRuntimeTheme): GraphPalette {
     selectedFill: theme.semantics.selection.background,
     selectedRing: theme.semantics.selection.border,
     selectedText: theme.semantics.selection.content,
-    weightMd: theme.semantics.border.strong,
-    weightXl: theme.semantics.content.default,
+    weightMd: theme.semantics.brand.outline,
+    weightXl: theme.semantics.brand.base,
     weightXs: theme.semantics.border.subtle,
   };
 }

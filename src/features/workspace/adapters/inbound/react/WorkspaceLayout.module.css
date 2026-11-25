@@ -1,0 +1,15 @@
+.frame {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.frame > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.header {
+  position: relative;
+  z-index: 10;
+}

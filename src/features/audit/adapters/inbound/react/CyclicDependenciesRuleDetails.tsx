@@ -5,7 +5,6 @@ import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Switch } from '@ankhorage/zora/web/switch';
 import { Text } from '@ankhorage/zora/web/text';
 import { View } from '@ankhorage/zora/web/view';
-import React from 'react';
 
 import { createCycleThemeColors } from '@/features/audit/utils/createCycleThemeColors';
 import {

@@ -1,6 +1,4 @@
-import { resolve } from 'node:path';
-
-/*** Resolve the browser workspace source with query, environment, then Atlas self-hosting precedence. */
+/*** Resolve the browser workspace source with query and explicit local-project precedence. */
 export function resolveWorkspaceStartupSource(
   sourceValue: string | undefined,
   configuredProjectPath: string | undefined
@@ -13,12 +11,10 @@ export function resolveWorkspaceStartupSource(
     return { kind: 'filesystem', path: projectPath };
   }
 
-  return { kind: 'filesystem', path: DEFAULT_WORKSPACE_PROJECT_PATH };
+  return { kind: 'empty' };
 }
 
-/*** Keep the shipped example available when a deployment has no selected project or mounted workspace. */
-const DEFAULT_WORKSPACE_PROJECT_PATH = resolve(process.cwd(), 'examples/typescript/my-app');
-
 type WorkspaceStartupSource =
+  | { readonly kind: 'empty' }
   | { readonly kind: 'filesystem'; readonly path: string }
   | { readonly kind: 'github'; readonly source: string };

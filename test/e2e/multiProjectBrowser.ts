@@ -259,7 +259,9 @@ async function assertFixtureBuildIsUnusedAsync(): Promise<void> {
     process.cwd(),
     [0, 1]
   );
-  if (users.trim() !== '') throw new Error(`Fixture build directory is still in use:\n${users}`);
+  const processIds = users.split('\n').filter(line => /^p\d+$/.test(line));
+  if (processIds.length > 0)
+    throw new Error(`Fixture build directory is still in use:\n${processIds.join('\n')}`);
 }
 
 /*** Captures command output so build and lifecycle failures remain inspectable in acceptance artifacts. */
@@ -725,7 +727,7 @@ async function assertWorkspaceViewportAsync(
   else {
     assert(result.sidebar !== null, 'Desktop workspace sidebar was unavailable.');
     assert(
-      result.sidebar.width === 288,
+      result.sidebar.width === referenceDesktopSidebarWidth,
       'Workspace sidebar is not visibly occupying its owned width.'
     );
   }
@@ -1385,14 +1387,13 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
-    'breadcrumb-home-restoration',
-    'Restores Home navigation from breadcrumbs.',
+    'breadcrumb-project-identity',
+    'Shows project identity without a redundant Home control.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByRole('button', { name: 'Expand' }).first().click();
-      await page.getByText('catalog', { exact: true }).click();
-      await page.getByLabel('Home').click();
-      await page.getByText('Atlas', { exact: true }).waitFor();
+      const breadcrumbs = page.getByTestId('workspace-breadcrumbs');
+      assert((await page.getByLabel('Home').count()) === 0, 'Removed Home control reappeared.');
+      await breadcrumbs.getByText('GitHub workspace', { exact: true }).waitFor();
       return [];
     }
   ),
@@ -1840,6 +1841,9 @@ const responsiveViewports = [
   { height: 900, width: 1440 },
 ] as const;
 
+const referenceDesktopPanelMargin = 12;
+const referenceDesktopSidebarWidth = 256;
+
 /*** Captures the measured layout invariants rendered by Chromium for one responsive acceptance cell. */
 async function captureResponsiveEvidenceAsync(
   page: Page,
@@ -1878,7 +1882,11 @@ async function captureResponsiveEvidenceAsync(
       graph: bounds(graph),
       header: bounds(header),
       repositoryEntry: bounds(repositoryEntry ?? null),
-      sidebar: bounds(sidebar),
+      sidebar: bounds(
+        sidebar instanceof HTMLElement && sidebar.checkVisibility({ opacityProperty: true })
+          ? sidebar
+          : null
+      ),
       tools: bounds(tools ?? null),
       fit: bounds(fit ?? null),
       viewport: { height: window.innerHeight, width: window.innerWidth },
@@ -1946,7 +1954,7 @@ function assertResponsiveEvidence(
     assertSeparatePointerTargets(evidence.tools, evidence.zoom, 'Tools overlaps the Zoom control.');
   } else {
     assert(
-      evidence.sidebar !== null && evidence.sidebar.width === 288,
+      evidence.sidebar !== null && evidence.sidebar.width === referenceDesktopSidebarWidth,
       'Desktop sidebar changed width.'
     );
   }
@@ -2485,7 +2493,7 @@ function assertAnonymousBulkWorkspaceGeometry(
     );
 }
 
-/*** Verifies the shell keeps its fixed sidebar and allocates the remainder only to workspace content. */
+/*** Verifies the shell keeps the edge-to-edge reference layout and fixed sidebar geometry. */
 function assertWorkspaceGeometryBaseline(
   geometry: WorkspaceGeometry,
   viewport: { readonly height: number; readonly width: number },
@@ -2510,8 +2518,14 @@ function assertWorkspaceGeometryBaseline(
       geometry.sidebar !== null,
       `Anonymous bulk ${phase} did not render the desktop sidebar.`
     );
-    assert(geometry.sidebar.left === 0, `Anonymous bulk ${phase} shifted the sidebar.`);
-    assert(geometry.sidebar.width === 288, `Anonymous bulk ${phase} changed the sidebar width.`);
+    assert(
+      geometry.sidebar.left === referenceDesktopPanelMargin,
+      `Anonymous bulk ${phase} shifted the sidebar.`
+    );
+    assert(
+      geometry.sidebar.width === referenceDesktopSidebarWidth,
+      `Anonymous bulk ${phase} changed the sidebar width.`
+    );
   }
   assertBoundsContained(
     geometry.graph,

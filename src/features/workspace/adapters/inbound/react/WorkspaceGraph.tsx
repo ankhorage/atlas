@@ -2,7 +2,6 @@
 import type { SelectionIntent } from '@ankhorage/utility/selection';
 import { ActivityIndicator } from '@ankhorage/zora/web/activity-indicator';
 import { View } from '@ankhorage/zora/web/view';
-import React from 'react';
 
 import { CycleInspector } from '@/features/audit/adapters/inbound/react/CycleInspector';
 import { DependencyGraphView } from '@/features/graph-view/adapters/inbound/react/DependencyGraphView';

@@ -23,6 +23,8 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
   const [publicOnly, setPublicOnly] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
+  const [workspaceOpen, setWorkspaceOpen] = useState(false);
+  const authControls = props.renderAuthControls?.(() => setWorkspaceOpen(true));
   const visibleRepositories = useVisibleRepositories(
     sourceForm.repositories,
     sourceForm.search,
@@ -36,27 +38,31 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         settings={sourceForm.settings}
       />
       <div className={styles.desktopSourceControls}>
-        {props.authControls}
+        {authControls}
         <ProjectSourceControls
           initiallyOpen={props.selectionRequired && sourceForm.selectionSupported}
           publicOnly={publicOnly}
           showSelectionNotice={false}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
+          workspaceOpen={workspaceOpen}
           onPublicOnlyChange={setPublicOnly}
+          onWorkspaceOpenChange={setWorkspaceOpen}
         />
       </div>
       <div className={styles.mobileSourceControls}>
         <RepositorySourceEntry onOpen={() => setSourceOpen(true)} />
         <ProjectSourceDialog
-          authControls={props.authControls}
+          authControls={authControls}
           initiallyOpen={props.selectionRequired}
           open={sourceOpen}
           publicOnly={publicOnly}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
+          workspaceOpen={workspaceOpen}
           onDismiss={() => setSourceOpen(false)}
           onPublicOnlyChange={setPublicOnly}
+          onWorkspaceOpenChange={setWorkspaceOpen}
         />
       </div>
     </>
@@ -86,6 +92,8 @@ function ProjectSourceDialog({
   visibleRepositories,
   onDismiss,
   onPublicOnlyChange,
+  onWorkspaceOpenChange,
+  workspaceOpen,
 }: ProjectSourceDialogProps) {
   return (
     <Dialog
@@ -111,6 +119,8 @@ function ProjectSourceDialog({
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
           onPublicOnlyChange={onPublicOnlyChange}
+          onWorkspaceOpenChange={onWorkspaceOpenChange}
+          workspaceOpen={workspaceOpen}
         />
       </View>
     </Dialog>
@@ -212,7 +222,7 @@ function readSource(currentSource: string | undefined): { readonly owner: string
 
 interface ProjectSourceFormProps {
   readonly activeWorkspaceId?: string;
-  readonly authControls?: ReactNode;
+  readonly renderAuthControls?: (onWorkspaceOpen: () => void) => ReactNode;
   readonly currentSource?: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
   readonly repositoryColorTones?: readonly ColorToneDefinition[];
@@ -229,6 +239,8 @@ interface ProjectSourceDialogProps {
   readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
   readonly onDismiss: () => void;
   readonly onPublicOnlyChange: (checked: boolean) => void;
+  readonly onWorkspaceOpenChange: (open: boolean) => void;
+  readonly workspaceOpen: boolean;
 }
 
 interface RepositorySourceEntryProps {

@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.22.5
+
+### Patch Changes
+
+- d644d00: Refit the graph after repository, filter, vendor, package-depth, and layout changes move nodes beyond the visible canvas.
+
+## 0.22.4
+
+### Patch Changes
+
+- 7d07fd2: Refine workspace graph controls, tree navigation, and dependency graph colors.
+
+## 0.22.3
+
+### Patch Changes
+
+- ac873a0: Start without a preselected example workspace when no source is configured.
+- 40938f2: Render the workspace edge-to-edge without an outer inset, border, rounding, or shadow.
+
+## 0.22.2
+
+### Patch Changes
+
+- 31eccef: Start Atlas with an included architecture showcase and add Java and TypeScript reference applications.
+
 ## 0.22.1
 
 ### Patch Changes

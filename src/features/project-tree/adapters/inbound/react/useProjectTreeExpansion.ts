@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { getProjectTreeAncestorIds } from '@/features/project-tree/utils/getProjectTreeAncestorIds';
 import type { ProjectTreeNode } from '@/types/projectTree';
 
-/*** Open the first top-level folder, preserve manual expansion, and reveal selected rows. */
+/*** Open the workspace root, preserve manual expansion, and reveal ancestors required by selected rows. */
 export function useProjectTreeExpansion(
   nodes: readonly ProjectTreeNode[],
   selectedIds: readonly string[]
@@ -12,7 +12,7 @@ export function useProjectTreeExpansion(
   const [state, setState] = useState<ProjectTreeExpansionState>(() => ({
     nodes,
     selectedIds,
-    ids: revealSelections(nodes, selectedIds, initialExpandedIds(nodes)),
+    ids: revealSelections(nodes, selectedIds, initiallyExpandedIds(nodes)),
   }));
   if (state.nodes !== nodes || !arraysEqual(state.selectedIds, selectedIds)) {
     setState({
@@ -28,10 +28,22 @@ export function useProjectTreeExpansion(
   };
 }
 
-/*** Select the first visible folder as the useful initial entry point without expanding the whole tree. */
-function initialExpandedIds(nodes: readonly ProjectTreeNode[]): readonly string[] {
-  const topFolder = nodes.find(node => node.children !== undefined && node.children.length > 0);
-  return topFolder === undefined ? [] : [topFolder.id];
+/*** Keep the workspace entry visible without expanding arbitrary source folders. */
+function initiallyExpandedIds(nodes: readonly ProjectTreeNode[]): readonly string[] {
+  return nodes.flatMap(node => [
+    ...(node.children?.length ? [node.id] : []),
+    ...virtualDescendantIds(node),
+  ]);
+}
+
+/*** Expand owner and repository presentation roots so the repository's top folder is visible. */
+function virtualDescendantIds(node: ProjectTreeNode): readonly string[] {
+  if (node.children === undefined) return [];
+  return node.children.flatMap(child =>
+    child.kind === 'virtual' && child.children?.length
+      ? [child.id, ...virtualDescendantIds(child)]
+      : []
+  );
 }
 
 /*** Add only the ancestors required to reveal all selections without opening selected folders. */

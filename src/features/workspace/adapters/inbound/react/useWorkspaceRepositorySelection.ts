@@ -71,7 +71,8 @@ async function runWorkspaceSelectionAsync(
   const generation = previous.generation + 1;
   const state = { ...previous, controller, generation, selectedIds, source };
   Object.assign(previous, state);
-  if (sourceChanged && selectedIds.size === 0) {
+  if (selectedIds.size === 0) {
+    clearWorkspaceSelection(previous, setLiveWorkspace);
     replaceWorkspaceHistory(source, selectedIds);
     return;
   }
@@ -98,6 +99,24 @@ async function runWorkspaceSelectionAsync(
     }
     setLiveWorkspace(current => ({ ...current, error: readSelectionError(error) }));
   }
+}
+
+/*** Clear the browser-owned selection locally so expired runtimes cannot block an empty selection. */
+function clearWorkspaceSelection(
+  state: WorkspaceSelectionState,
+  setLiveWorkspace: (value: LiveWorkspace | ((current: LiveWorkspace) => LiveWorkspace)) => void
+): void {
+  setLiveWorkspace(current => {
+    const next = {
+      ...current,
+      error: undefined,
+      repositoryStatuses: [],
+      runtimeId: undefined,
+      selectionRequired: true,
+    };
+    state.workspace = next;
+    return next;
+  });
 }
 
 /*** Starts a fresh runtime with the current complete selection after the server evicts an old one. */
@@ -188,6 +207,7 @@ function preserveWorkspaceDuringRecovery(
     projectName: frame.projectName,
     repositoryStatuses: frame.repositoryStatuses,
     runtimeId: frame.runtimeId,
+    selectionRequired: false,
     workspace,
   };
 }
@@ -298,5 +318,6 @@ export interface LiveWorkspace {
   readonly projectName: string;
   readonly repositoryStatuses: readonly WorkspaceRepositoryLoadStatus[] | undefined;
   readonly runtimeId: string | undefined;
+  readonly selectionRequired?: boolean;
   readonly workspace: WorkspaceLoadResult;
 }

@@ -1,4 +1,5 @@
 'use client';
+import { Icon } from '@ankhorage/zora/web/icon';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Select } from '@ankhorage/zora/web/select';
 import { Switch } from '@ankhorage/zora/web/switch';
@@ -18,6 +19,15 @@ const LAYOUT_OPTIONS: readonly LayoutOptions['name'][] = [
   'elk',
   'grid',
 ];
+
+/*** Keep the layout's visual language consistent in the compact settings control. */
+const LAYOUT_ICONS = {
+  breadthfirst: 'git-branch-outline',
+  circle: 'ellipse-outline',
+  concentric: 'radio-outline',
+  elk: 'git-network-outline',
+  grid: 'grid-outline',
+} as const;
 
 /*** Renders persistent graph controls from generated ZORA form and layout elements. */
 export function SettingsPanel() {
@@ -103,14 +113,24 @@ function LayoutSettings() {
 
   return (
     <SettingsSection title={t('settings.layout')}>
-      <Select
-        value={cytoscapeLayout}
-        options={LAYOUT_OPTIONS.map(value => ({ label: t(value), value }))}
-        onValueChange={selectLayout}
-        testID="cytoscape-layout"
-      />
+      <View align="center" direction="row" gap="s">
+        <Icon name={layoutIcon(cytoscapeLayout)} size="m" />
+        <View flex={1}>
+          <Select
+            value={cytoscapeLayout}
+            options={LAYOUT_OPTIONS.map(value => ({ label: t(value), value }))}
+            onValueChange={selectLayout}
+            testID="cytoscape-layout"
+          />
+        </View>
+      </View>
     </SettingsSection>
   );
+}
+
+/*** Resolve the icon owned by the active supported layout algorithm. */
+function layoutIcon(layout: LayoutOptions['name']) {
+  return LAYOUT_ICONS[layout as keyof typeof LAYOUT_ICONS];
 }
 
 /*** Renders the active layout-spacing control. */

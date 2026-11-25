@@ -1,5 +1,3 @@
-import { resolve } from 'node:path';
-
 import { assert, describe, it } from '@artiphishle/testosterone';
 
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
@@ -19,10 +17,7 @@ describe('[resolveWorkspaceStartupSource]', () => {
     });
   });
 
-  it('loads the shipped TypeScript example when neither browser source nor project environment is configured', () => {
-    assert.deepEqual(resolveWorkspaceStartupSource(undefined, undefined), {
-      kind: 'filesystem',
-      path: resolve(process.cwd(), 'examples/typescript/my-app'),
-    });
+  it('starts empty when no browser source or project environment is configured', () => {
+    assert.deepEqual(resolveWorkspaceStartupSource(undefined, undefined), { kind: 'empty' });
   });
 });
