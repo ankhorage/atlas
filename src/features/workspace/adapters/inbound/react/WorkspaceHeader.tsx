@@ -91,7 +91,7 @@ function WorkspaceHeaderActions(props: WorkspaceHeaderProps) {
   );
 }
 
-/*** Creates package breadcrumbs from a stable Home root to the active package path. */
+/*** Creates the active package breadcrumb trail without duplicating virtual repository identity. */
 function createBreadcrumbItems(
   currentPackage: string,
   projectName: string,
@@ -99,7 +99,7 @@ function createBreadcrumbItems(
 ): readonly BreadcrumbItem[] {
   const repositoryCrumbs = findRepositoryBreadcrumbs(currentPackage, projectTree);
   const projectCrumb = { id: ROOT_BREADCRUMB_ID, label: projectName };
-  if (repositoryCrumbs !== null) return [projectCrumb, ...repositoryCrumbs];
+  if (repositoryCrumbs !== null) return repositoryCrumbs;
   const packageSegments = normalizeGraphPackage(currentPackage).split('.').filter(Boolean);
   const packageItems = packageSegments.map((label, index) => ({
     id: createPackageBreadcrumbId(packageSegments.slice(0, index + 1).join('.')),
