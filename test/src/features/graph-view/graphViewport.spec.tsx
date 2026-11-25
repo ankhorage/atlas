@@ -49,6 +49,7 @@ describe('[graph viewport controls]', () => {
       const [spacingFactor, setSpacingFactor] = useState(0.8);
       const viewport = useGraphViewport({
         cycleHighlights: enabled ? ACTIVE_CYCLE : [],
+        layout: 'concentric',
         onSpacingFactorChange: nextSpacing => {
           spacingChanges.push(nextSpacing);
           setSpacingFactor(nextSpacing);
@@ -144,6 +145,7 @@ describe('[graph viewport controls]', () => {
     function Harness() {
       const viewport = useGraphViewport({
         cycleHighlights: [],
+        layout: 'concentric',
         onSpacingFactorChange: () => undefined,
         spacingFactor: 1,
       });
@@ -244,6 +246,7 @@ describe('[graph viewport controls]', () => {
     function Harness() {
       const viewport = useGraphViewport({
         cycleHighlights: [],
+        layout: 'concentric',
         onSpacingFactorChange: () => undefined,
         spacingFactor: 1,
       });

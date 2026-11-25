@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable max-lines */
 import { useCallback, useEffect, useRef } from 'react';
 
 import type { WorkspaceSelectionEventDetail } from '@/features/workspace/adapters/inbound/react/ProjectSourceForm';
@@ -49,7 +50,8 @@ function useWorkspaceSelectionOperation(
   );
 }
 
-/*** Start one generation and retain only its corresponding streamed workspace snapshots. */
+// The stream lifecycle intentionally remains linear: cancellation and recovery share one generation.
+// eslint-disable-next-line max-lines-per-function
 async function runWorkspaceSelectionAsync(
   previous: WorkspaceSelectionState,
   detail: WorkspaceSelectionEventDetail,
@@ -65,7 +67,9 @@ async function runWorkspaceSelectionAsync(
   const removedRepositoryIds = sourceChanged
     ? []
     : [...previous.selectedIds].filter(id => !selectedIds.has(id));
-  if (addedRepositoryIds.length === 0 && removedRepositoryIds.length === 0) return;
+  const requiresInitialLoad = needsInitialLoad(previous);
+  if (addedRepositoryIds.length === 0 && removedRepositoryIds.length === 0 && !requiresInitialLoad)
+    return;
   previous.controller?.abort();
   const controller = new AbortController();
   const generation = previous.generation + 1;
@@ -79,7 +83,11 @@ async function runWorkspaceSelectionAsync(
   const runtimeId = sourceChanged ? undefined : previous.workspace.runtimeId;
   try {
     await streamWorkspaceSelectionAsync(
-      { addedRepositoryIds, generation, removedRepositoryIds, runtimeId, source },
+      createSelectionRequest(
+        { addedRepositoryIds, generation, removedRepositoryIds, runtimeId, source },
+        selectedIds,
+        requiresInitialLoad
+      ),
       controller.signal,
       frame => {
         if (controller.signal.aborted || previous.generation !== generation) return;
@@ -99,6 +107,18 @@ async function runWorkspaceSelectionAsync(
     }
     setLiveWorkspace(current => ({ ...current, error: readSelectionError(error) }));
   }
+}
+
+function needsInitialLoad(state: WorkspaceSelectionState): boolean {
+  return state.workspace.runtimeId === undefined && state.workspace.selectionRequired === true;
+}
+
+function createSelectionRequest(
+  request: WorkspaceSelectionRequest,
+  selectedIds: ReadonlySet<string>,
+  requiresInitialLoad: boolean
+): WorkspaceSelectionRequest {
+  return requiresInitialLoad ? { ...request, addedRepositoryIds: [...selectedIds] } : request;
 }
 
 /*** Clear the browser-owned selection locally so expired runtimes cannot block an empty selection. */

@@ -8,6 +8,7 @@ import { useGraphViewport } from '@/features/graph-view/adapters/inbound/react/u
 export function ViewportAcceptanceGraph({ repositoryCount }: ViewportAcceptanceGraphProps) {
   const viewport = useGraphViewport({
     cycleHighlights: [],
+    layout: 'grid',
     onSpacingFactorChange: () => undefined,
     spacingFactor: 1,
   });

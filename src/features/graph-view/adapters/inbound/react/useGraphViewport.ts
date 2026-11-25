@@ -19,6 +19,7 @@ export function useGraphViewport(input: UseGraphViewportInput) {
   const [controller, setController] = useState<GraphViewController | null>(null);
   const controllerRef = useRef<GraphViewController | null>(null);
   const fittedTopologyRef = useRef<TopologyFit | null>(null);
+  const settledLayoutRef = useRef(input.layout);
   const [viewport, setViewport] = useState({ zoom: 1, min: 0.5, max: 2 });
   const cycleFocus = useCycleViewportFocus(input, setViewport);
 
@@ -51,9 +52,11 @@ export function useGraphViewport(input: UseGraphViewportInput) {
       visibleNodeIds: readonly string[]
     ) => {
       const topology = createTopologyFit(nextController, visibleNodeIds);
+      const layoutChanged = settledLayoutRef.current !== input.layout;
+      settledLayoutRef.current = input.layout;
       if (
         topology !== null &&
-        shouldFitTopology(nextController, topology, fittedTopologyRef.current)
+        (layoutChanged || shouldFitTopology(nextController, topology, fittedTopologyRef.current))
       ) {
         fittedTopologyRef.current = topology;
         fitGraphToViewport(nextController, setViewport);
@@ -222,6 +225,7 @@ function synchronizeGraphViewport(
 
 interface UseGraphViewportInput {
   readonly cycleHighlights: readonly CycleHighlight[];
+  readonly layout: string;
   readonly onSpacingFactorChange: (spacingFactor: number) => void;
   readonly spacingFactor: number;
 }

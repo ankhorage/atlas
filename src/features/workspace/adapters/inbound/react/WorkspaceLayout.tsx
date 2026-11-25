@@ -173,9 +173,30 @@ function RepositorySelectionNotice() {
         padding: 24,
       }}
     >
-      Select one or more repositories to inspect. No repository has been materialized yet.
+      <label>
+        Select one or more repositories to inspect. No repository has been materialized yet.
+        <select
+          aria-label="Load an example"
+          defaultValue=""
+          onChange={event => {
+            const example = exampleDestination(event.target.value);
+            if (example !== undefined) window.location.assign(example);
+          }}
+        >
+          <option value="">Or explore an example…</option>
+          <option value="java">Java example</option>
+          <option value="typescript">TypeScript example</option>
+        </select>
+      </label>
     </div>
   );
+}
+
+/*** Maps the finite example selector values without interpolating browser-controlled text into a URL. */
+function exampleDestination(value: string): string | undefined {
+  if (value === 'java') return '?example=java';
+  if (value === 'typescript') return '?example=typescript';
+  return undefined;
 }
 
 /*** Connects visible cycle evidence to the portable project scope that owns its preferences. */
