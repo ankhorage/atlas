@@ -541,7 +541,7 @@ async function readGraph(page: Page): Promise<readonly [number, string]> {
 async function readRules(page: Page): Promise<string> {
   const ruleTab = page.getByRole('tab', { name: /Rules/ });
   await ruleTab.click();
-  return page.getByRole('tabpanel').innerText();
+  return page.getByRole('tabpanel', { name: 'Rules' }).innerText();
 }
 
 /*** Fail parity checks with the semantic values that diverged. */
