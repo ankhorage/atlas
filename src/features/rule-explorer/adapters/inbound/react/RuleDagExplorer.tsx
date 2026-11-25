@@ -2,12 +2,16 @@
 
 import type { RuleEvaluationPlanFacet, RuleEvaluationResult } from '@ankhorage/rules';
 import { GraphView, type GraphViewNode } from '@ankhorage/zora/web/graph-view';
+import { Select } from '@ankhorage/zora/web/select';
+import { Tab } from '@ankhorage/zora/web/tab';
+import { TabList } from '@ankhorage/zora/web/tab-list';
+import { TabPanel } from '@ankhorage/zora/web/tab-panel';
+import { Tabs } from '@ankhorage/zora/web/tabs';
 import { Text } from '@ankhorage/zora/web/text';
 import { type TreeItemNode, TreeView } from '@ankhorage/zora/web/tree-view';
 import { View } from '@ankhorage/zora/web/view';
 import React from 'react';
 
-import { createRuleDagElements } from '@/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements';
 import {
   formatRuleDagStatus,
   projectRuleDag,
@@ -26,7 +30,6 @@ export function RuleDagExplorer({ evaluation }: RuleDagExplorerProps) {
     () => projectRuleDag(evaluation, facetFilters),
     [evaluation, facetFilters]
   );
-  const cytoscapeElements = React.useMemo(() => createRuleDagElements(projection), [projection]);
   const nodes = React.useMemo(
     () => toGraphViewNodes(projection.graph.nodes, view),
     [projection, view]
@@ -51,7 +54,6 @@ export function RuleDagExplorer({ evaluation }: RuleDagExplorerProps) {
       setSelectedIds={setSelectedIds}
       expandedIds={expandedIds}
       setExpandedIds={setExpandedIds}
-      cytoscapeElements={cytoscapeElements}
     />
   );
 }
@@ -63,24 +65,9 @@ function RuleDagContents(props: RuleDagContentsProps) {
       <section aria-label="Rule dependency explorer">
         <View gap="xs">
           <Text variant="label" weight="bold">
-            Rule evaluation DAG
+            Rule evaluation
           </Text>
-          <div role="group" aria-label="Rule DAG view">
-            <button
-              type="button"
-              aria-pressed={props.view === 'dependencies'}
-              onClick={() => props.setView('dependencies')}
-            >
-              Dependencies
-            </button>
-            <button
-              type="button"
-              aria-pressed={props.view === 'execution'}
-              onClick={() => props.setView('execution')}
-            >
-              Execution
-            </button>
-          </div>
+          <Text variant="caption">{ruleEvaluationSummary(props.nodes.length)}</Text>
           <RuleFacetFilters
             facets={props.facets}
             filters={props.filters}
@@ -88,29 +75,40 @@ function RuleDagContents(props: RuleDagContentsProps) {
           />
         </View>
       </section>
-      {props.nodes.length === 0 ? null : <RuleDagVisualization {...props} />}
-      <output aria-label="Rule graph projection" hidden>
-        {JSON.stringify(props.cytoscapeElements)}
-      </output>
+      {props.nodes.length === 0 ? <EmptyRuleEvaluation /> : <RuleDagVisualization {...props} />}
     </View>
   );
 }
 
-/*** Renders graph and tree renderers only when the visible projection has graph content. */
+/*** Renders one accessible ZORA tab view for dependencies and another for execution outcomes. */
 function RuleDagVisualization(props: RuleDagContentsProps) {
   return (
-    <>
-      <RuleDagGraph {...props} />
-      <TreeView
-        ariaLabel="Rule DAG nodes"
-        expandedIds={props.expandedIds}
-        expansionIndicator="chevron"
-        nodes={props.treeNodes}
-        selectedIds={props.selectedIds}
-        onExpandedChange={props.setExpandedIds}
-        onSelect={id => props.setSelectedIds([id])}
-      />
-    </>
+    <Tabs
+      value={props.view}
+      variant="line"
+      onValueChange={value => {
+        if (value === 'dependencies' || value === 'execution') props.setView(value);
+      }}
+    >
+      <TabList fill>
+        <Tab label="Dependencies" value="dependencies" />
+        <Tab label="Results" value="execution" />
+      </TabList>
+      <TabPanel value="dependencies">
+        {props.edges.length === 0 ? <NoRuleDependencies /> : <RuleDagGraph {...props} />}
+      </TabPanel>
+      <TabPanel value="execution">
+        <TreeView
+          ariaLabel="Rule evaluation results"
+          expandedIds={props.expandedIds}
+          expansionIndicator="chevron"
+          nodes={props.treeNodes}
+          selectedIds={props.selectedIds}
+          onExpandedChange={props.setExpandedIds}
+          onSelect={id => props.setSelectedIds([id])}
+        />
+      </TabPanel>
+    </Tabs>
   );
 }
 
@@ -124,7 +122,7 @@ function RuleDagGraph({ view, edges, nodes, selectedIds, setSelectedIds }: RuleD
       nodes={nodes}
       selectedNodeIds={selectedIds}
       sizeNodesToLabels
-      style={{ height: 260 }}
+      style={{ height: 220, width: '100%' }}
       styleRules={RULE_GRAPH_STYLES}
       onNodeEvent={event => {
         if (event.type === 'press') setSelectedIds([event.id]);
@@ -137,28 +135,53 @@ function RuleDagGraph({ view, edges, nodes, selectedIds, setSelectedIds }: RuleD
 function RuleFacetFilters({ facets, filters, onChange }: RuleFacetFiltersProps) {
   const facetsById = groupFacetsById(facets);
   return (
-    <div>
+    <View gap="xs">
       {[...facetsById.entries()].map(([id, values]) => (
-        <label key={id}>
-          {id}
-          <select
-            value={filters.find(filter => filter.id === id)?.values[0] ?? ''}
-            onChange={event =>
-              onChange([
-                ...filters.filter(filter => filter.id !== id),
-                { id, values: event.target.value === '' ? [] : [event.target.value] },
-              ])
-            }
-          >
-            <option value="">All</option>
-            {values.map(({ value, version }) => (
-              <option key={`${value}:${version}`} value={value}>{`${value} (v${version})`}</option>
-            ))}
-          </select>
-        </label>
+        <Select
+          key={id}
+          label={formatFacetLabel(id)}
+          options={[
+            { label: 'All', value: '' },
+            ...values.map(({ value, version }) => ({
+              label: `${formatFacetLabel(value)} (v${version})`,
+              value,
+            })),
+          ]}
+          value={filters.find(filter => filter.id === id)?.values[0] ?? ''}
+          onValueChange={value =>
+            onChange([
+              ...filters.filter(filter => filter.id !== id),
+              { id, values: value === '' ? [] : [value] },
+            ])
+          }
+        />
       ))}
-    </div>
+    </View>
   );
+}
+
+/*** Converts provider facet identifiers into concise labels without changing their filter identity. */
+function formatFacetLabel(value: string): string {
+  return value
+    .split(/[-_]/u)
+    .filter(Boolean)
+    .map(segment => segment.slice(0, 1).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
+/*** States the compact result count before a person chooses the detail they need. */
+function ruleEvaluationSummary(count: number): string {
+  return `${count} rule ${count === 1 ? 'instance' : 'instances'} in this evaluation.`;
+}
+
+/*** Explains that filtering removed the visible plan without treating it as a rule failure. */
+function EmptyRuleEvaluation() {
+  return <Text variant="caption">No rule instances match the current filters.</Text>;
+}
+
+/*** Explains a plan with no dependency edges while keeping results separately inspectable. */
+function NoRuleDependencies() {
+  return <Text variant="caption">These rule instances have no dependencies.</Text>;
 }
 
 /*** Maps stable evaluator node identities into the existing graph renderer's neutral contract. */
@@ -222,7 +245,6 @@ interface RuleFacetFiltersProps {
 }
 
 interface RuleDagContentsProps {
-  readonly cytoscapeElements: ReturnType<typeof createRuleDagElements>;
   readonly edges: readonly {
     readonly id: string;
     readonly source: string;
