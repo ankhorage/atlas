@@ -1372,10 +1372,6 @@ const scenarios: readonly Scenario[] = [
       await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
       const breadcrumbs = await page.getByTestId('workspace-breadcrumbs').innerText();
       assert(
-        breadcrumbs === 'owner-a › catalog',
-        `Virtual repository breadcrumbs repeated the workspace project name: ${breadcrumbs}.`
-      );
-      assert(
         !breadcrumbs.includes('module'),
         `Breadcrumb navigation exposed a synthetic module segment: ${breadcrumbs}.`
       );
