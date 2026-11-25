@@ -21,15 +21,10 @@ import styles from './WorkspaceHeader.module.css';
 /*** Edits a GitHub source while applying repository selection changes immediately. */
 export function ProjectSourceForm(props: ProjectSourceFormProps) {
   const sourceForm = useProjectSourceForm(props);
-  const [publicOnly, setPublicOnly] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const authControls = props.renderAuthControls?.(() => setWorkspaceOpen(true));
-  const visibleRepositories = useVisibleRepositories(
-    sourceForm.repositories,
-    sourceForm.search,
-    publicOnly
-  );
+  const visibleRepositories = useVisibleRepositories(sourceForm.repositories, sourceForm.search);
 
   return (
     <>
@@ -41,12 +36,10 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
         {authControls}
         <ProjectSourceControls
           initiallyOpen={props.selectionRequired && sourceForm.selectionSupported}
-          publicOnly={publicOnly}
           showSelectionNotice={false}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
           workspaceOpen={workspaceOpen}
-          onPublicOnlyChange={setPublicOnly}
           onWorkspaceOpenChange={setWorkspaceOpen}
         />
       </div>
@@ -56,12 +49,10 @@ export function ProjectSourceForm(props: ProjectSourceFormProps) {
           authControls={authControls}
           initiallyOpen={props.selectionRequired}
           open={sourceOpen}
-          publicOnly={publicOnly}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
           workspaceOpen={workspaceOpen}
           onDismiss={() => setSourceOpen(false)}
-          onPublicOnlyChange={setPublicOnly}
           onWorkspaceOpenChange={setWorkspaceOpen}
         />
       </div>
@@ -87,11 +78,9 @@ function ProjectSourceDialog({
   authControls,
   initiallyOpen,
   open,
-  publicOnly,
   sourceForm,
   visibleRepositories,
   onDismiss,
-  onPublicOnlyChange,
   onWorkspaceOpenChange,
   workspaceOpen,
 }: ProjectSourceDialogProps) {
@@ -115,10 +104,8 @@ function ProjectSourceDialog({
         {authControls}
         <ProjectSourceControls
           initiallyOpen={initiallyOpen && sourceForm.selectionSupported}
-          publicOnly={publicOnly}
           sourceForm={sourceForm}
           visibleRepositories={visibleRepositories}
-          onPublicOnlyChange={onPublicOnlyChange}
           onWorkspaceOpenChange={onWorkspaceOpenChange}
           workspaceOpen={workspaceOpen}
         />
@@ -130,19 +117,16 @@ function ProjectSourceDialog({
 /*** Filters the server-discovered repository inventory without changing staged selection. */
 function useVisibleRepositories(
   repositories: readonly WorkspaceRepositoryOption[] | undefined,
-  search: string,
-  publicOnly: boolean
+  search: string
 ): readonly WorkspaceRepositoryOption[] {
   return useMemo(
     () =>
-      repositories?.filter(
-        repository =>
-          (!publicOnly || repository.visibility === 'public') &&
-          `${repository.owner}/${repository.name}`
-            .toLocaleLowerCase()
-            .includes(search.toLocaleLowerCase())
+      repositories?.filter(repository =>
+        `${repository.owner}/${repository.name}`
+          .toLocaleLowerCase()
+          .includes(search.toLocaleLowerCase())
       ) ?? [],
-    [publicOnly, repositories, search]
+    [repositories, search]
   );
 }
 
@@ -234,11 +218,9 @@ interface ProjectSourceDialogProps {
   readonly authControls?: ReactNode;
   readonly initiallyOpen?: boolean;
   readonly open: boolean;
-  readonly publicOnly: boolean;
   readonly sourceForm: ReturnType<typeof useProjectSourceForm>;
   readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
   readonly onDismiss: () => void;
-  readonly onPublicOnlyChange: (checked: boolean) => void;
   readonly onWorkspaceOpenChange: (open: boolean) => void;
   readonly workspaceOpen: boolean;
 }

@@ -766,17 +766,6 @@ const scenarios: readonly Scenario[] = [
       await repositoryPickerButton(page).click();
       await page.getByLabel('GitHub owner').fill('owner-a');
       await repositoryPickerButton(page).waitFor();
-      assert(
-        !(await page.getByRole('checkbox', { name: 'Public only' }).isChecked()),
-        'Public only must remain unchecked until explicitly selected.'
-      );
-      const publicOnly = page.getByRole('checkbox', { name: 'Public only' });
-      await publicOnly.click();
-      await waitForCheckboxStateAsync(page, 'Public only', true);
-      assert(await publicOnly.isChecked(), 'Public only did not become checked after selection.');
-      await publicOnly.press('Space');
-      await waitForCheckboxStateAsync(page, 'Public only', false);
-      assert(!(await publicOnly.isChecked()), 'Public only remained checked after deselection.');
       await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(

@@ -58,13 +58,6 @@
   width: 100%;
 }
 
-.publicOnly {
-  align-items: center;
-  display: inline-flex;
-  gap: 4px;
-  white-space: nowrap;
-}
-
 .repositoryColorSwatch {
   border: 1px solid currentColor;
   border-radius: 2px;

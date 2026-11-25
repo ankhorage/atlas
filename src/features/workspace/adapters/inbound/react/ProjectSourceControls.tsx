@@ -15,16 +15,12 @@ import { isWorkspaceSelectionSource } from '@/features/workspace/application/use
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 import type { SettingsContextValue } from '@/types/settings';
 
-import styles from './WorkspaceHeader.module.css';
-
 /*** Compose the existing repository workflow so desktop and mobile share one staged selection. */
 export function ProjectSourceControls({
   initiallyOpen,
-  publicOnly,
   showSelectionNotice = true,
   sourceForm,
   visibleRepositories,
-  onPublicOnlyChange,
   onWorkspaceOpenChange,
   workspaceOpen,
 }: ProjectSourceControlsProps) {
@@ -46,7 +42,6 @@ export function ProjectSourceControls({
       />
       {showSelectionNotice ? <SelectionSourceNotice sourceForm={sourceForm} /> : null}
       {sourceForm.inventoryError ? <span role="status">{sourceForm.inventoryError}</span> : null}
-      <PublicOnlyFilter checked={publicOnly} onChange={onPublicOnlyChange} />
       <RepositoryCopyButton sourceForm={sourceForm} />
       <WorkspaceControl
         sourceForm={sourceForm}
@@ -134,28 +129,6 @@ function SelectionSourceNotice({ sourceForm }: { readonly sourceForm: ProjectSou
   );
 }
 
-/*** Keeps repository visibility filtering separate from GitHub authorization consent. */
-function PublicOnlyFilter({
-  checked,
-  onChange,
-}: {
-  readonly checked: boolean;
-  readonly onChange: (checked: boolean) => void;
-}) {
-  return (
-    <span className={styles.publicOnly}>
-      <Checkbox
-        accessibilityLabel="Public only"
-        checked={checked}
-        size="s"
-        onCheckedChange={onChange}
-      >
-        Public only
-      </Checkbox>
-    </span>
-  );
-}
-
 /*** Copies the canonical URLs of the staged repository selection. */
 function RepositoryCopyButton({ sourceForm }: { readonly sourceForm: ProjectSourceFormModel }) {
   return (
@@ -172,11 +145,9 @@ function RepositoryCopyButton({ sourceForm }: { readonly sourceForm: ProjectSour
 
 interface ProjectSourceControlsProps {
   readonly initiallyOpen?: boolean;
-  readonly publicOnly: boolean;
   readonly showSelectionNotice?: boolean;
   readonly sourceForm: ProjectSourceFormModel;
   readonly visibleRepositories: readonly WorkspaceRepositoryOption[];
-  readonly onPublicOnlyChange: (checked: boolean) => void;
   readonly onWorkspaceOpenChange: (open: boolean) => void;
   readonly workspaceOpen: boolean;
 }
