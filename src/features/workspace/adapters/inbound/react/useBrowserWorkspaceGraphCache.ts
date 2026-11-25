@@ -33,6 +33,9 @@ export function useBrowserWorkspaceGraphCache(input: BrowserWorkspaceGraphCacheI
       version: 1,
       workspace: input.workspace,
     });
+    const url = new URL(window.location.href);
+    url.searchParams.set('cache', '1');
+    window.history.replaceState(null, '', url);
   }, [input.projectName, input.repositoryIds, input.source, input.workspace, key]);
 }
 

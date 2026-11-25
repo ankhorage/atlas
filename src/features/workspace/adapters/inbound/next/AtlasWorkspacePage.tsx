@@ -22,7 +22,7 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
   const source = readSource(params);
   const repositoryIds = readRepositoryIds(readSearchParam(params.repositories));
   const result =
-    source !== undefined && repositoryIds.length > 0
+    readSearchParam(params.cache) === '1' && source !== undefined && repositoryIds.length > 0
       ? await loadWorkspace(undefined, repositoryAuthentication)
       : await loadWorkspace(
           withRepositorySelection(source, readSearchParam(params.repositories)),
@@ -93,6 +93,7 @@ interface AtlasWorkspacePageProps {
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
     readonly example?: string | readonly string[];
+    readonly cache?: string | readonly string[];
     readonly repositories?: string | readonly string[];
     readonly workspace?: string | readonly string[];
   }>;
