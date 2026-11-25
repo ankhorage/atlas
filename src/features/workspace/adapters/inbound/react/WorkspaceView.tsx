@@ -91,7 +91,13 @@ function useWorkspaceClientRuntime(input: {
     source: input.currentSource ?? '',
     workspace: input.liveWorkspace.workspace,
   });
-  useRestoreWorkspaceSelection(input.currentSource, selectedIds, input.liveWorkspace, selection);
+  useRestoreWorkspaceSelection(
+    input.currentSource,
+    selectedIds,
+    input.liveWorkspace,
+    input.repositories === undefined && input.initialSelectedRepositoryIds.length > 0,
+    selection
+  );
   return selection;
 }
 
@@ -164,6 +170,7 @@ function useRestoreWorkspaceSelection(
   source: string | undefined,
   selectedIds: readonly string[],
   workspace: LiveWorkspace,
+  shouldRestore: boolean,
   select: ReturnType<typeof useWorkspaceRepositorySelection>
 ) {
   const restored = useRef(false);
@@ -172,12 +179,13 @@ function useRestoreWorkspaceSelection(
       restored.current ||
       source === undefined ||
       selectedIds.length === 0 ||
+      !shouldRestore ||
       !workspace.selectionRequired
     )
       return;
     restored.current = true;
     select({ selectedIds, source });
-  }, [select, selectedIds, source, workspace.selectionRequired]);
+  }, [select, selectedIds, shouldRestore, source, workspace.selectionRequired]);
 }
 
 /*** Keep only the most recent retry response eligible to replace the live workspace state. */
