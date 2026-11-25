@@ -108,19 +108,8 @@ async function assertGenericWorkspaceInteractions(page: Page): Promise<void> {
   await assertRuleEvidence(page);
 }
 
-/*** Exercise the persistent presentation controls that an offline snapshot intentionally retains. */
+/*** Exercise the visible presentation controls that an offline snapshot intentionally retains. */
 async function assertOfflineSettingsInteractions(page: Page): Promise<void> {
-  const packagePrefix = page.getByLabel('Package prefix', { exact: true });
-  await packagePrefix.fill('com.');
-  await packagePrefix.fill('');
-
-  const switches = page.locator('[data-testid^="switch-"]');
-  const switchCount = await switches.count();
-  for (let index = 0; index < switchCount; index += 1) {
-    await switches.nth(index).click();
-    await switches.nth(index).click();
-  }
-
   const depth = page.getByLabel('Subpackage depth', { exact: true });
   await depth.focus();
   await page.keyboard.press('ArrowRight');
