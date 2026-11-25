@@ -20,6 +20,7 @@ export function useBrowserWorkspaceGraphCache(input: BrowserWorkspaceGraphCacheI
         : {
             ...current,
             projectName: cached.projectName,
+            preserveCachedGraph: true,
             selectionRequired: false,
             workspace: cached.workspace,
           }
