@@ -147,6 +147,10 @@ function usePackageGraphElements(packageGraph: PackageDependencyGraph) {
  * layout effects here. ZORA owns runtime reconciliation; memoization alone is not a correctness gate.
  */
 function useGraphViewPresentation(input: GraphViewPresentationInput) {
+  const topologyKey = useMemo(
+    () => createGraphTopologyKey(input.visibleElements),
+    [input.visibleElements]
+  );
   const model = useMemo(
     () =>
       input.visibleElements === null
@@ -167,8 +171,8 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
     [input.layout, input.theme, input.visibleElements]
   );
   const layoutOptions = useMemo<Readonly<Record<string, unknown>>>(
-    () => ({ ...LAYOUTS[input.layout] }),
-    [input.layout]
+    () => createTopologyAwareLayoutOptions(input.layout, topologyKey),
+    [input.layout, topologyKey]
   );
 
   return {
@@ -179,12 +183,29 @@ function useGraphViewPresentation(input: GraphViewPresentationInput) {
   };
 }
 
+/*** Change ZORA's layout input only when rendered topology, rather than graph styling, changes. */
+function createGraphTopologyKey(elements: ElementsDefinition | null): string {
+  if (elements === null) return '';
+  return [
+    ...elements.nodes.map(node => `node:${String(node.data.id)}`),
+    ...elements.edges.map(edge => `edge:${String(edge.data.id)}`),
+  ]
+    .sort()
+    .join('|');
+}
+
+/*** Refresh the layout input reference for topology changes without leaking an Atlas-only option. */
+function createTopologyAwareLayoutOptions(layout: LayoutOptions['name'], topologyKey: string) {
+  void topologyKey;
+  const entry = Object.entries(LAYOUTS).find(([name]) => name === layout);
+  return { ...entry?.[1] };
+}
+
 /*** Own GraphView controller callbacks and render the viewport plus zoom controls. */
 function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
   const { viewport } = props;
   const interactions = useGraphCanvasInteractions(props);
   const visibleNodeIds = useMemo(() => props.model.nodes.map(node => node.id), [props.model.nodes]);
-  useVisibleTopologyFit(props.model, viewport);
 
   return (
     <div className={styles.canvas} style={GRAPH_CANVAS_STYLE}>
@@ -224,33 +245,6 @@ function DependencyGraphCanvas(props: DependencyGraphCanvasProps) {
       </div>
     </div>
   );
-}
-
-/*** Refit after every browser-committed projection change, including filters and package depth. */
-function useVisibleTopologyFit(
-  model: DependencyGraphCanvasProps['model'],
-  viewport: ReturnType<typeof useGraphViewport>
-): void {
-  const visibleTopologySignature = useMemo(
-    () =>
-      [...model.nodes.map(node => `node:${node.id}`), ...model.edges.map(edge => `edge:${edge.id}`)]
-        .sort()
-        .join('|'),
-    [model.edges, model.nodes]
-  );
-  useFitVisibleTopology(viewport, visibleTopologySignature);
-}
-
-/*** Refit once the browser has committed every projection change, including filters and depth. */
-function useFitVisibleTopology(
-  viewport: ReturnType<typeof useGraphViewport>,
-  visibleTopologySignature: string
-): void {
-  useEffect(() => {
-    if (viewport.controller === null || visibleTopologySignature.length === 0) return;
-    const frame = requestAnimationFrame(viewport.fitGraph);
-    return () => cancelAnimationFrame(frame);
-  }, [viewport.controller, viewport.fitGraph, visibleTopologySignature]);
 }
 
 /*** Compose local hover presentation with workspace-owned controlled graph selection. */
