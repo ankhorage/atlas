@@ -19,10 +19,15 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
     readGitHubAuthViewAsync(),
     readGitHubRepositoryAuthenticationAsync(),
   ]);
-  const result = await loadWorkspace(
-    withRepositorySelection(readSearchParam(params.source), readSearchParam(params.repositories)),
-    repositoryAuthentication
-  );
+  const source = readSource(params);
+  const repositoryIds = readRepositoryIds(readSearchParam(params.repositories));
+  const result =
+    source !== undefined && repositoryIds.length > 0
+      ? await loadWorkspace(undefined, repositoryAuthentication)
+      : await loadWorkspace(
+          withRepositorySelection(source, readSearchParam(params.repositories)),
+          repositoryAuthentication
+        );
 
   return (
     <WorkspaceView
@@ -30,8 +35,9 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
         downloadJson: downloadAuditJsonAction,
         downloadXml: downloadAuditXmlAction,
       }}
-      currentSource={result.currentSource}
+      currentSource={source ?? result.currentSource}
       githubAuth={githubAuth}
+      initialSelectedRepositoryIds={repositoryIds}
       projectName={result.projectName}
       repositories={result.repositories}
       repositoryStatuses={result.repositoryStatuses}
@@ -42,6 +48,20 @@ export async function AtlasWorkspacePage({ loadWorkspace, searchParams }: AtlasW
       workspace={result.workspace}
     />
   );
+}
+
+function readSource(params: Awaited<AtlasWorkspacePageProps['searchParams']>): string | undefined {
+  const example = readSearchParam(params.example);
+  if (example === 'java' || example === 'typescript') return `example:${example}`;
+  return readSearchParam(params.source);
+}
+
+function readRepositoryIds(value: string | undefined): readonly string[] {
+  if (value === undefined) return [];
+  return value
+    .split(',')
+    .filter(id => id.length > 0 && id.length <= 256)
+    .toSorted();
 }
 
 /*** Select the serializable Tone props required by ZORA from the published Templates catalog. */
@@ -72,6 +92,7 @@ interface AtlasWorkspacePageProps {
   ) => Promise<WorkspaceProjectSourceResult>;
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
+    readonly example?: string | readonly string[];
     readonly repositories?: string | readonly string[];
     readonly workspace?: string | readonly string[];
   }>;

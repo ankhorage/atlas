@@ -173,7 +173,20 @@ function RepositorySelectionNotice() {
         padding: 24,
       }}
     >
-      Select one or more repositories to inspect. No repository has been materialized yet.
+      <label>
+        Select one or more repositories to inspect. No repository has been materialized yet.
+        <select
+          aria-label="Load an example"
+          defaultValue=""
+          onChange={event => {
+            if (event.target.value !== '') window.location.assign(`?example=${event.target.value}`);
+          }}
+        >
+          <option value="">Or explore an example…</option>
+          <option value="java">Java example</option>
+          <option value="typescript">TypeScript example</option>
+        </select>
+      </label>
     </div>
   );
 }

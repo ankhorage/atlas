@@ -4,6 +4,9 @@ export function resolveWorkspaceStartupSource(
   configuredProjectPath: string | undefined
 ): WorkspaceStartupSource {
   const source = sourceValue?.trim();
+  if (source === 'example:java') return { kind: 'filesystem', path: 'examples/java/my-app' };
+  if (source === 'example:typescript')
+    return { kind: 'filesystem', path: 'examples/typescript/my-app' };
   if (source !== undefined && source !== '') return { kind: 'github', source };
 
   const projectPath = configuredProjectPath?.trim();

@@ -20,6 +20,7 @@ function loadWorkspace(source: string | undefined, authorization: GitHubReposito
 interface HomeProps {
   readonly searchParams: Promise<{
     readonly source?: string | readonly string[];
+    readonly example?: string | readonly string[];
     readonly workspace?: string | readonly string[];
   }>;
 }

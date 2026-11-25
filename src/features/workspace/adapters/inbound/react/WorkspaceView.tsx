@@ -1,10 +1,11 @@
 'use client';
 import type { ColorToneDefinition } from '@ankhorage/zora';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { AuditExportActions } from '@/features/audit/adapters/inbound/react/AuditExportPanel';
 import type { GitHubAuthView } from '@/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync';
 import { SettingsProvider } from '@/features/settings/adapters/inbound/react/SettingsProvider';
+import { useBrowserWorkspaceGraphCache } from '@/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache';
 import {
   type LiveWorkspace,
   useWorkspaceRepositorySelection,
@@ -26,6 +27,7 @@ export function WorkspaceView({
   repositoryStatuses,
   runtimeId,
   selectionRequired,
+  initialSelectedRepositoryIds = [],
   workspaceScope,
   workspace,
 }: WorkspaceViewProps) {
@@ -38,12 +40,13 @@ export function WorkspaceView({
       workspace,
     })
   );
-  const selection = useWorkspaceRepositorySelection(
+  const selection = useWorkspaceClientRuntime({
     currentSource,
-    selectedRepositoryIds(repositories),
+    initialSelectedRepositoryIds,
     liveWorkspace,
-    setLiveWorkspace
-  );
+    repositories,
+    setLiveWorkspace,
+  });
   const onRetry = useWorkspaceRepositoryRetry(liveWorkspace, setLiveWorkspace);
   const activeProjectName = liveWorkspace.projectName;
   const settingsScope =
@@ -62,6 +65,34 @@ export function WorkspaceView({
     settingsScope,
     workspaceScope,
   });
+}
+
+/*** Coordinates browser cache restoration and the refresh stream for one URL selection. */
+function useWorkspaceClientRuntime(input: {
+  readonly currentSource: string | undefined;
+  readonly initialSelectedRepositoryIds: readonly string[];
+  readonly liveWorkspace: LiveWorkspace;
+  readonly repositories: readonly WorkspaceRepositoryOption[] | undefined;
+  readonly setLiveWorkspace: (
+    value: LiveWorkspace | ((current: LiveWorkspace) => LiveWorkspace)
+  ) => void;
+}) {
+  const selectedIds = selectedRepositoryIds(input.repositories, input.initialSelectedRepositoryIds);
+  const selection = useWorkspaceRepositorySelection(
+    input.currentSource,
+    selectedIds,
+    input.liveWorkspace,
+    input.setLiveWorkspace
+  );
+  useBrowserWorkspaceGraphCache({
+    projectName: input.liveWorkspace.projectName,
+    repositoryIds: selectedIds,
+    setLiveWorkspace: input.setLiveWorkspace,
+    source: input.currentSource ?? '',
+    workspace: input.liveWorkspace.workspace,
+  });
+  useRestoreWorkspaceSelection(input.currentSource, selectedIds, input.liveWorkspace, selection);
+  return selection;
 }
 
 /*** Keep the stateful browser coordination separate from the stable rendered workspace shell. */
@@ -119,11 +150,34 @@ function createLiveWorkspace(input: {
 
 /*** Derive the initial server-confirmed selection without persisting a graph or provider payload. */
 function selectedRepositoryIds(
-  repositories: readonly WorkspaceRepositoryOption[] | undefined
+  repositories: readonly WorkspaceRepositoryOption[] | undefined,
+  fallback: readonly string[]
 ): readonly string[] {
   return (
-    repositories?.filter(repository => repository.selected).map(repository => repository.id) ?? []
+    repositories?.filter(repository => repository.selected).map(repository => repository.id) ??
+    fallback
   );
+}
+
+/*** Begin the background refresh after an SSR placeholder or a restored browser graph. */
+function useRestoreWorkspaceSelection(
+  source: string | undefined,
+  selectedIds: readonly string[],
+  workspace: LiveWorkspace,
+  select: ReturnType<typeof useWorkspaceRepositorySelection>
+) {
+  const restored = useRef(false);
+  useEffect(() => {
+    if (
+      restored.current ||
+      source === undefined ||
+      selectedIds.length === 0 ||
+      !workspace.selectionRequired
+    )
+      return;
+    restored.current = true;
+    select({ selectedIds, source });
+  }, [select, selectedIds, source, workspace.selectionRequired]);
 }
 
 /*** Keep only the most recent retry response eligible to replace the live workspace state. */
@@ -200,6 +254,7 @@ interface WorkspaceViewProps {
   readonly auditExportActions?: AuditExportActions;
   readonly currentSource?: string;
   readonly githubAuth?: GitHubAuthView;
+  readonly initialSelectedRepositoryIds?: readonly string[];
   readonly offline?: boolean;
   readonly projectName: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];

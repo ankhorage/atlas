@@ -48,6 +48,7 @@ export function DependencyGraphView(props: DependencyGraphViewProps) {
   const { theme } = useZoraTheme();
   const viewport = useGraphViewport({
     cycleHighlights: props.cycleHighlights,
+    layout: settings.cytoscapeLayout,
     onSpacingFactorChange: settings.setCytoscapeLayoutSpacing,
     spacingFactor: settings.cytoscapeLayoutSpacing,
   });
