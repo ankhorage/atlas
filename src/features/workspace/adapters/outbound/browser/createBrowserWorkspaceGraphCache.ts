@@ -29,7 +29,7 @@ export function createWorkspaceGraphCacheKey(
   return `${source.trim().toLowerCase()}|${[...repositoryIds].toSorted().join(',')}`;
 }
 
-export interface BrowserWorkspaceGraphCacheEntry {
+interface BrowserWorkspaceGraphCacheEntry {
   readonly key: string;
   readonly projectName: string;
   readonly version: 1;
