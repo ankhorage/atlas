@@ -1,5 +1,4 @@
 'use client';
-import { Icon } from '@ankhorage/zora/web/icon';
 import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Select } from '@ankhorage/zora/web/select';
 import { Switch } from '@ankhorage/zora/web/switch';
@@ -12,21 +11,30 @@ import React, { type ChangeEvent } from 'react';
 import { useSettings } from '@/features/settings/adapters/inbound/react/useSettings';
 import { t } from '@/i18n/i18n';
 
-const LAYOUT_OPTIONS: readonly LayoutOptions['name'][] = [
+const LAYOUT_OPTIONS = [
   'breadthfirst',
   'circle',
   'concentric',
   'elk',
   'grid',
-];
+] as const satisfies readonly LayoutOptions['name'][];
 
-/*** Keep the layout's visual language consistent in the compact settings control. */
-const LAYOUT_ICONS = {
-  breadthfirst: 'git-branch-outline',
-  circle: 'ellipse-outline',
-  concentric: 'radio-outline',
-  elk: 'git-network-outline',
-  grid: 'grid-outline',
+const LAYOUT_MEDIA = {
+  breadthfirst: {
+    uri: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 28 28%22%3E%3Cpath d=%22M6 6v16m0-8h7m0 0v-5m0 5v5m0-5h7%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222.5%22/%3E%3Ccircle cx=%226%22 cy=%226%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2213%22 cy=%229%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2213%22 cy=%2219%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2220%22 cy=%2214%22 r=%222%22 fill=%22%236b7280%22/%3E%3C/svg%3E',
+  },
+  circle: {
+    uri: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 28 28%22%3E%3Ccircle cx=%2214%22 cy=%2214%22 r=%228%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222.5%22/%3E%3Ccircle cx=%2214%22 cy=%226%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2221%22 cy=%2218%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%227%22 cy=%2218%22 r=%222%22 fill=%22%236b7280%22/%3E%3C/svg%3E',
+  },
+  concentric: {
+    uri: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 28 28%22%3E%3Ccircle cx=%2214%22 cy=%2214%22 r=%223%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2214%22 cy=%2214%22 r=%227%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222.5%22/%3E%3Ccircle cx=%2214%22 cy=%2214%22 r=%2211%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-width=%222.5%22/%3E%3C/svg%3E',
+  },
+  elk: {
+    uri: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 28 28%22%3E%3Cpath d=%22M6 7h7m0 0v14m0-7h9%22 fill=%22none%22 stroke=%22%236b7280%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%222.5%22/%3E%3Ccircle cx=%226%22 cy=%227%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2213%22 cy=%227%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2213%22 cy=%2221%22 r=%222%22 fill=%22%236b7280%22/%3E%3Ccircle cx=%2222%22 cy=%2214%22 r=%222%22 fill=%22%236b7280%22/%3E%3C/svg%3E',
+  },
+  grid: {
+    uri: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 28 28%22%3E%3Cpath d=%22M7 7h4v4H7zm10 0h4v4h-4zM7 17h4v4H7zm10 0h4v4h-4z%22 fill=%22%236b7280%22/%3E%3C/svg%3E',
+  },
 } as const;
 
 /*** Renders persistent graph controls from generated ZORA form and layout elements. */
@@ -113,24 +121,34 @@ function LayoutSettings() {
 
   return (
     <SettingsSection title={t('settings.layout')}>
-      <View align="center" direction="row" gap="s">
-        <Icon name={layoutIcon(cytoscapeLayout)} size="m" />
-        <View flex={1}>
-          <Select
-            value={cytoscapeLayout}
-            options={LAYOUT_OPTIONS.map(value => ({ label: t(value), value }))}
-            onValueChange={selectLayout}
-            testID="cytoscape-layout"
-          />
-        </View>
-      </View>
+      <Select
+        value={cytoscapeLayout}
+        options={LAYOUT_OPTIONS.map(value => ({
+          label: t(value),
+          leadingMedia: layoutMedia(value),
+          value,
+        }))}
+        onValueChange={selectLayout}
+        testID="cytoscape-layout"
+      />
     </SettingsSection>
   );
 }
 
-/*** Resolve the icon owned by the active supported layout algorithm. */
-function layoutIcon(layout: LayoutOptions['name']) {
-  return LAYOUT_ICONS[layout as keyof typeof LAYOUT_ICONS];
+/*** Resolves the SVG media owned by each supported layout algorithm. */
+function layoutMedia(layout: (typeof LAYOUT_OPTIONS)[number]) {
+  switch (layout) {
+    case 'breadthfirst':
+      return LAYOUT_MEDIA.breadthfirst;
+    case 'circle':
+      return LAYOUT_MEDIA.circle;
+    case 'concentric':
+      return LAYOUT_MEDIA.concentric;
+    case 'elk':
+      return LAYOUT_MEDIA.elk;
+    case 'grid':
+      return LAYOUT_MEDIA.grid;
+  }
 }
 
 /*** Renders the active layout-spacing control. */
