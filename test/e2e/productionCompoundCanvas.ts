@@ -118,11 +118,6 @@ export async function assertProductionCompoundCanvasAsync(page: Page): Promise<v
     );
   }
 
-  const compounds = page.getByRole('switch', { name: 'Show Compound Nodes', exact: true });
-  if (!(await isSwitchEnabledAsync(compounds))) await compounds.click();
-  if (!(await isSwitchEnabledAsync(compounds)))
-    throw new Error('Production GraphView did not enable its compound projection.');
-
   const depth = page.getByLabel('Subpackage depth', { exact: true });
   const maximumDepth = await depth.getAttribute('max');
   if (maximumDepth === null || Number(maximumDepth) < 2)
@@ -319,14 +314,6 @@ async function readBreadcrumbsAsync(page: Page): Promise<readonly string[]> {
 async function requireBreadcrumbsAsync(page: Page, expected: readonly string[]): Promise<void> {
   const actual = await readBreadcrumbsAsync(page);
   assertSame('workspace breadcrumbs', actual, expected);
-}
-
-/*** Observe the existing generated switch semantics without adding an Atlas test hook. */
-async function isSwitchEnabledAsync(control: ReturnType<Page['getByRole']>): Promise<boolean> {
-  return control.evaluate(element => {
-    const thumb = element.querySelector(':scope > div > div > div');
-    return thumb instanceof HTMLElement && thumb.style.alignSelf === 'flex-end';
-  });
 }
 
 /*** Preserve concrete screenshots for review of real internal and directional graph edges. */

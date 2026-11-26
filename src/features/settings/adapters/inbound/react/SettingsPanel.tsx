@@ -49,8 +49,8 @@ export function SettingsPanel() {
   );
 }
 
-/*** Renders package-visibility settings through ZORA switches. */
-function FilterSettings() {
+/*** Keeps prepared package-visibility controls ready for their planned return to the sidebar. */
+function FilterSettings({ visible = false }: FilterSettingsProps) {
   const {
     showCompoundNodes,
     showVendorPackages,
@@ -60,6 +60,7 @@ function FilterSettings() {
     toggleShowVendorPackages,
   } = useSettings();
 
+  if (!visible) return null;
   return (
     <SettingsSection title={t('settings.filter')}>
       <TextInput
@@ -90,6 +91,10 @@ function FilterSettings() {
       </Switch>
     </SettingsSection>
   );
+}
+
+interface FilterSettingsProps {
+  readonly visible?: boolean;
 }
 
 /*** Renders the visible subpackage-depth control. */

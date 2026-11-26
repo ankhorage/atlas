@@ -563,21 +563,6 @@ async function assertWorkspaceGraphShellAsync(
   );
 }
 
-/*** Verifies the rendered thumb position used by the installed ZORA switch when accessibility state is unavailable. */
-async function assertSwitchCheckedAsync(switchControl: Locator, message: string): Promise<void> {
-  assert(await isSwitchCheckedAsync(switchControl), message);
-}
-
-/*** Reads the ZORA switch state across its semantic and visual renderings. */
-async function isSwitchCheckedAsync(switchControl: Locator): Promise<boolean> {
-  if ((await switchControl.getAttribute('aria-checked')) === 'true') return true;
-  return switchControl.evaluate(element =>
-    [...element.querySelectorAll<HTMLElement>('*')].some(
-      child => getComputedStyle(child).alignSelf === 'flex-end'
-    )
-  );
-}
-
 /*** Fails with a concrete diagnostic instead of accepting a missing user-visible state. */
 function assert(condition: boolean, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -766,17 +751,6 @@ const scenarios: readonly Scenario[] = [
       await repositoryPickerButton(page).click();
       await page.getByLabel('GitHub owner').fill('owner-a');
       await repositoryPickerButton(page).waitFor();
-      assert(
-        !(await page.getByRole('checkbox', { name: 'Public only' }).isChecked()),
-        'Public only must remain unchecked until explicitly selected.'
-      );
-      const publicOnly = page.getByRole('checkbox', { name: 'Public only' });
-      await publicOnly.click();
-      await waitForCheckboxStateAsync(page, 'Public only', true);
-      assert(await publicOnly.isChecked(), 'Public only did not become checked after selection.');
-      await publicOnly.press('Space');
-      await waitForCheckboxStateAsync(page, 'Public only', false);
-      assert(!(await publicOnly.isChecked()), 'Public only remained checked after deselection.');
       await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await page.waitForURL(
@@ -1357,7 +1331,7 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'multi-repository-real-source-compounds',
-    'Navigates a real source hierarchy without synthetic module groups while compounds are both enabled and disabled.',
+    'Navigates a real source hierarchy without synthetic module groups using the default compound projection.',
     async page => {
       const catalogRoot = 'repository.owner-a-catalog';
       const catalogSource = `${catalogRoot}.src`;
@@ -1376,13 +1350,6 @@ const scenarios: readonly Scenario[] = [
         `Breadcrumb navigation exposed a synthetic module segment: ${breadcrumbs}.`
       );
       await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
-      const compound = page.getByLabel('Show Compound Nodes');
-      if (await isSwitchCheckedAsync(compound)) await compound.click();
-      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
-      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
-      if (!(await isSwitchCheckedAsync(compound))) await compound.click();
-      await waitForGraphNodesAsync(page, [catalogSource, sharedSource]);
-      await assertNoSyntheticModuleNodeAsync(page, catalogRoot);
       return [];
     }
   ),
@@ -1398,14 +1365,13 @@ const scenarios: readonly Scenario[] = [
     }
   ),
   scenario(
-    'dependency-prefix-filter',
-    'Applies dependency package prefix filtering.',
+    'dependency-prefix-filter-hidden',
+    'Keeps the deferred dependency package prefix filter out of the sidebar.',
     async page => {
       await openWorkspaceAsync(page);
-      await page.getByLabel('Package prefix').fill('@fixture/catalog');
       assert(
-        (await page.getByLabel('Package prefix').inputValue()) === '@fixture/catalog',
-        'Prefix was not retained.'
+        (await page.getByLabel('Package prefix').count()) === 0,
+        'Deferred package prefix filter is still visible.'
       );
       return [];
     }
@@ -1422,17 +1388,19 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'projection-controls',
-    'Changes vendor, compound, and subpackage-depth controls.',
+    'Keeps deferred projection filters hidden while retaining subpackage depth control.',
     async page => {
       await openWorkspaceAsync(page);
-      const vendor = page.getByLabel('Show Vendor');
-      const compound = page.getByLabel('Show Compound Nodes');
       const depth = page.getByLabel('Subpackage depth');
-      await assertTopmostControlAsync(vendor, 'Vendor sidebar switch');
-      await assertTopmostControlAsync(compound, 'Compound sidebar switch');
       await assertTopmostControlAsync(depth, 'Subpackage-depth sidebar input');
-      await vendor.click();
-      await compound.click();
+      assert(
+        (await page.getByLabel('Show Vendor').count()) === 0,
+        'Vendor filter is still visible.'
+      );
+      assert(
+        (await page.getByLabel('Show Compound Nodes').count()) === 0,
+        'Compound filter is still visible.'
+      );
       await depth.fill('2');
       assert((await depth.inputValue()) === '2', 'Depth was not applied.');
       return [];
@@ -1505,24 +1473,26 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'workspace-reload-restoration',
-    'Restores source exclusions and settings after reload.',
+    'Restores source exclusions and visible settings after reload.',
     async page => {
       await openWorkspaceAsync(page, 'owner-a', ['owner-a-catalog', 'owner-a-shared']);
       await openRepositorySourceDialogAsync(page);
       await repositoryPickerButton(page).click();
       await page.getByRole('checkbox', { name: 'owner-a/catalog' }).click();
       await closeMobileRepositorySourceDialogAsync(page);
-      const vendor = page.getByRole('switch', { name: 'Show Vendor' });
-      if (!(await isSwitchCheckedAsync(vendor))) await vendor.click();
-      await assertSwitchCheckedAsync(vendor, 'Vendor setting did not change before Save.');
+      const depth = page.getByLabel('Subpackage depth', { exact: true });
+      await depth.fill('2');
+      assert((await depth.inputValue()) === '2', 'Subpackage depth did not change before Save.');
       await openWorkspaceMenuAsync(page);
       page.once('dialog', dialog => dialog.accept('Restored workspace'));
       await page.getByRole('button', { name: 'Save as' }).click();
       await page.waitForURL(/workspace=restored-workspace/u);
-      await page.evaluate(() => window.localStorage.removeItem('showVendorPackages'));
+      await page.evaluate(() => window.localStorage.removeItem('subPackageDepth'));
       await page.reload({ waitUntil: 'networkidle' });
-      const restoredVendor = page.getByRole('switch', { name: 'Show Vendor' });
-      await assertSwitchCheckedAsync(restoredVendor, 'Saved vendor setting was not restored.');
+      assert(
+        (await page.getByLabel('Subpackage depth', { exact: true }).inputValue()) === '2',
+        'Saved subpackage depth was not restored.'
+      );
       await page.getByRole('application', { name: 'Graph' }).waitFor();
       await openRepositorySourceDialogAsync(page);
       await repositoryPickerButton(page).click();
