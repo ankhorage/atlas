@@ -1,5 +1,4 @@
 'use client';
-import { Popover } from '@ankhorage/surface/browser';
 import type { ColorToneDefinition } from '@ankhorage/zora';
 import { Button } from '@ankhorage/zora/web/button';
 import { Checkbox } from '@ankhorage/zora/web/checkbox';
@@ -7,9 +6,11 @@ import { IconButton } from '@ankhorage/zora/web/icon-button';
 import { Surface } from '@ankhorage/zora/web/surface';
 import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
+import { useState } from 'react';
 
 import { RepositoryBranchControl } from '@/features/workspace/adapters/inbound/react/RepositoryBranchControl';
 import { RepositoryColorControl } from '@/features/workspace/adapters/inbound/react/RepositoryColorControl';
+import type { RepositoryBranchOptions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceOpenDetail } from '@/features/workspace/adapters/inbound/react/workspaceControlTypes';
 import { isWorkspaceSelectionSource } from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
@@ -67,6 +68,7 @@ function SourceRepositoryPicker({
     <RepositoryPicker
       repositories={visibleRepositories}
       repositoryColorTones={sourceForm.repositoryColorTones}
+      branchOptions={sourceForm.branchOptions}
       branchSelections={sourceForm.branchSelections}
       search={sourceForm.search}
       selectedIds={sourceForm.selectedIds}
@@ -81,6 +83,7 @@ function SourceRepositoryPicker({
       }
       onSelectionChange={sourceForm.setSelectedIds}
       onBranchSelection={sourceForm.setBranchSelection}
+      onBranchOptionsChange={sourceForm.cacheBranchOptions}
       source={sourceForm.source}
     />
   );
@@ -159,7 +162,9 @@ interface ProjectSourceControlsProps {
 
 interface ProjectSourceFormModel {
   readonly activeWorkspaceId?: string;
+  readonly branchOptions: Readonly<Record<string, RepositoryBranchOptions>>;
   readonly branchSelections: Readonly<Record<string, string>>;
+  readonly cacheBranchOptions: (repositoryId: string, options: RepositoryBranchOptions) => void;
   readonly copyRepositoryLinks: () => void;
   readonly deleteWorkspace: () => void;
   readonly inventoryError?: string;
@@ -180,6 +185,7 @@ interface ProjectSourceFormModel {
 
 interface RepositoryPickerProps {
   readonly branchSelections: Readonly<Record<string, string>>;
+  readonly branchOptions: Readonly<Record<string, RepositoryBranchOptions>>;
   readonly repositories: readonly WorkspaceRepositoryOption[];
   readonly repositoryColorTones: readonly ColorToneDefinition[];
   readonly search: string;
@@ -190,6 +196,7 @@ interface RepositoryPickerProps {
   readonly initiallyOpen?: boolean;
   readonly onDeselectAll: () => void;
   readonly onBranchSelection: (repositoryId: string, branch: string) => void;
+  readonly onBranchOptionsChange: (repositoryId: string, options: RepositoryBranchOptions) => void;
   readonly onSearchChange: (search: string) => void;
   readonly onSelectAll: () => void;
   readonly onSelectionChange: (ids: Set<string>) => void;
@@ -198,35 +205,39 @@ interface RepositoryPickerProps {
 
 /*** Renders one searchable multi-select rather than a header action for every repository. */
 function RepositoryPicker(props: RepositoryPickerProps) {
+  const [open, setOpen] = useState(Boolean(props.initiallyOpen));
+
   return (
-    <Popover
-      defaultOpen={props.initiallyOpen}
-      placement="bottom-start"
-      anchor={({ toggle }) => (
-        <Button disabled={!props.selectionSupported} size="s" variant="outline" onPress={toggle}>
-          Repositories ({props.selectedIds.size}/{props.totalCount})
-        </Button>
-      )}
-    >
-      <Surface style={REPOSITORY_PICKER_STYLE}>
-        <TextInput
-          accessibilityLabel="Search repositories"
-          placeholder="Search repositories"
-          size="s"
-          value={props.search}
-          onChangeText={props.onSearchChange}
-        />
-        <View direction="row" gap="xs" style={{ marginBlock: 8 }}>
-          <Button size="s" variant="ghost" onPress={props.onSelectAll}>
-            Select all
-          </Button>
-          <Button size="s" variant="ghost" onPress={props.onDeselectAll}>
-            Deselect all
-          </Button>
-        </View>
-        <RepositoryChoices {...props} />
-      </Surface>
-    </Popover>
+    <View style={REPOSITORY_PICKER_ANCHOR_STYLE}>
+      <Button
+        disabled={!props.selectionSupported}
+        size="s"
+        variant="outline"
+        onPress={() => setOpen(current => !current)}
+      >
+        Repositories ({props.selectedIds.size}/{props.totalCount})
+      </Button>
+      {open ? (
+        <Surface style={REPOSITORY_PICKER_STYLE}>
+          <TextInput
+            accessibilityLabel="Search repositories"
+            placeholder="Search repositories"
+            size="s"
+            value={props.search}
+            onChangeText={props.onSearchChange}
+          />
+          <View direction="row" gap="xs" style={{ marginBlock: 8 }}>
+            <Button size="s" variant="ghost" onPress={props.onSelectAll}>
+              Select all
+            </Button>
+            <Button size="s" variant="ghost" onPress={props.onDeselectAll}>
+              Deselect all
+            </Button>
+          </View>
+          <RepositoryChoices {...props} />
+        </Surface>
+      ) : null}
+    </View>
   );
 }
 
@@ -247,9 +258,11 @@ function RepositoryChoices(props: RepositoryPickerProps) {
       </Checkbox>
       <RepositoryBranchControl
         branch={props.branchSelections[repository.id]}
+        options={props.branchOptions[repository.id]}
         repository={repository}
         source={props.source}
         onChange={branch => props.onBranchSelection(repository.id, branch)}
+        onLoad={props.onBranchOptionsChange}
       />
       <RepositoryColorControl
         repository={repository}
@@ -272,9 +285,16 @@ function setRepositorySelected(
   return next;
 }
 
+const REPOSITORY_PICKER_ANCHOR_STYLE = { position: 'relative' } as const;
+
 const REPOSITORY_PICKER_STYLE = {
+  left: 0,
+  marginTop: 8,
   maxHeight: 360,
   minWidth: 280,
   overflowY: 'auto',
   padding: 8,
+  position: 'absolute',
+  top: '100%',
+  zIndex: 1,
 } as const;

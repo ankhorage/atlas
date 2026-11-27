@@ -161,7 +161,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
   });
   return {
     activeWorkspaceId: state.activeId,
-    branchSelections: state.branchSelections,
+    ...createBranchControlState(state),
     copyRepositoryLinks: actions.copyRepositoryLinks,
     deleteWorkspace: actions.deleteWorkspace,
     inventoryError,
@@ -178,6 +178,15 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     setBranchSelection: actions.setBranchSelection,
     setSource: actions.setSource,
     source: state.source,
+  };
+}
+
+/*** Keeps persistent branch options and their controlled selections together in the source form. */
+function createBranchControlState(state: ReturnType<typeof useProjectSourceFormState>) {
+  return {
+    branchOptions: state.branchOptions,
+    branchSelections: state.branchSelections,
+    cacheBranchOptions: state.cacheBranchOptions,
   };
 }
 

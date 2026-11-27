@@ -37,3 +37,8 @@ summary {
   display: flex;
   padding: 0;
 }
+
+[data-testid^='repository-branch-'][data-testid$='-popover-content'] {
+  max-height: min(20rem, calc(100dvh - 1rem));
+  overflow-y: auto;
+}
