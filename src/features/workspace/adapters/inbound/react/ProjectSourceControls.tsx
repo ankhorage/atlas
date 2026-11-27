@@ -1,5 +1,5 @@
 'use client';
-import { Popover } from '@ankhorage/surface/browser';
+import { Popover } from '@ankhorage/surface';
 import type { ColorToneDefinition } from '@ankhorage/zora';
 import { Button } from '@ankhorage/zora/web/button';
 import { Checkbox } from '@ankhorage/zora/web/checkbox';
