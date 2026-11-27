@@ -10,7 +10,8 @@ export async function discoverWorkspaceGitHubSourcesAsync(
   sourceValue: string,
   excludedRepositoryIds: ReadonlySet<string>,
   selectedRepositoryIds?: ReadonlySet<string> | 'all',
-  authentication: GitHubRepositoryAuthentication = 'anonymous'
+  authentication: GitHubRepositoryAuthentication = 'anonymous',
+  discoverAuthenticatedInventoryAsync: DiscoverAuthenticatedInventoryAsync = discoverGitHubAuthenticatedUserRepositoriesAsync
 ): Promise<WorkspaceGitHubDiscovery> {
   const sources = sourceValue
     .split(',')
@@ -19,7 +20,9 @@ export async function discoverWorkspaceGitHubSourcesAsync(
   if (sources.length === 0) throw new Error('At least one GitHub owner or repository is required.');
 
   const discoveries = await Promise.all(
-    sources.map(source => discoverGitHubSourceAsync(source, authentication))
+    sources.map(source =>
+      discoverGitHubSourceAsync(source, authentication, discoverAuthenticatedInventoryAsync)
+    )
   );
   const repositories = dedupeRepositories(discoveries.flatMap(discovery => discovery.repositories));
   const selectedIds =
@@ -39,15 +42,30 @@ export async function discoverWorkspaceGitHubSourcesAsync(
 /*** Resolve the explicit authenticated inventory token without permitting it to select environment credentials. */
 async function discoverGitHubSourceAsync(
   source: string,
-  authentication: GitHubRepositoryAuthentication
+  authentication: GitHubRepositoryAuthentication,
+  discoverAuthenticatedInventoryAsync: DiscoverAuthenticatedInventoryAsync
 ): Promise<{
   readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
   readonly selectedRepository?: GitHubRepositoryDiscoveryRepository;
 }> {
+  if (typeof authentication === 'object' && isAuthenticatedInventorySource(source)) {
+    const inventory = await discoverAuthenticatedInventoryAsync({ authentication });
+    return {
+      repositories:
+        source === '@me'
+          ? inventory.repositories
+          : inventory.repositories.filter(
+              repository => repository.owner.toLowerCase() === source.toLowerCase()
+            ),
+    };
+  }
   if (source !== '@me') return discoverGitHubRepositoriesAsync({ authentication, source });
-  if (authentication === 'anonymous' || authentication === 'environment')
-    throw new Error('Sign in with GitHub to view your accessible repositories.');
-  return discoverGitHubAuthenticatedUserRepositoriesAsync({ authentication });
+  throw new Error('Sign in with GitHub to view your accessible repositories.');
+}
+
+/*** Restrict authenticated inventory consumption to the owner forms already accepted by Repository. */
+function isAuthenticatedInventorySource(source: string): boolean {
+  return source === '@me' || (!source.includes('/') && !source.includes(':'));
 }
 
 /*** Preserve direct repository choices while owner discovery waits for an explicit selection. */
@@ -77,3 +95,5 @@ export interface WorkspaceGitHubDiscovery {
   readonly repositories: readonly GitHubRepositoryDiscoveryRepository[];
   readonly selectedRepositories: readonly GitHubRepositoryDiscoveryRepository[];
 }
+
+type DiscoverAuthenticatedInventoryAsync = typeof discoverGitHubAuthenticatedUserRepositoriesAsync;
