@@ -1,5 +1,6 @@
 import { isRecord } from '@ankhorage/utility/object';
 
+import { isWorkspaceBranchName } from '@/features/workspace/application/use-cases/isWorkspaceBranchName';
 import type {
   WorkspaceDefinition,
   WorkspacePresentationSettings,
@@ -32,9 +33,28 @@ function validateWorkspaceDefinition(value: unknown): WorkspaceDefinition | null
   }
   const sources = validateSources(value.sources);
   const settings = validateSettings(value.settings);
-  return sources === null || settings === null
+  const branchSelections = validateBranchSelections(value.branchSelections);
+  return sources === null || settings === null || branchSelections === null
     ? null
-    : { version: 1, id: value.id, name: value.name, sources, settings };
+    : {
+        version: 1,
+        id: value.id,
+        name: value.name,
+        sources,
+        settings,
+        ...(Object.keys(branchSelections).length === 0 ? {} : { branchSelections }),
+      };
+}
+
+/** Preserve safe slash-containing branch names in existing portable workspace definitions. */
+function validateBranchSelections(value: unknown): Readonly<Record<string, string>> | null {
+  if (value === undefined) return {};
+  if (!isRecord(value) || Object.keys(value).length > 256) return null;
+  return Object.entries(value).every(
+    ([repositoryId, branch]) => isRepositoryId(repositoryId) && isWorkspaceBranchName(branch)
+  )
+    ? Object.fromEntries(Object.entries(value) as readonly [string, string][])
+    : null;
 }
 
 /*** Validate non-empty sources and reject ambiguous duplicate source identities. */

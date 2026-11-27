@@ -12,7 +12,16 @@ export function createWorkspaceDefinition(
   const sources = createWorkspaceSources(input.source, input.repositories, input.selectedIds);
   return sources.length === 0
     ? null
-    : { version: 1, id: input.id, name: input.name, sources, settings: input.settings };
+    : {
+        version: 1,
+        id: input.id,
+        name: input.name,
+        sources,
+        settings: input.settings,
+        ...(Object.keys(input.branchSelections ?? {}).length === 0
+          ? {}
+          : { branchSelections: input.branchSelections }),
+      };
 }
 
 /*** Preserve owner exclusions and direct repository URLs as separate persisted source policies. */
@@ -72,6 +81,7 @@ function normalizeOwner(value: string): string | null {
 }
 
 interface CreateWorkspaceDefinitionInput {
+  readonly branchSelections?: Readonly<Record<string, string>>;
   readonly id: string;
   readonly name: string;
   readonly repositories?: readonly WorkspaceRepositoryOption[];

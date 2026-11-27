@@ -42,6 +42,7 @@ export interface WorkspaceRepositoryInventoryOption {
 /*** The browser-to-server diff for one progressively analyzed workspace selection. */
 export interface WorkspaceSelectionRequest {
   readonly addedRepositoryIds: readonly string[];
+  readonly branchSelections?: Readonly<Record<string, string>>;
   readonly generation: number;
   readonly removedRepositoryIds: readonly string[];
   readonly runtimeId?: string;
@@ -90,6 +91,7 @@ export interface WorkspaceDefinition {
   readonly name: string;
   readonly sources: readonly WorkspaceSource[];
   readonly settings: WorkspacePresentationSettings;
+  readonly branchSelections?: Readonly<Record<string, string>>;
 }
 
 /** Preserve owner-wide inclusion independently from explicit repository selections. */

@@ -76,6 +76,7 @@ function hasUnsavedChanges(
   if (workspace === undefined) return false;
   const current = createWorkspaceDefinition({
     ...workspace,
+    branchSelections: props.branchSelections,
     repositories: props.repositories,
     selectedIds: props.selectedIds,
     settings: readWorkspacePresentationSettings(settings),
@@ -192,6 +193,7 @@ function saveWorkspace(
   const existing = definitions.find(definition => definition.id === props.activeWorkspaceId);
   const workspace = createWorkspaceDefinition({
     id: saveAs || existing === undefined ? createWorkspaceId(name, definitions) : existing.id,
+    branchSelections: props.branchSelections,
     name: name.trim(),
     repositories: props.repositories,
     selectedIds: props.selectedIds,

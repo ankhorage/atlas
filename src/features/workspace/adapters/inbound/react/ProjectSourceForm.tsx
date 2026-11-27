@@ -149,9 +149,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
   } = useRepositoryInventory(initial.owner, props.repositories, state.source);
   const owner = state.source.trim().toLowerCase();
   const repositories = selectRepositories(inventory, initial.owner, owner, state.selectedIds);
-  const selectedRepositories = repositories.filter(repository =>
-    state.selectedIds.has(repository.id)
-  );
+  const selectedRepositories = selectSelectedRepositories(repositories, state.selectedIds);
   const actions = useProjectSourceFormActions({
     onSelection: props.onSelection,
     inventoryLoaded,
@@ -163,6 +161,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
   });
   return {
     activeWorkspaceId: state.activeId,
+    branchSelections: state.branchSelections,
     copyRepositoryLinks: actions.copyRepositoryLinks,
     deleteWorkspace: actions.deleteWorkspace,
     inventoryError,
@@ -176,6 +175,7 @@ function useProjectSourceForm(props: ProjectSourceFormProps) {
     settings,
     setSearch: state.setSearch,
     setSelectedIds: actions.setSelectedIds,
+    setBranchSelection: actions.setBranchSelection,
     setSource: actions.setSource,
     source: state.source,
   };
@@ -190,6 +190,14 @@ function selectRepositories(
 ): readonly WorkspaceRepositoryOption[] {
   if (owner === initialOwner.toLowerCase()) return inventory;
   return inventory.map(repository => ({ ...repository, selected: selectedIds.has(repository.id) }));
+}
+
+/*** Keep the staged selected option list available to copy and selection actions. */
+function selectSelectedRepositories(
+  repositories: readonly WorkspaceRepositoryOption[],
+  selectedIds: ReadonlySet<string>
+): readonly WorkspaceRepositoryOption[] {
+  return repositories.filter(repository => selectedIds.has(repository.id));
 }
 
 /*** Remove query-only workspace selection state before displaying the editable source. */
@@ -230,6 +238,7 @@ interface RepositorySourceEntryProps {
 }
 
 export interface WorkspaceSelectionEventDetail {
+  readonly branchSelections?: Readonly<Record<string, string>>;
   readonly selectedIds: readonly string[];
   readonly source: string;
 }

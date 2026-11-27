@@ -63,12 +63,35 @@ describe('[workspace selection route]', () => {
       recoverable: true,
     });
   });
+
+  it('forwards bounded branch selections while rejecting control characters', async () => {
+    const inputs: unknown[] = [];
+    const POST = createWorkspaceSelectionRoute(async input => {
+      inputs.push(input);
+      return { runAsync: async () => frame('runtime-1', 'successful') };
+    });
+    const valid = await POST(
+      selectionRequest({
+        addedRepositoryIds: ['repository-a'],
+        branchSelections: { 'repository-a': 'feature/draft' },
+      })
+    );
+    assert.equal(valid.status, 200);
+    assert.deepEqual((inputs[0] as { branchSelections: unknown }).branchSelections, {
+      'repository-a': 'feature/draft',
+    });
+    const invalid = await POST(
+      selectionRequest({ branchSelections: { 'repository-a': 'main\nsecret' } })
+    );
+    assert.equal(invalid.status, 400);
+  });
 });
 
 /*** Construct browser JSON exactly as the selection endpoint receives it. */
 function selectionRequest(
   input: Partial<{
     readonly addedRepositoryIds: readonly string[];
+    readonly branchSelections: Readonly<Record<string, string>>;
     readonly generation: number;
     readonly removedRepositoryIds: readonly string[];
     readonly runtimeId: string;
@@ -81,6 +104,7 @@ function selectionRequest(
       generation: input.generation ?? 1,
       removedRepositoryIds: input.removedRepositoryIds ?? [],
       ...(input.runtimeId === undefined ? {} : { runtimeId: input.runtimeId }),
+      ...(input.branchSelections === undefined ? {} : { branchSelections: input.branchSelections }),
       source: input.source ?? 'ankhorage',
     }),
     headers: { 'content-type': 'application/json' },

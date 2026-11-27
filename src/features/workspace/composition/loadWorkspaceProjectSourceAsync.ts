@@ -1,6 +1,5 @@
 import type { DependencyGraph } from '@ankhorage/dependency-graph';
 import type { ProjectInspection } from '@ankhorage/project-detector/types';
-import type { GitHubRepositoryDiscoveryRepository } from '@ankhorage/repository/github';
 import {
   type GitHubRepositoryAuthentication,
   type GitHubRepositoryRevisionResolutionResult,
@@ -18,11 +17,11 @@ import {
   createWorkspaceRepositoryRuntime,
   type WorkspaceRepositoryAuthorization,
   type WorkspaceRepositoryRuntime,
-  WorkspaceRepositoryRuntimeError,
 } from '@/features/workspace/composition/createWorkspaceRepositoryRuntime';
 import { loadWorkspaceAsync } from '@/features/workspace/composition/loadWorkspaceAsync';
 import type { WorkspaceRepositoryProgress } from '@/features/workspace/composition/loadWorkspaceRepositoryBatchAsync';
 import { resolveWorkspaceStartupSource } from '@/features/workspace/composition/resolveWorkspaceStartupSource';
+import { selectWorkspaceInventoryRepositories } from '@/features/workspace/composition/selectWorkspaceInventoryRepositories';
 import type { ProjectSource, ResolvedProjectSource } from '@/types/projectSource';
 import type {
   WorkspaceLoadResult,
@@ -87,9 +86,10 @@ export async function createWorkspaceSelectionOperationAsync(
     undefined,
     authorization.authentication
   );
-  const repositories = selectedInventoryRepositories(
+  const repositories = selectWorkspaceInventoryRepositories(
     discovery.repositories,
-    input.addedRepositoryIds
+    input.addedRepositoryIds,
+    input.branchSelections
   );
   if (input.runtimeId === undefined)
     return {
@@ -120,23 +120,6 @@ export async function createWorkspaceSelectionOperationAsync(
         signal === undefined ? streamSignal : AbortSignal.any([signal, streamSignal])
       ),
   };
-}
-
-/*** Resolve opaque browser IDs exclusively from the fresh authorized inventory. */
-function selectedInventoryRepositories(
-  inventory: readonly GitHubRepositoryDiscoveryRepository[],
-  ids: readonly string[]
-): readonly GitHubRepositoryDiscoveryRepository[] {
-  const byId = new Map(inventory.map(repository => [repository.id, repository]));
-  if (ids.some(id => !byId.has(id)))
-    throw new WorkspaceRepositoryRuntimeError(
-      'invalid',
-      'A selected repository is unavailable for this source and account.'
-    );
-  return ids.flatMap(id => {
-    const repository = byId.get(id);
-    return repository === undefined ? [] : [repository];
-  });
 }
 
 /*** Load the configured local project or discover GitHub sources supplied by the browser query. */

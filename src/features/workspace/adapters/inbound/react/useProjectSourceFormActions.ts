@@ -7,10 +7,12 @@ import type { WorkspaceRepositoryOption } from '@/features/workspace/composition
 /*** Combine source-form actions with restoration and nonsecret browser-session persistence. */
 export function useProjectSourceFormActions(input: ProjectSourceFormActionsInput) {
   const actions = useProjectSourceActions({
+    branchSelections: input.state.branchSelections,
     onSelection: input.onSelection,
     selectedRepositories: input.selectedRepositories,
     setActiveWorkspaceId: input.state.setActiveId,
     setSelectedIds: input.state.setSelectedIds,
+    setBranchSelections: input.state.setBranchSelections,
     setSource: input.state.setSource,
     setWorkspaceExclusions: input.state.setWorkspaceExclusions,
     source: input.state.source,
@@ -31,6 +33,7 @@ export function useProjectSourceFormActions(input: ProjectSourceFormActionsInput
 
 interface ProjectSourceFormActionsInput {
   readonly onSelection: (detail: {
+    readonly branchSelections?: Readonly<Record<string, string>>;
     readonly selectedIds: readonly string[];
     readonly source: string;
   }) => void;
