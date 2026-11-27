@@ -6,8 +6,6 @@ import { useState } from 'react';
 import type { RepositoryBranchOptions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
-import styles from './RepositoryBranchControl.module.css';
-
 /*** Lazy-load and select one repository branch without coupling it to selection or color. */
 export function RepositoryBranchControl({
   branch,
@@ -46,7 +44,7 @@ export function RepositoryBranchControl({
     );
   if (options.branches.length === 0) return <span role="status">No branches available.</span>;
   return (
-    <div className={styles.branchSelect}>
+    <div style={{ minWidth: '11rem' }}>
       <Select
         options={options.branches.map(value => ({ label: value, value }))}
         placeholder="Select branch"
