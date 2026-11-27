@@ -1,10 +1,9 @@
 'use client';
-import { parseHexColorOrThrow } from '@ankhorage/color-theory';
+import { type ColorHarmony, parseHexColorOrThrow } from '@ankhorage/color-theory';
 import { Popover } from '@ankhorage/surface/browser';
-import type { ColorPickerSelection, ColorPickerValue, ColorToneDefinition } from '@ankhorage/zora';
+import type { ColorPickerTab, ColorToneDefinition } from '@ankhorage/zora';
 import { Button } from '@ankhorage/zora/web/button';
 import { ColorPicker } from '@ankhorage/zora/web/color-picker';
-import { Surface } from '@ankhorage/zora/web/surface';
 import { useState } from 'react';
 
 import { repositoryColor } from '@/constants/repositoryColor';
@@ -29,7 +28,9 @@ export function RepositoryColorControl({
   const color = parseHexColorOrThrow(
     hasOverride ? settings.repositoryColors[repository.id] : repositoryColor.default
   );
-  const [value, setValue] = useState<ColorPickerValue>(() => createColorPickerValue(color));
+  const [picker, setPicker] = useState<RepositoryColorPickerState>(
+    createRepositoryColorPickerState
+  );
 
   return (
     <Popover
@@ -45,29 +46,56 @@ export function RepositoryColorControl({
       )}
     >
       <div onPointerDown={event => event.stopPropagation()}>
-        <Surface style={COLOR_PICKER_STYLE} variant="raised">
-          <ColorPicker
-            tabs={['wheel', 'tone']}
-            testID={`repository-color-picker-${repository.id}`}
-            tone={{ selectionMode: 'single', tones: repositoryColorTones }}
-            value={value}
-            wheel={{}}
-            onSelectionChange={(selection: ColorPickerSelection) =>
-              setRepositoryColor(settings, repository.id, selection)
-            }
-            onValueChange={(nextValue: ColorPickerValue) => setValue(nextValue)}
-          />
-          <Button
-            disabled={!hasOverride}
-            size="s"
-            variant="ghost"
-            onPress={() => resetRepositoryColor(settings, repository.id, setValue)}
-          >
-            Reset color
-          </Button>
-        </Surface>
+        <RepositoryColorPicker
+          color={color}
+          hasOverride={hasOverride}
+          picker={picker}
+          repository={repository}
+          repositoryColorTones={repositoryColorTones}
+          settings={settings}
+          setPicker={setPicker}
+        />
       </div>
     </Popover>
+  );
+}
+
+/*** Renders the ZORA-controlled picker while Atlas persists only its canonical primary color. */
+function RepositoryColorPicker({
+  color,
+  hasOverride,
+  picker,
+  repository,
+  repositoryColorTones,
+  settings,
+  setPicker,
+}: RepositoryColorPickerProps) {
+  return (
+    <div style={COLOR_PICKER_STYLE}>
+      <ColorPicker
+        activeTab={picker.activeTab}
+        harmony={picker.harmony}
+        primaryColor={color}
+        tabs={['grid', 'wheel']}
+        testID={`repository-color-picker-${repository.id}`}
+        tone={picker.tone}
+        tones={repositoryColorTones}
+        width={560}
+        onActiveTabChange={activeTab => setPicker({ ...picker, activeTab })}
+        onValueChange={nextValue => {
+          setPicker({ ...picker, harmony: nextValue.harmony, tone: nextValue.tone });
+          settings.setRepositoryColor(repository.id, nextValue.primaryColor.toUpperCase());
+        }}
+      />
+      <Button
+        disabled={!hasOverride}
+        size="s"
+        variant="ghost"
+        onPress={() => resetRepositoryColor(settings, repository.id, setPicker)}
+      >
+        Reset color
+      </Button>
+    </div>
   );
 }
 
@@ -75,35 +103,31 @@ export function RepositoryColorControl({
 function resetRepositoryColor(
   settings: SettingsContextValue,
   repositoryId: string,
-  setValue: (value: ColorPickerValue) => void
+  setPicker: (picker: RepositoryColorPickerState) => void
 ): void {
   settings.setRepositoryColor(repositoryId, undefined);
-  setValue(createColorPickerValue(parseHexColorOrThrow(repositoryColor.default)));
+  setPicker(createRepositoryColorPickerState());
 }
 
-/*** Create the controlled Wheel and Tone state from the current canonical repository color. */
-function createColorPickerValue(color: ColorPickerValue['wheel']['color']): ColorPickerValue {
-  return {
-    hue: color,
-    tab: 'wheel',
-    tone: null,
-    wheel: { color, harmony: null },
-  };
+/*** Create the locally controlled presentation state around Atlas's persisted primary color. */
+function createRepositoryColorPickerState(): RepositoryColorPickerState {
+  return { activeTab: 'grid' };
 }
 
-/*** Persist the Picker's one active Wheel or single Tone color as a canonical uppercase override. */
-function setRepositoryColor(
-  settings: SettingsContextValue,
-  repositoryId: string,
-  selection: ColorPickerSelection
-): void {
-  const color =
-    selection.mode === 'wheel'
-      ? selection.value.color
-      : selection.mode === 'tone'
-        ? selection.value.colors.at(0)
-        : undefined;
-  if (color !== undefined) settings.setRepositoryColor(repositoryId, color.toUpperCase());
+interface RepositoryColorPickerState {
+  readonly activeTab: ColorPickerTab;
+  readonly harmony?: ColorHarmony;
+  readonly tone?: string;
+}
+
+interface RepositoryColorPickerProps {
+  readonly color: ReturnType<typeof parseHexColorOrThrow>;
+  readonly hasOverride: boolean;
+  readonly picker: RepositoryColorPickerState;
+  readonly repository: WorkspaceRepositoryOption;
+  readonly repositoryColorTones: readonly ColorToneDefinition[];
+  readonly settings: SettingsContextValue;
+  readonly setPicker: (picker: RepositoryColorPickerState) => void;
 }
 
 const COLOR_PICKER_STYLE = {

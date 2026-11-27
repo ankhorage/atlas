@@ -1125,17 +1125,18 @@ const scenarios: readonly Scenario[] = [
       page.on('request', request => requests.push(request.url()));
       await page.getByLabel('Change color for owner-a/catalog').click();
       const picker = page.getByTestId('repository-color-picker-owner-a-catalog');
-      await picker.getByRole('slider', { name: /Color wheel/u }).waitFor();
+      await picker.getByLabel('Color grid').waitFor();
       assert(
         (await picker.getByRole('tab').count()) === 2,
-        'Repository color picker did not expose exactly Wheel and Tone.'
+        'Repository color picker did not expose exactly Grid and Wheel.'
       );
-      assert(
-        (await picker.getByRole('button', { name: 'None' }).count()) === 0,
-        'Repository color picker exposed Harmony controls.'
-      );
-      await picker.getByRole('tab', { name: 'tone' }).click();
-      await picker.getByLabel('jewel').first().click();
+      await picker.getByRole('tab', { name: 'Wheel' }).click();
+      await picker.getByRole('slider', { name: /Color wheel/u }).waitFor();
+      await picker.getByRole('tab', { name: 'Grid' }).click();
+      await picker
+        .getByLabel(/^Select #/u)
+        .first()
+        .click();
       await page.waitForFunction(() =>
         Object.entries(localStorage).some(
           ([key, value]) =>
@@ -1146,8 +1147,8 @@ const scenarios: readonly Scenario[] = [
         )
       );
       assert(
-        (await picker.getByLabel(/Selected jewel color 1:/u).count()) === 1,
-        'Tone picker did not retain exactly one selected color.'
+        (await picker.getByLabel('Color hex value').count()) === 1,
+        'Color picker did not expose its canonical HEX field.'
       );
       await settleGraphPresentationAsync(page);
       const afterColor = await readGraphPresentationAsync(page);
