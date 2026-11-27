@@ -3,7 +3,6 @@ import { useZoraTheme } from '@ankhorage/zora/web/runtime';
 import { Select } from '@ankhorage/zora/web/select';
 import { Switch } from '@ankhorage/zora/web/switch';
 import { Text } from '@ankhorage/zora/web/text';
-import { TextInput } from '@ankhorage/zora/web/text-input';
 import { View } from '@ankhorage/zora/web/view';
 import type { LayoutOptions } from 'cytoscape';
 import React, { type ChangeEvent } from 'react';
@@ -49,26 +48,17 @@ export function SettingsPanel() {
   );
 }
 
-/*** Keeps prepared package-visibility controls ready for their planned return to the sidebar. */
-function FilterSettings({ visible = false }: FilterSettingsProps) {
+/*** Renders graph projection switches while deferring only the package-prefix filter. */
+function FilterSettings() {
   const {
     showCompoundNodes,
     showVendorPackages,
-    dependencyPackagePrefix,
-    setDependencyPackagePrefix,
     toggleShowCompoundNodes,
     toggleShowVendorPackages,
   } = useSettings();
 
-  if (!visible) return null;
   return (
     <SettingsSection title={t('settings.filter')}>
-      <TextInput
-        aria-label={t('settings.packagePrefix')}
-        placeholder={t('settings.packagePrefix')}
-        value={dependencyPackagePrefix}
-        onChangeText={setDependencyPackagePrefix}
-      />
       <Switch
         accessibilityLabel={t('settings.showVendorPackages')}
         checked={showVendorPackages}
@@ -91,10 +81,6 @@ function FilterSettings({ visible = false }: FilterSettingsProps) {
       </Switch>
     </SettingsSection>
   );
-}
-
-interface FilterSettingsProps {
-  readonly visible?: boolean;
 }
 
 /*** Renders the visible subpackage-depth control. */

@@ -1389,18 +1389,18 @@ const scenarios: readonly Scenario[] = [
   ),
   scenario(
     'projection-controls',
-    'Keeps deferred projection filters hidden while retaining subpackage depth control.',
+    'Keeps the package-prefix filter deferred while retaining graph projection switches.',
     async page => {
       await openWorkspaceAsync(page);
       const depth = page.getByLabel('Subpackage depth');
       await assertTopmostControlAsync(depth, 'Subpackage-depth sidebar input');
       assert(
-        (await page.getByLabel('Show Vendor').count()) === 0,
-        'Vendor filter is still visible.'
+        (await page.getByLabel('Show Vendor').count()) === 1,
+        'Vendor projection switch is not visible.'
       );
       assert(
-        (await page.getByLabel('Show Compound Nodes').count()) === 0,
-        'Compound filter is still visible.'
+        (await page.getByLabel('Show Compound Nodes').count()) === 1,
+        'Compound projection switch is not visible.'
       );
       await depth.fill('2');
       assert((await depth.inputValue()) === '2', 'Depth was not applied.');
