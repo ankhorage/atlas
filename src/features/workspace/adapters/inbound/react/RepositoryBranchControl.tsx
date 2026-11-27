@@ -3,16 +3,26 @@ import { Button } from '@ankhorage/zora/web/button';
 import { Select } from '@ankhorage/zora/web/select';
 import { useState } from 'react';
 
+import type { RepositoryBranchOptions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import type { WorkspaceRepositoryOption } from '@/features/workspace/composition/loadWorkspaceProjectSourceAsync';
 
+import styles from './RepositoryBranchControl.module.css';
+
 /*** Lazy-load and select one repository branch without coupling it to selection or color. */
-export function RepositoryBranchControl({ branch, repository, source, onChange }: Props) {
-  const [branches, setBranches] = useState<readonly string[] | undefined>();
-  const [defaultBranch, setDefaultBranch] = useState<string | undefined>();
+export function RepositoryBranchControl({
+  branch,
+  options,
+  repository,
+  source,
+  onChange,
+  onLoad,
+}: Props) {
   const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
+
+  /*** Fetches the current repository's branches once and preserves them in the source form. */
   const load = async () => {
-    if (branches !== undefined || loading) return;
+    if (options !== undefined || loading) return;
     setLoading(true);
     setError(undefined);
     try {
@@ -21,35 +31,51 @@ export function RepositoryBranchControl({ branch, repository, source, onChange }
       if (!response.ok) throw new Error('Unable to load branches.');
       const value: unknown = await response.json();
       if (!isBranchResponse(value)) throw new Error('Unable to load branches.');
-      setBranches(value.branches);
-      setDefaultBranch(value.repository.defaultBranch);
+      onLoad(repository.id, createBranchOptions(value));
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Unable to load branches.');
     } finally {
       setLoading(false);
     }
   };
-  if (branches === undefined)
+  if (options === undefined)
     return (
       <Button size="s" variant="ghost" onPress={() => void load()}>
         {loading ? 'Loading…' : (error ?? 'Branch')}
       </Button>
     );
-  if (branches.length === 0) return <span role="status">No branches available.</span>;
+  if (options.branches.length === 0) return <span role="status">No branches available.</span>;
   return (
-    <Select
-      options={branches.map(value => ({ label: value, value }))}
-      value={branch ?? defaultBranch ?? ''}
-      onValueChange={onChange}
-    />
+    <div className={styles.branchSelect}>
+      <Select
+        options={options.branches.map(value => ({ label: value, value }))}
+        placeholder="Select branch"
+        testID={`repository-branch-${repository.id}`}
+        value={branch ?? options.defaultBranch}
+        onValueChange={onChange}
+      />
+    </div>
   );
 }
 
 interface Props {
   readonly branch: string | undefined;
+  readonly options: RepositoryBranchOptions | undefined;
   readonly repository: WorkspaceRepositoryOption;
   readonly source: string;
   readonly onChange: (branch: string) => void;
+  readonly onLoad: (repositoryId: string, options: RepositoryBranchOptions) => void;
+}
+
+/*** Sorts the credential-free API response before it becomes a persistent branch picker cache. */
+function createBranchOptions(value: {
+  readonly branches: readonly string[];
+  readonly repository: { readonly defaultBranch: string };
+}): RepositoryBranchOptions {
+  return {
+    branches: value.branches.toSorted((left, right) => left.localeCompare(right)),
+    defaultBranch: value.repository.defaultBranch,
+  };
 }
 
 /*** Accept only the credential-free branch payload returned by the workspace boundary. */

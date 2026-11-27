@@ -10,6 +10,7 @@ import { View } from '@ankhorage/zora/web/view';
 
 import { RepositoryBranchControl } from '@/features/workspace/adapters/inbound/react/RepositoryBranchControl';
 import { RepositoryColorControl } from '@/features/workspace/adapters/inbound/react/RepositoryColorControl';
+import type { RepositoryBranchOptions } from '@/features/workspace/adapters/inbound/react/useProjectSourceFormState';
 import { WorkspaceControls } from '@/features/workspace/adapters/inbound/react/WorkspaceControls';
 import type { WorkspaceOpenDetail } from '@/features/workspace/adapters/inbound/react/workspaceControlTypes';
 import { isWorkspaceSelectionSource } from '@/features/workspace/application/use-cases/isWorkspaceSelectionSource';
@@ -67,6 +68,7 @@ function SourceRepositoryPicker({
     <RepositoryPicker
       repositories={visibleRepositories}
       repositoryColorTones={sourceForm.repositoryColorTones}
+      branchOptions={sourceForm.branchOptions}
       branchSelections={sourceForm.branchSelections}
       search={sourceForm.search}
       selectedIds={sourceForm.selectedIds}
@@ -81,6 +83,7 @@ function SourceRepositoryPicker({
       }
       onSelectionChange={sourceForm.setSelectedIds}
       onBranchSelection={sourceForm.setBranchSelection}
+      onBranchOptionsChange={sourceForm.cacheBranchOptions}
       source={sourceForm.source}
     />
   );
@@ -159,7 +162,9 @@ interface ProjectSourceControlsProps {
 
 interface ProjectSourceFormModel {
   readonly activeWorkspaceId?: string;
+  readonly branchOptions: Readonly<Record<string, RepositoryBranchOptions>>;
   readonly branchSelections: Readonly<Record<string, string>>;
+  readonly cacheBranchOptions: (repositoryId: string, options: RepositoryBranchOptions) => void;
   readonly copyRepositoryLinks: () => void;
   readonly deleteWorkspace: () => void;
   readonly inventoryError?: string;
@@ -180,6 +185,7 @@ interface ProjectSourceFormModel {
 
 interface RepositoryPickerProps {
   readonly branchSelections: Readonly<Record<string, string>>;
+  readonly branchOptions: Readonly<Record<string, RepositoryBranchOptions>>;
   readonly repositories: readonly WorkspaceRepositoryOption[];
   readonly repositoryColorTones: readonly ColorToneDefinition[];
   readonly search: string;
@@ -190,6 +196,7 @@ interface RepositoryPickerProps {
   readonly initiallyOpen?: boolean;
   readonly onDeselectAll: () => void;
   readonly onBranchSelection: (repositoryId: string, branch: string) => void;
+  readonly onBranchOptionsChange: (repositoryId: string, options: RepositoryBranchOptions) => void;
   readonly onSearchChange: (search: string) => void;
   readonly onSelectAll: () => void;
   readonly onSelectionChange: (ids: Set<string>) => void;
@@ -247,9 +254,11 @@ function RepositoryChoices(props: RepositoryPickerProps) {
       </Checkbox>
       <RepositoryBranchControl
         branch={props.branchSelections[repository.id]}
+        options={props.branchOptions[repository.id]}
         repository={repository}
         source={props.source}
         onChange={branch => props.onBranchSelection(repository.id, branch)}
+        onLoad={props.onBranchOptionsChange}
       />
       <RepositoryColorControl
         repository={repository}
