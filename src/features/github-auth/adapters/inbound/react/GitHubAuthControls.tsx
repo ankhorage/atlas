@@ -74,9 +74,7 @@ function createAuthenticatedActions(
       title: 'Show private repositories',
       icon: { name: 'lock-closed-outline' },
       selected: privateRepositoryAccess,
-      onPress: () => {
-        if (!privateRepositoryAccess) requestPrivateAccess();
-      },
+      onPress: requestPrivateAccess,
     },
     {
       id: 'sign-out',
