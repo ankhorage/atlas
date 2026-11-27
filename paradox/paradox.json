@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.23.0",
+      "value": "v0.23.1",
       "color": "cb3837"
     },
     {
@@ -8654,18 +8654,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 41,
+        "line": 40,
         "column": 1
       }
     },
     {
       "name": "FilterSettings",
-      "description": "Keeps prepared package-visibility controls ready for their planned return to the sidebar.",
+      "description": "Renders graph projection switches while deferring only the package-prefix filter.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 53,
+        "line": 52,
         "column": 1
       }
     },
@@ -8676,7 +8676,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 101,
+        "line": 87,
         "column": 1
       }
     },
@@ -8687,7 +8687,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 119,
+        "line": 105,
         "column": 1
       }
     },
@@ -8698,7 +8698,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 123,
+        "line": 109,
         "column": 9
       }
     },
@@ -8709,7 +8709,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 144,
+        "line": 130,
         "column": 1
       }
     },
@@ -8720,7 +8720,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 160,
+        "line": 146,
         "column": 1
       }
     },
@@ -8731,7 +8731,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 178,
+        "line": 164,
         "column": 1
       }
     },
@@ -8742,7 +8742,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 190,
+        "line": 176,
         "column": 1
       }
     },
@@ -8753,7 +8753,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 194,
+        "line": 180,
         "column": 9
       }
     },

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.23.1
+
+### Patch Changes
+
+- 550bc84: Restore the repository vendor and compound-node projection switches while retaining the deferred package-prefix filter.
+
 ## 0.23.0
 
 ### Minor Changes
