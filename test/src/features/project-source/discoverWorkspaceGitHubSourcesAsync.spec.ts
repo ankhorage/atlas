@@ -62,6 +62,31 @@ describe('[discoverWorkspaceGitHubSourcesAsync]', () => {
       ['collaborator', 'personal']
     );
   });
+
+  it('keeps public owner discovery available when GitHub declines the authenticated inventory', async () => {
+    const publicRepository = repository('atlas', 'ankhorage', 'atlas', 'public');
+    const result = await discoverWorkspaceGitHubSourcesAsync(
+      'ankhorage',
+      new Set(),
+      undefined,
+      { kind: 'user', accessToken: 'test-token' },
+      async () => {
+        throw new Error('GitHub denied the authenticated inventory.');
+      },
+      async input => {
+        assert.deepEqual(input, {
+          authentication: { kind: 'user', accessToken: 'test-token' },
+          source: 'ankhorage',
+        });
+        return {
+          owner: { login: 'ankhorage', type: 'organization', url: 'https://github.com/ankhorage' },
+          repositories: [publicRepository],
+        };
+      }
+    );
+
+    assert.deepEqual(result.repositories, [publicRepository]);
+  });
 });
 
 /*** Creates a credential-free Repository inventory record for authenticated discovery tests. */
