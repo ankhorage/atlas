@@ -1,6 +1,7 @@
 import { isRecord } from '@ankhorage/utility/object';
 
 import { createWorkspaceProgressResponse } from '@/features/workspace/adapters/inbound/next/createWorkspaceProgressResponse';
+import { isWorkspaceBranchName } from '@/features/workspace/application/use-cases/isWorkspaceBranchName';
 import {
   isWorkspaceSelectionSource,
   normalizeWorkspaceSelectionSource,
@@ -37,6 +38,8 @@ function isSelectionRequest(value: unknown): value is WorkspaceSelectionRequest 
     !isGeneration(value.generation)
   )
     return false;
+  if (value.branchSelections !== undefined && !isBranchSelections(value.branchSelections))
+    return false;
   if (
     !isIdentifierArray(value.addedRepositoryIds) ||
     !isIdentifierArray(value.removedRepositoryIds)
@@ -49,6 +52,17 @@ function isSelectionRequest(value: unknown): value is WorkspaceSelectionRequest 
   )
     return false;
   return value.runtimeId !== undefined || value.removedRepositoryIds.length === 0;
+}
+
+/** Validate bounded Git branch names without accepting URLs, control characters, or secrets. */
+function isBranchSelections(value: unknown): value is Readonly<Record<string, string>> {
+  return (
+    isRecord(value) &&
+    Object.keys(value).length <= 256 &&
+    Object.entries(value).every(
+      ([repositoryId, branch]) => isOpaqueIdentifier(repositoryId) && isWorkspaceBranchName(branch)
+    )
+  );
 }
 
 /*** Bound client generation values so a stale browser request cannot exhaust transport parsing. */

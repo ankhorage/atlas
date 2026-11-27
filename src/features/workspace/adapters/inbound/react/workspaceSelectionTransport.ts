@@ -86,6 +86,7 @@ export class WorkspaceSelectionError extends Error {
 
 export interface WorkspaceSelectionRequest {
   readonly addedRepositoryIds: readonly string[];
+  readonly branchSelections?: Readonly<Record<string, string>>;
   readonly generation: number;
   readonly removedRepositoryIds: readonly string[];
   readonly runtimeId?: string;

@@ -13,6 +13,7 @@ export function createWorkspaceOpenDetail(workspace: WorkspaceDefinition): Works
   if (excludedRepositoryIds.length > 0)
     params.set('source', `${source}|exclude=${excludedRepositoryIds.join(',')}`);
   return {
+    branchSelections: workspace.branchSelections ?? {},
     excludedRepositoryIds,
     href: `/?${params.toString()}`,
     id: workspace.id,

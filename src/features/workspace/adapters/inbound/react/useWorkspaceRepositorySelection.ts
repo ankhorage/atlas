@@ -37,6 +37,7 @@ function useWorkspaceSelectionOperation(
 ) {
   const state = useRef<WorkspaceSelectionState>({
     controller: undefined,
+    branchSelections: {},
     generation: 0,
     inFlight: false,
     pendingSelection: undefined,
@@ -131,10 +132,10 @@ async function runWorkspaceSelectionAsync(
 ): Promise<void> {
   const change = createWorkspaceSelectionChange(previous, detail);
   if (change === null) return;
-  const { selectedIds, source, sourceChanged } = change;
+  const { branchSelections, selectedIds, source, sourceChanged } = change;
   const controller = new AbortController();
   const generation = previous.generation + 1;
-  const state = { ...previous, controller, generation, selectedIds, source };
+  const state = { ...previous, branchSelections, controller, generation, selectedIds, source };
   Object.assign(previous, state);
   if (selectedIds.size === 0) return clearEmptyWorkspaceSelection(previous, setLiveWorkspace);
   const runtimeId = sourceChanged ? undefined : previous.workspace.runtimeId;
@@ -143,6 +144,7 @@ async function runWorkspaceSelectionAsync(
       createSelectionRequest(
         {
           addedRepositoryIds: change.addedRepositoryIds,
+          branchSelections,
           generation,
           removedRepositoryIds: change.removedRepositoryIds,
           runtimeId,
@@ -188,10 +190,15 @@ function createWorkspaceSelectionChange(
   const source = normalizeSource(detail.source);
   if (!isWorkspaceSelectionSource(source)) return null;
   const selectedIds = new Set(detail.selectedIds);
+  const branchSelections = detail.branchSelections ?? {};
+  const previousBranches = new Map(Object.entries(previous.branchSelections));
+  const branches = new Map(Object.entries(branchSelections));
   const sourceChanged = source !== previous.source;
   const addedRepositoryIds = sourceChanged
     ? [...selectedIds]
-    : [...selectedIds].filter(id => !previous.selectedIds.has(id));
+    : [...selectedIds].filter(
+        id => !previous.selectedIds.has(id) || previousBranches.get(id) !== branches.get(id)
+      );
   const removedRepositoryIds = sourceChanged
     ? []
     : [...previous.selectedIds].filter(id => !selectedIds.has(id));
@@ -200,6 +207,7 @@ function createWorkspaceSelectionChange(
     return null;
   return {
     addedRepositoryIds,
+    branchSelections,
     removedRepositoryIds,
     requiresInitialLoad,
     selectedIds,
@@ -251,6 +259,7 @@ async function recoverWorkspaceRuntimeAsync(
     await streamWorkspaceSelectionAsync(
       {
         addedRepositoryIds: [...state.selectedIds],
+        branchSelections: state.branchSelections,
         generation,
         removedRepositoryIds: [],
         source: state.source,
@@ -325,6 +334,7 @@ function readSelectionError(error: unknown): string {
 }
 
 interface WorkspaceSelectionState {
+  branchSelections: Readonly<Record<string, string>>;
   controller: AbortController | undefined;
   generation: number;
   inFlight: boolean;
@@ -337,6 +347,7 @@ interface WorkspaceSelectionState {
 
 interface WorkspaceSelectionChange {
   readonly addedRepositoryIds: readonly string[];
+  readonly branchSelections: Readonly<Record<string, string>>;
   readonly removedRepositoryIds: readonly string[];
   readonly requiresInitialLoad: boolean;
   readonly selectedIds: Set<string>;

@@ -11,6 +11,7 @@ export function useProjectSourceFormState(
 ) {
   const [source, setSource] = useState(initialOwner);
   const [selectedIds, setSelectedIds] = useState(createSelectedRepositoryIds(repositories));
+  const [branchSelections, setBranchSelections] = useState<Readonly<Record<string, string>>>({});
   const [search, setSearch] = useState('');
   const [activeId, setActiveId] = useState(activeWorkspaceId);
   const [workspaceExclusions, setWorkspaceExclusions] = useState<ReadonlySet<string> | undefined>(
@@ -18,11 +19,13 @@ export function useProjectSourceFormState(
   );
   return {
     activeId,
+    branchSelections,
     search,
     selectedIds,
     setActiveId,
     setSearch,
     setSelectedIds,
+    setBranchSelections,
     setSource,
     setWorkspaceExclusions,
     source,

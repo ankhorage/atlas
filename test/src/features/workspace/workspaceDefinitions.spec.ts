@@ -41,6 +41,18 @@ describe('[workspace definitions]', () => {
     assert.deepEqual(validateWorkspaceDefinitions([legacy])?.[0]?.settings.repositoryColors, {});
   });
 
+  it('persists slash-containing branch selections and rejects unsafe branch values', () => {
+    const branchSelections = { R_atlas: 'feature/draft' };
+    assert.deepEqual(
+      validateWorkspaceDefinitions([{ ...WORKSPACE, branchSelections }])?.[0]?.branchSelections,
+      branchSelections
+    );
+    assert.equal(
+      validateWorkspaceDefinitions([{ ...WORKSPACE, branchSelections: { R_atlas: 'main\n' } }]),
+      null
+    );
+  });
+
   it('accepts only bounded canonical repository color overrides', () => {
     const repositoryColors = { R_atlas: '#AABBCC' };
     const oversizedRepositoryColors = Object.fromEntries(

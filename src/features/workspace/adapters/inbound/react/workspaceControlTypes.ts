@@ -4,6 +4,7 @@ import type { WorkspaceDefinition } from '@/types/workspace';
 
 export interface WorkspaceControlsProps {
   readonly activeWorkspaceId?: string;
+  readonly branchSelections: Readonly<Record<string, string>>;
   readonly onDeleteWorkspace: () => void;
   readonly onOpenWorkspace: (detail: WorkspaceOpenDetail) => void;
   readonly repositories?: readonly WorkspaceRepositoryOption[];
@@ -27,6 +28,7 @@ export interface WorkspaceMenuProps {
 }
 
 export interface WorkspaceOpenDetail {
+  readonly branchSelections: Readonly<Record<string, string>>;
   readonly excludedRepositoryIds: readonly string[];
   readonly href: string;
   readonly id: string;
