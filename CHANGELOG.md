@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.23.0
+
+### Minor Changes
+
+- a46c296: Adopt the ZORA 28 Grid/Wheel ColorPicker for repository graph colors.
+
 ## 0.22.5
 
 ### Patch Changes

@@ -14,7 +14,7 @@
     {
       "id": "npm",
       "label": "npm",
-      "value": "v0.22.5",
+      "value": "v0.23.0",
       "color": "cb3837"
     },
     {
@@ -1029,7 +1029,6 @@
       "path": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/audit/utils/getAdaptiveCycleLayoutSpacing.ts",
         "src/types/auditVisualization.ts"
       ],
       "exports": [
@@ -1572,20 +1571,9 @@
       ]
     },
     {
-      "path": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
-      "isEntrypoint": false,
-      "dependencies": [
-        "src/features/rule-explorer/domain/projectRuleDag.ts"
-      ],
-      "exports": [
-        "createRuleDagElements"
-      ]
-    },
-    {
       "path": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
       "isEntrypoint": false,
       "dependencies": [
-        "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
         "src/features/rule-explorer/domain/projectRuleDag.ts"
       ],
       "exports": [
@@ -1830,6 +1818,17 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
+      ],
+      "exports": [
+        "useBrowserWorkspaceGraphCache"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -1915,6 +1914,7 @@
       "isEntrypoint": false,
       "dependencies": [
         "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
         "src/features/workspace/application/use-cases/isWorkspaceSelectionSource.ts",
         "src/types/workspace.ts"
       ],
@@ -2031,6 +2031,19 @@
       ]
     },
     {
+      "path": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "streamWorkspaceSelectionAsync",
+        "WorkspaceProgressFrame",
+        "WorkspaceSelectionError",
+        "WorkspaceSelectionRequest"
+      ]
+    },
+    {
       "path": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
       "isEntrypoint": false,
       "dependencies": [
@@ -2054,6 +2067,7 @@
         "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "src/features/github-auth/adapters/inbound/next/readGitHubAuthViewAsync.ts",
         "src/features/settings/adapters/inbound/react/SettingsProvider.tsx",
+        "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
         "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
         "src/features/workspace/composition/loadWorkspaceProjectSourceAsync.ts",
@@ -2061,6 +2075,17 @@
       ],
       "exports": [
         "WorkspaceView"
+      ]
+    },
+    {
+      "path": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/types/workspace.ts"
+      ],
+      "exports": [
+        "createBrowserWorkspaceGraphCache",
+        "createWorkspaceGraphCacheKey"
       ]
     },
     {
@@ -3258,6 +3283,16 @@
       "exports": []
     },
     {
+      "path": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+      "isEntrypoint": false,
+      "dependencies": [
+        "ankh.config.json",
+        "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx"
+      ],
+      "exports": []
+    },
+    {
       "path": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
       "isEntrypoint": false,
       "dependencies": [
@@ -3415,6 +3450,14 @@
       "dependencies": [
         "src/features/project-analysis/adapters/outbound/source-metadata/readTypeScriptProjectFileMetadata.ts",
         "src/utils/parseProjectPath.ts"
+      ],
+      "exports": []
+    },
+    {
+      "path": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts",
+      "isEntrypoint": false,
+      "dependencies": [
+        "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       ],
       "exports": []
     },
@@ -5553,7 +5596,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
-        "line": 92,
+        "line": 90,
         "column": 1
       }
     },
@@ -5564,7 +5607,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
-        "line": 97,
+        "line": 95,
         "column": 1
       }
     },
@@ -6059,7 +6102,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 96,
+        "line": 97,
         "column": 1
       }
     },
@@ -6070,7 +6113,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 118,
+        "line": 119,
         "column": 1
       }
     },
@@ -6081,7 +6124,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 137,
+        "line": 138,
         "column": 1
       }
     },
@@ -6092,7 +6135,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 148,
+        "line": 149,
+        "column": 1
+      }
+    },
+    {
+      "name": "createGraphTopologyKey",
+      "description": "Change ZORA's layout input only when rendered topology, rather than graph styling, changes.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
+        "line": 187,
+        "column": 1
+      }
+    },
+    {
+      "name": "createTopologyAwareLayoutOptions",
+      "description": "Refresh the layout input reference for topology changes without leaking an Atlas-only option.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
+        "line": 198,
         "column": 1
       }
     },
@@ -6103,29 +6168,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 182,
-        "column": 1
-      }
-    },
-    {
-      "name": "useVisibleTopologyFit",
-      "description": "Refit after every browser-committed projection change, including filters and package depth.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 229,
-        "column": 1
-      }
-    },
-    {
-      "name": "useFitVisibleTopology",
-      "description": "Refit once the browser has committed every projection change, including filters and depth.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 244,
+        "line": 205,
         "column": 1
       }
     },
@@ -6136,7 +6179,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 256,
+        "line": 251,
         "column": 1
       }
     },
@@ -6147,7 +6190,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 275,
+        "line": 270,
         "column": 1
       }
     },
@@ -6158,7 +6201,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
-        "line": 288,
+        "line": 283,
         "column": 1
       }
     },
@@ -6268,7 +6311,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 19,
+        "line": 18,
         "column": 1
       }
     },
@@ -6301,7 +6344,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 72,
+        "line": 74,
         "column": 1
       }
     },
@@ -6312,7 +6355,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 93,
+        "line": 95,
         "column": 1
       }
     },
@@ -6323,18 +6366,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 105,
+        "line": 107,
         "column": 1
       }
     },
     {
       "name": "useCycleViewportFocus",
-      "description": "Owns active-cycle measurement, spacing adaptation, and the one post-relayout refit.",
+      "description": "Owns active-cycle focus without changing the selected layout spacing.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 125,
+        "line": 127,
         "column": 1
       }
     },
@@ -6345,51 +6388,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 151,
+        "line": 146,
         "column": 9
       }
     },
     {
-      "name": "synchronizeCycleFocusRefs",
-      "description": "Clears stale refit state when cycle intent changes or is disabled.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 170,
-        "column": 1
-      }
-    },
-    {
       "name": "handleSettledCycleFocus",
-      "description": "Focuses active cycles only from settled owner geometry, then refits once after adaptive relayout.\nMissing cycle evidence is left to projection expansion and never measured as a partial cycle.",
+      "description": "Focuses an active cycle only from settled owner geometry.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 192,
+        "line": 162,
         "column": 1
       }
     },
     {
       "name": "focusActiveCycle",
-      "description": "Fits the whole graph, measures active nodes, and requests only a justified spacing reduction.",
+      "description": "Fit cycle evidence without changing the user's selected layout spacing.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 219,
-        "column": 1
-      }
-    },
-    {
-      "name": "readCycleLayoutMetrics",
-      "description": "Converts renderer-neutral GraphView measurements into the cycle-spacing policy metrics.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 237,
+        "line": 175,
         "column": 1
       }
     },
@@ -6400,7 +6421,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 276,
+        "line": 183,
         "column": 1
       }
     },
@@ -6411,7 +6432,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 288,
+        "line": 195,
+        "column": 1
+      }
+    },
+    {
+      "name": "fitGraphToViewport",
+      "description": "Fits automatically changed geometry while preserving the user's spacing selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
+        "line": 204,
         "column": 1
       }
     },
@@ -6422,7 +6454,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "line": 297,
+        "line": 213,
         "column": 1
       }
     },
@@ -7962,7 +7994,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 40,
+        "line": 49,
+        "column": 1
+      }
+    },
+    {
+      "name": "discoverAuthorizedOwnerInventoryAsync",
+      "description": "Prefer the complete authorized inventory while preserving public owner discovery when GitHub declines it.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
+        "line": 71,
+        "column": 1
+      }
+    },
+    {
+      "name": "isAuthenticatedInventorySource",
+      "description": "Restrict authenticated inventory consumption to the owner forms already accepted by Repository.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
+        "line": 91,
         "column": 1
       }
     },
@@ -7973,7 +8027,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 54,
+        "line": 96,
         "column": 1
       }
     },
@@ -7984,7 +8038,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
-        "line": 68,
+        "line": 110,
         "column": 1
       }
     },
@@ -8385,24 +8439,13 @@
       }
     },
     {
-      "name": "createRuleDagElements",
-      "description": "Adapts the canonical Rule DAG into Cytoscape elements for renderer-neutral graph consumers.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
-        "line": 6,
-        "column": 1
-      }
-    },
-    {
       "name": "RuleDagExplorer",
       "description": "Renders the evaluator-owned dependency and execution evidence without changing rule semantics.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 20,
+        "line": 24,
         "column": 1
       }
     },
@@ -8413,18 +8456,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 60,
+        "line": 62,
         "column": 1
       }
     },
     {
       "name": "RuleDagVisualization",
-      "description": "Renders graph and tree renderers only when the visible projection has graph content.",
+      "description": "Renders one accessible ZORA tab view for dependencies and another for execution outcomes.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 100,
+        "line": 84,
         "column": 1
       }
     },
@@ -8435,7 +8478,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 118,
+        "line": 116,
         "column": 1
       }
     },
@@ -8446,7 +8489,51 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 137,
+        "line": 135,
+        "column": 1
+      }
+    },
+    {
+      "name": "formatFacetLabel",
+      "description": "Converts provider facet identifiers into concise labels without changing their filter identity.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 164,
+        "column": 1
+      }
+    },
+    {
+      "name": "ruleEvaluationSummary",
+      "description": "States the compact result count before a person chooses the detail they need.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 173,
+        "column": 1
+      }
+    },
+    {
+      "name": "EmptyRuleEvaluation",
+      "description": "Explains that filtering removed the visible plan without treating it as a rule failure.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 178,
+        "column": 1
+      }
+    },
+    {
+      "name": "NoRuleDependencies",
+      "description": "Explains a plan with no dependency edges while keeping results separately inspectable.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "line": 183,
         "column": 1
       }
     },
@@ -8457,7 +8544,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 165,
+        "line": 188,
         "column": 1
       }
     },
@@ -8468,7 +8555,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 180,
+        "line": 203,
         "column": 1
       }
     },
@@ -8479,7 +8566,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "line": 191,
+        "line": 214,
         "column": 1
       }
     },
@@ -8567,18 +8654,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 33,
+        "line": 41,
         "column": 1
       }
     },
     {
       "name": "FilterSettings",
-      "description": "Renders package-visibility settings through ZORA switches.",
+      "description": "Keeps prepared package-visibility controls ready for their planned return to the sidebar.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 45,
+        "line": 53,
         "column": 1
       }
     },
@@ -8589,7 +8676,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 88,
+        "line": 101,
         "column": 1
       }
     },
@@ -8600,7 +8687,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 106,
+        "line": 119,
         "column": 1
       }
     },
@@ -8611,18 +8698,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 110,
+        "line": 123,
         "column": 9
       }
     },
     {
-      "name": "layoutIcon",
-      "description": "Resolve the icon owned by the active supported layout algorithm.",
+      "name": "layoutMedia",
+      "description": "Resolves the SVG media owned by each supported layout algorithm.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 132,
+        "line": 144,
         "column": 1
       }
     },
@@ -8633,7 +8720,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 137,
+        "line": 160,
         "column": 1
       }
     },
@@ -8644,7 +8731,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 155,
+        "line": 178,
         "column": 1
       }
     },
@@ -8655,7 +8742,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 167,
+        "line": 190,
         "column": 1
       }
     },
@@ -8666,7 +8753,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "line": 171,
+        "line": 194,
         "column": 9
       }
     },
@@ -8781,13 +8868,35 @@
       }
     },
     {
+      "name": "readSource",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "name": "readRepositoryIds",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
+        "line": 59,
+        "column": 1
+      }
+    },
+    {
       "name": "createColorToneDefinitions",
       "description": "Select the serializable Tone props required by ZORA from the published Templates catalog.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 48,
+        "line": 68,
         "column": 1
       }
     },
@@ -8798,7 +8907,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 55,
+        "line": 75,
         "column": 1
       }
     },
@@ -8809,7 +8918,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx",
-        "line": 60,
+        "line": 80,
         "column": 1
       }
     },
@@ -9117,7 +9226,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 21,
+        "line": 19,
         "column": 1
       }
     },
@@ -9128,7 +9237,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 61,
+        "line": 56,
         "column": 1
       }
     },
@@ -9139,7 +9248,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 91,
+        "line": 86,
         "column": 1
       }
     },
@@ -9150,7 +9259,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 102,
+        "line": 97,
         "column": 1
       }
     },
@@ -9161,18 +9270,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 127,
-        "column": 1
-      }
-    },
-    {
-      "name": "PublicOnlyFilter",
-      "description": "Keeps repository visibility filtering separate from GitHub authorization consent.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 138,
+        "line": 122,
         "column": 1
       }
     },
@@ -9183,7 +9281,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 160,
+        "line": 133,
         "column": 1
       }
     },
@@ -9194,7 +9292,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 219,
+        "line": 190,
         "column": 1
       }
     },
@@ -9205,7 +9303,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 253,
+        "line": 224,
         "column": 1
       }
     },
@@ -9216,7 +9314,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceControls.tsx",
-        "line": 276,
+        "line": 247,
         "column": 1
       }
     },
@@ -9238,7 +9336,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 73,
+        "line": 64,
         "column": 1
       }
     },
@@ -9249,7 +9347,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 86,
+        "line": 77,
         "column": 1
       }
     },
@@ -9260,7 +9358,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 131,
+        "line": 118,
         "column": 1
       }
     },
@@ -9271,7 +9369,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 150,
+        "line": 134,
         "column": 1
       }
     },
@@ -9282,7 +9380,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 201,
+        "line": 185,
         "column": 1
       }
     },
@@ -9293,7 +9391,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
-        "line": 212,
+        "line": 196,
         "column": 1
       }
     },
@@ -9304,7 +9402,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
-        "line": 23,
+        "line": 22,
+        "column": 1
+      }
+    },
+    {
+      "name": "RepositoryColorPicker",
+      "description": "Renders the ZORA-controlled picker while Atlas persists only its canonical primary color.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
+        "line": 64,
         "column": 1
       }
     },
@@ -9315,29 +9424,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
-        "line": 75,
+        "line": 103,
         "column": 1
       }
     },
     {
-      "name": "createColorPickerValue",
-      "description": "Create the controlled Wheel and Tone state from the current canonical repository color.",
+      "name": "createRepositoryColorPickerState",
+      "description": "Create the locally controlled presentation state around Atlas's persisted primary color.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
-        "line": 85,
-        "column": 1
-      }
-    },
-    {
-      "name": "setRepositoryColor",
-      "description": "Persist the Picker's one active Wheel or single Tone color as a canonical uppercase override.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
-        "line": 95,
+        "line": 113,
         "column": 1
       }
     },
@@ -9349,6 +9447,17 @@
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx",
         "line": 8,
+        "column": 1
+      }
+    },
+    {
+      "name": "useBrowserWorkspaceGraphCache",
+      "description": "Restores a matching successful graph before refreshing its repositories in the background.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "line": 11,
         "column": 1
       }
     },
@@ -9634,7 +9743,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 9,
+        "line": 16,
         "column": 1
       }
     },
@@ -9645,18 +9754,106 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 25,
+        "line": 32,
+        "column": 1
+      }
+    },
+    {
+      "name": "scheduleWorkspaceSelection",
+      "description": "Coalesce picker changes before opening a stream; later changes wait for the active stream.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 64,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearScheduledWorkspaceSelection",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 81,
+        "column": 1
+      }
+    },
+    {
+      "name": "flushWorkspaceSelectionAsync",
+      "description": "Serialize selection streams so a diff always targets the runtime that produced it.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 101,
+        "column": 1
+      }
+    },
+    {
+      "name": "flushPendingWorkspaceSelection",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 118,
         "column": 1
       }
     },
     {
       "name": "runWorkspaceSelectionAsync",
-      "description": "Start one generation and retain only its corresponding streamed workspace snapshots.",
+      "description": "Apply one settled picker intent without superseding an already-running server operation.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 53,
+        "line": 127,
+        "column": 1
+      }
+    },
+    {
+      "name": "clearEmptyWorkspaceSelection",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 176,
+        "column": 1
+      }
+    },
+    {
+      "name": "createWorkspaceSelectionChange",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 184,
+        "column": 1
+      }
+    },
+    {
+      "name": "needsInitialLoad",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 211,
+        "column": 1
+      }
+    },
+    {
+      "name": "createSelectionRequest",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "line": 215,
         "column": 1
       }
     },
@@ -9667,7 +9864,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 105,
+        "line": 224,
         "column": 1
       }
     },
@@ -9678,29 +9875,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 123,
-        "column": 1
-      }
-    },
-    {
-      "name": "streamWorkspaceSelectionAsync",
-      "description": "Consume every complete NDJSON snapshot as it arrives instead of waiting for the terminal frame.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 157,
-        "column": 1
-      }
-    },
-    {
-      "name": "consumeWorkspaceProgressRecord",
-      "description": "Validate one NDJSON record before it can affect visible graph or status state.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 183,
+        "line": 242,
         "column": 1
       }
     },
@@ -9711,7 +9886,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 196,
+        "line": 277,
         "column": 1
       }
     },
@@ -9722,7 +9897,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 216,
+        "line": 301,
         "column": 1
       }
     },
@@ -9733,7 +9908,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 226,
+        "line": 311,
         "column": 1
       }
     },
@@ -9744,7 +9919,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 231,
+        "line": 316,
         "column": 1
       }
     },
@@ -9755,40 +9930,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 236,
-        "column": 1
-      }
-    },
-    {
-      "name": "isWorkspaceProgressFrame",
-      "description": "Narrow a credential-free progressive workspace snapshot from the server transport.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 243,
-        "column": 1
-      }
-    },
-    {
-      "name": "isTerminalErrorFrame",
-      "description": "Distinguish a documented terminal stream failure from ordinary progress snapshots.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 264,
-        "column": 1
-      }
-    },
-    {
-      "name": "isWorkspaceLoadResult",
-      "description": "Check only the portable workspace result discriminant at the transport boundary.",
-      "see": [],
-      "security": [],
-      "sourceLocation": {
-        "filePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "line": 276,
+        "line": 321,
         "column": 1
       }
     },
@@ -9964,7 +10106,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 23,
+        "line": 27,
         "column": 1
       }
     },
@@ -9975,7 +10117,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 37,
+        "line": 41,
         "column": 1
       }
     },
@@ -9986,18 +10128,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 59,
+        "line": 64,
         "column": 1
       }
     },
     {
       "name": "createBreadcrumbItems",
-      "description": "Creates package breadcrumbs from a stable Home root to the active package path.",
+      "description": "Creates the active package breadcrumb trail without duplicating virtual repository identity.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 90,
+        "line": 95,
         "column": 1
       }
     },
@@ -10008,7 +10150,29 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 108,
+        "line": 113,
+        "column": 1
+      }
+    },
+    {
+      "name": "createPackageBreadcrumbId",
+      "description": "Encodes a graph package identity so breadcrumb keys cannot collide with workspace controls.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "line": 149,
+        "column": 1
+      }
+    },
+    {
+      "name": "resolveBreadcrumbNavigationPath",
+      "description": "Resolves a unique breadcrumb identity to the graph package scope it opens.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "line": 154,
         "column": 1
       }
     },
@@ -10019,7 +10183,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
-        "line": 139,
+        "line": 160,
         "column": 1
       }
     },
@@ -10090,13 +10254,24 @@
       }
     },
     {
+      "name": "exampleDestination",
+      "description": "Maps the finite example selector values without interpolating browser-controlled text into a URL.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "line": 196,
+        "column": 1
+      }
+    },
+    {
       "name": "useWorkspaceCycleSelection",
       "description": "Connects visible cycle evidence to the portable project scope that owns its preferences.",
       "see": [],
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 182,
+        "line": 203,
         "column": 1
       }
     },
@@ -10107,7 +10282,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
-        "line": 194,
+        "line": 215,
         "column": 1
       }
     },
@@ -10233,6 +10408,61 @@
       }
     },
     {
+      "name": "streamWorkspaceSelectionAsync",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "line": 3,
+        "column": 1
+      }
+    },
+    {
+      "name": "consumeWorkspaceProgressRecord",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "line": 28,
+        "column": 1
+      }
+    },
+    {
+      "name": "isWorkspaceProgressFrame",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "line": 40,
+        "column": 1
+      }
+    },
+    {
+      "name": "isTerminalErrorFrame",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "line": 60,
+        "column": 1
+      }
+    },
+    {
+      "name": "isWorkspaceLoadResult",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "line": 71,
+        "column": 1
+      }
+    },
+    {
       "name": "WorkspaceSidebar",
       "description": "Compose workspace tools and persistent graph settings from generated ZORA elements.",
       "see": [],
@@ -10316,7 +10546,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 18,
+        "line": 19,
+        "column": 1
+      }
+    },
+    {
+      "name": "useWorkspaceClientRuntime",
+      "description": "Coordinates browser cache restoration and the refresh stream for one URL selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 71,
         "column": 1
       }
     },
@@ -10327,7 +10568,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 68,
+        "line": 105,
         "column": 1
       }
     },
@@ -10338,7 +10579,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 104,
+        "line": 141,
         "column": 1
       }
     },
@@ -10349,7 +10590,18 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 121,
+        "line": 158,
+        "column": 1
+      }
+    },
+    {
+      "name": "useRestoreWorkspaceSelection",
+      "description": "Begin the background refresh after an SSR placeholder or a restored browser graph.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "line": 169,
         "column": 1
       }
     },
@@ -10360,7 +10612,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 130,
+        "line": 192,
         "column": 1
       }
     },
@@ -10371,7 +10623,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 147,
+        "line": 209,
         "column": 1
       }
     },
@@ -10382,7 +10634,7 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 175,
+        "line": 237,
         "column": 1
       }
     },
@@ -10393,7 +10645,73 @@
       "security": [],
       "sourceLocation": {
         "filePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
-        "line": 192,
+        "line": 254,
+        "column": 1
+      }
+    },
+    {
+      "name": "createBrowserWorkspaceGraphCache",
+      "description": "Stores the last successfully rendered graph for one credential-free browser selection.",
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "line": 4,
+        "column": 1
+      }
+    },
+    {
+      "name": "createWorkspaceGraphCacheKey",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "line": 25,
+        "column": 1
+      }
+    },
+    {
+      "name": "isEntry",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "line": 44,
+        "column": 1
+      }
+    },
+    {
+      "name": "isRecord",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "line": 53,
+        "column": 1
+      }
+    },
+    {
+      "name": "validText",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "line": 57,
+        "column": 1
+      }
+    },
+    {
+      "name": "isSuccessfulWorkspace",
+      "description": null,
+      "see": [],
+      "security": [],
+      "sourceLocation": {
+        "filePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "line": 61,
         "column": 1
       }
     },
@@ -13485,6 +13803,21 @@
         "sourcePath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts"
       },
       {
+        "fromPath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toPath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toPath": "src/features/theme/adapters/inbound/react/ZoraRuntimeProvider.tsx",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromPath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toPath": "ankh.config.json",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
         "fromPath": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
         "toPath": "src/features/graph-view/utils/createCompoundOpacityIndex.ts",
         "sourcePath": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts"
@@ -13638,6 +13971,11 @@
         "fromPath": "test/src/features/project-analysis/selectParserLanguage.spec.ts",
         "toPath": "src/types/language.ts",
         "sourcePath": "test/src/features/project-analysis/selectParserLanguage.spec.ts"
+      },
+      {
+        "fromPath": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts",
+        "toPath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts",
+        "sourcePath": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts"
       },
       {
         "fromPath": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
@@ -14776,11 +15114,6 @@
       },
       {
         "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "toPath": "src/features/audit/utils/getAdaptiveCycleLayoutSpacing.ts",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromPath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
         "toPath": "src/types/auditVisualization.ts",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
@@ -14873,16 +15206,6 @@
         "fromPath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts",
         "toPath": "src/types/projectTree.ts",
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
-      },
-      {
-        "fromPath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
-        "toPath": "src/features/rule-explorer/domain/projectRuleDag.ts",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts"
-      },
-      {
-        "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "toPath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
       {
         "fromPath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
@@ -15150,6 +15473,16 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "toPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts",
         "toPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceSessionStore.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceSession.ts"
@@ -15237,6 +15570,11 @@
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "toPath": "src/features/workspace/adapters/inbound/react/ProjectSourceForm.tsx",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toPath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
@@ -15455,6 +15793,11 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
       },
       {
+        "fromPath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
+      },
+      {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx",
         "toPath": "src/features/audit/adapters/inbound/react/AuditExportPanel.tsx",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceSidebar.tsx"
@@ -15511,6 +15854,11 @@
       },
       {
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toPath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
@@ -15528,6 +15876,11 @@
         "fromPath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
         "toPath": "src/types/workspace.ts",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts",
+        "toPath": "src/types/workspace.ts",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
       },
       {
         "fromPath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceStore.ts",
@@ -17169,18 +17522,6 @@
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
-        "fromSymbol": "assertSwitchCheckedAsync",
-        "toSymbol": "assert",
-        "callExpression": "assert",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "assertSwitchCheckedAsync",
-        "toSymbol": "isSwitchCheckedAsync",
-        "callExpression": "isSwitchCheckedAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
         "fromSymbol": "assertTopmostControlAsync",
         "toSymbol": "assert",
         "callExpression": "assert",
@@ -17230,12 +17571,6 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "waitForCheckboxStateAsync",
-        "callExpression": "waitForCheckboxStateAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "assertGraphCanvasAsync",
         "callExpression": "assertGraphCanvasAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
@@ -17244,6 +17579,12 @@
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "openRepositoryPickerAsync",
         "callExpression": "openRepositoryPickerAsync",
+        "sourcePath": "test/e2e/multiProjectBrowser.ts"
+      },
+      {
+        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
+        "toSymbol": "waitForCheckboxStateAsync",
+        "callExpression": "waitForCheckboxStateAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -17344,20 +17685,8 @@
       },
       {
         "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "isSwitchCheckedAsync",
-        "callExpression": "isSwitchCheckedAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
         "toSymbol": "openWorkspaceMenuAsync",
         "callExpression": "openWorkspaceMenuAsync",
-        "sourcePath": "test/e2e/multiProjectBrowser.ts"
-      },
-      {
-        "fromSymbol": "test/e2e/multiProjectBrowser.ts",
-        "toSymbol": "assertSwitchCheckedAsync",
-        "callExpression": "assertSwitchCheckedAsync",
         "sourcePath": "test/e2e/multiProjectBrowser.ts"
       },
       {
@@ -18174,12 +18503,6 @@
         "fromSymbol": "assertProductionCompoundCanvasAsync",
         "toSymbol": "saveEvidenceAsync",
         "callExpression": "saveEvidenceAsync",
-        "sourcePath": "test/e2e/productionCompoundCanvas.ts"
-      },
-      {
-        "fromSymbol": "assertProductionCompoundCanvasAsync",
-        "toSymbol": "isSwitchEnabledAsync",
-        "callExpression": "isSwitchEnabledAsync",
         "sourcePath": "test/e2e/productionCompoundCanvas.ts"
       },
       {
@@ -19888,14 +20211,26 @@
       },
       {
         "fromSymbol": "discoverGitHubSourceAsync",
-        "toSymbol": "discoverGitHubRepositoriesAsync",
-        "callExpression": "discoverGitHubRepositoriesAsync",
+        "toSymbol": "isAuthenticatedInventorySource",
+        "callExpression": "isAuthenticatedInventorySource",
         "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       },
       {
         "fromSymbol": "discoverGitHubSourceAsync",
-        "toSymbol": "discoverGitHubAuthenticatedUserRepositoriesAsync",
-        "callExpression": "discoverGitHubAuthenticatedUserRepositoriesAsync",
+        "toSymbol": "discoverAuthorizedOwnerInventoryAsync",
+        "callExpression": "discoverAuthorizedOwnerInventoryAsync",
+        "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
+      },
+      {
+        "fromSymbol": "discoverGitHubSourceAsync",
+        "toSymbol": "discoverRepositoriesAsync",
+        "callExpression": "discoverRepositoriesAsync",
+        "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
+      },
+      {
+        "fromSymbol": "discoverAuthorizedOwnerInventoryAsync",
+        "toSymbol": "discoverAuthenticatedInventoryAsync",
+        "callExpression": "discoverAuthenticatedInventoryAsync",
         "sourcePath": "src/features/project-source/composition/discoverWorkspaceGitHubSourcesAsync.ts"
       },
       {
@@ -21753,6 +22088,42 @@
         "sourcePath": "test/src/features/github-auth/githubAuthConfiguration.spec.ts"
       },
       {
+        "fromSymbol": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toSymbol": "parseAppManifest",
+        "callExpression": "parseAppManifest",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toSymbol": "render",
+        "callExpression": "render",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toSymbol": "resolve",
+        "callExpression": "resolve",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
+        "fromSymbol": "test/src/features/github-auth/GitHubAuthControls.spec.tsx",
+        "toSymbol": "unmount",
+        "callExpression": "unmount",
+        "sourcePath": "test/src/features/github-auth/GitHubAuthControls.spec.tsx"
+      },
+      {
         "fromSymbol": "test/src/features/graph-view/createCompoundOpacityIndex.spec.ts",
         "toSymbol": "describe",
         "callExpression": "describe",
@@ -22507,6 +22878,30 @@
         "toSymbol": "detectProject",
         "callExpression": "detectProject",
         "sourcePath": "test/src/features/project-analysis/selectParserLanguage.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts",
+        "toSymbol": "describe",
+        "callExpression": "describe",
+        "sourcePath": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts",
+        "toSymbol": "it",
+        "callExpression": "it",
+        "sourcePath": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts",
+        "toSymbol": "discoverWorkspaceGitHubSourcesAsync",
+        "callExpression": "discoverWorkspaceGitHubSourcesAsync",
+        "sourcePath": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts"
+      },
+      {
+        "fromSymbol": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts",
+        "toSymbol": "repository",
+        "callExpression": "repository",
+        "sourcePath": "test/src/features/project-source/discoverWorkspaceGitHubSourcesAsync.spec.ts"
       },
       {
         "fromSymbol": "test/src/features/project-source/materializeSourceJarAsync.spec.ts",
@@ -26607,12 +27002,6 @@
         "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
       },
       {
-        "fromSymbol": "onPress",
-        "toSymbol": "requestPrivateAccess",
-        "callExpression": "requestPrivateAccess",
-        "sourcePath": "src/features/github-auth/adapters/inbound/react/GitHubAuthControls.tsx"
-      },
-      {
         "fromSymbol": "createPackageGraphElements",
         "toSymbol": "toCytoscapeElements",
         "callExpression": "toCytoscapeElements",
@@ -26986,6 +27375,12 @@
       },
       {
         "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
+        "toSymbol": "createGraphTopologyKey",
+        "callExpression": "createGraphTopologyKey",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
+      },
+      {
+        "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
         "toSymbol": "createGraphViewModel",
         "callExpression": "createGraphViewModel",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
@@ -26994,6 +27389,12 @@
         "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
         "toSymbol": "createGraphViewStyles",
         "callExpression": "createGraphViewStyles",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
+      },
+      {
+        "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
+        "toSymbol": "createTopologyAwareLayoutOptions",
+        "callExpression": "createTopologyAwareLayoutOptions",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
@@ -27015,33 +27416,9 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
-        "fromSymbol": "DependencyGraphCanvas",
-        "toSymbol": "useVisibleTopologyFit",
-        "callExpression": "useVisibleTopologyFit",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
-      },
-      {
         "fromSymbol": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx",
         "toSymbol": "handleLayoutComplete",
         "callExpression": "viewport.handleLayoutComplete",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
-      },
-      {
-        "fromSymbol": "useVisibleTopologyFit",
-        "toSymbol": "useMemo",
-        "callExpression": "useMemo",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
-      },
-      {
-        "fromSymbol": "useVisibleTopologyFit",
-        "toSymbol": "useFitVisibleTopology",
-        "callExpression": "useFitVisibleTopology",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
-      },
-      {
-        "fromSymbol": "useFitVisibleTopology",
-        "toSymbol": "useEffect",
-        "callExpression": "useEffect",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/DependencyGraphView.tsx"
       },
       {
@@ -27256,8 +27633,8 @@
       },
       {
         "fromSymbol": "handleLayoutComplete",
-        "toSymbol": "fitGraphWithOptimizedSpacing",
-        "callExpression": "fitGraphWithOptimizedSpacing",
+        "toSymbol": "fitGraphToViewport",
+        "callExpression": "fitGraphToViewport",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
@@ -27297,12 +27674,6 @@
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
-        "fromSymbol": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts",
-        "toSymbol": "synchronizeCycleFocusRefs",
-        "callExpression": "synchronizeCycleFocusRefs",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
         "fromSymbol": "useCycleViewportFocus",
         "toSymbol": "useCallback",
         "callExpression": "useCallback",
@@ -27334,30 +27705,18 @@
       },
       {
         "fromSymbol": "focusActiveCycle",
-        "toSymbol": "fitGraphWithOptimizedSpacing",
-        "callExpression": "fitGraphWithOptimizedSpacing",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "focusActiveCycle",
-        "toSymbol": "getAdaptiveCycleLayoutSpacing",
-        "callExpression": "getAdaptiveCycleLayoutSpacing",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "focusActiveCycle",
-        "toSymbol": "readCycleLayoutMetrics",
-        "callExpression": "readCycleLayoutMetrics",
-        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
-      },
-      {
-        "fromSymbol": "focusActiveCycle",
-        "toSymbol": "handleSpacingFactorChange",
-        "callExpression": "input.handleSpacingFactorChange",
+        "toSymbol": "fitGraphToViewport",
+        "callExpression": "fitGraphToViewport",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
       },
       {
         "fromSymbol": "fitGraphWithOptimizedSpacing",
+        "toSymbol": "synchronizeGraphViewport",
+        "callExpression": "synchronizeGraphViewport",
+        "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
+      },
+      {
+        "fromSymbol": "fitGraphToViewport",
         "toSymbol": "synchronizeGraphViewport",
         "callExpression": "synchronizeGraphViewport",
         "sourcePath": "src/features/graph-view/adapters/inbound/react/useGraphViewport.ts"
@@ -27981,21 +28340,9 @@
         "sourcePath": "src/features/project-tree/adapters/inbound/react/useProjectTreeExpansion.ts"
       },
       {
-        "fromSymbol": "createRuleDagElements",
-        "toSymbol": "toCytoscapeElements",
-        "callExpression": "toCytoscapeElements",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/cytoscape/createRuleDagElements.ts"
-      },
-      {
         "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
         "toSymbol": "projectRuleDag",
         "callExpression": "projectRuleDag",
-        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
-      },
-      {
-        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
-        "toSymbol": "createRuleDagElements",
-        "callExpression": "createRuleDagElements",
         "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
       {
@@ -28008,6 +28355,12 @@
         "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
         "toSymbol": "toTreeNodes",
         "callExpression": "toTreeNodes",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "RuleDagContents",
+        "toSymbol": "ruleEvaluationSummary",
+        "callExpression": "ruleEvaluationSummary",
         "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
       {
@@ -28032,6 +28385,12 @@
         "fromSymbol": "RuleFacetFilters",
         "toSymbol": "groupFacetsById",
         "callExpression": "groupFacetsById",
+        "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
+      },
+      {
+        "fromSymbol": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx",
+        "toSymbol": "formatFacetLabel",
+        "callExpression": "formatFacetLabel",
         "sourcePath": "src/features/rule-explorer/adapters/inbound/react/RuleDagExplorer.tsx"
       },
       {
@@ -28107,15 +28466,15 @@
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
-        "fromSymbol": "LayoutSettings",
-        "toSymbol": "layoutIcon",
-        "callExpression": "layoutIcon",
+        "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
+        "toSymbol": "t",
+        "callExpression": "t",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
         "fromSymbol": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx",
-        "toSymbol": "t",
-        "callExpression": "t",
+        "toSymbol": "layoutMedia",
+        "callExpression": "layoutMedia",
         "sourcePath": "src/features/settings/adapters/inbound/react/SettingsPanel.tsx"
       },
       {
@@ -28276,6 +28635,24 @@
       },
       {
         "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "readSource",
+        "callExpression": "readSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "readRepositoryIds",
+        "callExpression": "readRepositoryIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
+        "toSymbol": "readSearchParam",
+        "callExpression": "readSearchParam",
+        "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
+      },
+      {
+        "fromSymbol": "AtlasWorkspacePage",
         "toSymbol": "loadWorkspace",
         "callExpression": "loadWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
@@ -28288,14 +28665,14 @@
       },
       {
         "fromSymbol": "AtlasWorkspacePage",
-        "toSymbol": "readSearchParam",
-        "callExpression": "readSearchParam",
+        "toSymbol": "createColorToneDefinitions",
+        "callExpression": "createColorToneDefinitions",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {
-        "fromSymbol": "AtlasWorkspacePage",
-        "toSymbol": "createColorToneDefinitions",
-        "callExpression": "createColorToneDefinitions",
+        "fromSymbol": "readSource",
+        "toSymbol": "readSearchParam",
+        "callExpression": "readSearchParam",
         "sourcePath": "src/features/workspace/adapters/inbound/next/AtlasWorkspacePage.tsx"
       },
       {
@@ -28642,20 +29019,14 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
-        "toSymbol": "createColorPickerValue",
-        "callExpression": "createColorPickerValue",
+        "toSymbol": "setPicker",
+        "callExpression": "setPicker",
         "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
         "toSymbol": "setRepositoryColor",
-        "callExpression": "setRepositoryColor",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx",
-        "toSymbol": "setValue",
-        "callExpression": "setValue",
+        "callExpression": "settings.setRepositoryColor",
         "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
       },
       {
@@ -28672,26 +29043,14 @@
       },
       {
         "fromSymbol": "resetRepositoryColor",
-        "toSymbol": "setValue",
-        "callExpression": "setValue",
+        "toSymbol": "setPicker",
+        "callExpression": "setPicker",
         "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
       },
       {
         "fromSymbol": "resetRepositoryColor",
-        "toSymbol": "createColorPickerValue",
-        "callExpression": "createColorPickerValue",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
-      },
-      {
-        "fromSymbol": "resetRepositoryColor",
-        "toSymbol": "parseHexColorOrThrow",
-        "callExpression": "parseHexColorOrThrow",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
-      },
-      {
-        "fromSymbol": "setRepositoryColor",
-        "toSymbol": "setRepositoryColor",
-        "callExpression": "settings.setRepositoryColor",
+        "toSymbol": "createRepositoryColorPickerState",
+        "callExpression": "createRepositoryColorPickerState",
         "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryColorControl.tsx"
       },
       {
@@ -28699,6 +29058,42 @@
         "toSymbol": "onRetry",
         "callExpression": "onRetry",
         "sourcePath": "src/features/workspace/adapters/inbound/react/RepositoryLoadFailures.tsx"
+      },
+      {
+        "fromSymbol": "useBrowserWorkspaceGraphCache",
+        "toSymbol": "createWorkspaceGraphCacheKey",
+        "callExpression": "createWorkspaceGraphCacheKey",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "useBrowserWorkspaceGraphCache",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "toSymbol": "load",
+        "callExpression": "createBrowserWorkspaceGraphCache(window.localStorage).load",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "toSymbol": "createBrowserWorkspaceGraphCache",
+        "callExpression": "createBrowserWorkspaceGraphCache",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "toSymbol": "setLiveWorkspace",
+        "callExpression": "input.setLiveWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts",
+        "toSymbol": "save",
+        "callExpression": "createBrowserWorkspaceGraphCache(window.localStorage).save",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useBrowserWorkspaceGraphCache.ts"
       },
       {
         "fromSymbol": "useBrowserWorkspaceSession",
@@ -29116,38 +29511,86 @@
       },
       {
         "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "toSymbol": "runWorkspaceSelectionAsync",
-        "callExpression": "runWorkspaceSelectionAsync",
+        "toSymbol": "scheduleWorkspaceSelection",
+        "callExpression": "scheduleWorkspaceSelection",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
-        "fromSymbol": "runWorkspaceSelectionAsync",
+        "fromSymbol": "scheduleWorkspaceSelection",
+        "toSymbol": "clearScheduledWorkspaceSelection",
+        "callExpression": "clearScheduledWorkspaceSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
+        "toSymbol": "flushWorkspaceSelectionAsync",
+        "callExpression": "flushWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "clearScheduledWorkspaceSelection",
         "toSymbol": "normalizeSource",
         "callExpression": "normalizeSource",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
-        "fromSymbol": "runWorkspaceSelectionAsync",
+        "fromSymbol": "clearScheduledWorkspaceSelection",
         "toSymbol": "isWorkspaceSelectionSource",
         "callExpression": "isWorkspaceSelectionSource",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
-        "fromSymbol": "runWorkspaceSelectionAsync",
+        "fromSymbol": "clearScheduledWorkspaceSelection",
         "toSymbol": "clearWorkspaceSelection",
         "callExpression": "clearWorkspaceSelection",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
-        "fromSymbol": "runWorkspaceSelectionAsync",
+        "fromSymbol": "clearScheduledWorkspaceSelection",
         "toSymbol": "replaceWorkspaceHistory",
         "callExpression": "replaceWorkspaceHistory",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "flushWorkspaceSelectionAsync",
+        "toSymbol": "runWorkspaceSelectionAsync",
+        "callExpression": "runWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "flushWorkspaceSelectionAsync",
+        "toSymbol": "flushPendingWorkspaceSelection",
+        "callExpression": "flushPendingWorkspaceSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "flushPendingWorkspaceSelection",
+        "toSymbol": "flushWorkspaceSelectionAsync",
+        "callExpression": "flushWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "createWorkspaceSelectionChange",
+        "callExpression": "createWorkspaceSelectionChange",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "clearEmptyWorkspaceSelection",
+        "callExpression": "clearEmptyWorkspaceSelection",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
         "fromSymbol": "runWorkspaceSelectionAsync",
         "toSymbol": "streamWorkspaceSelectionAsync",
         "callExpression": "streamWorkspaceSelectionAsync",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "createSelectionRequest",
+        "callExpression": "createSelectionRequest",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
@@ -29160,6 +29603,12 @@
         "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
         "toSymbol": "preserveWorkspaceDuringRecovery",
         "callExpression": "preserveWorkspaceDuringRecovery",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "runWorkspaceSelectionAsync",
+        "toSymbol": "replaceWorkspaceHistory",
+        "callExpression": "replaceWorkspaceHistory",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
@@ -29187,6 +29636,36 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
+        "fromSymbol": "clearEmptyWorkspaceSelection",
+        "toSymbol": "clearWorkspaceSelection",
+        "callExpression": "clearWorkspaceSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "clearEmptyWorkspaceSelection",
+        "toSymbol": "replaceWorkspaceHistory",
+        "callExpression": "replaceWorkspaceHistory",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSelectionChange",
+        "toSymbol": "normalizeSource",
+        "callExpression": "normalizeSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSelectionChange",
+        "toSymbol": "isWorkspaceSelectionSource",
+        "callExpression": "isWorkspaceSelectionSource",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
+        "fromSymbol": "createWorkspaceSelectionChange",
+        "toSymbol": "needsInitialLoad",
+        "callExpression": "needsInitialLoad",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
+      },
+      {
         "fromSymbol": "clearWorkspaceSelection",
         "toSymbol": "setLiveWorkspace",
         "callExpression": "setLiveWorkspace",
@@ -29208,42 +29687,6 @@
         "fromSymbol": "recoverWorkspaceRuntimeAsync",
         "toSymbol": "setLiveWorkspace",
         "callExpression": "setLiveWorkspace",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
-      },
-      {
-        "fromSymbol": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts",
-        "toSymbol": "consumeWorkspaceProgressRecord",
-        "callExpression": "consumeWorkspaceProgressRecord",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
-      },
-      {
-        "fromSymbol": "streamWorkspaceSelectionAsync",
-        "toSymbol": "consumeWorkspaceProgressRecord",
-        "callExpression": "consumeWorkspaceProgressRecord",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
-      },
-      {
-        "fromSymbol": "consumeWorkspaceProgressRecord",
-        "toSymbol": "isTerminalErrorFrame",
-        "callExpression": "isTerminalErrorFrame",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
-      },
-      {
-        "fromSymbol": "consumeWorkspaceProgressRecord",
-        "toSymbol": "isWorkspaceProgressFrame",
-        "callExpression": "isWorkspaceProgressFrame",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
-      },
-      {
-        "fromSymbol": "consumeWorkspaceProgressRecord",
-        "toSymbol": "onFrame",
-        "callExpression": "onFrame",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
-      },
-      {
-        "fromSymbol": "isWorkspaceProgressFrame",
-        "toSymbol": "isWorkspaceLoadResult",
-        "callExpression": "isWorkspaceLoadResult",
         "sourcePath": "src/features/workspace/adapters/inbound/react/useWorkspaceRepositorySelection.ts"
       },
       {
@@ -29487,6 +29930,12 @@
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toSymbol": "resolveBreadcrumbNavigationPath",
+        "callExpression": "resolveBreadcrumbNavigationPath",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
         "fromSymbol": "WorkspaceHeaderActions",
         "toSymbol": "useZoraTheme",
         "callExpression": "useZoraTheme",
@@ -29508,6 +29957,18 @@
         "fromSymbol": "createBreadcrumbItems",
         "toSymbol": "normalizeGraphPackage",
         "callExpression": "normalizeGraphPackage",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx",
+        "toSymbol": "createPackageBreadcrumbId",
+        "callExpression": "createPackageBreadcrumbId",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
+      },
+      {
+        "fromSymbol": "findRepositoryBreadcrumbs",
+        "toSymbol": "createPackageBreadcrumbId",
+        "callExpression": "createPackageBreadcrumbId",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceHeader.tsx"
       },
       {
@@ -29544,6 +30005,12 @@
         "fromSymbol": "WorkspaceMain",
         "toSymbol": "hasIncompleteBulkSelection",
         "callExpression": "hasIncompleteBulkSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx",
+        "toSymbol": "exampleDestination",
+        "callExpression": "exampleDestination",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceLayout.tsx"
       },
       {
@@ -29587,6 +30054,42 @@
         "toSymbol": "hasRepositoryLoadStatus",
         "callExpression": "hasRepositoryLoadStatus",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspacePanels.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts",
+        "toSymbol": "consumeWorkspaceProgressRecord",
+        "callExpression": "consumeWorkspaceProgressRecord",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
+      },
+      {
+        "fromSymbol": "streamWorkspaceSelectionAsync",
+        "toSymbol": "consumeWorkspaceProgressRecord",
+        "callExpression": "consumeWorkspaceProgressRecord",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
+      },
+      {
+        "fromSymbol": "consumeWorkspaceProgressRecord",
+        "toSymbol": "isTerminalErrorFrame",
+        "callExpression": "isTerminalErrorFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
+      },
+      {
+        "fromSymbol": "consumeWorkspaceProgressRecord",
+        "toSymbol": "isWorkspaceProgressFrame",
+        "callExpression": "isWorkspaceProgressFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
+      },
+      {
+        "fromSymbol": "consumeWorkspaceProgressRecord",
+        "toSymbol": "onFrame",
+        "callExpression": "onFrame",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
+      },
+      {
+        "fromSymbol": "isWorkspaceProgressFrame",
+        "toSymbol": "isWorkspaceLoadResult",
+        "callExpression": "isWorkspaceLoadResult",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/workspaceSelectionTransport.ts"
       },
       {
         "fromSymbol": "WorkspaceSidebar",
@@ -29650,14 +30153,8 @@
       },
       {
         "fromSymbol": "WorkspaceView",
-        "toSymbol": "useWorkspaceRepositorySelection",
-        "callExpression": "useWorkspaceRepositorySelection",
-        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
-      },
-      {
-        "fromSymbol": "WorkspaceView",
-        "toSymbol": "selectedRepositoryIds",
-        "callExpression": "selectedRepositoryIds",
+        "toSymbol": "useWorkspaceClientRuntime",
+        "callExpression": "useWorkspaceClientRuntime",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -29676,6 +30173,48 @@
         "fromSymbol": "WorkspaceView",
         "toSymbol": "renderWorkspace",
         "callExpression": "renderWorkspace",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "useWorkspaceClientRuntime",
+        "toSymbol": "selectedRepositoryIds",
+        "callExpression": "selectedRepositoryIds",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "useWorkspaceClientRuntime",
+        "toSymbol": "useWorkspaceRepositorySelection",
+        "callExpression": "useWorkspaceRepositorySelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "useWorkspaceClientRuntime",
+        "toSymbol": "useBrowserWorkspaceGraphCache",
+        "callExpression": "useBrowserWorkspaceGraphCache",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "useWorkspaceClientRuntime",
+        "toSymbol": "useRestoreWorkspaceSelection",
+        "callExpression": "useRestoreWorkspaceSelection",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "useRestoreWorkspaceSelection",
+        "toSymbol": "useRef",
+        "callExpression": "useRef",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "useRestoreWorkspaceSelection",
+        "toSymbol": "useEffect",
+        "callExpression": "useEffect",
+        "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx",
+        "toSymbol": "select",
+        "callExpression": "select",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
       },
       {
@@ -29701,6 +30240,36 @@
         "toSymbol": "setLiveWorkspace",
         "callExpression": "setLiveWorkspace",
         "sourcePath": "src/features/workspace/adapters/inbound/react/WorkspaceView.tsx"
+      },
+      {
+        "fromSymbol": "load",
+        "toSymbol": "isEntry",
+        "callExpression": "isEntry",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "isEntry",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "isEntry",
+        "toSymbol": "validText",
+        "callExpression": "validText",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "isEntry",
+        "toSymbol": "isSuccessfulWorkspace",
+        "callExpression": "isSuccessfulWorkspace",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
+      },
+      {
+        "fromSymbol": "isSuccessfulWorkspace",
+        "toSymbol": "isRecord",
+        "callExpression": "isRecord",
+        "sourcePath": "src/features/workspace/adapters/outbound/browser/createBrowserWorkspaceGraphCache.ts"
       },
       {
         "fromSymbol": "load",
